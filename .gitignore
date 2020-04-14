@@ -1,9 +1,3 @@
-# SCXML generated SC source directory
-support
-
-# Java compiled code directory
-bin
-
 # Eiffel compiled code directory, *.rc file and *.ecf configuration file 
 EIFGENs
 *.rc
