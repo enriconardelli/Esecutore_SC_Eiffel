@@ -8,7 +8,23 @@ class
 	STATO
 
 create
-	make_with_id, make_final_with_id, make_empty
+	make_with_id, make_final_with_id, make_with_id_and_parent
+
+feature -- attributi
+
+	transizioni: ARRAY [TRANSIZIONE]
+
+	finale: BOOLEAN
+
+	stato_default: ARRAY[STATO]
+
+	stato_genitore: detachable STATO
+
+	id: STRING
+
+	OnEntry: detachable AZIONE
+
+	OnExit: detachable AZIONE
 
 feature --creazione
 
@@ -17,7 +33,8 @@ feature --creazione
 			non_e_una_stringa_vuota: un_id /= Void
 		do
 			id := un_id
-			finale := FALSE
+			finale := False
+			create stato_default.make_empty
 			create transizioni.make_empty
 		ensure
 			attributo_assegnato: id = un_id
@@ -27,29 +44,24 @@ feature --creazione
 		require
 			non_e_una_stringa_vuota: un_id /= Void
 		do
-			id := un_id
-			finale := TRUE
-			create transizioni.make_empty
+			make_with_id (un_id)
+			set_final
 		ensure
 			attributo_assegnato: id = un_id
 		end
 
-	make_empty
+	make_with_id_and_parent (un_id: STRING; p_genitore: STATO)
+		require
+			non_e_una_stringa_vuota: un_id /= Void
+			genitore_esistente: p_genitore /= Void
 		do
-			create transizioni.make_empty
-			finale := false
-			create id.make_empty
+			make_with_id (un_id)
+			set_genitore(p_genitore)
+		ensure
+			attributo_assegnato: id = un_id
 		end
 
-feature --attributi
-
-	transizioni: ARRAY [TRANSIZIONE]
-
-	finale: BOOLEAN
-
-	id: STRING
-
-feature --setter
+feature -- setter
 
 	set_final
 		do
@@ -58,15 +70,71 @@ feature --setter
 			ora_e_finale: finale
 		end
 
-		--add_transition
+	set_OnEntry (una_azione: AZIONE)
+		require
+			e_una_azione: una_azione /= VOID
+		do
+			OnEntry := una_azione
+		ensure
+			azione_assegnata: OnEntry = una_azione
+		end
 
-feature --routines
+	set_OnExit (una_azione: AZIONE)
+		require
+			e_una_azione: una_azione /= VOID
+		do
+			OnExit := una_azione
+		ensure
+			azione_assegnata: OnExit = una_azione
+		end
+
+feature -- routines
 
 	aggiungi_transizione (tr: TRANSIZIONE)
 		do
 			transizioni.force (tr, transizioni.count + 1)
 		end
 
+	set_genitore (p_genitore: STATO)
+		require
+			genitore_esistente: p_genitore /= Void
+		do
+			stato_genitore := p_genitore
+		ensure
+			genitore_acquisito: stato_genitore = p_genitore
+		end
+
+	transizione_abilitata (istante_corrente: LINKED_SET [STRING]; hash_delle_condizioni: HASH_TABLE [BOOLEAN, STRING]): detachable TRANSIZIONE
+		local
+			index_count: INTEGER
+			transizione_corrente: detachable TRANSIZIONE
+			evento_abilitato: BOOLEAN
+			condizione_abilitata: BOOLEAN
+		do
+			from
+				index_count := transizioni.lower
+			invariant
+				index_count >= 1
+				index_count <= transizioni.count + 1
+			until
+				index_count = transizioni.upper + 1 or Result /= Void
+			loop
+				transizione_corrente := transizioni [index_count]
+				evento_abilitato := transizione_corrente.check_evento (istante_corrente)
+				condizione_abilitata := transizione_corrente.check_condizione (hash_delle_condizioni)
+				if evento_abilitato and condizione_abilitata then
+					Result := transizioni [index_count]
+				end
+				index_count := index_count + 1
+			end
+			if Result = Void then
+				if attached stato_genitore as sg then
+					Result := sg.transizione_abilitata (istante_corrente, hash_delle_condizioni)
+				end
+			end
+		end
+
+feature -- routines forse inutili
 
 	numero_transizioni_abilitate (evento_corrente: STRING; hash_delle_condizioni: HASH_TABLE [BOOLEAN, STRING]): INTEGER
 			-- ritorna il numero di transizioni attivabili con evento_corrente nella configurazione corrente
@@ -81,13 +149,13 @@ feature --routines
 			until
 				index_count = transizioni.upper + 1
 			loop
-				if attached evento_corrente as ec then if attivabile (index_count, ec, hash_delle_condizioni) then
-					numero_di_transizioni_attivate_da_evento_corrente := numero_di_transizioni_attivate_da_evento_corrente + 1
+				if attached evento_corrente as ec then
+					if attivabile (index_count, ec, hash_delle_condizioni) then
+						numero_di_transizioni_attivate_da_evento_corrente := numero_di_transizioni_attivate_da_evento_corrente + 1
+					end
 				end
-			end
 				index_count := index_count + 1
 			end
-
 			Result := numero_di_transizioni_attivate_da_evento_corrente
 		end
 
@@ -158,7 +226,9 @@ feature --routines
 				end
 				index_count := index_count + 1
 			end
-			Result := transizioni [index]
+			if index /= 0 then
+				Result := transizioni [index]
+			end
 		end
 
 end

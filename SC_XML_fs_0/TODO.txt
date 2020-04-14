@@ -1,0 +1,14 @@
+COMPLETAMENTO PROGRAMMA
+
+- Test sulle azioni (assign e log) delle transizioni con condizioni (basato su xor_azioni)
+
+- Test: Verificare se a condizioni diverse corrispondono percorsi diversi
+
+- Test con transizioni interne
+
+
+PROGETTO
+
+- Stati paralleli
+
+- Capire in che modo gli agenti possono essere usati per migliorare l'evoluzione della state_chart (vd https://www.eiffel.org/node/315 )

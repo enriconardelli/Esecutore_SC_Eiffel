@@ -1,8 +1,8 @@
 note
 	description: "La classe che rappresenta la statechart"
-	author: "Daniele Fakhoury & Eloisa Scarsella"
-	date: "$Date$"
-	revision: "$Revision $"
+	author: "Daniele Fakhoury & Eloisa Scarsella & Luca Biondo & Simone Longhi"
+	date: "20 aprile 2018"
+	revision: "2"
 
 class
 	CONFIGURAZIONE
@@ -12,122 +12,35 @@ create
 
 feature --attributi
 
-	stato_corrente: STATO
-
-	stato_iniziale: STATO
-
-		--	eventi: ARRAY [STRING]
-		--			-- serve durante la lettura degli eventi dal file
+	stato_iniziale: ARRAY[STATO]
 
 	stati: HASH_TABLE [STATO, STRING]
 			-- serve durante l'istanziazione iniziale di stati, transizione e configurazione
-			-- una volta che è terminata non serve più
+			-- una volta che ï¿½ terminata non serve piï¿½
 
 	condizioni: HASH_TABLE [BOOLEAN, STRING]
 			-- serve durante l'istanziazione iniziale di stati, transizione e configurazione
-			-- una volta che è terminata non serve più
+			-- una volta che ï¿½ terminata non serve piï¿½
 
 	albero: XML_CALLBACKS_NULL_FILTER_DOCUMENT
 			-- rappresenta sotto forma di un albero la SC letta dal file
 
+	ha_problemi_con_il_file_della_sc: BOOLEAN
+
 feature --creazione
 
-	make(nome_SC: STRING)
+	make (nome_SC: STRING)
 		do
+--			create stato_iniziale.make_with_id (create {STRING}.make_empty)
+--			stato_iniziale.set_final
 			create stato_iniziale.make_empty
-			stato_iniziale.set_final
 			crea_albero (nome_SC)
 			create stati.make (1)
 			create condizioni.make (1)
 			crea_stati_e_condizioni
-			stato_corrente := stato_iniziale
-		end
-
-feature --evoluzione SC
-
-	crea_albero (nome_file_SC: STRING)
-			-- crea e inizializza `albero'
-		local
-			parser: XML_PARSER
-		do
-				--| Instantiate parser
-			create {XML_STANDARD_PARSER} parser.make
-				--| Build tree callbacks
-			create albero.make_null
-			parser.set_callbacks (albero)
-				--| Parse the `file_name' content
-			parser.parse_from_filename (nome_file_SC)
-			if parser.error_occurred then
-				print ("Parsing error!!! %N")
-			else
-				print ("Parsing OK. %N")
-			end
-		end
-
-	evolvi_SC (eventi: ARRAY [STRING])
-		local
-			count_evento_corrente: INTEGER
-			evento_corrente: STRING
-			nuovo_stato: detachable STATO
-		do
-			print ("%Nentrato in evolvi_SC:  %N %N")
-			print ("stato iniziale:  " + stato_corrente.id + "       %N")
-			FROM
-				count_evento_corrente := 1
-			UNTIL
-				stato_corrente.finale or count_evento_corrente > eventi.count
-			LOOP
-				stabilizza_stato
---				-- TODO eventuale cambiamento usando transizione_abilitata invece che evento_corrente
-				evento_corrente := eventi [count_evento_corrente]
-				count_evento_corrente := count_evento_corrente + 1
-				print ("evento corrente = " + evento_corrente + "   %N")
-				nuovo_stato := stato_corrente.target (evento_corrente, condizioni)
-				esegui_azioni (evento_corrente)
-				if attached nuovo_stato as ns then
-					set_stato_corrente (ns)
-				end
-			end
-			print ("%Nterminato evolvi_SC nello stato = " + stato_corrente.id + "%N")
-		end
-
-	esegui_azioni (evento_corrente: STRING)
-		local
-			transizione: TRANSIZIONE
-		do
-			transizione := stato_corrente.get_transition (evento_corrente)
-			across
-				transizione.azioni as ta
-			loop
-			    ta.item.action(condizioni)
-			end
-		end
-
-	stabilizza_stato
-		-- assicura che stato_stabile sia stabile eseguendo tutte le transizioni
-		-- TODO da sistemare, non ha bisogno di un evento
-		local evento: detachable STRING
-		-- 	require  stato_corrente.numero_transizioni_abilitate(evento,condizioni) <2
-			do
-			if attached evento as e then
-				if attached stato_corrente.target(e,condizioni) as sc_tse then
-					set_stato_corrente (sc_tse)
-					if stato_corrente.numero_transizioni_abilitate(e,condizioni) = 1 then
-						stabilizza_stato
-					end
-				end
-			end
 		end
 
 feature -- inizializzazione SC
-
-	set_stato_corrente (uno_stato: STATO)
-		require
-			stato_corrente_not_void: stato_corrente /= Void
-		do
-			stato_corrente := uno_stato
-			print ("%Nnuovo stato corrente = " + stato_corrente.id + "    %N")
-		end
 
 	istanzia_condizioni (lis_data: LIST [XML_ELEMENT])
 			-- istanzia nella SC le condizioni presenti in <datamodel>
@@ -143,10 +56,10 @@ feature -- inizializzazione SC
 				lis_data.forth
 			end
 			condizioni.extend (true, "condizione_vuota")
-				-- condizione_vuota è una condizione sempre true che si applica alle transizioni che hanno condizione void (cfr riempi_stato)
+				-- condizione_vuota ï¿½ una condizione sempre true che si applica alle transizioni che hanno condizione void (cfr riempi_stato)
 		end
 
-	istanzia_stati_e_condizioni (lis_el: LIST [XML_ELEMENT])
+	istanzia_condizioni_e_final (lis_el: LIST [XML_ELEMENT])
 			-- istanzia nella SC gli stati presenti in <state> e le condizioni presenti in <datamodel>
 		do
 			from
@@ -156,10 +69,83 @@ feature -- inizializzazione SC
 			loop
 				if lis_el.item_for_iteration.name ~ "final" and then attached lis_el.item_for_iteration.attribute_by_name ("id") as att then
 					stati.extend (create {STATO}.make_final_with_id (att.value), att.value)
-				elseif lis_el.item_for_iteration.name ~ "state" and then attached lis_el.item_for_iteration.attribute_by_name ("id") as att then
-					stati.extend (create {STATO}.make_with_id (att.value), att.value)
+						--				elseif lis_el.item_for_iteration.name ~ "state" and then attached lis_el.item_for_iteration.attribute_by_name ("id") as att then
+						--					stati.extend (create {STATO}.make_with_id (att.value), att.value)
 				elseif lis_el.item_for_iteration.name ~ "datamodel" and then attached lis_el.item_for_iteration.elements as lis_data then
 					istanzia_condizioni (lis_data)
+				end
+				lis_el.forth
+			end
+		end
+
+	istanzia_stati (lis_el: LIST [XML_ELEMENT]; p_genitore: detachable STATO)
+		local
+			stato_temp: STATO
+		do
+			from
+				lis_el.start
+			until
+				lis_el.after
+			loop
+				if lis_el.item_for_iteration.name ~ "state" and then attached lis_el.item_for_iteration.attribute_by_name ("id") as att then
+					if lis_el.item_for_iteration.has_element_by_name ("state") then -- elemento corrente ha figli
+						if attached {STATO_XOR} p_genitore as pg then
+							stato_temp := create {STATO_XOR}.make_with_id (att.value)
+							stato_temp.set_genitore (pg)
+							stati.extend (stato_temp, att.value)
+							pg.add_figlio (stato_temp)
+						elseif attached {STATO_AND} p_genitore as pg then -- elemento corrente ha genitore
+							stato_temp := create {STATO_XOR}.make_with_id (att.value)
+							stato_temp.set_genitore (pg)
+							stati.extend (stato_temp, att.value)
+							pg.add_figlio (stato_temp)
+						else
+							stati.extend (create {STATO_XOR}.make_with_id (att.value), att.value)
+						end
+						istanzia_stati (lis_el.item_for_iteration.elements, stati.item (att.value))
+					else -- elemento corrente non ha figli
+						if attached {STATO_XOR} p_genitore as pg then -- elemento corrente ha genitore
+							stato_temp := create {STATO}.make_with_id_and_parent (att.value, pg)
+							stati.extend (stato_temp, att.value)
+							pg.add_figlio (stato_temp)
+						elseif attached {STATO_AND} p_genitore as pg then -- elemento corrente ha genitore
+							stato_temp := create {STATO}.make_with_id_and_parent (att.value, pg)
+							stati.extend (stato_temp, att.value)
+							pg.add_figlio (stato_temp)
+						else -- elemento corrente non ha neanche genitore
+							stati.extend (create {STATO}.make_with_id (att.value), att.value)
+						end
+					end
+				end
+				if lis_el.item_for_iteration.name ~ "parallel" and then attached lis_el.item_for_iteration.attribute_by_name ("id") as att then
+					if lis_el.item_for_iteration.has_element_by_name ("state") then -- elemento corrente ha figli
+						if attached {STATO_AND} p_genitore as pg then
+							stato_temp := create {STATO_AND}.make_with_id (att.value)
+							stato_temp.set_genitore (pg)
+							stati.extend (stato_temp, att.value)
+							pg.add_figlio (stato_temp)
+						elseif attached {STATO_XOR} p_genitore as pg then
+							stato_temp := create {STATO_AND}.make_with_id (att.value)
+							stato_temp.set_genitore (pg)
+							stati.extend (stato_temp, att.value)
+							pg.add_figlio (stato_temp)
+						else
+							stati.extend (create {STATO_AND}.make_with_id (att.value), att.value)
+						end
+						istanzia_stati (lis_el.item_for_iteration.elements, stati.item (att.value))
+					else -- elemento corrente non ha figli
+--						if attached {STATO_AND} p_genitore as pg then -- elemento corrente ha genitore
+--							stato_temp := create {STATO}.make_with_id_and_parent (att.value, pg)
+--							stati.extend (stato_temp, att.value)
+--							pg.add_figlio (stato_temp)
+--						elseif attached {STATO_XOR} p_genitore as pg then
+--							stato_temp := create {STATO}.make_with_id_and_parent (att.value, pg)
+--							stati.extend (stato_temp, att.value)
+--							pg.add_figlio (stato_temp)
+--						else -- elemento corrente non ha neanche genitore
+--							stati.extend (create {STATO}.make_with_id (att.value), att.value)
+--						end
+					end
 				end
 				lis_el.forth
 			end
@@ -174,23 +160,105 @@ feature -- inizializzazione SC
 				lis_el.after
 			loop
 				if lis_el.item_for_iteration.name ~ "state" and then attached lis_el.item_for_iteration.attribute_by_name ("id") as stato_xml then
+					inizializza_stati (lis_el.item_for_iteration.elements)
+					riempi_stato (stato_xml.value, lis_el.item_for_iteration)
+				end
+				if lis_el.item_for_iteration.name ~ "parallel" and then attached lis_el.item_for_iteration.attribute_by_name ("id") as stato_xml then
+					inizializza_stati (lis_el.item_for_iteration.elements)
 					riempi_stato (stato_xml.value, lis_el.item_for_iteration)
 				end
 				lis_el.forth
 			end
 		end
 
+	set_stati_default (lis_el: LIST [XML_ELEMENT])
+			-- assegna agli stati presenti nella SC le transizioni con eventi e azioni
+		do
+			from
+				lis_el.start
+			until
+				lis_el.after
+			loop
+				if lis_el.item_for_iteration.name ~ "state" and then attached lis_el.item_for_iteration.attribute_by_name ("id") as stato then
+					if attached lis_el.item_for_iteration.attribute_by_name ("initial") as df then
+						if attached stati.item (df.value) as st_df then
+							if attached {STATO_XOR} stati.item (stato.value) as pr then
+								pr.set_stato_default (st_df)
+							end
+						end
+					end
+					if lis_el.item_for_iteration.has_element_by_name ("state") then -- elemento corrente ha figli
+						set_stati_default (lis_el.item_for_iteration.elements)
+					end
+				end
+				if lis_el.item_for_iteration.name ~ "parallel" and then attached lis_el.item_for_iteration.attribute_by_name ("id") as stato then
+					if attached {STATO_AND} stati.item (stato.value) as st then
+						st.set_stato_default
+					end
+					set_stati_default (lis_el.item_for_iteration.elements)
+				end
+				lis_el.forth
+			end
+		end
+
 	imposta_stato_iniziale (radice: XML_ELEMENT)
+		local
+			i: INTEGER
 		do
 			if attached radice.attribute_by_name ("initial") as si then
 				if attached stati.item (si.value) as v then
-					stato_iniziale := v
+					if not v.stato_default.is_empty then
+						from
+							i := v.stato_default.lower
+						until
+							i = v.stato_default.upper + 1
+						loop
+							imposta_stati_ricorsivo (v.stato_default[i])
+							i := i + 1
+						end
+					else
+						stato_iniziale.force (v, stato_iniziale.count + 1)
+					end
+--					if attached v.stato_default as df then
+--						if not df.id.is_equal (v.id) then
+--							imposta_stati_ricorsivo (df)
+--						else
+--							stato_iniziale := v
+--						end
+--					else
+--						stato_iniziale := v
+--					end
 				else
-					print ("ERRORE: lo stato indicato come 'initial' non è uno degli stati in <state>")
+					print ("ERRORE: lo stato indicato come 'initial' non ï¿½ uno degli stati in <state>")
+				end
+			elseif attached radice.element_by_name ("state") as st then
+					-- l'assenza di "initial" ï¿½ gestita scegliendo il primo dei figli se lo stato ha figli oppure scegliendo sï¿½ stesso se lo stato non ha figli
+				if attached st.attribute_by_name ("id") as id then
+					if attached stati.item (id.value) as df then
+						imposta_stati_ricorsivo (df)
+					end
+				end
+--			else -- TODO oppure segnalando errore se il nodo ï¿½ la radice <scxml>
+--				print ("ERRORE: manca lo stato 'initial' nel file e non c'ï¿½ la gestione della sua assenza %N")
+--					-- TODO gestire la scelta dello stato iniziale in caso di assenza dell'attributo 'initial' nel file .xml
+			end
+		end
+
+	imposta_stati_ricorsivo (stato: STATO)
+		local
+			i: INTEGER
+		do
+			if not stato.stato_default.is_empty then
+				from
+					i := stato.stato_default.lower
+				until
+					i = stato.stato_default.upper + 1
+				loop
+					imposta_stati_ricorsivo (stato.stato_default[i])
+					i := i + 1
 				end
 			else
-				print ("ERRORE: manca lo stato 'initial' nel file e non c'è la gestione della sua assenza")
-					-- TODO gestire la scelta dello stato iniziale in caso di assenza dell'attributo 'initial' nel file .xml
+				stato_iniziale.force (stato, stato_iniziale.count + 1)
 			end
 		end
 
@@ -199,7 +267,9 @@ feature -- inizializzazione SC
 			--	inizializza ogni stato con le sue transizioni con eventi ed azioni
 		do
 			if attached {XML_ELEMENT} albero.document.first as f and then attached f.elements as lis_el then
-				istanzia_stati_e_condizioni (lis_el)
+				istanzia_condizioni_e_final (lis_el)
+				istanzia_stati (lis_el, Void)
+				set_stati_default (lis_el)
 				imposta_stato_iniziale (f)
 				inizializza_stati (lis_el)
 			end
@@ -255,7 +325,7 @@ feature -- inizializzazione SC
 
 	riempi_stato (id_stato: STRING; element: XML_ELEMENT)
 		local
-			transition_list: LIST [XML_ELEMENT]
+			transition_list: LIST [XML_ELEMENT] --lista di tutto ciï¿½ che appartiene allo stato
 			assign_list: LIST [XML_ELEMENT]
 			transizione: TRANSIZIONE
 		do
@@ -265,18 +335,24 @@ feature -- inizializzazione SC
 			until
 				transition_list.after
 			loop
-
 					-- TODO gestire separatamente feature di creazione transizione che torna o transizione o errore
 				if transition_list.item_for_iteration.name ~ "transition" and then attached transition_list.item_for_iteration.attribute_by_name ("target") as tt then
 						-- TODO gestire fallimento del test per assenza clausola target
 					if attached stati.item (tt.value) as ts then
-						create transizione.make_with_target (ts)
-						assegnazione_evento (transition_list, transizione)
-						assegnazione_condizione (transition_list, transizione)
-						assign_list := transition_list.item_for_iteration.elements
-						assegnazione_azioni (assign_list, transizione)
-						if attached stati.item (id_stato) as si then
-							si.aggiungi_transizione (transizione)
+						if attached stati.item (id_stato) as sr then
+							create transizione.make_with_target (ts, sr)
+							if attached transition_list.item_for_iteration.attribute_by_name ("type") as tp then
+								if tp.value ~ "internal" and verifica_internal (transizione.sorgente, transizione.target) then
+									transizione.set_internal
+								end
+							end
+							assegnazione_evento (transition_list, transizione)
+							assegnazione_condizione (transition_list, transizione)
+							assign_list := transition_list.item_for_iteration.elements
+							assegnazione_azioni (assign_list, transizione)
+							if attached stati.item (id_stato) as si then
+								si.aggiungi_transizione (transizione)
+							end
 						end
 					else
 						if attached stati.item (id_stato) as si then
@@ -284,12 +360,122 @@ feature -- inizializzazione SC
 						end
 					end
 				end
+				if transition_list.item_for_iteration.name ~ "onentry" then
+					if attached transition_list.item_for_iteration.elements as list then
+						istanzia_onentry (id_stato, list)
+					end
+				end
+				if transition_list.item_for_iteration.name ~ "onexit" then
+					if attached transition_list.item_for_iteration.elements as list then
+						istanzia_onexit (id_stato, list)
+					end
+				end
 				transition_list.forth
 			end
 		end
 
+	verifica_internal (sorgente, target: STATO): BOOLEAN
+		do
+--			Result := FALSE
+			if attached target.stato_genitore as tr_gn then
+				if tr_gn = sorgente then
+					Result := TRUE
+				else
+					Result := verifica_internal (sorgente, tr_gn)
+				end
+			end
+		end
+
+	istanzia_onentry (id_stato: STRING; elements: LIST [XML_ELEMENT])
+		do
+			from
+				elements.start
+			until
+				elements.after
+			loop
+				if elements.item_for_iteration.name ~ "assign" then
+					if attached elements.item_for_iteration.attribute_by_name ("location") as luogo and then attached elements.item_for_iteration.attribute_by_name ("expr") as expr then
+						if expr.value ~ "false" then
+							if attached stati.item (id_stato) as si then
+								si.set_onentry (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, FALSE))
+							end
+						elseif expr.value ~ "true" then
+							if attached stati.item (id_stato) as si then
+								si.set_onentry (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, TRUE))
+							end
+						end
+					end
+				end
+				if elements.item_for_iteration.name ~ "log" and then attached elements.item_for_iteration.attribute_by_name ("name") as name then
+					if attached stati.item (id_stato) as si then
+						if attached name.value then
+							si.set_onentry (create {STAMPA}.make_with_text (name.value))
+						end
+					end
+				end
+				elements.forth
+			end
+		end
+
+	istanzia_onexit (id_stato: STRING; elements: LIST [XML_ELEMENT])
+		local
+			azione: AZIONE
+		do
+			from
+				elements.start
+			until
+				elements.after or azione /= VOID
+			loop
+				if elements.item_for_iteration.name ~ "assign" then
+					if attached elements.item_for_iteration.attribute_by_name ("location") as luogo and then attached elements.item_for_iteration.attribute_by_name ("expr") as expr then
+						if expr.value ~ "false" then
+							if attached stati.item (id_stato) as si then
+								si.set_onexit (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, FALSE))
+								azione := si.onexit
+							end
+						elseif expr.value ~ "true" then
+							if attached stati.item (id_stato) as si then
+								si.set_onexit (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, TRUE))
+								azione := si.onexit
+							end
+						end
+					end
+				end
+				if elements.item_for_iteration.name ~ "log" and then attached elements.item_for_iteration.attribute_by_name ("name") as name then
+					if attached stati.item (id_stato) as si then
+						if attached name.value then
+							si.set_onexit (create {STAMPA}.make_with_text (name.value))
+							azione := si.onexit
+						end
+					end
+				end
+				elements.forth
+			end
+		end
+
+	crea_albero (nome_file_SC: STRING)
+			-- crea e inizializza `albero'
+		local
+			parser: XML_PARSER
+		do
+				--| Instantiate parser
+			create {XML_STANDARD_PARSER} parser.make
+				--| Build tree callbacks
+			create albero.make_null
+			parser.set_callbacks (albero)
+				--| Parse the `file_name' content
+			parser.parse_from_filename (nome_file_SC)
+			if parser.error_occurred then
+				print ("Parsing error!!! %N")
+				ha_problemi_con_il_file_della_sc := TRUE
+			else
+				print ("Parsing OK. %N")
+				ha_problemi_con_il_file_della_sc := FALSE
+			end
+		end
+
 		-- Aggiungere 'feature' per tracciare quanto accade scrivendo su file model_out.txt:
-		--la SC costruita dal programma (cioè il file model.xml letto)
+		--la SC costruita dal programma (cioï¿½ il file model.xml letto)
 		--la configurazione iniziale in termini di stato e nomi-valori delle condizioni
 		--l'evoluzione della SC in termini di sequenza di quintuple:
 		--stato, evento, condizione, azione, target
