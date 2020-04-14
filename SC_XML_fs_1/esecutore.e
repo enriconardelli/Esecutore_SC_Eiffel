@@ -19,6 +19,9 @@ feature -- Attributi
 
 	stato_corrente: ARRAY [STATO]
 
+	eventi_esterni: ARRAY [STRING]
+			-- memorizza gli eventi letti dal file
+
 feature {NONE} -- Creazione e avvio interattivo
 
 	start (nomi_files: ARRAY [STRING])
@@ -26,7 +29,7 @@ feature {NONE} -- Creazione e avvio interattivo
 		do
 			make (nomi_files)
 			print ("%N=========%N EVOLUZIONE INIZIO%N")
-			state_chart.evolvi_SC (eventi_esterni)
+			evolvi_SC (eventi.eventi_esterni)
 			print ("%N EVOLUZIONE FINE!%N=========%N")
 		end
 
@@ -40,17 +43,18 @@ feature -- Creazione per i test
 			-- scrivere i parametri ognuno tra doppi apici
 		do
 			print ("%N=========%N CREAZIONE INIZIO%N")
-			print ("crea la SC in " + nomi_files [1] + "%N")
-			print ("con gli eventi in " + nomi_files [2] + "%N")
+--			print ("crea la SC in " + nomi_files [1] + "%N")
+--			print ("con gli eventi in " + nomi_files [2] + "%N")
+--			create eventi_esterni.make_empty
+--			acquisisci_eventi (nomi_files [2])
+--			print ("acquisiti eventi %N")
+--			create state_chart.make(nomi_files [1])
+--			if verifica_eventi_esterni then
+--				print ("tutti gli eventi sono conosciuti dalla SC %N")
+--			else
+--				print ("nel file ci sono eventi che la SC non conosce %N")
 			create eventi_esterni.make_empty
-			acquisisci_eventi (nomi_files [2])
-			print ("acquisiti eventi %N")
-			create state_chart.make(nomi_files [1])
-			if verifica_eventi_esterni then
-				print ("tutti gli eventi sono conosciuti dalla SC %N")
-			else
-				print ("nel file ci sono eventi che la SC non conosce %N")
-			print ("INIZIO!%N")
+
 			print ("crea la SC in " + nomi_files [1] + "%N")
 			create state_chart.make (nomi_files [1])
 			create stato_corrente.make_empty
@@ -77,7 +81,24 @@ feature -- file eventi
 
 	acquisisci_eventi (nome_file_eventi: STRING)
 			-- Legge gli eventi dal file passato come secondo argomento e li inserisce in `eventi_esterni'
-			-- TODO non gestisce il caso in cui su una riga del file degli eventi ci sia piï¿½ di un evento
+			-- TODO non gestisce il caso in cui su una riga del file degli eventi ci sia più di un evento
+		local
+			file: PLAIN_TEXT_FILE
+			i: INTEGER
+		do
+			create file.make_open_read (nome_file_eventi)
+			from
+				i := 1
+			until
+				file.off
+			loop
+				file.read_line
+				eventi_esterni.force (file.last_string.twin, i)
+				i := i + 1
+			end
+			file.close
+		end
+
 feature --evoluzione SC
 
 	evolvi_SC (istanti: ARRAY [LINKED_SET [STRING]])
@@ -86,6 +107,7 @@ feature --evoluzione SC
 			i: INTEGER
 			nuovo_stato_corrente: ARRAY [STATO]
 			condizioni_correnti: HASH_TABLE [BOOLEAN, STRING]
+			transizione_corrente: TRANSIZIONE
 		do
 			print ("%Nentrato in evolvi_SC:  %N %N")
 			print ("stato iniziale:  ")
@@ -300,6 +322,8 @@ feature --evoluzione SC
 					Result := False
 				end
 			end
+		end
+
 	esegui_azioni_onentry (p_contesto: detachable STATO; p_target: STATO)
 		do
 			if p_target /= p_contesto and then attached p_target.stato_genitore as sg then

@@ -20,6 +20,7 @@ inherit
 feature {NONE} -- Supporto
 
 	nomi_files_prova: ARRAY [STRING]
+	altro_esecutore_prova, esecutore_prova: ESECUTORE
 	a_path: PATH
 	test_data_dir: STRING = "test_data"
 
@@ -59,5 +60,5 @@ feature -- Test routines
 				count := count + 1
 			end
 		end
-		
+
 end

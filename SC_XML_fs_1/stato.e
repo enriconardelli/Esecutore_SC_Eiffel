@@ -226,9 +226,9 @@ feature -- routines forse inutili
 				end
 				index_count := index_count + 1
 			end
-			if index /= 0 then
+--			if index /= 0 then
 				Result := transizioni [index]
-			end
+--			end
 		end
 
 end
