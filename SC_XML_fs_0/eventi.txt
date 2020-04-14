@@ -1,0 +1,6 @@
+circle
+minus
+star
+square
+plus
+star
