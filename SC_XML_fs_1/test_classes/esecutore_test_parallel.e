@@ -62,7 +62,7 @@ feature -- Test
 			nomi_files_prova [1] := test_data_dir + "esempio_uscita.xml"
 			nomi_files_prova [2] := test_data_dir + "eventi_uscita.txt"
 			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A2B1 )", esecutore.stato_corrente.count = 1 and has_state(esecutore.stato_corrente,"A2A2") )
+			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A1 )", esecutore.stato_corrente.count = 1 and has_state(esecutore.stato_corrente,"A1") )
 		end
 
 	t_esempio_complesso
