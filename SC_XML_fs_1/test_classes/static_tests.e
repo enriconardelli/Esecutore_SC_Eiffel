@@ -35,7 +35,7 @@ feature -- preparazione
 		do
 			create a_path.make_current
 			test_data_dir.append_character(a_path.directory_separator)
-			file_name :=test_data_dir + "esempio_per_altro_esecutore_test.xml"
+			file_name :=test_data_dir + "esempio_cronometro.xml"
 				--| Instantiate parser
 			create {XML_STANDARD_PARSER} parser.make
 				--| Build tree callbacks
