@@ -38,8 +38,8 @@ feature -- Test routines
 			create configurazione_prova.make (nomi_files_prova [1])
 
 			create nomi_files_prova.make_filled ("", 1, 2)
-			nomi_files_prova[1] := test_data_dir + "esempio_cronometro.xml"
-			nomi_files_prova[2] := test_data_dir + "eventi_cronometro.txt"
+			nomi_files_prova[1] := test_data_dir + "cronometro.xml"
+			nomi_files_prova[2] := test_data_dir + "cronometro_eventi.txt"
 
 			create altra_configurazione_prova.make (nomi_files_prova [1])
 		end
