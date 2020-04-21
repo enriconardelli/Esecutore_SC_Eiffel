@@ -16,7 +16,7 @@ feature -- Test routines
 	on_prepare
 		do
 		    precursor
-			nomi_files_prova[1] := test_data_dir + "esempio_cronometro_per_esecutore_test.xml"
+			nomi_files_prova[1] := test_data_dir + "cronometro_semplice.xml"
 			nomi_files_prova[2] := test_data_dir
 		end
 
