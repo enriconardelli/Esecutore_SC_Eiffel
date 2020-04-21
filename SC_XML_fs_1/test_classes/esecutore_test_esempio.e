@@ -28,7 +28,7 @@ feature -- Test routines
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova[2] := nomi_files_prova[2] + "eventi_1.txt"
-			create esecutore.start(nomi_files_prova)
+			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (three)", esecutore.stato_corrente.count = 1 and esecutore.stato_corrente[1].id.is_equal ("three") )
 			assert ("ERRORE il sistema non ha aggiornato correttamente le condizioni", esecutore.state_chart.condizioni.item ("alfa") and esecutore.state_chart.condizioni.item ("beta") and not esecutore.state_chart.condizioni.item ("gamma") )
 		end
@@ -39,7 +39,7 @@ feature -- Test routines
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova[2] := nomi_files_prova[2] + "eventi_2.txt"
-			create esecutore.start(nomi_files_prova)
+			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (one)", esecutore.stato_corrente.count = 1 and esecutore.stato_corrente[1].id.is_equal ("one") )
 			assert ("ERRORE il sistema non ha aggiornato correttamente le condizioni", esecutore.state_chart.condizioni.item ("alfa") and esecutore.state_chart.condizioni.item ("beta") and not esecutore.state_chart.condizioni.item ("gamma") )
 		end
@@ -50,7 +50,7 @@ feature -- Test routines
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova[2] := nomi_files_prova[2] + "eventi_3.txt"
-			create esecutore.start(nomi_files_prova)
+			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (one)", esecutore.stato_corrente.count = 1 and esecutore.stato_corrente[1].id.is_equal ("one") )
 			assert ("ERRORE il sistema non ha aggiornato correttamente le condizioni", not esecutore.state_chart.condizioni.item ("alfa") and esecutore.state_chart.condizioni.item ("beta") and not esecutore.state_chart.condizioni.item ("gamma") )
 		end
@@ -61,7 +61,7 @@ feature -- Test routines
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova[2] := nomi_files_prova[2] + "eventi_4.txt"
-			create esecutore.start(nomi_files_prova)
+			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (one)", esecutore.stato_corrente.count = 1 and esecutore.stato_corrente[1].id.is_equal ("one") )
 			assert ("ERRORE il sistema non ha aggiornato alfa", not esecutore.state_chart.condizioni.item ("alfa") )
 			assert ("ERRORE il sistema non ha aggiornato beta", esecutore.state_chart.condizioni.item ("beta") )
@@ -75,7 +75,7 @@ feature -- Test routines
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova[2] := nomi_files_prova[2] + "eventi_5.txt"
-			create esecutore.start(nomi_files_prova)
+			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (one)", esecutore.stato_corrente.count = 1 and esecutore.stato_corrente[1].id.is_equal ("one") )
 			assert ("ERRORE il sistema non ha aggiornato alfa", not esecutore.state_chart.condizioni.item ("alfa") )
 			assert ("ERRORE il sistema non ha aggiornato beta", not esecutore.state_chart.condizioni.item ("beta") )
@@ -89,7 +89,7 @@ feature -- Test routines
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova[2] := nomi_files_prova[2] + "eventi_verifica.txt"
-			create esecutore.start(nomi_files_prova)
+			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (one)", esecutore.stato_corrente.count = 1 and esecutore.stato_corrente[1].id.is_equal ("one") )
 			assert ("ERRORE il sistema non ha aggiornato alfa", not esecutore.state_chart.condizioni.item ("alfa") )
 			assert ("ERRORE il sistema non ha aggiornato beta", not esecutore.state_chart.condizioni.item ("beta") )

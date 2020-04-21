@@ -10,6 +10,7 @@ class
 inherit
 	ESECUTORE_TEST
 		redefine on_prepare end
+
 feature -- Test routines
 
 	on_prepare
@@ -27,7 +28,7 @@ feature -- Test Cronometro
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova[2] := nomi_files_prova[2] + "eventi_cronometro_1_per_esecutore_test_verifica.txt"
-			create esecutore.start(nomi_files_prova)
+			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (RUNNING)", esecutore.stato_corrente.count = 1 and esecutore.stato_corrente[1].id.is_equal("running") )
 		end
 
@@ -37,7 +38,7 @@ feature -- Test Cronometro
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova[2] := nomi_files_prova[2] + "eventi_cronometro_2_per_esecutore_test_verifica.txt"
-			create esecutore.start(nomi_files_prova)
+			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (STOPPED)", esecutore.stato_corrente.count = 1 and esecutore.stato_corrente[1].id.is_equal ("stopped"))
 		end
 
@@ -47,7 +48,7 @@ feature -- Test Cronometro
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova[2] := nomi_files_prova[2] + "eventi_cronometro_3_per_esecutore_test_verifica.txt"
-			create esecutore.start(nomi_files_prova)
+			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (RESET)", esecutore.stato_corrente.count = 1 and esecutore.stato_corrente[1].id.is_equal ("reset"))
 		end
 
@@ -57,7 +58,7 @@ feature -- Test Cronometro
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova[2] := nomi_files_prova[2] + "eventi_cronometro_4_per_esecutore_test_verifica.txt"
-			create esecutore.start(nomi_files_prova)
+			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (PAUSED)", esecutore.stato_corrente.count = 1 and esecutore.stato_corrente[1].id.is_equal ("paused"))
 		end
 
@@ -67,7 +68,7 @@ feature -- Test Cronometro
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova[2] := nomi_files_prova[2] + "eventi_cronometro_5_per_esecutore_test_verifica.txt"
-			create esecutore.start(nomi_files_prova)
+			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (RUNNING)", esecutore.stato_corrente.count = 1 and esecutore.stato_corrente[1].id.is_equal ("running"))
 		end
 
@@ -77,7 +78,7 @@ feature -- Test Cronometro
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova[2] := nomi_files_prova[2] + "eventi_cronometro_1_per_esecutore_test.txt"
-			create esecutore.start(nomi_files_prova)
+			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (PAUSED)", esecutore.stato_corrente.count = 1 and esecutore.stato_corrente[1].id.is_equal ("paused"))
 		end
 
@@ -87,7 +88,7 @@ feature -- Test Cronometro
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova[2] := nomi_files_prova[2] + "eventi_cronometro_2_per_esecutore_test.txt"
-			create esecutore.start(nomi_files_prova)
+			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (STOPPED)", esecutore.stato_corrente.count = 1 and esecutore.stato_corrente[1].id.is_equal ("stopped"))
 		end
 

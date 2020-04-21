@@ -30,7 +30,7 @@ feature -- Test
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova [2] := nomi_files_prova [2] + "eventi_xor_2.txt"
-			create esecutore.start (nomi_files_prova)
+			create esecutore.make (nomi_files_prova)
 			assert ("ERRORE il sistema non ha eseguito l'azione on_entryB", esecutore.state_chart.condizioni.item ("on_entryB"))
 			assert ("ERRORE il sistema non ha eseguito l'azione on_entryB1", esecutore.state_chart.condizioni.item ("on_entryB1"))
 			assert ("ERRORE il sistema non ha eseguito l'azione on_exitA", esecutore.state_chart.condizioni.item ("on_exitA"))
