@@ -26,7 +26,7 @@ feature -- Test routines
 			create a_path.make_current
 			test_data_dir.append_character(a_path.directory_separator)
 			create configurazione_prova.make(test_data_dir + "esempio_per_esecutore_test.xml")
-			create altro_configurazione_prova.make(test_data_dir + "eventi_per_esecutore_test.txt")
+			create altro_configurazione_prova.make(test_data_dir + "tre_stati_atomici_eventi.txt")
 			create ambiente.make_empty
 		end
 
