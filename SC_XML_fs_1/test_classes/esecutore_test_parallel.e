@@ -72,6 +72,6 @@ feature -- Test
 			nomi_files_prova [1] := test_data_dir + "esempio_complesso.xml"
 			nomi_files_prova [2] := test_data_dir + "eventi_complesso.txt"
 			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A11 )", esecutore.stato_corrente.count = 2 and has_state(esecutore.stato_corrente,"A11") )
+			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A11 )", esecutore.stato_corrente.count = 1 and has_state(esecutore.stato_corrente,"A11") )
 		end
 end
