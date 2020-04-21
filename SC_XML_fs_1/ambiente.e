@@ -1,8 +1,8 @@
 note
-	description: "Summary description for {AMBIENTE}."
+	description: "La classe che rappresenta gli eventi esterni cui la StateChar reagisce"
 	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
+	date: "21/apr/2020"
+	revision: "1.1"
 
 class
 	AMBIENTE
