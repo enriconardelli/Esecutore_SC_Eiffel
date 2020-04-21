@@ -75,7 +75,7 @@ feature -- evoluzione della statechart
 		do
 			print ("%Nentrato in evolvi_SC:  %N %N")
 			print ("stato iniziale:  ")
-			stampa_stati (conf_corrente)
+			stampa_conf_corrente
 			create condizioni_correnti.make (1)
 			from
 				count_istante_corrente := 1
@@ -83,9 +83,9 @@ feature -- evoluzione della statechart
 				stato_final (conf_corrente) or count_istante_corrente > istanti.count
 			loop
 				if attached istanti [count_istante_corrente] as istante_corrente then
-					print ("Stampa indice istante corrente = ")
+					print ("Indice istante corrente = ")
 					print (count_istante_corrente)
-					print ("   %N")
+					print ("%N")
 					condizioni_correnti.copy (state_chart.condizioni)
 					create prossima_conf_corrente.make_empty
 					from
@@ -108,10 +108,10 @@ feature -- evoluzione della statechart
 					end
 				end
 				count_istante_corrente := count_istante_corrente + 1
-				stampa_stati (conf_corrente)
+				stampa_conf_corrente
 			end
-			print ("%N%NHo terminato l'elaborazione degli eventi nello stato = ")
-			stampa_stati (conf_corrente)
+			print ("%NHo terminato l'elaborazione degli eventi nella seguente configurazione%N")
+			stampa_conf_corrente
 		end
 
 	aggiungi_paralleli (stato: STATO; prossima_conf_corrente: ARRAY [STATO])
@@ -252,17 +252,14 @@ feature -- evoluzione della statechart
 			end
 		end
 
-	stampa_stati (stati: ARRAY [STATO])
+	stampa_conf_corrente
 		local
 			i: INTEGER
 		do
-			from
-				i := stati.lower
-			until
-				i = stati.upper + 1
+			print ("configurazione corrente: ")
+			across conf_corrente as cc
 			loop
-				print (stati [i].id + " ")
-				i := i + 1
+				print (cc.item.id + " ")
 			end
 			print (" %N")
 		end
