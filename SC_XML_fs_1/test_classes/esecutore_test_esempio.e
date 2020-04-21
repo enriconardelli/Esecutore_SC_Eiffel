@@ -88,7 +88,7 @@ feature -- Test routines
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova[2] := nomi_files_prova[2] + "tre_stati_atomici_eventi_verifica.txt"
+			nomi_files_prova[2] := nomi_files_prova[2] + "tre_stati_atomici_eventi_6.txt"
 			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (one)", esecutore.conf_corrente.count = 1 and esecutore.conf_corrente[1].id.is_equal ("one") )
 			assert ("ERRORE il sistema non ha aggiornato alfa", not esecutore.state_chart.condizioni.item ("alfa") )
