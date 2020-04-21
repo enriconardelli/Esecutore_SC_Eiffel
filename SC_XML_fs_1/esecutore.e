@@ -17,7 +17,8 @@ feature -- Attributi
 
 	eventi: AMBIENTE
 
-	stato_corrente: ARRAY [STATO]
+	conf_corrente: ARRAY [STATO]
+			-- insieme degli stati nella configurazione corrente della SC
 
 	eventi_esterni: ARRAY [STRING]
 			-- memorizza gli eventi letti dal file
@@ -57,8 +58,9 @@ feature -- Creazione per i test
 
 			print ("crea la SC in " + nomi_files [1] + "%N")
 			create state_chart.make (nomi_files [1])
-			create stato_corrente.make_empty
-			stato_corrente.copy (state_chart.stato_iniziale)
+			-- TODO stato_corrente e' l'insieme di stati della configurazione corrente
+			create conf_corrente.make_empty
+			conf_corrente.copy (state_chart.stato_iniziale)
 			create eventi.make_empty
 			if not state_chart.ha_problemi_con_il_file_della_sc then
 				print ("e la esegue con gli eventi in " + nomi_files [2] + "%N")
@@ -105,52 +107,52 @@ feature --evoluzione SC
 		local
 			count_istante_corrente: INTEGER
 			i: INTEGER
-			nuovo_stato_corrente: ARRAY [STATO]
+			prossima_conf_corrente: ARRAY [STATO]
 			condizioni_correnti: HASH_TABLE [BOOLEAN, STRING]
 			transizione_corrente: TRANSIZIONE
 		do
 			print ("%Nentrato in evolvi_SC:  %N %N")
 			print ("stato iniziale:  ")
-			stampa_stati (stato_corrente)
+			stampa_stati (conf_corrente)
 			create condizioni_correnti.make (1)
 			from
 				count_istante_corrente := 1
 			until
-				stato_final (stato_corrente) or count_istante_corrente > istanti.count
+				stato_final (conf_corrente) or count_istante_corrente > istanti.count
 			loop
 				if attached istanti [count_istante_corrente] as istante_corrente then
 					print ("Stampa indice istante corrente = ")
 					print (count_istante_corrente)
 					print ("   %N")
 					condizioni_correnti.copy (state_chart.condizioni)
-					create nuovo_stato_corrente.make_empty
+					create prossima_conf_corrente.make_empty
 					from
-						i := stato_corrente.lower
+						i := conf_corrente.lower
 					until
-						i = stato_corrente.upper + 1
+						i = conf_corrente.upper + 1
 					loop
-						transizione_corrente := stato_corrente [i].transizione_abilitata (istante_corrente, condizioni_correnti)
+						transizione_corrente := conf_corrente [i].transizione_abilitata (istante_corrente, condizioni_correnti)
 						if attached transizione_corrente as tc then
-							esegui_azioni (tc, stato_corrente [i])
-							aggiungi_paralleli (tc.target, nuovo_stato_corrente)
-							trova_default (tc.target, nuovo_stato_corrente)
+							esegui_azioni (tc, conf_corrente [i])
+							aggiungi_paralleli (tc.target, prossima_conf_corrente)
+							trova_default (tc.target, prossima_conf_corrente)
 						else
-							nuovo_stato_corrente.force (stato_corrente [i], nuovo_stato_corrente.count + 1)
+							prossima_conf_corrente.force (conf_corrente [i], prossima_conf_corrente.count + 1)
 						end
 						i := i + 1
 					end
-					if not nuovo_stato_corrente.is_empty then
-						stato_corrente.copy (nuovo_stato_corrente)
+					if not prossima_conf_corrente.is_empty then
+						conf_corrente.copy (prossima_conf_corrente)
 					end
 				end
 				count_istante_corrente := count_istante_corrente + 1
-				stampa_stati (stato_corrente)
+				stampa_stati (conf_corrente)
 			end
 			print ("%N%NHo terminato l'elaborazione degli eventi nello stato = ")
-			stampa_stati (stato_corrente)
+			stampa_stati (conf_corrente)
 		end
 
-	aggiungi_paralleli (stato: STATO; nuovo_stato_corrente: ARRAY [STATO])
+	aggiungi_paralleli (stato: STATO; prossima_conf_corrente: ARRAY [STATO])
 		local
 			i: INTEGER
 		do
@@ -161,17 +163,17 @@ feature --evoluzione SC
 					i = sg.stato_default.upper + 1
 				loop
 					if not sg.stato_default [i].is_equal(stato) then
-						trova_default (sg.stato_default [i], nuovo_stato_corrente)
+						trova_default (sg.stato_default [i], prossima_conf_corrente)
 					end
 					i := i + 1
 				end
 			end
 			if attached stato.stato_genitore as sg then
-				aggiungi_paralleli (sg, nuovo_stato_corrente)
+				aggiungi_paralleli (sg, prossima_conf_corrente)
 			end
 		end
 
-	trova_default (stato: STATO; nuovo_stato_corrente: ARRAY [STATO])
+	trova_default (stato: STATO; prossima_conf_corrente: ARRAY [STATO])
 		local
 			i: INTEGER
 		do
@@ -184,11 +186,11 @@ feature --evoluzione SC
 					if attached stato.stato_default [i].onentry as oe then
 						oe.action (state_chart.condizioni)
 					end
-					trova_default (stato.stato_default [i], nuovo_stato_corrente)
+					trova_default (stato.stato_default [i], prossima_conf_corrente)
 					i := i + 1
 				end
-			elseif not nuovo_stato_corrente.has (stato) then
-				nuovo_stato_corrente.force (stato, nuovo_stato_corrente.count + 1)
+			elseif not prossima_conf_corrente.has (stato) then
+				prossima_conf_corrente.force (stato, prossima_conf_corrente.count + 1)
 			end
 		end
 
@@ -336,16 +338,16 @@ feature --evoluzione SC
 
 	stato_final (stato: ARRAY [STATO]): BOOLEAN
 		require
-			contesto: stato_corrente /= VOID
+			contesto: conf_corrente /= VOID
 		local
 			i: INTEGER
 		do
 			from
-				i := stato_corrente.lower
+				i := conf_corrente.lower
 			until
-				i = stato_corrente.upper + 1
+				i = conf_corrente.upper + 1
 			loop
-				if stato_corrente [i].finale then
+				if conf_corrente [i].finale then
 					result := TRUE
 				end
 				i := i + 1
