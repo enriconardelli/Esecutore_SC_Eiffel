@@ -33,20 +33,16 @@ feature -- Test routines
 
 		end
 
-	has_state( stati: ARRAY [STATO]; stato: STRING ):BOOLEAN
-	-- Controlla se negli 'stati' passati c'ï¿½ lo 'stato'
+	conf_has_state( conf: ARRAY [STATO]; stato: STRING ):BOOLEAN
+	-- Controlla se in `conf' è presente `stato'
 		local
 			count: INTEGER
 		do
-			from
-				count := stati.lower
-			until
-				count = stati.upper + 1
+			across conf as c
 			loop
-				if stati[count].id.is_equal(stato) then
-					result := TRUE
+				if c.item.id.is_equal(stato) then
+					Result := TRUE
 				end
-				count := count + 1
 			end
 		end
 
