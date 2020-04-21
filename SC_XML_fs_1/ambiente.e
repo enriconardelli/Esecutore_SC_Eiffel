@@ -26,7 +26,7 @@ feature --creazione
 feature
 
 	acquisisci_eventi (nome_file_eventi: STRING)
-			-- Legge gli eventi dal file passato come secondo argomento e li inserisce in `eventi_esterni'
+			-- Legge gli eventi dal file passato come argomento e li inserisce in `eventi_esterni'
 
 		local
 			file: PLAIN_TEXT_FILE
@@ -64,7 +64,9 @@ feature
 			evento_assente: BOOLEAN
 		do
 			create eventi_nella_SC.make (0)
-				-- inserisce tutti gli eventi definiti nella SC in eventi_nella_SC
+
+			-- inserisce tutti gli eventi definiti nella SC in eventi_nella_SC
+			-- TODO convertire from loop in across loop
 			from
 				state_chart.stati.start
 			until
@@ -84,12 +86,15 @@ feature
 				end
 				state_chart.stati.forth
 			end
-				-- verifica che ogni evento esterno sia presente nella SC
+
+			-- verifica che ogni evento esterno sia presente nella SC
+			-- TODO convertire from loop in across loop
 			from
 				i := eventi_esterni.lower
 			until
 				i = eventi_esterni.upper + 1
 			loop
+				-- TODO convertire from loop in across loop
 				from
 					j := eventi_esterni [i].lower
 				until
