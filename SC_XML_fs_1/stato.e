@@ -138,22 +138,12 @@ feature -- routines forse inutili
 
 	numero_transizioni_abilitate (evento_corrente: STRING; hash_delle_condizioni: HASH_TABLE [BOOLEAN, STRING]): INTEGER
 			-- ritorna il numero di transizioni attivabili con evento_corrente nella configurazione corrente
-		local
-			index_count: INTEGER
-			numero_di_transizioni_attivate_da_evento_corrente: INTEGER
 		do
-			-- TODO convertire from loop in across loop
 			across transizioni as t
---			from
---				index_count := transizioni.lower
---			until
---				index_count = transizioni.upper + 1
 			loop
---				if attivabile (index_count, evento_corrente, hash_delle_condizioni) then
 				if attivabile (t.item, evento_corrente, hash_delle_condizioni) then
 					Result := Result + 1
 				end
---				index_count := index_count + 1
 			end
 		end
 
@@ -185,22 +175,13 @@ feature -- routines forse inutili
 	target (evento_corrente: STRING; hash_delle_condizioni: HASH_TABLE [BOOLEAN, STRING]): detachable STATO
 		-- ritorna Current se con `evento_corrente' nella configurazione corrente non è attivabile alcuna transizione
 		-- ritorna lo stato a cui porta la transizione di indice minimo attivabile nella configurazione corrente con `evento_corrente'
-		-- Giulia Iezzi, Alessando Filippo 12/apr/2020
-		local
-			index_count: INTEGER
+		-- Giulia Iezzi, Alessando Filippo 12/apr/2020; EN 21/apr/2020
 		do
-			-- TODO convertire from loop in across loop
-			Result := Void
 			across transizioni as t
---			from
---				index_count := transizioni.lower
---			until
---				index_count = transizioni.upper + 1 or Result /= Void
 			loop
 	        	if attivabile(t.item, evento_corrente, hash_delle_condizioni) then
 		        	Result := t.item.target
 		        end
---			index_count := index_count + 1
 			end
 			if Result = Void then
 				Result := Current
@@ -225,9 +206,7 @@ feature -- routines forse inutili
 				end
 				index_count := index_count + 1
 			end
---			if index /= 0 then
-				Result := transizioni [index]
---			end
+			Result := transizioni [index]
 		end
 
 end
