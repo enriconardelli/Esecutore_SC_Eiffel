@@ -44,21 +44,9 @@ feature -- Creazione per i test
 			-- scrivere i parametri ognuno tra doppi apici
 		do
 			print ("%N=========%N CREAZIONE INIZIO%N")
---			print ("crea la SC in " + nomi_files [1] + "%N")
---			print ("con gli eventi in " + nomi_files [2] + "%N")
---			create eventi_esterni.make_empty
---			acquisisci_eventi (nomi_files [2])
---			print ("acquisiti eventi %N")
---			create state_chart.make(nomi_files [1])
---			if verifica_eventi_esterni then
---				print ("tutti gli eventi sono conosciuti dalla SC %N")
---			else
---				print ("nel file ci sono eventi che la SC non conosce %N")
 			create eventi_esterni.make_empty
-
 			print ("crea la SC in " + nomi_files [1] + "%N")
 			create state_chart.make (nomi_files [1])
-			-- TODO stato_corrente e' l'insieme di stati della configurazione corrente
 			create conf_corrente.make_empty
 			conf_corrente.copy (state_chart.stato_iniziale)
 			create eventi.make_empty
@@ -79,27 +67,27 @@ feature -- Creazione per i test
 		end
 
 
-feature -- file eventi
+--feature -- file eventi
 
-	acquisisci_eventi (nome_file_eventi: STRING)
-			-- Legge gli eventi dal file passato come secondo argomento e li inserisce in `eventi_esterni'
-			-- TODO non gestisce il caso in cui su una riga del file degli eventi ci sia più di un evento
-		local
-			file: PLAIN_TEXT_FILE
-			i: INTEGER
-		do
-			create file.make_open_read (nome_file_eventi)
-			from
-				i := 1
-			until
-				file.off
-			loop
-				file.read_line
-				eventi_esterni.force (file.last_string.twin, i)
-				i := i + 1
-			end
-			file.close
-		end
+--	acquisisci_eventi (nome_file_eventi: STRING)
+--			-- Legge gli eventi dal file passato come secondo argomento e li inserisce in `eventi_esterni'
+--			-- TODO non gestisce il caso in cui su una riga del file degli eventi ci sia più di un evento
+--		local
+--			file: PLAIN_TEXT_FILE
+--			i: INTEGER
+--		do
+--			create file.make_open_read (nome_file_eventi)
+--			from
+--				i := 1
+--			until
+--				file.off
+--			loop
+--				file.read_line
+--				eventi_esterni.force (file.last_string.twin, i)
+--				i := i + 1
+--			end
+--			file.close
+--		end
 
 feature --evoluzione SC
 
