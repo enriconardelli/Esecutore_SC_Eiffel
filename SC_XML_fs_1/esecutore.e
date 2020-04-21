@@ -66,29 +66,6 @@ feature -- Creazione per i test
 			print ("%N CREAZIONE FINE%N=========%N")
 		end
 
-
---feature -- file eventi
-
---	acquisisci_eventi (nome_file_eventi: STRING)
---			-- Legge gli eventi dal file passato come secondo argomento e li inserisce in `eventi_esterni'
---			-- TODO non gestisce il caso in cui su una riga del file degli eventi ci sia più di un evento
---		local
---			file: PLAIN_TEXT_FILE
---			i: INTEGER
---		do
---			create file.make_open_read (nome_file_eventi)
---			from
---				i := 1
---			until
---				file.off
---			loop
---				file.read_line
---				eventi_esterni.force (file.last_string.twin, i)
---				i := i + 1
---			end
---			file.close
---		end
-
 feature --evoluzione SC
 
 	evolvi_SC (istanti: ARRAY [LINKED_SET [STRING]])
