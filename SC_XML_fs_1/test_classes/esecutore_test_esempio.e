@@ -16,7 +16,7 @@ feature -- Test routines
 	on_prepare
 		do
 		    precursor
-			nomi_files_prova[1] := test_data_dir + "esempio.xml"
+			nomi_files_prova[1] := test_data_dir + "tre_stati_atomici.xml"
 			nomi_files_prova[2] := test_data_dir
 		end
 
@@ -27,7 +27,7 @@ feature -- Test routines
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova[2] := nomi_files_prova[2] + "eventi_1.txt"
+			nomi_files_prova[2] := nomi_files_prova[2] + "tre_stati_atomici_eventi_1.txt"
 			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (three)", esecutore.conf_corrente.count = 1 and esecutore.conf_corrente[1].id.is_equal ("three") )
 			assert ("ERRORE il sistema non ha aggiornato correttamente le condizioni", esecutore.state_chart.condizioni.item ("alfa") and esecutore.state_chart.condizioni.item ("beta") and not esecutore.state_chart.condizioni.item ("gamma") )
@@ -38,7 +38,7 @@ feature -- Test routines
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova[2] := nomi_files_prova[2] + "eventi_2.txt"
+			nomi_files_prova[2] := nomi_files_prova[2] + "tre_stati_atomici_eventi_2.txt"
 			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (one)", esecutore.conf_corrente.count = 1 and esecutore.conf_corrente[1].id.is_equal ("one") )
 			assert ("ERRORE il sistema non ha aggiornato correttamente le condizioni", esecutore.state_chart.condizioni.item ("alfa") and esecutore.state_chart.condizioni.item ("beta") and not esecutore.state_chart.condizioni.item ("gamma") )
@@ -49,7 +49,7 @@ feature -- Test routines
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova[2] := nomi_files_prova[2] + "eventi_3.txt"
+			nomi_files_prova[2] := nomi_files_prova[2] + "tre_stati_atomici_eventi_3.txt"
 			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (one)", esecutore.conf_corrente.count = 1 and esecutore.conf_corrente[1].id.is_equal ("one") )
 			assert ("ERRORE il sistema non ha aggiornato correttamente le condizioni", not esecutore.state_chart.condizioni.item ("alfa") and esecutore.state_chart.condizioni.item ("beta") and not esecutore.state_chart.condizioni.item ("gamma") )
@@ -60,7 +60,7 @@ feature -- Test routines
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova[2] := nomi_files_prova[2] + "eventi_4.txt"
+			nomi_files_prova[2] := nomi_files_prova[2] + "tre_stati_atomici_eventi_4.txt"
 			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (one)", esecutore.conf_corrente.count = 1 and esecutore.conf_corrente[1].id.is_equal ("one") )
 			assert ("ERRORE il sistema non ha aggiornato alfa", not esecutore.state_chart.condizioni.item ("alfa") )
@@ -74,7 +74,7 @@ feature -- Test routines
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova[2] := nomi_files_prova[2] + "eventi_5.txt"
+			nomi_files_prova[2] := nomi_files_prova[2] + "tre_stati_atomici_eventi_5.txt"
 			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (one)", esecutore.conf_corrente.count = 1 and esecutore.conf_corrente[1].id.is_equal ("one") )
 			assert ("ERRORE il sistema non ha aggiornato alfa", not esecutore.state_chart.condizioni.item ("alfa") )
@@ -88,7 +88,7 @@ feature -- Test routines
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova[2] := nomi_files_prova[2] + "eventi_verifica.txt"
+			nomi_files_prova[2] := nomi_files_prova[2] + "tre_stati_atomici_eventi_verifica.txt"
 			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (one)", esecutore.conf_corrente.count = 1 and esecutore.conf_corrente[1].id.is_equal ("one") )
 			assert ("ERRORE il sistema non ha aggiornato alfa", not esecutore.state_chart.condizioni.item ("alfa") )
