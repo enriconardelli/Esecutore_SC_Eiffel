@@ -104,7 +104,7 @@ feature -- routines
 			genitore_acquisito: stato_genitore = p_genitore
 		end
 
-	transizione_abilitata (istante_corrente: LINKED_SET [STRING]; hash_delle_condizioni: HASH_TABLE [BOOLEAN, STRING]): detachable TRANSIZIONE
+	transizione_abilitata (istante_corrente: LINKED_SET [STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]): detachable TRANSIZIONE
 		local
 			index_count: INTEGER
 			transizione_corrente: detachable TRANSIZIONE
@@ -121,7 +121,7 @@ feature -- routines
 			loop
 				transizione_corrente := transizioni [index_count]
 				evento_abilitato := transizione_corrente.check_evento (istante_corrente)
-				condizione_abilitata := transizione_corrente.check_condizione (hash_delle_condizioni)
+				condizione_abilitata := transizione_corrente.check_condizione (condizioni)
 				if evento_abilitato and condizione_abilitata then
 					Result := transizioni [index_count]
 				end
@@ -129,7 +129,7 @@ feature -- routines
 			end
 			if Result = Void then
 				if attached stato_genitore as sg then
-					Result := sg.transizione_abilitata (istante_corrente, hash_delle_condizioni)
+					Result := sg.transizione_abilitata (istante_corrente, condizioni)
 				end
 			end
 		end
@@ -143,31 +143,29 @@ feature -- routines forse inutili
 			numero_di_transizioni_attivate_da_evento_corrente: INTEGER
 		do
 			-- TODO convertire from loop in across loop
-			from
-				index_count := transizioni.lower
-				numero_di_transizioni_attivate_da_evento_corrente := 0
-			until
-				index_count = transizioni.upper + 1
+			across transizioni as t
+--			from
+--				index_count := transizioni.lower
+--			until
+--				index_count = transizioni.upper + 1
 			loop
-				if attached evento_corrente as ec then
-					if attivabile (index_count, ec, hash_delle_condizioni) then
-						numero_di_transizioni_attivate_da_evento_corrente := numero_di_transizioni_attivate_da_evento_corrente + 1
-					end
+--				if attivabile (index_count, evento_corrente, hash_delle_condizioni) then
+				if attivabile (t.item, evento_corrente, hash_delle_condizioni) then
+					Result := Result + 1
 				end
-				index_count := index_count + 1
+--				index_count := index_count + 1
 			end
-			Result := numero_di_transizioni_attivate_da_evento_corrente
 		end
 
-	attivabile (index_count: INTEGER; evento_corrente: STRING; hash_delle_condizioni: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
-		-- verifica, in caso di transizione di posto `index_count' che ha un evento se è uguale a `evento_corrente' e se la condizione e' vera
-		-- verifica, in caso di transizione di posto `index_count' senza evento se la condizione e' vera
-		-- Giulia Iezzi, Alessando Filippo 12/apr/2020
+	attivabile (una_transizione: TRANSIZIONE; evento_corrente: STRING; hash_delle_condizioni: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
+		-- verifica, in caso `una_transizione' che ha un evento se è uguale a `evento_corrente' e se la condizione e' vera
+		-- verifica, in caso `una_transizione' senza evento se la condizione e' vera
+		-- Giulia Iezzi, Alessando Filippo 12/apr/2020; EN 21/apr/2020
 		-- TODO completare test per questa feature
 		do
-			if attached transizioni [index_count].evento as e then
+			if attached una_transizione.evento as e then
 				if e.is_equal (evento_corrente) then
-					if attached transizioni [index_count].condizione as c then
+					if attached una_transizione.condizione as c then
 						if hash_delle_condizioni.item (c) = True then
 							Result := True
 						end
@@ -176,7 +174,7 @@ feature -- routines forse inutili
 					end
 				end
 			else
-				if attached transizioni [index_count].condizione as cond then
+				if attached una_transizione.condizione as cond then
 						if hash_delle_condizioni.item (cond) = True then
 							Result := True
 						end
@@ -193,15 +191,16 @@ feature -- routines forse inutili
 		do
 			-- TODO convertire from loop in across loop
 			Result := Void
-			from
-				index_count := transizioni.lower
-			until
-				index_count = transizioni.upper + 1 or Result /= Void
+			across transizioni as t
+--			from
+--				index_count := transizioni.lower
+--			until
+--				index_count = transizioni.upper + 1 or Result /= Void
 			loop
-	        	if attivabile(index_count, evento_corrente, hash_delle_condizioni) then
-		        	Result := transizioni[index_count].target
+	        	if attivabile(t.item, evento_corrente, hash_delle_condizioni) then
+		        	Result := t.item.target
 		        end
-			index_count := index_count + 1
+--			index_count := index_count + 1
 			end
 			if Result = Void then
 				Result := Current
