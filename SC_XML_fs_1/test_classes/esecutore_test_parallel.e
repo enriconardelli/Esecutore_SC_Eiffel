@@ -29,7 +29,7 @@ feature -- Test
 			nomi_files_prova [1] := test_data_dir + "esempio_parallelo_condizioni.xml"
 			nomi_files_prova [2] := test_data_dir + "eventi_parallelo_condizioni.txt"
 			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( C - DUE )", esecutore.conf_corrente.count = 2 and conf_has_state(esecutore.conf_corrente,"DUE") and conf_has_state(esecutore.conf_corrente,"C") )
+			assert ("ERRORE il sistema non ha terminato negli stati corretti ( C )", esecutore.conf_corrente.count = 1 and conf_has_state(esecutore.conf_corrente,"C") )
 	 		assert ("ERRORE il sistema non impostato correttamente le condizioni", esecutore.state_chart.condizioni.item ("alfa"))
 		end
 

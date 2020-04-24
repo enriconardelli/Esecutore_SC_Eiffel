@@ -6,8 +6,8 @@
 		<state id="A" initial="A1">
 			<state id="A1" initial="A11" >
 				<state id="A11" >
-					<transition event="x" target="A2A1">
-						<log name="x: da A11 a A2A1" />
+					<transition event="x" target="A2B1">
+						<log name="x: da A11 a A2B1" />
 					</transition>
 				</state>
 				<state id="A12" >

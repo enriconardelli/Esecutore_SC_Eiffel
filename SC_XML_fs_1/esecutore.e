@@ -99,7 +99,10 @@ feature -- evoluzione della statechart
 							aggiungi_paralleli (tc.target, prossima_conf_corrente)
 							trova_default (tc.target, prossima_conf_corrente)
 						else
-							prossima_conf_corrente.force (conf_corrente [i], prossima_conf_corrente.count + 1)
+							-- QUI!!!!!!!!!!!
+							if attached {STATO_AND} parallelo_antenato(conf_corrente[i]) as par_ant and then check_transizioni_interne(par_ant,istante_corrente,condizioni_correnti) then
+								prossima_conf_corrente.force (conf_corrente [i], prossima_conf_corrente.count + 1)
+							end
 						end
 						i := i + 1
 					end
@@ -112,6 +115,44 @@ feature -- evoluzione della statechart
 			end
 			print ("%NHo terminato l'elaborazione degli eventi nella seguente configurazione%N")
 			stampa_conf_corrente
+		end
+
+	-- QUI!!!!!!!!!!!!!!!!
+	parallelo_antenato(stato: STATO): detachable STATO
+		-- restituisce parallelo antenato più vicino
+		do
+			if attached {STATO_AND} stato then
+				Result := stato
+			elseif attached stato.stato_genitore as gen then
+				if attached {STATO_AND} gen then
+					Result := gen
+				else
+					Result := parallelo_antenato(gen)
+				end
+			end
+		end
+
+	-- QUI!!!!!!!!!!!!!!!!	
+	check_transizioni_interne(antenato: STATO; istante_corrente: LINKED_SET [STRING]; condizioni_correnti: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
+		local
+			i: INTEGER
+		do
+			if not antenato.stato_default.is_empty then
+				from
+					i:=antenato.stato_default.lower
+				until
+					i=antenato.stato_default.upper+1 or Result = true
+				loop
+					if attached antenato.stato_default[i].transizione_abilitata(istante_corrente, condizioni_correnti) then
+						Result := true
+				--	else
+				--		Result := check_transizioni_interne(antenato.stato_default[i],istante_corrente, condizioni_correnti)
+					end
+					i:=i+1
+				end
+			else
+				Result := false
+			end
 		end
 
 	aggiungi_paralleli (stato: STATO; prossima_conf_corrente: ARRAY [STATO])
