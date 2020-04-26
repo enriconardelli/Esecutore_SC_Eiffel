@@ -75,14 +75,4 @@ feature -- Test
 			create esecutore.make (nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A11 )", esecutore.conf_corrente.count = 1 and conf_has_state(esecutore.conf_corrente,"A11") )
 		end
-
-	t_transizione_parallelo_interna
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "esempio_transizione_parallelo_interna.xml"
-			nomi_files_prova [2] := test_data_dir + "eventi_transizione_parallelo_interna.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A2A2 , A2B2 )", esecutore.conf_corrente.count = 2 and conf_has_state(esecutore.conf_corrente,"A2A2") and  conf_has_state(esecutore.conf_corrente,"A2B2"))
-		end
 end

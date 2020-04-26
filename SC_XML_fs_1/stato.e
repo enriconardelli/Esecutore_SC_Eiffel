@@ -16,8 +16,6 @@ feature -- attributi
 
 	finale: BOOLEAN
 
-	attivo: BOOLEAN
-
 	stato_default: ARRAY[STATO]
 
 	stato_genitore: detachable STATO
@@ -64,16 +62,6 @@ feature --creazione
 		end
 
 feature -- setter
-
-	set_attivo
-		do
-			attivo := True
-		end
-
-	set_inattivo
-		do
-			attivo := False
-		end
 
 	set_final
 		do
