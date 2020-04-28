@@ -88,7 +88,7 @@ feature -- inizializzazione SC
 				lis_el.after
 			loop
 				if lis_el.item_for_iteration.name ~ "state" and then attached lis_el.item_for_iteration.attribute_by_name ("id") as att then
-					if lis_el.item_for_iteration.has_element_by_name ("state") then -- elemento corrente ha figli
+					if lis_el.item_for_iteration.has_element_by_name ("state") or lis_el.item_for_iteration.has_element_by_name ("parallel") then  -- elemento corrente ha figli
 						if attached {STATO_XOR} p_genitore as pg then
 							stato_temp := create {STATO_XOR}.make_with_id (att.value)
 							stato_temp.set_genitore (pg)
@@ -118,7 +118,7 @@ feature -- inizializzazione SC
 					end
 				end
 				if lis_el.item_for_iteration.name ~ "parallel" and then attached lis_el.item_for_iteration.attribute_by_name ("id") as att then
-					if lis_el.item_for_iteration.has_element_by_name ("state") then -- elemento corrente ha figli
+					if lis_el.item_for_iteration.has_element_by_name ("state") or lis_el.item_for_iteration.has_element_by_name ("parallel") then -- elemento corrente ha figli
 						if attached {STATO_AND} p_genitore as pg then
 							stato_temp := create {STATO_AND}.make_with_id (att.value)
 							stato_temp.set_genitore (pg)
@@ -187,7 +187,7 @@ feature -- inizializzazione SC
 							end
 						end
 					end
-					if lis_el.item_for_iteration.has_element_by_name ("state") then -- elemento corrente ha figli
+					if lis_el.item_for_iteration.has_element_by_name ("state") or lis_el.item_for_iteration.has_element_by_name ("parallel") then -- elemento corrente ha figli
 						set_stati_default (lis_el.item_for_iteration.elements)
 					end
 				end
