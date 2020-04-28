@@ -18,8 +18,8 @@ feature -- Attributi
 	ambiente_corrente: AMBIENTE
 			-- rappresenta l'ambiente in cui la SC si evolve
 
-	conf_corrente: ARRAY [STATO]
-			-- insieme degli stati nella configurazione corrente della SC
+	conf_base_corrente: ARRAY [STATO]
+			-- insieme degli stati base nella configurazione corrente della SC e non di tutti gli stati attivi
 
 feature {NONE} -- Creazione e avvio interattivo
 
@@ -44,8 +44,8 @@ feature -- Creazione per i test
 			print ("%N=========%N CREAZIONE INIZIO%N")
 			print ("crea la SC in " + nomi_files [1] + "%N")
 			create state_chart.make (nomi_files [1])
-			create conf_corrente.make_empty
-			conf_corrente.copy (state_chart.stato_iniziale)
+			create conf_base_corrente.make_empty
+			conf_base_corrente.copy (state_chart.stato_iniziale)
 			create ambiente_corrente.make_empty
 			if not state_chart.ha_problemi_con_il_file_della_sc then
 				print ("e la esegue con gli eventi in " + nomi_files [2] + "%N")
@@ -69,7 +69,7 @@ feature -- evoluzione della statechart
 		local
 			count_istante_corrente: INTEGER
 			i: INTEGER
-			prossima_conf_corrente: ARRAY [STATO]
+			prossima_conf_base: ARRAY [STATO]
 			condizioni_correnti: HASH_TABLE [BOOLEAN, STRING]
 			transizione_corrente: TRANSIZIONE
 		do
@@ -80,38 +80,38 @@ feature -- evoluzione della statechart
 			from
 				count_istante_corrente := 1
 			until
-				stato_final (conf_corrente) or count_istante_corrente > istanti.count
+				stato_final (conf_base_corrente) or count_istante_corrente > istanti.count
 			loop
 				if attached istanti [count_istante_corrente] as istante_corrente then
 					print ("Indice istante corrente = ")
 					print (count_istante_corrente)
 					print ("%N")
 					condizioni_correnti.copy (state_chart.condizioni)
-					create prossima_conf_corrente.make_empty
+					create prossima_conf_base.make_empty
 					from
-						i := conf_corrente.lower
+						i := conf_base_corrente.lower
 					until
-						i = conf_corrente.upper + 1
+						i = conf_base_corrente.upper + 1
 					loop
-						transizione_corrente := conf_corrente [i].transizione_abilitata (istante_corrente, condizioni_correnti)
+						transizione_corrente := conf_base_corrente [i].transizione_abilitata (istante_corrente, condizioni_correnti)
 						if attached transizione_corrente as tc then
-							esegui_azioni (tc, conf_corrente [i])
-							aggiungi_paralleli (tc.target, prossima_conf_corrente)
-							trova_default (tc.target, prossima_conf_corrente)
+							esegui_azioni (tc, conf_base_corrente [i])
+							aggiungi_paralleli (tc.target, prossima_conf_base)
+							trova_default (tc.target, prossima_conf_base)
 						else
-							prossima_conf_corrente.force (conf_corrente [i], prossima_conf_corrente.count + 1)
+							prossima_conf_base.force (conf_base_corrente [i], prossima_conf_base.count + 1)
 						end
 						i := i + 1
 					end
-					prossima_conf_corrente := stati_attivi_conf(prossima_conf_corrente)
-					if not prossima_conf_corrente.is_empty then
-						conf_corrente.copy (prossima_conf_corrente)
+					prossima_conf_base := stati_attivi_conf(prossima_conf_base)
+					if not prossima_conf_base.is_empty then
+						conf_base_corrente.copy (prossima_conf_base)
 					end
 				end
 				count_istante_corrente := count_istante_corrente + 1
 				stampa_conf_corrente
 			end
-			print ("%NHo terminato l'elaborazione degli eventi nella seguente configurazione%N")
+			print ("%NHo terminato l'elaborazione degli eventi nella seguente configurazione base%N")
 			stampa_conf_corrente
 		end
 
@@ -126,6 +126,7 @@ feature -- evoluzione della statechart
 			until
 				i=conf_da_modificare.upper+1
 			loop
+				-- TODO serve proprio il secondo test? se sì non conviene evitare in trova_default di inserire doppioni?
 				if conf_da_modificare[i].attivo and not Result.has(conf_da_modificare[i]) then
 					Result.force(conf_da_modificare[i],Result.count+1)
 				end
@@ -148,29 +149,29 @@ feature -- evoluzione della statechart
 --			end
 --		end
 
-	aggiungi_paralleli (stato: STATO; prossima_conf_corrente: ARRAY [STATO])
+	aggiungi_paralleli (target: STATO; prossima_conf_base: ARRAY [STATO])
 		local
 			i: INTEGER
 		do
-			stato.set_attivo
-			if attached {STATO_AND} stato.stato_genitore  as sg and then not sg.attivo then
+			target.set_attivo
+			if attached {STATO_AND} target.stato_genitore  as sgt and then not sgt.attivo then
 				from
-					i := sg.stato_default.lower
+					i := sgt.stato_default.lower
 				until
-					i = sg.stato_default.upper + 1
+					i = sgt.stato_default.upper + 1
 				loop
-					if not sg.stato_default [i].is_equal(stato) then
-						trova_default (sg.stato_default [i], prossima_conf_corrente)
+					if not sgt.stato_default [i].is_equal(target) then
+						trova_default (sgt.stato_default [i], prossima_conf_base)
 					end
 					i := i + 1
 				end
 			end
-			if attached stato.stato_genitore as sg then
-				aggiungi_paralleli (sg, prossima_conf_corrente)
+			if attached target.stato_genitore as sgt then
+				aggiungi_paralleli (sgt, prossima_conf_base)
 			end
 		end
 
-	trova_default (stato: STATO; prossima_conf_corrente: ARRAY [STATO])
+	trova_default (stato: STATO; prossima_conf_base: ARRAY [STATO])
 		local
 			i: INTEGER
 		do
@@ -184,11 +185,13 @@ feature -- evoluzione della statechart
 					if attached stato.stato_default [i].onentry as oe then
 						oe.action (state_chart.condizioni)
 					end
-					trova_default (stato.stato_default [i], prossima_conf_corrente)
+					trova_default (stato.stato_default [i], prossima_conf_base)
 					i := i + 1
 				end
-			elseif not prossima_conf_corrente.has (stato) then
-				prossima_conf_corrente.force (stato, prossima_conf_corrente.count + 1)
+			elseif not prossima_conf_base.has (stato) then
+				-- `stato' è uno stato atomico
+				-- TODO serve aggiungere un test che impedisca di inserire in prossima_conf_base uno stato se già c'è?'
+				prossima_conf_base.force (stato, prossima_conf_base.count + 1)
 			end
 		end
 
@@ -238,9 +241,8 @@ feature -- evoluzione della statechart
 		do
 			if p_stato_corrente /= p_contesto then
 				if attached{STATO_AND} p_stato_corrente as sc  then
-					sc.set_stato_intattivo_con_figli
+					sc.set_stato_inattivo_con_figli
 				end
-
 				if attached{STATO_XOR} p_stato_corrente  as sc then
 					sc.set_stato_intattivo_con_figli
 				end
@@ -270,6 +272,7 @@ feature -- evoluzione della statechart
 	esegui_azioni_onentry (p_contesto: detachable STATO; p_target: STATO)
 		do
 			if p_target /= p_contesto and then attached p_target.stato_genitore as sg then
+				-- TODO qui esegue le on_entry risalendo sugli antenati. cioè in ordine inverso a quanto dovrebbe
 				esegui_azioni_onentry (p_contesto, sg)
 			end
 			if p_target /= p_contesto and then attached p_target.onentry as oe then
@@ -279,16 +282,16 @@ feature -- evoluzione della statechart
 
 	stato_final (stato: ARRAY [STATO]): BOOLEAN
 		require
-			contesto: conf_corrente /= VOID
+			contesto: conf_base_corrente /= VOID
 		local
 			i: INTEGER
 		do
 			from
-				i := conf_corrente.lower
+				i := conf_base_corrente.lower
 			until
-				i = conf_corrente.upper + 1
+				i = conf_base_corrente.upper + 1
 			loop
-				if conf_corrente [i].finale then
+				if conf_base_corrente [i].finale then
 					result := TRUE
 				end
 				i := i + 1
@@ -300,7 +303,7 @@ feature -- evoluzione della statechart
 			i: INTEGER
 		do
 			print ("configurazione corrente: ")
-			across conf_corrente as cc
+			across conf_base_corrente as cc
 			loop
 				print (cc.item.id + " ")
 			end

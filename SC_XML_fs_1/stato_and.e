@@ -51,14 +51,14 @@ feature -- setter
 			end
 		end
 
-		set_stato_intattivo_con_figli
+		set_stato_inattivo_con_figli
 		-- Arianna & Riccardo 26/04/2020
 			do
 				current.set_inattivo
-				set_stati_figli_intattivi
+				set_stati_figli_inattivi
 			end
 
-		set_stati_figli_intattivi
+		set_stati_figli_inattivi
 		-- Arianna & Riccardo 26/04/2020
 			local
 				i: INTEGER
@@ -70,7 +70,7 @@ feature -- setter
 				loop
 					stati_figli[i].set_inattivo
 					if attached{STATO_AND} stati_figli[i] as sf then
-						sf.set_stati_figli_intattivi
+						sf.set_stati_figli_inattivi
 					end
 					if attached{STATO_XOR} stati_figli[i] as sf then
 						sf.set_stati_figli_intattivi
