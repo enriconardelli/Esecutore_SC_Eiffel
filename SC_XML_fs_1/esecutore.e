@@ -99,13 +99,11 @@ feature -- evoluzione della statechart
 							aggiungi_paralleli (tc.target, prossima_conf_corrente)
 							trova_default (tc.target, prossima_conf_corrente)
 						else
-							-- QUI!!!!!!!!!!!
-							if attached {STATO_AND} parallelo_antenato(conf_corrente[i]) as par_ant and then check_transizioni_interne(par_ant,istante_corrente,condizioni_correnti) then
-								prossima_conf_corrente.force (conf_corrente [i], prossima_conf_corrente.count + 1)
-							end
+							prossima_conf_corrente.force (conf_corrente [i], prossima_conf_corrente.count + 1)
 						end
 						i := i + 1
 					end
+					prossima_conf_corrente := stati_attivi_conf(prossima_conf_corrente)
 					if not prossima_conf_corrente.is_empty then
 						conf_corrente.copy (prossima_conf_corrente)
 					end
@@ -117,49 +115,45 @@ feature -- evoluzione della statechart
 			stampa_conf_corrente
 		end
 
-	-- QUI!!!!!!!!!!!!!!!!
-	parallelo_antenato(stato: STATO): detachable STATO
-		-- restituisce parallelo antenato più vicino
-		do
-			if attached {STATO_AND} stato then
-				Result := stato
-			elseif attached stato.stato_genitore as gen then
-				if attached {STATO_AND} gen then
-					Result := gen
-				else
-					Result := parallelo_antenato(gen)
-				end
-			end
-		end
-
-	-- QUI!!!!!!!!!!!!!!!!	
-	check_transizioni_interne(antenato: STATO; istante_corrente: LINKED_SET [STRING]; condizioni_correnti: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
+	stati_attivi_conf(conf_da_modificare: ARRAY[STATO]): ARRAY[STATO]
+	-- Arianna & Riccardo 26/04/2020
 		local
 			i: INTEGER
 		do
-			if not antenato.stato_default.is_empty then
-				from
-					i:=antenato.stato_default.lower
-				until
-					i=antenato.stato_default.upper+1 or Result = true
-				loop
-					if attached antenato.stato_default[i].transizione_abilitata(istante_corrente, condizioni_correnti) then
-						Result := true
-				--	else
-				--		Result := check_transizioni_interne(antenato.stato_default[i],istante_corrente, condizioni_correnti)
-					end
-					i:=i+1
+			create Result.make_empty
+			from
+				i:=conf_da_modificare.lower
+			until
+				i=conf_da_modificare.upper+1
+			loop
+				if conf_da_modificare[i].attivo and not Result.has(conf_da_modificare[i]) then
+					Result.force(conf_da_modificare[i],Result.count+1)
 				end
-			else
-				Result := false
+				i:=i+1
 			end
 		end
+
+--	parallelo_antenato(stato: STATO): detachable STATO
+--	-- Riccardo Malandruccolo
+--		-- restituisce parallelo antenato più vicino
+--		do
+--			if attached {STATO_AND} stato then
+--				Result := stato
+--			elseif attached stato.stato_genitore as gen then
+--				if attached {STATO_AND} gen then
+--					Result := gen
+--				else
+--					Result := parallelo_antenato(gen)
+--				end
+--			end
+--		end
 
 	aggiungi_paralleli (stato: STATO; prossima_conf_corrente: ARRAY [STATO])
 		local
 			i: INTEGER
 		do
-			if attached {STATO_AND} stato.stato_genitore as sg then
+			stato.set_attivo
+			if attached {STATO_AND} stato.stato_genitore  as sg and then not sg.attivo then
 				from
 					i := sg.stato_default.lower
 				until
@@ -180,6 +174,7 @@ feature -- evoluzione della statechart
 		local
 			i: INTEGER
 		do
+			stato.set_attivo
 			if not stato.stato_default.is_empty then
 				from
 					i := stato.stato_default.lower
@@ -242,6 +237,13 @@ feature -- evoluzione della statechart
 	esegui_azioni_onexit (p_stato_corrente: STATO; p_contesto: detachable STATO)
 		do
 			if p_stato_corrente /= p_contesto then
+				if attached{STATO_AND} p_stato_corrente as sc  then
+					sc.set_stato_intattivo_con_figli
+				end
+
+				if attached{STATO_XOR} p_stato_corrente  as sc then
+					sc.set_stato_intattivo_con_figli
+				end
 				if attached p_stato_corrente.onexit as ox then
 					ox.action (state_chart.condizioni)
 				end
