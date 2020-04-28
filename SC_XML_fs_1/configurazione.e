@@ -13,6 +13,7 @@ create
 feature --attributi
 
 	stato_iniziale: ARRAY[STATO]
+		-- l'insieme degli stati base da cui parte la statechart
 
 	stati: HASH_TABLE [STATO, STRING]
 			-- serve durante l'istanziazione iniziale di stati, transizione e configurazione

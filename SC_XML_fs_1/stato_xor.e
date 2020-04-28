@@ -64,7 +64,7 @@ feature -- setter
 				loop
 					stati_figli[i].set_inattivo
 					if attached{STATO_AND} stati_figli[i] as sf then
-						sf.set_stati_figli_intattivi
+						sf.set_stati_figli_inattivi
 					end
 					if attached{STATO_XOR} stati_figli[i] as sf then
 						sf.set_stati_figli_intattivi

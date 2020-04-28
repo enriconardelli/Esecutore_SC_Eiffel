@@ -17,6 +17,7 @@ feature -- attributi
 	finale: BOOLEAN
 
 	attivo: BOOLEAN
+		-- indipendentemente se sia uno stato base o meno
 
 	stato_default: ARRAY[STATO]
 
