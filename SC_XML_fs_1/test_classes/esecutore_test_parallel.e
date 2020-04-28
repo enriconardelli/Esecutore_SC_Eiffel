@@ -95,7 +95,7 @@ feature -- Test
 			nomi_files_prova [1] := test_data_dir + "parallelo_una_profondita.xml"
 			nomi_files_prova [2] := test_data_dir + "eventi_xor_1.txt"
 			create esecutore.make (nomi_files_prova)
-			 assert ("ERRORE lo stato corrente non è (A,UNO)", conf_has_state(esecutore.conf_corrente,"A") and conf_has_state(esecutore.conf_corrente,"UNO"))
+			 assert ("ERRORE lo stato corrente non è (A,UNO)", conf_has_state(esecutore.conf_base_corrente,"A") and conf_has_state(esecutore.conf_base_corrente,"UNO"))
 		end
 
 	t_parallelo_piu_profondo
@@ -105,7 +105,7 @@ feature -- Test
 			nomi_files_prova [1] := test_data_dir + "parallelo_piu_profondo.xml"
 			nomi_files_prova [2] := test_data_dir + "eventi_xor_1.txt"
 			create esecutore.make (nomi_files_prova)
-			 assert ("ERRORE lo stato corrente non è (A2A1, P1, P2)", conf_has_state(esecutore.conf_corrente,"A2A1") and conf_has_state(esecutore.conf_corrente,"P1") and conf_has_state(esecutore.conf_corrente,"P2"))
+			 assert ("ERRORE lo stato corrente non è (A2A1, P1, P2)", conf_has_state(esecutore.conf_base_corrente,"A2A1") and conf_has_state(esecutore.conf_base_corrente,"P1") and conf_has_state(esecutore.conf_base_corrente,"P2"))
 		end
 
 end
