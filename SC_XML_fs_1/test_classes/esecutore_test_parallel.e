@@ -108,4 +108,15 @@ feature -- Test
 			 assert ("ERRORE lo stato corrente non è (A2A1, P1, P2)", conf_has_state(esecutore.conf_base_corrente,"A2A1") and conf_has_state(esecutore.conf_base_corrente,"P1") and conf_has_state(esecutore.conf_base_corrente,"P2"))
 		end
 
+	t_misto_parallel_1
+	-- Alessandro & Giulia 01/05/2020
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "esempio_multi_parallel.xml"
+			nomi_files_prova [2] := test_data_dir + "esempio_multi_parallel_eventi.txt"
+			create esecutore.make (nomi_files_prova)
+			assert ("ERRORE lo configurazione base corrente non è (A,B2,B1)", conf_has_state(esecutore.conf_base_corrente,"A") and conf_has_state(esecutore.conf_base_corrente,"B1") and conf_has_state(esecutore.conf_base_corrente,"B2"))
+		end
+
 end
