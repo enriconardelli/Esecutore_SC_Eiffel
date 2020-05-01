@@ -79,7 +79,7 @@ feature -- Test Cronometro
 		do
 			nomi_files_prova[2] := nomi_files_prova[2] + "cronometro_semplice_eventi_multipli_1.txt"
 			create esecutore.make(nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato nello stato corretto (PAUSED)", esecutore.conf_base_corrente.count = 1 and esecutore.conf_base_corrente[1].id.is_equal ("paused"))
+			assert ("ERRORE il sistema non ha terminato nello stato corretto (RUNNING)", esecutore.conf_base_corrente.count = 1 and esecutore.conf_base_corrente[1].id.is_equal ("running"))
 		end
 
 	t_evolvi_cronometro_7
