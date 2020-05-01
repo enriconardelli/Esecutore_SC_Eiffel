@@ -119,4 +119,17 @@ feature -- Test
 			assert ("ERRORE lo configurazione base corrente non è (A,B2,B1)", conf_has_state(esecutore.conf_base_corrente,"A") and conf_has_state(esecutore.conf_base_corrente,"B1") and conf_has_state(esecutore.conf_base_corrente,"B2"))
 		end
 
+--	t_transizioni_interne_parallel
+--	--Claudia & Federico 01/05/2020
+--	--Quando vengono eseguite transizioni all' interno di uno stato parallelo, a sua volta contenuto in uno stato parallelo
+--	--Viene "scordata" la configurazione a livello più alto (nell' esecuzione di questo test la configurazione finale dovrebbe contenere anche lo stato B1, che invece non appare)
+--	local
+--			esecutore: ESECUTORE
+--		do
+--			nomi_files_prova [1] := test_data_dir + "esempio_transizioni_interne_parallelo.xml"
+--			nomi_files_prova [2] := test_data_dir + "eventi_transizioni_interne_parallelo.txt"
+--			create esecutore.make (nomi_files_prova)
+--			assert ("ERRORE lo configurazione base corrente non è (A1A2,A1B,A1C,B1)", conf_has_state(esecutore.conf_base_corrente,"A1A2") and conf_has_state(esecutore.conf_base_corrente,"A1B") and conf_has_state(esecutore.conf_base_corrente,"A1C") and conf_has_state(esecutore.conf_base_corrente,"B1"))
+--		end
+
 end

@@ -39,4 +39,18 @@ feature -- Test
 			assert ("ERRORE il sistema non ha eseguito l'azione on_exitA1b", esecutore.state_chart.condizioni.item ("on_exitA1b"))
 		end
 
+--	t_azioni_uscita
+--    -- Claudia & Federico 01/05/2020
+--    local
+--      esecutore: ESECUTORE
+--    do
+--      nomi_files_prova [1] := test_data_dir + "esempio_azioni_uscita.xml"
+--        nomi_files_prova [2] := test_data_dir + "eventi_azioni_uscita.txt"
+--      create esecutore.make (nomi_files_prova)
+--      assert("ERRORE 5.1 non esco da X", esecutore.state_chart.condizioni.item ("on_exitX"))
+--      assert("ERRORE 5.2 non esco da A", esecutore.state_chart.condizioni.item ("on_exitA"))
+--      assert("ERRORE 5.3 non esco da A1", esecutore.state_chart.condizioni.item ("on_exitA1"))
+--      assert("ERRORE 5.4 non esco da B", esecutore.state_chart.condizioni.item ("on_exitB"))
+--    end
+
 end
