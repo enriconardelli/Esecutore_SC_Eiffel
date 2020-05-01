@@ -208,8 +208,8 @@ feature -- inizializzazione SC
 		do
 			if attached radice.attribute_by_name ("initial") as si then
 				if attached stati.item (si.value) as v then
+					v.set_attivo
 					if not v.stato_default.is_empty then
-						v.set_attivo
 						from
 							i := v.stato_default.lower
 						until
@@ -250,6 +250,7 @@ feature -- inizializzazione SC
 		local
 			i: INTEGER
 		do
+			stato.set_attivo
 			if not stato.stato_default.is_empty then
 				from
 					i := stato.stato_default.lower

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="S">
+
+<datamodel>
+	<data id="on_entryS" expr="false"/>
+	<data id="on_exitS" expr="false"/>
+	<data id="on_entryT" expr="false"/>
+	<data id="on_exitT" expr="false"/>	
+</datamodel>
+
+<state id="S" initial="T">
+	<onentry>
+        <log expr="entering S"/>
+		<assign location="on_entryS" expr="true"/>
+       </onentry>
+       <onexit>
+         <log expr="leaving S"/>
+		<assign location="on_exitS" expr="true"/>
+     	  </onexit>
+
+   <state id="T" initial="A">
+      <onentry>
+        <log expr="entering T"/>
+		<assign location="on_entryT" expr="true"/>
+       </onentry>
+       <onexit>
+         <log expr="leaving T"/>
+		<assign location="on_exitT" expr="true"/>
+     	  </onexit>
+     
+     <state id="A">
+       <onentry>
+        <log expr="entering A"/>
+       </onentry>
+        <onexit>
+           <log expr="leaving A"/>
+        </onexit>
+	<transition event="e" target="B">
+        <log expr="transizione da A a B"/>
+     </transition>
+
+     </state>
+
+	<state id="B">
+	<onentry>
+        <log expr="entering B"/>
+       </onentry>
+        <onexit>
+           <log expr="leaving B"/>
+        </onexit>
+	</state>
+
+</state>
+
+     <transition event="f" target="B" type="internal">
+        <log expr="transizione interna da S a B"/>
+     </transition>
+
+</state>
+</scxml>

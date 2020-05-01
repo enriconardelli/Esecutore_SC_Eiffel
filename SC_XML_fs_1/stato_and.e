@@ -73,7 +73,7 @@ feature -- setter
 						sf.set_stati_figli_inattivi
 					end
 					if attached{STATO_XOR} stati_figli[i] as sf then
-						sf.set_stati_figli_intattivi
+						sf.set_stati_figli_inattivi
 					end
 					i := i + 1
 				end

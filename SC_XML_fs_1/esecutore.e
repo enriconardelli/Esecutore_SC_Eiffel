@@ -96,6 +96,7 @@ feature -- evoluzione della statechart
 						transizione_corrente := conf_base_corrente [i].transizione_abilitata (istante_corrente, condizioni_correnti)
 						if attached transizione_corrente as tc then
 							esegui_azioni (tc, conf_base_corrente [i])
+							disattiva_figli (genitore_piu_grande(conf_base_corrente [i], transizione_corrente))
 							aggiungi_paralleli (tc.target, prossima_conf_base)
 							trova_default (tc.target, prossima_conf_base)
 						else
@@ -126,13 +127,45 @@ feature -- evoluzione della statechart
 			until
 				i=conf_da_modificare.upper+1
 			loop
-				-- TODO serve proprio il secondo test? se sì non conviene evitare in trova_default di inserire doppioni?
-				if conf_da_modificare[i].attivo and not Result.has(conf_da_modificare[i]) then
+				if conf_da_modificare[i].attivo then
 					Result.force(conf_da_modificare[i],Result.count+1)
 				end
 				i:=i+1
 			end
 		end
+
+		genitore_piu_grande(stato_corrente: STATO; transizione: TRANSIZIONE): STATO
+		-- Arianna & Riccardo 01/05/2020
+			local
+				contesto, stato_temp: detachable STATO
+			do
+				Result := stato_corrente
+				if transizione.internal then
+					contesto := transizione.sorgente
+				else
+					contesto := trova_contesto (transizione.sorgente, transizione.target)
+				end
+
+				from
+					stato_temp := stato_corrente
+				until
+				 	stato_temp  = contesto
+				loop
+					if attached stato_temp then
+						Result := stato_temp
+						stato_temp := stato_temp.stato_genitore
+					end
+				end
+			end
+
+		disattiva_figli (stato: STATO)
+		-- Arianna & Riccardo 01/05/2020
+			do
+				if attached{STATO_AND} stato as sa then sa.set_stato_inattivo_con_figli
+				elseif attached{STATO_XOR} stato as sx then sx.set_stato_inattivo_con_figli
+				else stato.set_inattivo
+				end
+			end
 
 --	parallelo_antenato(stato: STATO): detachable STATO
 --	-- Riccardo Malandruccolo
@@ -176,15 +209,15 @@ feature -- evoluzione della statechart
 			i: INTEGER
 		do
 			stato.set_attivo
+			if attached stato.onentry as oe then
+				oe.action (state_chart.condizioni)
+			end
 			if not stato.stato_default.is_empty then
 				from
 					i := stato.stato_default.lower
 				until
 					i = stato.stato_default.upper + 1
 				loop
-					if attached stato.stato_default [i].onentry as oe then
-						oe.action (state_chart.condizioni)
-					end
 					trova_default (stato.stato_default [i], prossima_conf_base)
 					i := i + 1
 				end
@@ -240,12 +273,6 @@ feature -- evoluzione della statechart
 	esegui_azioni_onexit (p_stato_corrente: STATO; p_contesto: detachable STATO)
 		do
 			if p_stato_corrente /= p_contesto then
-				if attached{STATO_AND} p_stato_corrente as sc  then
-					sc.set_stato_inattivo_con_figli
-				end
-				if attached{STATO_XOR} p_stato_corrente  as sc then
-					sc.set_stato_intattivo_con_figli
-				end
 				if attached p_stato_corrente.onexit as ox then
 					ox.action (state_chart.condizioni)
 				end
@@ -271,12 +298,12 @@ feature -- evoluzione della statechart
 
 	esegui_azioni_onentry (p_contesto: detachable STATO; p_target: STATO)
 		do
-			if p_target /= p_contesto and then attached p_target.stato_genitore as sg then
+			if attached p_target.stato_genitore as sg and then sg /= p_contesto then
 				-- TODO qui esegue le on_entry risalendo sugli antenati. cioè in ordine inverso a quanto dovrebbe
 				esegui_azioni_onentry (p_contesto, sg)
-			end
-			if p_target /= p_contesto and then attached p_target.onentry as oe then
-				oe.action (state_chart.condizioni)
+				if attached sg.onentry as oe then
+					oe.action (state_chart.condizioni)
+				end
 			end
 		end
 
@@ -299,8 +326,6 @@ feature -- evoluzione della statechart
 		end
 
 	stampa_conf_corrente
-		local
-			i: INTEGER
 		do
 			print ("configurazione corrente: ")
 			across conf_base_corrente as cc
