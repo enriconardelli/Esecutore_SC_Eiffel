@@ -277,6 +277,11 @@ feature -- evoluzione della statechart
 					ox.action (state_chart.condizioni)
 				end
 				if attached p_stato_corrente.stato_genitore as sg then
+				--sto lavorando qui
+					if  then
+
+					end
+				--fin qui
 					esegui_azioni_onexit (sg, p_contesto)
 				end
 			end
