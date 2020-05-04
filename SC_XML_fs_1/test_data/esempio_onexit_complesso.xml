@@ -11,6 +11,7 @@
 		<data expr="false" id="on_exitA21"/>
 		<data expr="false" id="on_exitB"/>
 		<data expr="false" id="on_exitB1"/>
+		<data expr="false" id="on_exitB2"/>
 		<data expr="false" id="on_exitC"/>
 		<data expr="false" id="on_exitC1"/>
 		<data expr="false" id="on_exitC11"/>
@@ -59,6 +60,11 @@
 				</transition>
 				<onexit>
 					<assign expr="true" location="on_exitB1"/>
+				</onexit>
+			</state>
+			<state id="B2">
+				<onexit>
+					<assign expr="true" location="on_exitB2"/>
 				</onexit>
 			</state>
 			<onexit>
