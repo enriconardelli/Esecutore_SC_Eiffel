@@ -99,7 +99,7 @@ feature -- evoluzione della statechart
 							esegui_azioni (tc, conf_base_corrente [i])
 							genitore:=genitore_piu_grande(conf_base_corrente [i], tc)
 							esci_da_stati_figli (genitore, genitore)
-							--disattiva_figli (genitore)
+							disattiva_figli (genitore)
 							aggiungi_paralleli (tc.target, prossima_conf_base)
 							trova_default (tc.target, prossima_conf_base)
 						else
@@ -183,7 +183,7 @@ feature -- evoluzione della statechart
 					loop
 						if sa.stati_figli[j].attivo then
 							esegui_azioni_onexit(sa.stati_figli[j],contesto)
-							sa.stati_figli[j].set_inattivo
+							--sa.stati_figli[j].set_inattivo
 						end
 						esci_da_stati_figli(sa.stati_figli[j],contesto)
 						j:=j+1
@@ -196,7 +196,7 @@ feature -- evoluzione della statechart
 					loop
 						if so.stati_figli[j].attivo then
 							esegui_azioni_onexit(so.stati_figli[j],contesto)
-							so.stati_figli[j].set_inattivo
+							--so.stati_figli[j].set_inattivo
 						end
 						esci_da_stati_figli(so.stati_figli[j],contesto)
 						j:=j+1
@@ -315,7 +315,7 @@ feature -- evoluzione della statechart
 				if attached p_stato_corrente.onexit as ox then
 					ox.action (state_chart.condizioni)
 				end
-				if attached p_stato_corrente.stato_genitore as sg and then sg.attivo then
+				if attached p_stato_corrente.stato_genitore as sg then
 --				--sto lavorando qui (questo loop al momento non funziona bene)
 --					if attached{STATO_AND} sg  as g then
 --						from
