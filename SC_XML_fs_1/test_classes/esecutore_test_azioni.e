@@ -87,4 +87,15 @@ feature -- Test
 			assert("ERRORE 4.4 non rientro in T", esecutore.state_chart.condizioni.item ("on_entryT"))
 		end
 
+		t_onexit_complesso
+		-- Claudia & Federico 04/05/2020
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "esempio_onexit_complesso.xml"
+			nomi_files_prova [2] := test_data_dir + "eventi_onexit_complesso.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("Errore 1: lo stato di arrivo non è T", esecutore.conf_base_corrente/="T")
+		end
+
 end

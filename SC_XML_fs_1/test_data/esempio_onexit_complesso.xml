@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="S">
+
+	<datamodel>
+		<data expr="false" id="on_exitS"/>
+		<data expr="false" id="on_exitA"/>
+		<data expr="false" id="on_exitA1"/>
+		<data expr="false" id="on_exitA11"/>
+		<data expr="false" id="on_exitA111"/>
+		<data expr="false" id="on_exitA2"/>
+		<data expr="false" id="on_exitA21"/>
+		<data expr="false" id="on_exitB"/>
+		<data expr="false" id="on_exitB1"/>
+		<data expr="false" id="on_exitC"/>
+		<data expr="false" id="on_exitC1"/>
+		<data expr="false" id="on_exitC11"/>
+		<data expr="false" id="on_exitC11A"/>
+		<data expr="false" id="on_exitC11A1"/>
+		<data expr="false" id="on_exitC11B"/>
+		<data expr="false" id="on_exitD"/>
+		<data expr="false" id="on_exitT"/>
+	</datamodel>
+
+<parallel id ="S">
+		<parallel id="A">
+			<state id="A1" initial="A11">
+				<state id="A11" initial="A111">
+					<state id="A111">
+						<onexit>
+							<assign expr="true" location="on_exitA111"/>
+						</onexit>
+					</state>
+					<onexit>
+						<assign expr="true" location="on_exitA11"/>
+					</onexit>
+				</state>
+				<onexit>
+					<assign expr="true" location="on_exitA1"/>
+				</onexit>
+			</state>
+			<state id="A2" initial="A21">
+				<state id="A21">
+					<onexit>
+						<assign expr="true" location="on_exitA21"/>
+					</onexit>
+				</state>
+				<onexit>
+					<assign expr="true" location="on_exitA2"/>
+				</onexit>
+			</state>
+			<onexit>
+				<assign expr="true" location="on_exitA"/>
+			</onexit>
+		</parallel>
+		<state id="B" initial="B1">
+			<state id="B1">
+				<transition event="x" target="T">
+					<log name="x: da B1 a T"  />
+				</transition>
+				<onexit>
+					<assign expr="true" location="on_exitB1"/>
+				</onexit>
+			</state>
+			<onexit>
+				<assign expr="true" location="on_exitB"/>
+			</onexit>
+		</state>
+		<state id="C" initial="C1">
+			<state id="C1" initial="C11">
+				<parallel id=C11>
+					<state id="C11A" initial="C11A1">
+						<state id="C11A1">
+							<onexit>
+								<assign expr="true" location="on_exitC11A1"/>
+							</onexit>
+						</state>
+						<onexit>
+							<assign expr="true" location="on_exitC11A"/>
+						</onexit>
+					</state>
+					<state id="C11B">
+						<onexit>
+							<assign expr="true" location="on_exitC11B"/>
+						</onexit>
+					</state>
+					<onexit>
+						<assign expr="true" location="on_exitC11"/>
+					</onexit>
+				</parallel>
+				<onexit>
+					<assign expr="true" location="on_exitC11"/>
+				</onexit>
+			</state>
+
+		</state>
+		<state id="D">
+			<onexit>
+				<assign expr="true" location="on_exitD"/>
+			</onexit>
+		</state>
+		<onexit>
+			<assign expr="true" location="on_exitS"/>
+		</onexit>
+	</parallel>
+
+	<state id ="T">
+		<onexit>
+			<assign expr="true" location="on_exitT"/>
+		</onexit>
+	</state>
+
+</scxml>
