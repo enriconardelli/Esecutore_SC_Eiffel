@@ -94,10 +94,12 @@
 					</onexit>
 				</parallel>
 				<onexit>
-					<assign expr="true" location="on_exitC11"/>
+					<assign expr="true" location="on_exitC1"/>
 				</onexit>
 			</state>
-
+			<onexit>
+				<assign expr="true" location="on_exitC"/>
+			</onexit>
 		</state>
 		<state id="D">
 			<onexit>
