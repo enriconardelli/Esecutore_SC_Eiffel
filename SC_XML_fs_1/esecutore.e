@@ -99,7 +99,7 @@ feature -- evoluzione della statechart
 							esegui_azioni (tc, conf_base_corrente [i])
 							genitore:=genitore_piu_grande(conf_base_corrente [i], tc)
 							esci_da_stati_figli (genitore, genitore)
-							disattiva_figli (genitore)
+							--disattiva_figli (genitore)
 							aggiungi_paralleli (tc.target, prossima_conf_base)
 							trova_default (tc.target, prossima_conf_base)
 						else
@@ -175,28 +175,32 @@ feature -- evoluzione della statechart
 			local
 				j:INTEGER
 			do
-				if attached {STATO_AND} uno_stato as sa and then (sa.attivo and not sa.stati_figli.is_empty) then
+				if attached {STATO_AND} uno_stato as sa and then not sa.stati_figli.is_empty then
 					from
 						j:=sa.stati_figli.lower
 					until
 						j=sa.stati_figli.upper+1
 					loop
-						esegui_azioni_onexit(sa.stati_figli[j],contesto)
+						if sa.stati_figli[j].attivo then
+							esegui_azioni_onexit(sa.stati_figli[j],contesto)
+							sa.stati_figli[j].set_inattivo
+						end
 						esci_da_stati_figli(sa.stati_figli[j],contesto)
 						j:=j+1
 					end
-				elseif attached {STATO_XOR} uno_stato as so and then (so.attivo and not so.stati_figli.is_empty) then
+				elseif attached {STATO_XOR} uno_stato as so and then not so.stati_figli.is_empty then
 					from
 						j:=so.stati_figli.lower
 					until
 						j=so.stati_figli.upper+1
 					loop
-						esegui_azioni_onexit(so.stati_figli[j],contesto)
+						if so.stati_figli[j].attivo then
+							esegui_azioni_onexit(so.stati_figli[j],contesto)
+							so.stati_figli[j].set_inattivo
+						end
 						esci_da_stati_figli(so.stati_figli[j],contesto)
 						j:=j+1
-
-					end
-
+						end
 				end
 			end
 
@@ -311,7 +315,7 @@ feature -- evoluzione della statechart
 				if attached p_stato_corrente.onexit as ox then
 					ox.action (state_chart.condizioni)
 				end
-				if attached p_stato_corrente.stato_genitore as sg then
+				if attached p_stato_corrente.stato_genitore as sg and then sg.attivo then
 --				--sto lavorando qui (questo loop al momento non funziona bene)
 --					if attached{STATO_AND} sg  as g then
 --						from
