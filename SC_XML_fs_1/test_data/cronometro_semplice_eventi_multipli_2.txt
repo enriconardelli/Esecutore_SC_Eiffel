@@ -1,4 +1,2 @@
 start
-split
-unsplit
-stop
+stop reset

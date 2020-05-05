@@ -1,0 +1,3 @@
+reset stop start
+stop reset
+stop reset
