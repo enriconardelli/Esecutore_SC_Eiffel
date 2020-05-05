@@ -181,9 +181,8 @@ feature -- evoluzione della statechart
 					until
 						j=sa.stati_figli.upper+1
 					loop
-						if sa.stati_figli[j].attivo then
+						if sa.stati_figli[j].attivo and sa.stati_figli[j].stato_default.is_empty then
 							esegui_azioni_onexit(sa.stati_figli[j],contesto)
-							--sa.stati_figli[j].set_inattivo
 						end
 						esci_da_stati_figli(sa.stati_figli[j],contesto)
 						j:=j+1
@@ -194,9 +193,8 @@ feature -- evoluzione della statechart
 					until
 						j=so.stati_figli.upper+1
 					loop
-						if so.stati_figli[j].attivo then
+						if so.stati_figli[j].attivo and so.stati_figli[j].stato_default.is_empty then
 							esegui_azioni_onexit(so.stati_figli[j],contesto)
-							--so.stati_figli[j].set_inattivo
 						end
 						esci_da_stati_figli(so.stati_figli[j],contesto)
 						j:=j+1
