@@ -25,8 +25,10 @@ feature -- attributi
 
 	id: STRING
 
+	-- TODO dichiarla come ARRAY[AZIONE]
 	OnEntry: detachable AZIONE
 
+	-- TODO dichiarla come ARRAY[AZIONE]
 	OnExit: detachable AZIONE
 
 feature --creazione

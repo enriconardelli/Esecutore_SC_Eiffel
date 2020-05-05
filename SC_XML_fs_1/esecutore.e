@@ -276,6 +276,7 @@ feature -- evoluzione della statechart
 				if attached p_stato_corrente.onexit as ox then
 					ox.action (state_chart.condizioni)
 				end
+				-- TODO condizionare questa ricorsione sul genitore al fatto che per il genitore non si è mai invocato esegui_azioni_onexit
 				if attached p_stato_corrente.stato_genitore as sg then
 					esegui_azioni_onexit (sg, p_contesto)
 				end
