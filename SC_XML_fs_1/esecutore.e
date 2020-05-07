@@ -99,7 +99,7 @@ feature -- evoluzione della statechart
 							esegui_azioni (tc, conf_base_corrente [i])
 							genitore:=genitore_piu_grande(conf_base_corrente [i], tc)
 							esci_da_stati_figli (genitore, genitore)
-							disattiva_figli (genitore)
+							--disattiva_figli (genitore)
 							aggiungi_paralleli (tc.target, prossima_conf_base)
 							trova_default (tc.target, prossima_conf_base)
 						else
@@ -309,25 +309,13 @@ feature -- evoluzione della statechart
 		local
 			i: INTEGER
 		do
-			if p_stato_corrente /= p_contesto then
+			if p_stato_corrente /= p_contesto and p_stato_corrente.attivo then
 				if attached p_stato_corrente.onexit as ox then
 					ox.action (state_chart.condizioni)
 				end
+				p_stato_corrente.set_inattivo
 				-- TODO condizionare questa ricorsione sul genitore al fatto che per il genitore non si è mai invocato esegui_azioni_onexit
 				if attached p_stato_corrente.stato_genitore as sg then
---				--sto lavorando qui (questo loop al momento non funziona bene)
---					if attached{STATO_AND} sg  as g then
---						from
---							i:=g.get_stati_figli.lower
---						until
---							i=g.get_stati_figli.upper + 1
---						loop
---							if g.get_stati_figli[i] /= p_stato_corrente and then attached g.get_stati_figli[i].onexit as fox then
---								fox.action (state_chart.condizioni)
---							end
---						end
---					end
---				--fin qui
 					esegui_azioni_onexit (sg, p_contesto)
 				end
 			end
