@@ -132,4 +132,14 @@ feature -- Test
 			assert ("ERRORE lo configurazione base corrente non è (A1A2,A1B,A1C,B1)", conf_has_state(esecutore.conf_base_corrente,"A1A2") and conf_has_state(esecutore.conf_base_corrente,"A1B") and conf_has_state(esecutore.conf_base_corrente,"A1C") and conf_has_state(esecutore.conf_base_corrente,"B1"))
 		end
 
+	t_transizione_non_ammissibile
+	-- Arianna Calzuola & Riccardo Malandruccolo 07/05/2020
+	local
+		esecutore: ESECUTORE
+	do
+		nomi_files_prova [1] := test_data_dir + "esempio_transizione_non_ammissibile.xml"
+  		nomi_files_prova [2] := test_data_dir + "eventi_entrata.txt"
+		create esecutore.make (nomi_files_prova)
+		assert ("ERRORE lo stato corrente non è (P1, P2)", conf_has_state(esecutore.conf_base_corrente,"P1") and conf_has_state(esecutore.conf_base_corrente,"P2"))
+	end
 end
