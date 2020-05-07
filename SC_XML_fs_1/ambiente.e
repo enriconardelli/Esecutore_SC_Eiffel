@@ -102,7 +102,7 @@ feature
 				loop
 					if attached eventi_esterni[i].i_th (j) as ei then
 						if not eventi_nella_SC.has (ei) then
-						print ("%N ATTENZIONE!! l'evento" + ei + "non viene utilizzato!")
+						print ("%NATTENZIONE: l'evento " + ei + " non viene utilizzato!%N")
 						evento_assente := True
 						end
 					end

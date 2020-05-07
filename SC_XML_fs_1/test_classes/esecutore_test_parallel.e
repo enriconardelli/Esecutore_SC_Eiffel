@@ -19,7 +19,7 @@ feature -- Test
 			nomi_files_prova [1] := test_data_dir + "esempio_base_parallelo.xml"
 			nomi_files_prova [2] := test_data_dir + "eventi_base_parallelo.txt"
 			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A - TRE )", esecutore.conf_base_corrente.count = 2 and conf_has_state(esecutore.conf_base_corrente,"C") and conf_has_state(esecutore.conf_base_corrente,"TRE") )
+			assert ("ERRORE il sistema non ha terminato negli stati corretti ( C )", esecutore.conf_base_corrente.count = 1 and conf_has_state(esecutore.conf_base_corrente,"C") )
 		end
 
 	t_condizioni_parallelo

@@ -94,11 +94,12 @@ feature -- evoluzione della statechart
 						i = conf_base_corrente.upper + 1
 					loop
 						transizione_corrente := conf_base_corrente [i].transizione_abilitata (istante_corrente, condizioni_correnti)
-						if attached transizione_corrente as tc then
+						if attached transizione_corrente as tc and conf_base_corrente[i].attivo then
+							-- `conf_base_corrente[i].attivo' serve per prevenire configurazioni non ammissibili
 							esegui_azioni (tc, conf_base_corrente [i])
-							disattiva_figli (genitore_piu_grande(conf_base_corrente [i], transizione_corrente))
-							aggiungi_paralleli (tc.target, prossima_conf_base)
+							disattiva_discendenti (genitore_piu_grande(conf_base_corrente [i], transizione_corrente))
 							trova_default (tc.target, prossima_conf_base)
+							aggiungi_paralleli (tc.target, prossima_conf_base)
 						else
 							prossima_conf_base.force (conf_base_corrente [i], prossima_conf_base.count + 1)
 						end
@@ -118,6 +119,7 @@ feature -- evoluzione della statechart
 
 	stati_attivi_conf(conf_da_modificare: ARRAY[STATO]): ARRAY[STATO]
 	-- Arianna & Riccardo 26/04/2020
+	-- elimina stati inattivi dalla configurazione
 		local
 			i: INTEGER
 		do
@@ -134,53 +136,39 @@ feature -- evoluzione della statechart
 			end
 		end
 
-		genitore_piu_grande(stato_corrente: STATO; transizione: TRANSIZIONE): STATO
-		-- Arianna & Riccardo 01/05/2020
-			local
-				contesto, stato_temp: detachable STATO
-			do
-				Result := stato_corrente
-				if transizione.internal then
-					contesto := transizione.sorgente
-				else
-					contesto := trova_contesto (transizione.sorgente, transizione.target)
-				end
-
-				from
-					stato_temp := stato_corrente
-				until
-				 	stato_temp  = contesto
-				loop
-					if attached stato_temp then
-						Result := stato_temp
-						stato_temp := stato_temp.stato_genitore
-					end
-				end
+	genitore_piu_grande(stato_corrente: STATO; transizione: TRANSIZIONE): STATO
+	-- Arianna & Riccardo 01/05/2020
+	-- restituisce l'antenato più grande che contiene stato_corrente ed è contenuto nel contesto
+		local
+			contesto, stato_temp: detachable STATO
+		do
+			Result := stato_corrente
+			if transizione.internal then
+				contesto := transizione.sorgente
+			else
+				contesto := trova_contesto (transizione.sorgente, transizione.target)
 			end
 
-		disattiva_figli (stato: STATO)
-		-- Arianna & Riccardo 01/05/2020
-			do
-				if attached{STATO_AND} stato as sa then sa.set_stato_inattivo_con_figli
-				elseif attached{STATO_XOR} stato as sx then sx.set_stato_inattivo_con_figli
-				else stato.set_inattivo
+			from
+				stato_temp := stato_corrente
+			until
+			 	stato_temp  = contesto
+			loop
+				if attached stato_temp then
+					Result := stato_temp
+					stato_temp := stato_temp.stato_genitore
 				end
 			end
+		end
 
---	parallelo_antenato(stato: STATO): detachable STATO
---	-- Riccardo Malandruccolo
---		-- restituisce parallelo antenato più vicino
---		do
---			if attached {STATO_AND} stato then
---				Result := stato
---			elseif attached stato.stato_genitore as gen then
---				if attached {STATO_AND} gen then
---					Result := gen
---				else
---					Result := parallelo_antenato(gen)
---				end
---			end
---		end
+	disattiva_discendenti (stato: STATO)
+	-- Arianna & Riccardo 01/05/2020
+		do
+			if attached{STATO_AND} stato as sa then sa.set_stato_inattivo_con_discendenti
+			elseif attached{STATO_XOR} stato as sx then sx.set_stato_inattivo_con_discendenti
+			else stato.set_inattivo
+			end
+		end
 
 	aggiungi_paralleli (target: STATO; prossima_conf_base: ARRAY [STATO])
 		local

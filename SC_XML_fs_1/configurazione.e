@@ -343,18 +343,21 @@ feature -- inizializzazione SC
 						-- TODO gestire fallimento del test per assenza clausola target
 					if attached stati.item (tt.value) as ts then
 						if attached stati.item (id_stato) as sr then
-							create transizione.make_with_target (ts, sr)
-							if attached transition_list.item_for_iteration.attribute_by_name ("type") as tp then
-								if tp.value ~ "internal" and verifica_internal (transizione.sorgente, transizione.target) then
-									transizione.set_internal
+							if not attached{STATO_AND} trova_pseudo_contesto(sr,ts) then
+								-- evita transizioni tra figli di paralleli
+								create transizione.make_with_target (ts, sr)
+								if attached transition_list.item_for_iteration.attribute_by_name ("type") as tp then
+									if tp.value ~ "internal" and verifica_internal (transizione.sorgente, transizione.target) then
+										transizione.set_internal
+									end
 								end
-							end
-							assegnazione_evento (transition_list, transizione)
-							assegnazione_condizione (transition_list, transizione)
-							assign_list := transition_list.item_for_iteration.elements
-							assegnazione_azioni (assign_list, transizione)
-							if attached stati.item (id_stato) as si then
-								si.aggiungi_transizione (transizione)
+								assegnazione_evento (transition_list, transizione)
+								assegnazione_condizione (transition_list, transizione)
+								assign_list := transition_list.item_for_iteration.elements
+								assegnazione_azioni (assign_list, transizione)
+								if attached stati.item (id_stato) as si then
+									si.aggiungi_transizione (transizione)
+								end
 							end
 						end
 					else
@@ -379,12 +382,14 @@ feature -- inizializzazione SC
 
 	verifica_internal (sorgente, target: STATO): BOOLEAN
 		do
---			Result := FALSE
-			if attached target.stato_genitore as tr_gn then
-				if tr_gn = sorgente then
-					Result := TRUE
-				else
-					Result := verifica_internal (sorgente, tr_gn)
+			if attached{STATO_XOR} sorgente then
+				-- secondo la specifica XML `internal' può essere eseguita solo con sorgente XOR
+				if attached target.stato_genitore as tr_gn then
+					if tr_gn = sorgente then
+						Result := TRUE
+					else
+						Result := verifica_internal (sorgente, tr_gn)
+					end
 				end
 			end
 		end
@@ -475,6 +480,34 @@ feature -- inizializzazione SC
 				print ("Parsing OK. %N")
 				ha_problemi_con_il_file_della_sc := FALSE
 			end
+		end
+
+	trova_pseudo_contesto (p_sorgente, p_destinazione: STATO): detachable STATO
+		-- trova il minimo antenato comune PROPRIO a p_sorgente e p_destinazione
+		-- (può essere anche AND)
+		local
+			antenati: HASH_TABLE [STRING, STRING]
+			corrente: STATO
+		do
+			create antenati.make (0)
+				-- "marca" tutti gli antenati di p_sorgente incluso
+			from
+				corrente := p_sorgente.stato_genitore
+			until
+				corrente = Void
+			loop
+				antenati.put (corrente.id, corrente.id)
+				corrente := corrente.stato_genitore
+			end
+				-- trova il piï¿½ basso antenato di p_destinazione in "antenati"
+			from
+				corrente := p_destinazione
+			until
+				corrente = Void or else antenati.has (corrente.id)
+			loop
+				corrente := corrente.stato_genitore
+			end
+			Result := corrente
 		end
 
 		-- Aggiungere 'feature' per tracciare quanto accade scrivendo su file model_out.txt:
