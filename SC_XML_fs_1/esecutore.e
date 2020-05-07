@@ -72,6 +72,7 @@ feature -- evoluzione della statechart
 			prossima_conf_base: ARRAY [STATO]
 			condizioni_correnti: HASH_TABLE [BOOLEAN, STRING]
 			transizione_corrente: TRANSIZIONE
+			genitore: STATO
 		do
 			print ("%Nentrato in evolvi_SC:  %N %N")
 			print ("stato iniziale:  ")
@@ -96,7 +97,9 @@ feature -- evoluzione della statechart
 						transizione_corrente := conf_base_corrente [i].transizione_abilitata (istante_corrente, condizioni_correnti)
 						if attached transizione_corrente as tc then
 							esegui_azioni (tc, conf_base_corrente [i])
-							disattiva_figli (genitore_piu_grande(conf_base_corrente [i], transizione_corrente))
+							genitore:=genitore_piu_grande(conf_base_corrente [i], tc)
+							esci_da_stati_figli (genitore, genitore)
+							disattiva_figli (genitore)
 							aggiungi_paralleli (tc.target, prossima_conf_base)
 							trova_default (tc.target, prossima_conf_base)
 						else
@@ -164,6 +167,38 @@ feature -- evoluzione della statechart
 				if attached{STATO_AND} stato as sa then sa.set_stato_inattivo_con_figli
 				elseif attached{STATO_XOR} stato as sx then sx.set_stato_inattivo_con_figli
 				else stato.set_inattivo
+				end
+			end
+
+		esci_da_stati_figli(uno_stato: STATO; contesto: detachable STATO)
+		-- Claudia & Federico 04/05/2020
+			local
+				j:INTEGER
+			do
+				if attached {STATO_AND} uno_stato as sa and then not sa.stati_figli.is_empty then
+					from
+						j:=sa.stati_figli.lower
+					until
+						j=sa.stati_figli.upper+1
+					loop
+						if sa.stati_figli[j].attivo and sa.stati_figli[j].stato_default.is_empty then
+							esegui_azioni_onexit(sa.stati_figli[j],contesto)
+						end
+						esci_da_stati_figli(sa.stati_figli[j],contesto)
+						j:=j+1
+					end
+				elseif attached {STATO_XOR} uno_stato as so and then not so.stati_figli.is_empty then
+					from
+						j:=so.stati_figli.lower
+					until
+						j=so.stati_figli.upper+1
+					loop
+						if so.stati_figli[j].attivo and so.stati_figli[j].stato_default.is_empty then
+							esegui_azioni_onexit(so.stati_figli[j],contesto)
+						end
+						esci_da_stati_figli(so.stati_figli[j],contesto)
+						j:=j+1
+						end
 				end
 			end
 
@@ -271,6 +306,8 @@ feature -- evoluzione della statechart
 		end
 
 	esegui_azioni_onexit (p_stato_corrente: STATO; p_contesto: detachable STATO)
+		local
+			i: INTEGER
 		do
 			if p_stato_corrente /= p_contesto then
 				if attached p_stato_corrente.onexit as ox then
@@ -278,6 +315,19 @@ feature -- evoluzione della statechart
 				end
 				-- TODO condizionare questa ricorsione sul genitore al fatto che per il genitore non si è mai invocato esegui_azioni_onexit
 				if attached p_stato_corrente.stato_genitore as sg then
+--				--sto lavorando qui (questo loop al momento non funziona bene)
+--					if attached{STATO_AND} sg  as g then
+--						from
+--							i:=g.get_stati_figli.lower
+--						until
+--							i=g.get_stati_figli.upper + 1
+--						loop
+--							if g.get_stati_figli[i] /= p_stato_corrente and then attached g.get_stati_figli[i].onexit as fox then
+--								fox.action (state_chart.condizioni)
+--							end
+--						end
+--					end
+--				--fin qui
 					esegui_azioni_onexit (sg, p_contesto)
 				end
 			end
