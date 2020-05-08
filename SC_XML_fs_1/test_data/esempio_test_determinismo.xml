@@ -16,7 +16,8 @@
 		</parallel>
 				
 		<state id="A2" >
-			<transition event="k" target="A1" />
+			<transition event="k1" target="A1" />
+			<transition event="k2" target="A12" />
 			<transition event="e1" target="C" />
 		</state>
 			
