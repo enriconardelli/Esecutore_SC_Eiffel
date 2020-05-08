@@ -63,4 +63,28 @@ feature -- Test routines
 			assert ("ERRORE il sistema non ha terminato negli stati corretti ( D1 )", esecutore.conf_base_corrente.count = 1 and conf_has_state(esecutore.conf_base_corrente,"D1") )
 		end
 
+	t_non_determinismo_2
+	-- Arianna Calzuola & Riccardo Malandruccolo 08/05/2020
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "esempio_non_determinismo_2.xml"
+	  		nomi_files_prova [2] := test_data_dir + "eventi_transizione_parallelo_interna.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE 2.1: il sistema entra in due stati XOR", esecutore.conf_base_corrente.count = 1)
+			assert("ERRORE 2.2: il sistema non entra in A", conf_has_state(esecutore.conf_base_corrente,"A"))
+		end
+
+	t_non_determinismo_3
+	-- Arianna Calzuola & Riccardo Malandruccolo 08/05/2020
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "esempio_non_determinismo_3.xml"
+	  		nomi_files_prova [2] := test_data_dir + "eventi_entrata.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE:3.1 il sistema esce dallo stato P parallelo", esecutore.conf_base_corrente.count = 2)
+			assert("ERRORE 3.2: il sistema non entra in (B,P2)", conf_has_state(esecutore.conf_base_corrente,"B") and conf_has_state(esecutore.conf_base_corrente,"P2"))
+		end
+
 end
