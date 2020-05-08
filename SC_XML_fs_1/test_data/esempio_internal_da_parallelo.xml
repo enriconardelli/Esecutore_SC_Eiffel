@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="P">
+	<parallel id="P">	
+		<state id="P1">								
+		</state>
+			
+		<state id="P2" initial="P2A">
+			<state id="P2A"></state>
+			<state id="P2B"></state>
+		</state>	
+
+		<transition event="x" target="P2B" type="internal">
+		<log name="x: da P a P2B" />
+		</transition>
+    	</parallel>
+</scxml>

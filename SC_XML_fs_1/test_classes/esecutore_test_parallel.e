@@ -142,4 +142,16 @@ feature -- Test
 		create esecutore.make (nomi_files_prova)
 		assert ("ERRORE lo stato corrente non è (P1, P2)", conf_has_state(esecutore.conf_base_corrente,"P1") and conf_has_state(esecutore.conf_base_corrente,"P2"))
 	end
+
+	t_internal_con_sorgente_parallelo
+	-- Arianna Calzuola & Riccardo Malandruccolo 08/05/2020
+	-- se la transizione fosse internal si dimenticherebbe della struttura in parallelo
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "esempio_internal_da_parallelo.xml"
+	  		nomi_files_prova [2] := test_data_dir + "eventi_entrata.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (P1,P2B)", esecutore.conf_base_corrente.count = 2 and conf_has_state(esecutore.conf_base_corrente,"P1") and conf_has_state(esecutore.conf_base_corrente,"P2B"))
+		end
 end
