@@ -106,6 +106,7 @@ feature -- evoluzione della statechart
 						i := i + 1
 					end
 					prossima_conf_base := stati_attivi_conf(prossima_conf_base)
+					prossima_conf_base := riordina_conf_base(prossima_conf_base)
 					if not prossima_conf_base.is_empty then
 						conf_base_corrente.copy (prossima_conf_base)
 					end
@@ -313,6 +314,26 @@ feature -- evoluzione della statechart
 				i := i + 1
 			end
 		end
+
+	riordina_conf_base(conf_base:ARRAY[STATO]): ARRAY[STATO]
+	--Agulini Claudia & Fiorini Federico 11/05/2020
+	--Viene usata per riordinare la configurazione rispettando l' ordine del file xml
+	local
+		j: INTEGER
+		conf_ordinata: ARRAY[STATO]
+	do
+		create conf_ordinata.make_empty
+		j := conf_ordinata.lower
+		across
+			state_chart.stati as stati
+		loop
+			if conf_base.has (stati.item) then
+				conf_ordinata.force(stati.item, j)
+				j := j + 1
+			end
+		end
+		result := conf_ordinata
+	end
 
 	stampa_conf_corrente
 		do
