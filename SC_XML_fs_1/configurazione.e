@@ -426,25 +426,21 @@ feature -- inizializzazione SC
 		end
 
 	istanzia_onexit (id_stato: STRING; elements: LIST [XML_ELEMENT])
-		local
-			azione: AZIONE
 		do
 			from
 				elements.start
 			until
-				elements.after or azione /= VOID
+				elements.after
 			loop
 				if elements.item_for_iteration.name ~ "assign" then
 					if attached elements.item_for_iteration.attribute_by_name ("location") as luogo and then attached elements.item_for_iteration.attribute_by_name ("expr") as expr then
 						if expr.value ~ "false" then
 							if attached stati.item (id_stato) as si then
 								si.set_onexit (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, FALSE))
-								azione := si.onexit
 							end
 						elseif expr.value ~ "true" then
 							if attached stati.item (id_stato) as si then
 								si.set_onexit (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, TRUE))
-								azione := si.onexit
 							end
 						end
 					end
@@ -453,7 +449,6 @@ feature -- inizializzazione SC
 					if attached stati.item (id_stato) as si then
 						if attached name.value then
 							si.set_onexit (create {STAMPA}.make_with_text (name.value))
-							azione := si.onexit
 						end
 					end
 				end

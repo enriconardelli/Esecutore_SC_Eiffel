@@ -65,14 +65,15 @@ feature -- Test routines
 
 	t_non_determinismo_2_1
 	-- Arianna Calzuola & Riccardo Malandruccolo 08/05/2020
+	-- fallisce perché in P2A (che viene prima nel file xml) non trova transizioni con evento 'x',
+	-- quindi risale fino a quando non trova la transizioni interna di T
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "esempio_non_determinismo_2.xml"
-	  		nomi_files_prova [2] := test_data_dir + "eventi_transizione_parallelo_interna.txt"
+			nomi_files_prova [1] := test_data_dir + "esempio_non_determinismo_priorità.xml"
+	  		nomi_files_prova [2] := test_data_dir + "eventi_entrata.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE 2_1.1: il sistema entra in due stati XOR", esecutore.conf_base_corrente.count = 1)
-			assert("ERRORE 2_1.2: il sistema non entra in A", conf_has_state(esecutore.conf_base_corrente,"A"))
+			assert("ERRORE: il sistema non termina in (P1B,P2A)", esecutore.conf_base_corrente.count = 2 and conf_has_state(esecutore.conf_base_corrente,"P1B") and conf_has_state(esecutore.conf_base_corrente,"P2A"))
 		end
 
 	t_non_determinismo_2_2
@@ -80,24 +81,23 @@ feature -- Test routines
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "esempio_non_determinismo_3.xml"
-	  		nomi_files_prova [2] := test_data_dir + "eventi_entrata.txt"
+			nomi_files_prova [1] := test_data_dir + "esempio_non_determinismo_2.xml"
+	  		nomi_files_prova [2] := test_data_dir + "eventi_transizione_parallelo_interna.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE 2_2.1: il sistema esce dallo stato P parallelo", esecutore.conf_base_corrente.count = 2)
-			assert("ERRORE 2_2.2: il sistema non entra in (B,P2)", conf_has_state(esecutore.conf_base_corrente,"B") and conf_has_state(esecutore.conf_base_corrente,"P2"))
+			assert("ERRORE 2_2.1: il sistema entra in due stati XOR", esecutore.conf_base_corrente.count = 1)
+			assert("ERRORE 2_2.2: il sistema non entra in A", conf_has_state(esecutore.conf_base_corrente,"A"))
 		end
 
 	t_non_determinismo_2_3
 	-- Arianna Calzuola & Riccardo Malandruccolo 08/05/2020
-	-- fallisce perché in P2A non trova transizioni con evento 'x', quindi risale fino a quando
-	-- non trova la transizioni interna di T
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "esempio_non_determinismo_4.xml"
+			nomi_files_prova [1] := test_data_dir + "esempio_non_determinismo_3.xml"
 	  		nomi_files_prova [2] := test_data_dir + "eventi_entrata.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (P1B,P2A)", esecutore.conf_base_corrente.count = 2 and conf_has_state(esecutore.conf_base_corrente,"P1B") and conf_has_state(esecutore.conf_base_corrente,"P2A"))
+			assert("ERRORE 2_3.1: il sistema esce dallo stato P parallelo", esecutore.conf_base_corrente.count = 2)
+			assert("ERRORE 2_3.2: il sistema non entra in (B,P2)", conf_has_state(esecutore.conf_base_corrente,"B") and conf_has_state(esecutore.conf_base_corrente,"P2"))
 		end
 
 end

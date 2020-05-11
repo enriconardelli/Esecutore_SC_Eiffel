@@ -144,7 +144,7 @@ feature -- Test routines
 			create stato_prova.make_with_id ("stato_prova")
 			create azione_prova.make_with_text ("prova")
 			stato_prova.set_OnEntry (azione_prova)
-			assert ("Azione OnEntry NON assegnata correttamente", stato_prova.OnEntry ~ azione_prova)
+			assert ("Azione OnEntry NON assegnata correttamente", stato_prova.OnEntry[1] ~ azione_prova)
 		end
 
 	t_set_OnExit
@@ -154,7 +154,7 @@ feature -- Test routines
 			create stato_prova.make_with_id ("stato_prova")
 			create azione_prova.make_with_text ("prova")
 			stato_prova.set_OnExit (azione_prova)
-			assert ("Azione OnEntry NON assegnata correttamente", stato_prova.OnExit ~ azione_prova)
+			assert ("Azione OnEntry NON assegnata correttamente", stato_prova.OnExit[1] ~ azione_prova)
 		end
 
 		-- Test per features con evento

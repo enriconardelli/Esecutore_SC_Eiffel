@@ -25,11 +25,9 @@ feature -- attributi
 
 	id: STRING
 
-	-- TODO dichiarla come ARRAY[AZIONE]
-	OnEntry: detachable AZIONE
+	OnEntry: ARRAY[AZIONE]
 
-	-- TODO dichiarla come ARRAY[AZIONE]
-	OnExit: detachable AZIONE
+	OnExit: ARRAY[AZIONE]
 
 feature --creazione
 
@@ -41,6 +39,8 @@ feature --creazione
 			finale := False
 			create stato_default.make_empty
 			create transizioni.make_empty
+			create OnEntry.make_empty
+			create OnExit.make_empty
 		ensure
 			attributo_assegnato: id = un_id
 		end
@@ -89,18 +89,18 @@ feature -- setter
 		require
 			e_una_azione: una_azione /= VOID
 		do
-			OnEntry := una_azione
+			OnEntry.force(una_azione, OnEntry.count+1)
 		ensure
-			azione_assegnata: OnEntry = una_azione
+			azione_assegnata: OnEntry[OnEntry.count] = una_azione
 		end
 
 	set_OnExit (una_azione: AZIONE)
 		require
 			e_una_azione: una_azione /= VOID
 		do
-			OnExit := una_azione
+			OnExit.force (una_azione,OnExit.count+1)
 		ensure
-			azione_assegnata: OnExit = una_azione
+			azione_assegnata: OnExit[OnExit.count] = una_azione
 		end
 
 feature -- routines

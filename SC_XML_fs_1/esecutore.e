@@ -72,6 +72,7 @@ feature -- evoluzione della statechart
 			prossima_conf_base: ARRAY [STATO]
 			condizioni_correnti: HASH_TABLE [BOOLEAN, STRING]
 			transizione_corrente: TRANSIZIONE
+			target_precedente: detachable STATO
 		do
 			print ("%Nentrato in evolvi_SC:  %N %N")
 			print ("stato iniziale:  ")
@@ -88,18 +89,24 @@ feature -- evoluzione della statechart
 					print ("%N")
 					condizioni_correnti.copy (state_chart.condizioni)
 					create prossima_conf_base.make_empty
+					target_precedente:=void
 					from
 						i := conf_base_corrente.lower
 					until
 						i = conf_base_corrente.upper + 1
 					loop
 						transizione_corrente := conf_base_corrente [i].transizione_abilitata (istante_corrente, condizioni_correnti)
-						if attached transizione_corrente as tc and conf_base_corrente[i].attivo then
+						if conf_base_corrente[i].attivo and attached transizione_corrente as tc then
 							-- `conf_base_corrente[i].attivo' serve per prevenire configurazioni non ammissibili
-							esegui_azioni (tc, conf_base_corrente [i])
-							disattiva_discendenti (genitore_piu_grande(conf_base_corrente [i], transizione_corrente))
-							trova_default (tc.target, prossima_conf_base)
-							aggiungi_paralleli (tc.target, prossima_conf_base)
+							if (attached target_precedente implies (attached{STATO_AND} trova_contesto(target_precedente,tc.target))) then
+								esegui_azioni (tc, conf_base_corrente [i])
+								disattiva_discendenti (genitore_piu_grande(conf_base_corrente [i], transizione_corrente))
+								trova_default (tc.target, prossima_conf_base)
+								aggiungi_paralleli (tc.target, prossima_conf_base)
+								target_precedente:=tc.target
+							else
+								prossima_conf_base.force (conf_base_corrente [i], prossima_conf_base.count + 1)
+							end
 						else
 							prossima_conf_base.force (conf_base_corrente [i], prossima_conf_base.count + 1)
 						end
@@ -198,8 +205,12 @@ feature -- evoluzione della statechart
 			i: INTEGER
 		do
 			stato.set_attivo
-			if attached stato.onentry as oe then
-				oe.action (state_chart.condizioni)
+			if stato.onentry.count>0 then
+				across
+					stato.onentry as oe
+				loop
+					oe.item.action (state_chart.condizioni)
+				end
 			end
 			if not stato.stato_default.is_empty then
 				from
@@ -262,8 +273,13 @@ feature -- evoluzione della statechart
 	esegui_azioni_onexit (p_stato_corrente: STATO; p_contesto: detachable STATO)
 		do
 			if p_stato_corrente /= p_contesto then
-				if attached p_stato_corrente.onexit as ox then
-					ox.action (state_chart.condizioni)
+				if p_stato_corrente.onexit.count>0 then
+					across
+						p_stato_corrente.onexit as ox
+					loop
+						ox.item.action (state_chart.condizioni)
+					end
+
 				end
 				-- TODO condizionare questa ricorsione sul genitore al fatto che per il genitore non si è mai invocato esegui_azioni_onexit
 				if attached p_stato_corrente.stato_genitore as sg then
@@ -291,8 +307,12 @@ feature -- evoluzione della statechart
 			if attached p_target.stato_genitore as sg and then sg /= p_contesto then
 				-- TODO qui esegue le on_entry risalendo sugli antenati. cioè in ordine inverso a quanto dovrebbe
 				esegui_azioni_onentry (p_contesto, sg)
-				if attached sg.onentry as oe then
-					oe.action (state_chart.condizioni)
+				if sg.onentry.count>0 then
+					across
+						sg.onentry as oe
+					loop
+						oe.item.action (state_chart.condizioni)
+					end
 				end
 			end
 		end
