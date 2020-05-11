@@ -97,9 +97,6 @@ feature -- evoluzione della statechart
 						transizione_corrente := conf_base_corrente [i].transizione_abilitata (istante_corrente, condizioni_correnti)
 						if attached transizione_corrente as tc then
 							esegui_azioni (tc, conf_base_corrente [i])
---							genitore:=genitore_piu_grande(conf_base_corrente [i], tc)
---							esci_da_stati_figli (genitore, genitore)
---							disattiva_figli (genitore)
 							aggiungi_paralleli (tc.target, prossima_conf_base)
 							trova_default (tc.target, prossima_conf_base)
 						else
