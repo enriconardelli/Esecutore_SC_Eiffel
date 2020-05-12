@@ -52,7 +52,7 @@ feature -- Test routines
 	t_non_determinismo_1_4
 	 --Filippo & Iezzi 08/05/2020
 	 --finisce in D1 perchè esegue la transizione dal primo stato della configurazione
-	 --TODO: fallisce perchè all'entrata nello stato AND cambia l'ordine in cui compaiono gli stati fratelli
+	 --TODO: se fallisce è perchè all'entrata nello stato AND cambia l'ordine in cui compaiono gli stati fratelli
 	 --rispetto a quello indicato sul file xml
 		local
 			esecutore: ESECUTORE

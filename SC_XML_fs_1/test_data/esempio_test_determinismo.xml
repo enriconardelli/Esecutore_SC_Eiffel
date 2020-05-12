@@ -5,6 +5,7 @@
 		<transition event="f1" target="B" />
 		<transition event="f1" target="C" />
 		<transition event="e1" target="B" />
+		
 	
 		<parallel id="A1" >
 			<state id="A11" >
@@ -20,6 +21,8 @@
 			<transition event="k2" target="A12" />
 			<transition event="e1" target="C" />
 		</state>
+		
+		<transition event="g1" target="D2" />
 			
 	</state>	
 		
