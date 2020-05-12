@@ -68,7 +68,7 @@ feature -- Test routines
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "esempio_non_determinismo_priorità.xml"
+			nomi_files_prova [1] := test_data_dir + "esempio_non_determinismo_1.xml"
 	  		nomi_files_prova [2] := test_data_dir + "eventi_entrata.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (P1B,P2A)", esecutore.conf_base_corrente.count = 2 and conf_has_state(esecutore.conf_base_corrente,"P1B") and conf_has_state(esecutore.conf_base_corrente,"P2A"))
