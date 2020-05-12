@@ -73,6 +73,9 @@ feature -- evoluzione della statechart
 			condizioni_correnti: HASH_TABLE [BOOLEAN, STRING]
 			transizione_corrente: TRANSIZIONE
 			target_precedente: detachable STATO
+
+--			genitore: STATO
+
 		do
 			print ("%Nentrato in evolvi_SC:  %N %N")
 			print ("stato iniziale:  ")
@@ -169,14 +172,63 @@ feature -- evoluzione della statechart
 			end
 		end
 
-	disattiva_discendenti (stato: STATO)
-	-- Arianna & Riccardo 01/05/2020
+
+		disattiva_discendenti (stato: STATO)
+		-- Arianna & Riccardo 01/05/2020
 		do
 			if attached{STATO_AND} stato as sa then sa.set_stato_inattivo_con_discendenti
 			elseif attached{STATO_XOR} stato as sx then sx.set_stato_inattivo_con_discendenti
 			else stato.set_inattivo
 			end
 		end
+
+		esegui_onexit_figli(uno_stato: STATO; contesto: detachable STATO)
+		-- Claudia & Federico 04/05/2020
+			local
+				j:INTEGER
+			do
+				if attached {STATO_AND} uno_stato as sa and then not sa.stati_figli.is_empty then
+					from
+						j:=sa.stati_figli.lower
+					until
+						j=sa.stati_figli.upper+1
+					loop
+						if sa.stati_figli[j].attivo and sa.stati_figli[j].stato_default.is_empty then
+							esegui_azioni_onexit(sa.stati_figli[j],contesto)
+						end
+						esegui_onexit_figli(sa.stati_figli[j],contesto)
+						j:=j+1
+					end
+				elseif attached {STATO_XOR} uno_stato as so and then not so.stati_figli.is_empty then
+					from
+						j:=so.stati_figli.lower
+					until
+						j=so.stati_figli.upper+1
+					loop
+						if so.stati_figli[j].attivo and so.stati_figli[j].stato_default.is_empty then
+							esegui_azioni_onexit(so.stati_figli[j],contesto)
+						end
+						esegui_onexit_figli(so.stati_figli[j],contesto)
+						j:=j+1
+						end
+				end
+			end
+
+--	parallelo_antenato(stato: STATO): detachable STATO
+--	-- Riccardo Malandruccolo
+--		-- restituisce parallelo antenato più vicino
+--		do
+--			if attached {STATO_AND} stato then
+--				Result := stato
+--			elseif attached stato.stato_genitore as gen then
+--				if attached {STATO_AND} gen then
+--					Result := gen
+--				else
+--					Result := parallelo_antenato(gen)
+--				end
+--			end
+--		end
+
 
 	aggiungi_paralleli (target: STATO; prossima_conf_base: ARRAY [STATO])
 		local
@@ -271,7 +323,10 @@ feature -- evoluzione della statechart
 		end
 
 	esegui_azioni_onexit (p_stato_corrente: STATO; p_contesto: detachable STATO)
+		local
+			i: INTEGER
 		do
+
 			if p_stato_corrente /= p_contesto then
 				if p_stato_corrente.onexit.count>0 then
 					across
@@ -279,11 +334,14 @@ feature -- evoluzione della statechart
 					loop
 						ox.item.action (state_chart.condizioni)
 					end
-
 				end
+				p_stato_corrente.set_inattivo
 				-- TODO condizionare questa ricorsione sul genitore al fatto che per il genitore non si è mai invocato esegui_azioni_onexit
 				if attached p_stato_corrente.stato_genitore as sg then
 					esegui_azioni_onexit (sg, p_contesto)
+				end
+				if attached {STATO_AND} p_stato_corrente.stato_genitore as sg_and then
+					esegui_onexit_figli(sg_and, sg_and)
 				end
 			end
 		end
