@@ -24,10 +24,6 @@ feature -- creazione
 			create stati_figli.make_empty
 		end
 
-feature -- attributi
-
-	stati_figli: ARRAY [STATO]
-
 feature -- setter
 
 	add_figlio (uno_stato: STATO)

@@ -21,6 +21,9 @@ feature -- Attributi
 	conf_base_corrente: ARRAY [STATO]
 			-- insieme degli stati base nella configurazione corrente della SC e non di tutti gli stati attivi
 
+	visitati_in_discesa: ARRAY [STATO]
+			-- insieme di stati visitati durante l'uscita nella discesa verso il basso a partire dallo stato corrente
+
 feature {NONE} -- Creazione e avvio interattivo
 
 	start (nomi_files: ARRAY [STRING])
@@ -45,6 +48,7 @@ feature -- Creazione per i test
 			print ("crea la SC in " + nomi_files [1] + "%N")
 			create state_chart.make (nomi_files [1])
 			create conf_base_corrente.make_empty
+			create visitati_in_discesa.make_empty
 			conf_base_corrente.copy (state_chart.stato_iniziale)
 			create ambiente_corrente.make_empty
 			if not state_chart.ha_problemi_con_il_file_della_sc then
@@ -73,9 +77,6 @@ feature -- evoluzione della statechart
 			condizioni_correnti: HASH_TABLE [BOOLEAN, STRING]
 			transizione_corrente: TRANSIZIONE
 			target_precedente: detachable STATO
-
-
-
 		do
 			print ("%Nentrato in evolvi_SC:  %N %N")
 			print ("stato iniziale:  ")
@@ -257,6 +258,12 @@ feature -- evoluzione della statechart
 			else
 				contesto := trova_contesto (transizione.sorgente, transizione.target)
 			end
+			-- TODO: impostaziona alternativa_1 esegui_uscita(contesto) che risale fino al genitore_piu_grande e poi
+			-- lo visita ricorsivamente urscendo dai suoi discendenti dal basso verso l'alto
+			-- TODO: impostazione alternativa_2 per ogni stato in conf_base_corrente si esce di un passo verso l'alto
+			-- alla volta, fino ad arrivare al genitore_piu_grande
+--			esegui_uscita (stato, contesto)
+--			visitati_in_discesa.wipe_out
 			esegui_azioni_onexit (stato, contesto)
 			esegui_azioni_transizione (transizione.azioni)
 			esegui_azioni_onentry (contesto, transizione.target)
@@ -290,9 +297,38 @@ feature -- evoluzione della statechart
 			Result := corrente
 		end
 
+	esegui_uscita (p_stato_corrente: STATO; p_contesto: detachable STATO)
+		do
+			if p_stato_corrente /= p_contesto and p_stato_corrente.attivo then
+				visitati_in_discesa.force(p_stato_corrente, visitati_in_discesa.count+1)
+--	ESEGUE USCITA DAI MIEI DISCENDENTI
+				if not p_stato_corrente.stato_atomico then
+					across p_stato_corrente.stati_figli as sf
+					loop esegui_uscita(sf.item, p_contesto)
+					end
+				end
+-- ESEGUE USCITA DA ME
+				esegui_onexit (p_stato_corrente)
+				p_stato_corrente.set_inattivo
+-- ESEGUE USCITA DAI MIEI EVENTUALI ANTENATI
+				if attached p_stato_corrente.stato_genitore as sg and then not visitati_in_discesa.has(sg)then
+					esegui_uscita (sg, p_contesto)
+				end
+			end
+		end
+
+	esegui_onexit (p_stato_corrente: STATO)
+		do
+			if p_stato_corrente.onexit.count>0 then
+				across
+					p_stato_corrente.onexit as ox
+				loop
+					ox.item.action (state_chart.condizioni)
+				end
+			end
+		end
+
 	esegui_azioni_onexit (p_stato_corrente: STATO; p_contesto: detachable STATO)
-		local
-			i: INTEGER
 		do
 			if p_stato_corrente /= p_contesto and p_stato_corrente.attivo then
 				if p_stato_corrente.onexit.count>0 then
@@ -314,33 +350,15 @@ feature -- evoluzione della statechart
 
 		esegui_onexit_figli(uno_stato: STATO; contesto: detachable STATO)
 		-- Claudia & Federico 04/05/2020
-			local
-				j:INTEGER
 			do
-				if attached {STATO_AND} uno_stato as sa and then not sa.stati_figli.is_empty then
-					from
-						j:=sa.stati_figli.lower
-					until
-						j=sa.stati_figli.upper+1
+				if not uno_stato.stato_atomico then
+					across uno_stato.stati_figli as sf
 					loop
-						if sa.stati_figli[j].attivo and sa.stati_figli[j].stato_default.is_empty then
-							esegui_azioni_onexit(sa.stati_figli[j],contesto)
+						if sf.item.attivo and sf.item.stato_atomico then
+							esegui_azioni_onexit(sf.item,contesto)
 						end
-						esegui_onexit_figli(sa.stati_figli[j],contesto)
-						j:=j+1
+						esegui_onexit_figli(sf.item,contesto)
 					end
-				elseif attached {STATO_XOR} uno_stato as so and then not so.stati_figli.is_empty then
-					from
-						j:=so.stati_figli.lower
-					until
-						j=so.stati_figli.upper+1
-					loop
-						if so.stati_figli[j].attivo and so.stati_figli[j].stato_default.is_empty then
-							esegui_azioni_onexit(so.stati_figli[j],contesto)
-						end
-						esegui_onexit_figli(so.stati_figli[j],contesto)
-						j:=j+1
-						end
 				end
 			end
 

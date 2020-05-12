@@ -17,11 +17,13 @@ feature -- attributi
 	finale: BOOLEAN
 
 	attivo: BOOLEAN
-		-- indipendentemente se sia uno stato base o meno
+		-- indipendentemente se sia uno stato atomico o meno
 
 	stato_default: ARRAY[STATO]
 
 	stato_genitore: detachable STATO
+
+	stati_figli: ARRAY [STATO]
 
 	id: STRING
 
@@ -38,6 +40,7 @@ feature --creazione
 			id := un_id
 			finale := False
 			create stato_default.make_empty
+			create stati_figli.make_empty
 			create transizioni.make_empty
 			create OnEntry.make_empty
 			create OnExit.make_empty
@@ -101,6 +104,13 @@ feature -- setter
 			OnExit.force (una_azione,OnExit.count+1)
 		ensure
 			azione_assegnata: OnExit[OnExit.count] = una_azione
+		end
+
+feature -- stato
+	stato_atomico: BOOLEAN
+		-- ritorna vero se lo stato è uno stato atomico
+		do
+			Result := stati_figli.is_empty
 		end
 
 feature -- routines
