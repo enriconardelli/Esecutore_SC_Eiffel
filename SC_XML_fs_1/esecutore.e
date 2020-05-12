@@ -74,7 +74,7 @@ feature -- evoluzione della statechart
 			transizione_corrente: TRANSIZIONE
 			target_precedente: detachable STATO
 
---			genitore: STATO
+
 
 		do
 			print ("%Nentrato in evolvi_SC:  %N %N")
@@ -103,7 +103,7 @@ feature -- evoluzione della statechart
 							-- `conf_base_corrente[i].attivo' serve per prevenire configurazioni non ammissibili
 							if (attached target_precedente implies (attached{STATO_AND} trova_contesto(target_precedente,tc.target))) then
 								esegui_azioni (tc, conf_base_corrente [i])
-								disattiva_discendenti (genitore_piu_grande(conf_base_corrente [i], transizione_corrente))
+--								disattiva_discendenti (genitore_piu_grande(conf_base_corrente [i], transizione_corrente))
 								trova_default (tc.target, prossima_conf_base)
 								aggiungi_paralleli (tc.target, prossima_conf_base)
 								target_precedente:=tc.target
@@ -327,7 +327,7 @@ feature -- evoluzione della statechart
 			i: INTEGER
 		do
 
-			if p_stato_corrente /= p_contesto then
+			if p_stato_corrente /= p_contesto and p_stato_corrente.attivo then
 				if p_stato_corrente.onexit.count>0 then
 					across
 						p_stato_corrente.onexit as ox
