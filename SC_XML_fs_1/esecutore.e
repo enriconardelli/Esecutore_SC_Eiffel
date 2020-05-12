@@ -182,38 +182,6 @@ feature -- evoluzione della statechart
 			end
 		end
 
-		esegui_onexit_figli(uno_stato: STATO; contesto: detachable STATO)
-		-- Claudia & Federico 04/05/2020
-			local
-				j:INTEGER
-			do
-				if attached {STATO_AND} uno_stato as sa and then not sa.stati_figli.is_empty then
-					from
-						j:=sa.stati_figli.lower
-					until
-						j=sa.stati_figli.upper+1
-					loop
-						if sa.stati_figli[j].attivo and sa.stati_figli[j].stato_default.is_empty then
-							esegui_azioni_onexit(sa.stati_figli[j],contesto)
-						end
-						esegui_onexit_figli(sa.stati_figli[j],contesto)
-						j:=j+1
-					end
-				elseif attached {STATO_XOR} uno_stato as so and then not so.stati_figli.is_empty then
-					from
-						j:=so.stati_figli.lower
-					until
-						j=so.stati_figli.upper+1
-					loop
-						if so.stati_figli[j].attivo and so.stati_figli[j].stato_default.is_empty then
-							esegui_azioni_onexit(so.stati_figli[j],contesto)
-						end
-						esegui_onexit_figli(so.stati_figli[j],contesto)
-						j:=j+1
-						end
-				end
-			end
-
 --	parallelo_antenato(stato: STATO): detachable STATO
 --	-- Riccardo Malandruccolo
 --		-- restituisce parallelo antenato più vicino
@@ -326,7 +294,6 @@ feature -- evoluzione della statechart
 		local
 			i: INTEGER
 		do
-
 			if p_stato_corrente /= p_contesto and p_stato_corrente.attivo then
 				if p_stato_corrente.onexit.count>0 then
 					across
@@ -336,7 +303,6 @@ feature -- evoluzione della statechart
 					end
 				end
 				p_stato_corrente.set_inattivo
-				-- TODO condizionare questa ricorsione sul genitore al fatto che per il genitore non si è mai invocato esegui_azioni_onexit
 				if attached p_stato_corrente.stato_genitore as sg then
 					esegui_azioni_onexit (sg, p_contesto)
 				end
@@ -345,6 +311,38 @@ feature -- evoluzione della statechart
 				end
 			end
 		end
+
+		esegui_onexit_figli(uno_stato: STATO; contesto: detachable STATO)
+		-- Claudia & Federico 04/05/2020
+			local
+				j:INTEGER
+			do
+				if attached {STATO_AND} uno_stato as sa and then not sa.stati_figli.is_empty then
+					from
+						j:=sa.stati_figli.lower
+					until
+						j=sa.stati_figli.upper+1
+					loop
+						if sa.stati_figli[j].attivo and sa.stati_figli[j].stato_default.is_empty then
+							esegui_azioni_onexit(sa.stati_figli[j],contesto)
+						end
+						esegui_onexit_figli(sa.stati_figli[j],contesto)
+						j:=j+1
+					end
+				elseif attached {STATO_XOR} uno_stato as so and then not so.stati_figli.is_empty then
+					from
+						j:=so.stati_figli.lower
+					until
+						j=so.stati_figli.upper+1
+					loop
+						if so.stati_figli[j].attivo and so.stati_figli[j].stato_default.is_empty then
+							esegui_azioni_onexit(so.stati_figli[j],contesto)
+						end
+						esegui_onexit_figli(so.stati_figli[j],contesto)
+						j:=j+1
+						end
+				end
+			end
 
 	esegui_azioni_transizione (p_azioni: ARRAY [AZIONE])
 		local

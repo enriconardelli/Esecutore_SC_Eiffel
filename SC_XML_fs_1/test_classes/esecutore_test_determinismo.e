@@ -52,8 +52,6 @@ feature -- Test routines
 	t_non_determinismo_1_4
 	 --Filippo & Iezzi 08/05/2020
 	 --finisce in D1 perchè esegue la transizione dal primo stato della configurazione
-	 --TODO: se fallisce è perchè all'entrata nello stato AND cambia l'ordine in cui compaiono gli stati fratelli
-	 --rispetto a quello indicato sul file xml
 		local
 			esecutore: ESECUTORE
 		do
@@ -65,7 +63,7 @@ feature -- Test routines
 
 	t_non_determinismo_2_1
 	-- Arianna Calzuola & Riccardo Malandruccolo 08/05/2020
-	-- fallisce perché in P2A (che viene prima nel file xml) non trova transizioni con evento 'x',
+	-- TODO: fallisce perché in P2A (che viene prima nel file xml) non trova transizioni con evento 'x',
 	-- quindi risale fino a quando non trova la transizioni interna di T
 		local
 			esecutore: ESECUTORE
@@ -90,6 +88,7 @@ feature -- Test routines
 
 	t_non_determinismo_2_3
 	-- Arianna Calzuola & Riccardo Malandruccolo 08/05/2020
+	-- TODO: non completamente risolto
 		local
 			esecutore: ESECUTORE
 		do
