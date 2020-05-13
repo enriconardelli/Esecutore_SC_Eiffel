@@ -104,7 +104,7 @@ feature -- evoluzione della statechart
 							-- `conf_base_corrente[i].attivo' serve per prevenire configurazioni non ammissibili
 							if (attached target_precedente implies (attached{STATO_AND} trova_contesto(target_precedente,tc.target))) then
 								esegui_azioni (tc, conf_base_corrente [i])
---								disattiva_discendenti (genitore_piu_grande(conf_base_corrente [i], transizione_corrente))
+							--	genitore_piu_grande(conf_base_corrente [i], transizione_corrente).set_stato_inattivo_con_discendenti
 								trova_default (tc.target, prossima_conf_base)
 								aggiungi_paralleli (tc.target, prossima_conf_base)
 								target_precedente:=tc.target
@@ -170,16 +170,6 @@ feature -- evoluzione della statechart
 					Result := stato_temp
 					stato_temp := stato_temp.stato_genitore
 				end
-			end
-		end
-
-
-		disattiva_discendenti (stato: STATO)
-		-- Arianna & Riccardo 01/05/2020
-		do
-			if attached{STATO_AND} stato as sa then sa.set_stato_inattivo_con_discendenti
-			elseif attached{STATO_XOR} stato as sx then sx.set_stato_inattivo_con_discendenti
-			else stato.set_inattivo
 			end
 		end
 
