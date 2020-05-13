@@ -94,8 +94,8 @@ feature -- setter
 			if not stato_atomico then
 				across stati_figli as sf
 				loop
-					set_inattivo
-					set_stati_discendenti_inattivi
+					sf.item.set_inattivo
+					sf.item.set_stati_discendenti_inattivi
 				end
 			end
 		end
