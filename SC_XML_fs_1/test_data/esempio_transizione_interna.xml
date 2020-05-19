@@ -6,55 +6,62 @@
 	<data id="on_exitS" expr="false"/>
 	<data id="on_entryT" expr="false"/>
 	<data id="on_exitT" expr="false"/>	
+	<data id="on_entryA" expr="false"/>
+	<data id="on_exitA" expr="false"/>	
+	<data id="on_entryB" expr="false"/>
+	<data id="on_exitB" expr="false"/>	
 </datamodel>
 
 <state id="S" initial="T">
 	<onentry>
-        <log expr="entering S"/>
+		<log name="entering S"/>
 		<assign location="on_entryS" expr="true"/>
-       </onentry>
-       <onexit>
-         <log expr="leaving S"/>
+	</onentry>
+	<onexit>
+		<log name="leaving S"/>
 		<assign location="on_exitS" expr="true"/>
-     	  </onexit>
+	</onexit>
 
-   <state id="T" initial="A">
-      <onentry>
-        <log expr="entering T"/>
-		<assign location="on_entryT" expr="true"/>
-       </onentry>
-       <onexit>
-         <log expr="leaving T"/>
-		<assign location="on_exitT" expr="true"/>
-     	  </onexit>
-     
-     <state id="A">
-       <onentry>
-        <log expr="entering A"/>
-       </onentry>
-        <onexit>
-           <log expr="leaving A"/>
-        </onexit>
-	<transition event="e" target="B">
-        <log expr="transizione da A a B"/>
-     </transition>
+	<state id="T" initial="A">
+		<onentry>
+			<log name="entering T"/>
+			<assign location="on_entryT" expr="true"/>
+		</onentry>
+		<onexit>
+			<log name="leaving T"/>
+			<assign location="on_exitT" expr="true"/>
+		</onexit>
 
-     </state>
+		<state id="A">
+			<onentry>
+				<log name="entering A"/>
+				<assign location="on_entryA" expr="true"/>
+			</onentry>
+			<onexit>
+				<log name="leaving A"/>
+				<assign location="on_exitA" expr="true"/>
+			</onexit>
+			<transition event="e" target="B">
+				<log name="transizione da A a B"/>
+			</transition>
+		</state>
 
-	<state id="B">
-	<onentry>
-        <log expr="entering B"/>
-       </onentry>
-        <onexit>
-           <log expr="leaving B"/>
-        </onexit>
+		<state id="B">
+			<onentry>
+				<log name="entering B"/>
+				<assign location="on_entryB" expr="true"/>
+			</onentry>
+			<onexit>
+				<log name="leaving B"/>
+				<assign location="on_exitB" expr="true"/>
+			</onexit>
+		</state>
+	
 	</state>
 
-</state>
-
-     <transition event="f" target="B" type="internal">
-        <log expr="transizione interna da S a B"/>
-     </transition>
+	<transition event="f" target="B" type="internal">
+		<log name="transizione interna da S a B"/>
+	</transition>
 
 </state>
 </scxml>

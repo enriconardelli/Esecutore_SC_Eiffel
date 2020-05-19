@@ -28,28 +28,34 @@
 				<state id="A11" initial="A111">
 					<state id="A111">
 						<onexit>
+							<log name = "exiting A111"></log>
 							<assign expr="true" location="on_exitA111"/>
 						</onexit>
 					</state>
 					<onexit>
+						<log name = "exiting A11"></log>
 						<assign expr="true" location="on_exitA11"/>
 					</onexit>
 				</state>
 				<onexit>
+					<log name = "exiting A1"></log>
 					<assign expr="true" location="on_exitA1"/>
 				</onexit>
 			</state>
 			<state id="A2" initial="A21">
 				<state id="A21">
 					<onexit>
+						<log name = "exiting A21"></log>
 						<assign expr="true" location="on_exitA21"/>
 					</onexit>
 				</state>
 				<onexit>
+					<log name = "exiting A2"></log>
 					<assign expr="true" location="on_exitA2"/>
 				</onexit>
 			</state>
 			<onexit>
+				<log name = "exiting A"></log>
 				<assign expr="true" location="on_exitA"/>
 			</onexit>
 		</parallel>
