@@ -21,9 +21,6 @@ feature -- Attributi
 	conf_base_corrente: ARRAY [STATO]
 			-- insieme degli stati base nella configurazione corrente della SC e non di tutti gli stati attivi
 
-	visitati_in_discesa: ARRAY [STATO]
-			-- insieme di stati visitati durante l'uscita nella discesa verso il basso a partire dallo stato corrente
-
 feature {NONE} -- Creazione e avvio interattivo
 
 	start (nomi_files: ARRAY [STRING])
@@ -48,7 +45,6 @@ feature -- Creazione per i test
 			print ("crea la SC in " + nomi_files [1] + "%N")
 			create state_chart.make (nomi_files [1])
 			create conf_base_corrente.make_empty
-			create visitati_in_discesa.make_empty
 			conf_base_corrente.copy (state_chart.stato_iniziale)
 			create ambiente_corrente.make_empty
 			if not state_chart.ha_problemi_con_il_file_della_sc then
@@ -104,7 +100,7 @@ feature -- evoluzione della statechart
 							-- `conf_base_corrente[i].attivo' serve per prevenire configurazioni non ammissibili
 							if (attached target_precedente implies (attached{STATO_AND} trova_contesto(target_precedente,tc.target))) then
 								esegui_azioni (tc, conf_base_corrente [i])
-							--	genitore_piu_grande(conf_base_corrente [i], transizione_corrente).set_stato_inattivo_con_discendenti
+								genitore_piu_grande(conf_base_corrente [i], transizione_corrente).set_stato_inattivo_con_discendenti
 								trova_default (tc.target, prossima_conf_base)
 								aggiungi_paralleli (tc.target, prossima_conf_base)
 								target_precedente:=tc.target
@@ -188,7 +184,6 @@ feature -- evoluzione della statechart
 --			end
 --		end
 
-
 	aggiungi_paralleli (target: STATO; prossima_conf_base: ARRAY [STATO])
 		local
 			i: INTEGER
@@ -216,13 +211,7 @@ feature -- evoluzione della statechart
 			i: INTEGER
 		do
 			stato.set_attivo
-			if stato.onentry.count>0 then
-				across
-					stato.onentry as oe
-				loop
-					oe.item.action (state_chart.condizioni)
-				end
-			end
+			esegui_onentry(stato)
 			if not stato.stato_default.is_empty then
 				from
 					i := stato.stato_default.lower
@@ -250,11 +239,7 @@ feature -- evoluzione della statechart
 			end
 			-- TODO: impostaziona alternativa_1 esegui_uscita(contesto) che risale fino al genitore_piu_grande e poi
 			-- lo visita ricorsivamente urscendo dai suoi discendenti dal basso verso l'alto
-			-- TODO: impostazione alternativa_2 per ogni stato in conf_base_corrente si esce di un passo verso l'alto
-			-- alla volta, fino ad arrivare al genitore_piu_grande
---			esegui_uscita (stato, contesto)
---			visitati_in_discesa.wipe_out
-			esegui_azioni_onexit (stato, contesto)
+			esegui_azioni_onexit (genitore_piu_grande(stato, transizione))
 			esegui_azioni_transizione (transizione.azioni)
 			esegui_azioni_onentry (contesto, transizione.target)
 		end
@@ -287,26 +272,6 @@ feature -- evoluzione della statechart
 			Result := corrente
 		end
 
-	esegui_uscita (p_stato_corrente: STATO; p_contesto: detachable STATO)
-		do
-			if p_stato_corrente /= p_contesto and p_stato_corrente.attivo then
-				visitati_in_discesa.force(p_stato_corrente, visitati_in_discesa.count+1)
---	ESEGUE USCITA DAI MIEI DISCENDENTI
-				if not p_stato_corrente.stato_atomico then
-					across p_stato_corrente.stati_figli as sf
-					loop esegui_uscita(sf.item, p_contesto)
-					end
-				end
--- ESEGUE USCITA DA ME
-				esegui_onexit (p_stato_corrente)
-				p_stato_corrente.set_inattivo
--- ESEGUE USCITA DAI MIEI EVENTUALI ANTENATI
-				if attached p_stato_corrente.stato_genitore as sg and then not visitati_in_discesa.has(sg)then
-					esegui_uscita (sg, p_contesto)
-				end
-			end
-		end
-
 	esegui_onexit (p_stato_corrente: STATO)
 		do
 			if p_stato_corrente.onexit.count>0 then
@@ -318,39 +283,33 @@ feature -- evoluzione della statechart
 			end
 		end
 
-	esegui_azioni_onexit (p_stato_corrente: STATO; p_contesto: detachable STATO)
+	esegui_onentry (p_stato_corrente: STATO)
 		do
-			if p_stato_corrente /= p_contesto and p_stato_corrente.attivo then
-				if p_stato_corrente.onexit.count>0 then
-					across
-						p_stato_corrente.onexit as ox
-					loop
-						ox.item.action (state_chart.condizioni)
-					end
-				end
-				p_stato_corrente.set_inattivo
-				if attached p_stato_corrente.stato_genitore as sg then
-					esegui_azioni_onexit (sg, p_contesto)
-				end
-				if attached {STATO_AND} p_stato_corrente.stato_genitore as sg_and then
-					esegui_onexit_figli(sg_and, sg_and)
+			if p_stato_corrente.onentry .count>0 then
+				across
+					p_stato_corrente.onentry as oe
+				loop
+					oe.item.action (state_chart.condizioni)
 				end
 			end
 		end
 
-		esegui_onexit_figli(uno_stato: STATO; contesto: detachable STATO)
-		-- Claudia & Federico 04/05/2020
-			do
-				if not uno_stato.stato_atomico then
-					across uno_stato.stati_figli as sf
-					loop
-						if sf.item.attivo and sf.item.stato_atomico then
-							esegui_azioni_onexit(sf.item,contesto)
-						end
-						esegui_onexit_figli(sf.item,contesto)
+	esegui_azioni_onexit (stato_uscita: STATO)
+	-- Arianna & Riccardo 13/05/2020
+		do
+			if not stato_uscita.stato_atomico then
+				across
+					stato_uscita.stati_figli as sf
+				loop
+					if sf.item.attivo then
+						esegui_azioni_onexit (sf.item)
 					end
 				end
 			end
+			esegui_onexit(stato_uscita)
+			-- stato_uscita.set_inattivo
+			-- gli stati vengono messi inattivi in evolvi_sc
+		end
 
 	esegui_azioni_transizione (p_azioni: ARRAY [AZIONE])
 		local
@@ -369,15 +328,8 @@ feature -- evoluzione della statechart
 	esegui_azioni_onentry (p_contesto: detachable STATO; p_target: STATO)
 		do
 			if attached p_target.stato_genitore as sg and then sg /= p_contesto then
-				-- TODO qui esegue le on_entry risalendo sugli antenati. cioè in ordine inverso a quanto dovrebbe
 				esegui_azioni_onentry (p_contesto, sg)
-				if sg.onentry.count>0 then
-					across
-						sg.onentry as oe
-					loop
-						oe.item.action (state_chart.condizioni)
-					end
-				end
+				esegui_onentry(sg)
 			end
 		end
 
@@ -428,5 +380,4 @@ feature -- evoluzione della statechart
 			end
 			print (" %N")
 		end
-
 end
