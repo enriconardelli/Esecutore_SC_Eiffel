@@ -2,9 +2,6 @@
 <scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="S">
 	<parallel id="S">
 
-		<transition event="e1" target="K" />
-		<transition event="f" target="E12" />
-		
 		<state id="A" >
 				<transition event="e1" target="E2" />
 		</state>
@@ -17,6 +14,9 @@
 			</state>				
 		</parallel>
 			
+		<transition event="e1" target="K" />
+		<transition event="f" target="E12" />
+		
 	</parallel>
 	
 	<state id="E" initial="E1">
@@ -27,7 +27,7 @@
 			</state>
 			<state id="E12" >
 			</state>		
-		</palallel>	
+		</parallel>	
 		<state id="E2" >
 			<transition event="e1.75" target="E" />
 		</state>	

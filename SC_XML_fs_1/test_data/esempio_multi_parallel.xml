@@ -3,11 +3,12 @@
 	<parallel id="S">
 		
 		<state id="A" >
+			
 		</state>
 		
 		<parallel id="B" >
 			<state id="B1" >
-				<transition event="e1" target="E1" />
+				<transition event="e1" target="E11" />
 			</state>
 			<state id="B2" >
 			</state>				
@@ -23,7 +24,7 @@
 			</state>
 			<state id="E12" >
 			</state>		
-		</palallel>	
+		</parallel>	
 		<state id="E2" >
 			<transition event="e1.75" target="E" />
 		</state>	
