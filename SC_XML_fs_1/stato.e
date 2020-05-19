@@ -81,25 +81,6 @@ feature -- setter
 			attivo := False
 		end
 
-	set_stato_inattivo_con_discendenti
-	-- Arianna & Riccardo 26/04/2020
-		do
-			set_inattivo
-			set_stati_discendenti_inattivi
-		end
-
-	set_stati_discendenti_inattivi
-	-- Arianna & Riccardo 26/04/2020
-		do
-			if not stato_atomico then
-				across stati_figli as sf
-				loop
-					sf.item.set_inattivo
-					sf.item.set_stati_discendenti_inattivi
-				end
-			end
-		end
-
 	set_final
 		do
 			finale := TRUE
