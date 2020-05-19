@@ -69,6 +69,12 @@
 				</onexit>
 			</state>
 			<state id="B2">
+				<transition event="z" target="T">
+					<log name="z: da B2 a T"  />
+				</transition>
+				<transition event="u" target="B1">
+					<log name="u: da B2 a B1"  />
+				</transition>
 				<onexit>
 					<assign expr="true" location="on_exitB2"/>
 				</onexit>
@@ -121,6 +127,9 @@
 		<onexit>
 			<assign expr="true" location="on_exitT"/>
 		</onexit>
+		<transition event="y" target="B2">
+			<log name="y: da T a B2"  />
+		</transition>
 	</state>
 
 </scxml>
