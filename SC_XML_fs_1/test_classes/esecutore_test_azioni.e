@@ -118,4 +118,60 @@ feature -- Test
 			assert("Errore T: non doveva venir eseguita l' onexit di T", not esecutore.state_chart.condizioni.item("on_exitT"))
 		end
 
+		t_onexit_complesso_2
+		-- Claudia & Federico 18/05/2020
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "esempio_onexit_complesso.xml"
+			nomi_files_prova [2] := test_data_dir + "eventi_onexit_complesso_2.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("Errore 1: lo stato di arrivo non è T", conf_has_state(esecutore.conf_base_corrente,"T"))
+			assert("Errore B2: non viene eseguita l' onexit di B2", esecutore.state_chart.condizioni.item("on_exitB2"))
+			assert("Errore S: non viene eseguita l' onexit di S", esecutore.state_chart.condizioni.item("on_exitS"))
+			assert("Errore A: non viene eseguita l' onexit di A", esecutore.state_chart.condizioni.item("on_exitA"))
+			assert("Errore A1: non viene eseguita l' onexit di A1", esecutore.state_chart.condizioni.item("on_exitA1"))
+			assert("Errore A11: non viene eseguita l' onexit di A11", esecutore.state_chart.condizioni.item("on_exitA11"))
+			assert("Errore A111: non viene eseguita l' onexit di A111", esecutore.state_chart.condizioni.item("on_exitA111"))
+			assert("Errore A2: non viene eseguita l' onexit di A2", esecutore.state_chart.condizioni.item("on_exitA2"))
+			assert("Errore A21: non viene eseguita l' onexit di A21", esecutore.state_chart.condizioni.item("on_exitA21"))
+			assert("Errore B: non viene eseguita l' onexit di B", esecutore.state_chart.condizioni.item("on_exitB"))
+			assert("Errore B1: non viene eseguita l' onexit di B1", esecutore.state_chart.condizioni.item("on_exitB1"))
+			assert("Errore C: non viene eseguita l' onexit di C", esecutore.state_chart.condizioni.item("on_exitC"))
+			assert("Errore C1: non viene eseguita l' onexit di C1", esecutore.state_chart.condizioni.item("on_exitC1"))
+			assert("Errore C11: non viene eseguita l' onexit di C11", esecutore.state_chart.condizioni.item("on_exitC11"))
+			assert("Errore C11A: non viene eseguita l' onexit di C11A", esecutore.state_chart.condizioni.item("on_exitC11A"))
+			assert("Errore C11A1: non viene eseguita l' onexit di C11A1", esecutore.state_chart.condizioni.item("on_exitC11A1"))
+			assert("Errore C11B: non viene eseguita l' onexit di C11B", esecutore.state_chart.condizioni.item("on_exitC11B"))
+			assert("Errore D: non viene eseguita l' onexit di D", esecutore.state_chart.condizioni.item("on_exitD"))
+			assert("Errore T: non viene eseguita l' onexit di T", esecutore.state_chart.condizioni.item("on_exitT"))
+		end
+
+		t_onexit_complesso_3
+		-- Claudia & Federico 18/05/2020
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "esempio_onexit_complesso.xml"
+			nomi_files_prova [2] := test_data_dir + "eventi_onexit_complesso_3.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("Errore B2: non viene eseguita l' onexit di B2", esecutore.state_chart.condizioni.item("on_exitB2"))
+			assert("Errore S: non viene eseguita l' onexit di S", esecutore.state_chart.condizioni.item("on_exitS"))
+			assert("Errore A: non viene eseguita l' onexit di A", esecutore.state_chart.condizioni.item("on_exitA"))
+			assert("Errore A1: non viene eseguita l' onexit di A1", esecutore.state_chart.condizioni.item("on_exitA1"))
+			assert("Errore A11: non viene eseguita l' onexit di A11", esecutore.state_chart.condizioni.item("on_exitA11"))
+			assert("Errore A111: non viene eseguita l' onexit di A111", esecutore.state_chart.condizioni.item("on_exitA111"))
+			assert("Errore A2: non viene eseguita l' onexit di A2", esecutore.state_chart.condizioni.item("on_exitA2"))
+			assert("Errore A21: non viene eseguita l' onexit di A21", esecutore.state_chart.condizioni.item("on_exitA21"))
+			assert("Errore B: non viene eseguita l' onexit di B", esecutore.state_chart.condizioni.item("on_exitB"))
+			assert("Errore B1: non viene eseguita l' onexit di B1", esecutore.state_chart.condizioni.item("on_exitB1"))
+			assert("Errore C: non viene eseguita l' onexit di C", esecutore.state_chart.condizioni.item("on_exitC"))
+			assert("Errore C1: non viene eseguita l' onexit di C1", esecutore.state_chart.condizioni.item("on_exitC1"))
+			assert("Errore C11: non viene eseguita l' onexit di C11", esecutore.state_chart.condizioni.item("on_exitC11"))
+			assert("Errore C11A: non viene eseguita l' onexit di C11A", esecutore.state_chart.condizioni.item("on_exitC11A"))
+			assert("Errore C11A1: non viene eseguita l' onexit di C11A1", esecutore.state_chart.condizioni.item("on_exitC11A1"))
+			assert("Errore C11B: non viene eseguita l' onexit di C11B", esecutore.state_chart.condizioni.item("on_exitC11B"))
+			assert("Errore D: non viene eseguita l' onexit di D", esecutore.state_chart.condizioni.item("on_exitD"))
+			assert("Errore T: non viene eseguita l' onexit di T", esecutore.state_chart.condizioni.item("on_exitT"))
+		end
 end
