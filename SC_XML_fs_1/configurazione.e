@@ -343,7 +343,7 @@ feature -- inizializzazione SC
 						-- TODO gestire fallimento del test per assenza clausola target
 					if attached stati.item (tt.value) as ts then
 						if attached stati.item (id_stato) as sr then
-							if ts.contiene_stato(sr) or else not attached{STATO_AND} trova_pseudo_contesto(sr,ts) then
+							if not attached{STATO_AND} trova_pseudo_contesto(sr,ts) then
 								-- evita transizioni tra figli di paralleli
 								create transizione.make_with_target (ts, sr)
 								if attached transition_list.item_for_iteration.attribute_by_name ("type") as tp then

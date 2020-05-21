@@ -72,7 +72,7 @@ feature -- evoluzione della statechart
 			prossima_conf_base: ARRAY [STATO]
 			condizioni_correnti: HASH_TABLE [BOOLEAN, STRING]
 			transizione_corrente: TRANSIZIONE
-			transizioni_eseguibili: ARRAY[TRANSIZIONE]
+			target_precedente: detachable STATO
 		do
 			print ("%Nentrato in evolvi_SC:  %N %N")
 			print ("stato iniziale:  ")
@@ -89,17 +89,23 @@ feature -- evoluzione della statechart
 					print ("%N")
 					condizioni_correnti.copy (state_chart.condizioni)
 					create prossima_conf_base.make_empty
-					transizioni_eseguibili:=trova_transizioni_eseguibili(istante_corrente, condizioni_correnti)
+					target_precedente:=void
 					from
 						i := conf_base_corrente.lower
 					until
 						i = conf_base_corrente.upper + 1
 					loop
 						transizione_corrente := conf_base_corrente [i].transizione_abilitata (istante_corrente, condizioni_correnti)
-						if attached transizione_corrente as tc and then transizioni_eseguibili.has(tc) then
-							esegui_azioni (tc, conf_base_corrente [i])
-							trova_default (tc.target, prossima_conf_base)
-							aggiungi_paralleli (tc.target, prossima_conf_base)
+						if conf_base_corrente[i].attivo and attached transizione_corrente as tc then
+							-- `conf_base_corrente[i].attivo' serve per prevenire configurazioni non ammissibili
+							if (attached target_precedente implies (attached{STATO_AND} trova_contesto(target_precedente,tc.target))) then
+								esegui_azioni (tc, conf_base_corrente [i])
+								trova_default (tc.target, prossima_conf_base)
+								aggiungi_paralleli (tc.target, prossima_conf_base)
+								target_precedente:=tc.target
+							else
+								prossima_conf_base.force (conf_base_corrente [i], prossima_conf_base.count + 1)
+							end
 						else
 							prossima_conf_base.force (conf_base_corrente [i], prossima_conf_base.count + 1)
 						end
@@ -162,75 +168,20 @@ feature -- evoluzione della statechart
 			end
 		end
 
-	trova_transizioni_eseguibili(evento: LINKED_SET[STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]): ARRAY[TRANSIZIONE]
-		-- Arianna & Riccardo 21/05/2020
-		-- restituisce l'array di transizioni che possono essere eseguite nello stato attuale del sistema
-		-- rispettando le specifiche SCXML dell'ordine degli stati nel file .xml e della gerarchia (modello object-oriented)
-		local
-			parallelo_genitore: detachable STATO_AND
-			transizioni: ARRAY[TRANSIZIONE]
-			i: INTEGER
-		do
-			create transizioni.make_empty
-			from
-				i:=conf_base_corrente.lower
-			until
-				i=conf_base_corrente.upper+1
-			loop
-				if attached conf_base_corrente[i].transizione_abilitata (evento, condizioni) as ta then
-					if attached parallelo_genitore implies (parallelo_genitore.contiene_stato (ta.sorgente) implies parallelo_genitore.contiene_stato (ta.target)) then
-						-- risolve il conflitto dell'ordine degli stati nel file .xml
-						-- impedendo di uscire dal parallelo se con lo stesso evento non sono precedentemente uscito
-						if ta.sorgente.stato_atomico or else check_transizioni_discendenti(ta.sorgente,evento,condizioni) then
-							transizioni.force (ta,transizioni.count+1)
-							parallelo_genitore:=trova_parallelo_genitore(ta.target)
-							if parallelo_genitore=void then
-								i:=conf_base_corrente.upper
-							end
-						end
-					end
-				end
-				i:=i+1
-			end
-
-			Result:=transizioni
-		end
-
-	check_transizioni_discendenti(stato: STATO; evento: LINKED_SET[STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
-		-- Arianna & Riccardo 21/05/2020
-		-- controlla che la sorgente della transizione non abbia al suo interno uno stato attivo con transizione attivata dallo stesso evento
-		-- (precedenza secondo il modello object-oriented)
-		do
-			Result:=true
-			across
-				conf_base_corrente as conf
-			loop
-				if stato.contiene_stato (conf.item) and then attached conf.item.transizione_abilitata (evento, condizioni) as ta then
-					if stato.contiene_stato(ta.sorgente) then
-						Result:=false
-					end
-				end
-			end
-		end
-
-	trova_parallelo_genitore(stato: STATO): detachable STATO_AND
-		-- Arianna & Riccardo 21/05/2020
-		-- restituisce il parallelo più piccolo contenente propriamente 'stato'
-		local
-			stato_temp: STATO
-		do
-			from
-				stato_temp:=stato.stato_genitore
-			until
-				attached{STATO_AND} stato_temp or stato_temp=void
-			loop
-				stato_temp:=stato_temp.stato_genitore
-			end
-
-			if attached{STATO_AND} stato_temp as st then
-				Result:=st
-			end
-		end
+--	parallelo_antenato(stato: STATO): detachable STATO
+--	-- Riccardo Malandruccolo
+--		-- restituisce parallelo antenato più vicino
+--		do
+--			if attached {STATO_AND} stato then
+--				Result := stato
+--			elseif attached stato.stato_genitore as gen then
+--				if attached {STATO_AND} gen then
+--					Result := gen
+--				else
+--					Result := parallelo_antenato(gen)
+--				end
+--			end
+--		end
 
 	aggiungi_paralleli (target: STATO; prossima_conf_base: ARRAY [STATO])
 		local
@@ -311,7 +262,7 @@ feature -- evoluzione della statechart
 			end
 				-- trova il piï¿½ basso antenato di p_destinazione in "antenati"
 			from
-				corrente := p_destinazione.stato_genitore
+				corrente := p_destinazione
 			until
 				corrente = Void or else antenati.has (corrente.id)
 			loop

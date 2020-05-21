@@ -154,15 +154,4 @@ feature -- Test
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (P1,P2B)", esecutore.conf_base_corrente.count = 2 and conf_has_state(esecutore.conf_base_corrente,"P1") and conf_has_state(esecutore.conf_base_corrente,"P2B"))
 		end
-
-	t_figlio_genitore
-	-- Arianna & Riccardo 21/05/2020
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "esempio_transizione_figlio_genitore.xml"
-	  		nomi_files_prova [2] := test_data_dir + "eventi_[x][y].txt"
-			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (P1A1,P1B1,P2)", esecutore.conf_base_corrente.count = 3 and conf_has_state(esecutore.conf_base_corrente,"P1A1") and conf_has_state(esecutore.conf_base_corrente,"P1B1") and conf_has_state(esecutore.conf_base_corrente,"P2"))
-		end
 end

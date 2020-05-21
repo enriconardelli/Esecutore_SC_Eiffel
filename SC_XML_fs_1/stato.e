@@ -233,16 +233,4 @@ feature -- routines forse inutili
 			end
 			Result := transizioni [index]
 		end
-
-	contiene_stato(stato: STATO): BOOLEAN
-		-- controlla se `stato' è contenuto 'propriamente' nel current
-		do
-			if attached stato.stato_genitore as sg then
-				if sg/=current then
-					Result:=contiene_stato(sg)
-				else
-					Result:=true
-				end
-			end
-		end
 end

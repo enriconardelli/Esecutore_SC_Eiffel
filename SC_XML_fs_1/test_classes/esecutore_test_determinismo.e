@@ -99,37 +99,4 @@ feature -- Test routines
 			assert("ERRORE 2_3.2: il sistema non entra in (B,P2)", conf_has_state(esecutore.conf_base_corrente,"B") and conf_has_state(esecutore.conf_base_corrente,"P2"))
 		end
 
-	t_non_determinismo_2_4
-	-- Arianna & Riccardo 21/05/2020
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "esempio_transizione_figlio_genitore.xml"
-	  		nomi_files_prova [2] := test_data_dir + "eventi_[x y].txt"
-			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (P1A2,P1B1,P2)", esecutore.conf_base_corrente.count = 3 and conf_has_state(esecutore.conf_base_corrente,"P1A2") and conf_has_state(esecutore.conf_base_corrente,"P1B1") and conf_has_state(esecutore.conf_base_corrente,"P2"))
-		end
-
-	t_non_determinismo_2_5_1
-	-- Arianna & Riccardo 21/05/2020
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "esempio_non_determinismo_5.xml"
-	  		nomi_files_prova [2] := test_data_dir + "eventi_entrata.txt"
-			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (P1B,P2A,R1B,R2A)", esecutore.conf_base_corrente.count = 4 and conf_has_state(esecutore.conf_base_corrente,"P1B") and conf_has_state(esecutore.conf_base_corrente,"P2A") and conf_has_state(esecutore.conf_base_corrente,"R1B") and conf_has_state(esecutore.conf_base_corrente,"R2A"))
-		end
-
-	t_non_determinismo_2_5_2
-	-- Arianna & Riccardo 21/05/2020
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "esempio_non_determinismo_5.xml"
-	  		nomi_files_prova [2] := test_data_dir + "eventi_[y x].txt"
-			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (P1B,P2A,R1B,R2A)", esecutore.conf_base_corrente.count = 4 and conf_has_state(esecutore.conf_base_corrente,"P1B") and conf_has_state(esecutore.conf_base_corrente,"P2A") and conf_has_state(esecutore.conf_base_corrente,"R1B") and conf_has_state(esecutore.conf_base_corrente,"R2A"))
-		end
-
 end
