@@ -245,4 +245,11 @@ feature -- routines forse inutili
 				end
 			end
 		end
+
+	intersezione_vuota(stato: STATO): BOOLEAN
+		do
+			if not contiene_stato(stato) and not stato.contiene_stato(current) and current/=stato then
+				Result := true
+			end
+		end
 end

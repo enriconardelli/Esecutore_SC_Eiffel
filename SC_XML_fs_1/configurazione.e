@@ -496,7 +496,7 @@ feature -- inizializzazione SC
 			end
 				-- trova il pi� basso antenato di p_destinazione in "antenati"
 			from
-				corrente := p_destinazione
+				corrente := p_destinazione.stato_genitore
 			until
 				corrente = Void or else antenati.has (corrente.id)
 			loop

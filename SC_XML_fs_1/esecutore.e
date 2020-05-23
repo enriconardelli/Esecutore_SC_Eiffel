@@ -71,8 +71,8 @@ feature -- evoluzione della statechart
 			i: INTEGER
 			prossima_conf_base: ARRAY [STATO]
 			condizioni_correnti: HASH_TABLE [BOOLEAN, STRING]
-			transizione_corrente: TRANSIZIONE
 			transizioni_eseguibili: ARRAY[TRANSIZIONE]
+			transizione_corrente: TRANSIZIONE
 		do
 			print ("%Nentrato in evolvi_SC:  %N %N")
 			print ("stato iniziale:  ")
@@ -118,6 +118,38 @@ feature -- evoluzione della statechart
 			stampa_conf_corrente
 		end
 
+	trova_transizioni_eseguibili(evento: LINKED_SET[STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]): ARRAY[TRANSIZIONE]
+		-- restituisce l'array di transizioni che possono essere eseguite nello stato attuale del sistema
+		-- rispettando le specifiche SCXML dell'ordine degli stati nel file .xml e della gerarchia (modello object-oriented)
+		local
+			transizioni: ARRAY[TRANSIZIONE]
+			i: INTEGER
+			uscita_precedente: detachable STATO
+			sorgenti: ARRAY[STATO]
+		do
+			create transizioni.make_empty
+			sorgenti := sorgenti_ordinate(evento, condizioni)
+			from
+				i:=sorgenti.lower
+			until
+				i=sorgenti.upper+1
+			loop
+				if i = sorgenti.upper or else not sorgenti[i].contiene_stato(sorgenti[i+1]) then
+					-- una sorgente che contiene la successiva non deve essere eseguita
+					if attached sorgenti[i].transizione_abilitata (evento, condizioni) as ta then
+						if attached uscita_precedente implies genitore_piu_grande(ta).intersezione_vuota(uscita_precedente) then
+							-- impedendo di uscire dal parallelo se con lo stesso evento non sono precedentemente uscito
+							transizioni.force (ta,transizioni.count+1)
+							uscita_precedente:=genitore_piu_grande(ta)
+						end
+					end
+				end
+				i:=i+1
+			end
+
+			Result:=transizioni
+		end
+
 	stati_attivi_conf(conf_da_modificare: ARRAY[STATO]): ARRAY[STATO]
 	-- Arianna & Riccardo 26/04/2020
 	-- elimina stati inattivi dalla configurazione
@@ -137,99 +169,36 @@ feature -- evoluzione della statechart
 			end
 		end
 
-	genitore_piu_grande(stato_corrente: STATO; transizione: TRANSIZIONE): STATO
-	-- Arianna & Riccardo 01/05/2020
+	genitore_piu_grande(transizione: TRANSIZIONE): STATO
 	-- restituisce l'antenato più grande che contiene stato_corrente ed è contenuto nel contesto
 		local
 			contesto, stato_temp: detachable STATO
 		do
-			Result := stato_corrente
+			Result := transizione.sorgente
+
 			if transizione.internal then
 				contesto := transizione.sorgente
+				across
+					transizione.sorgente.stati_figli as figli
+				loop
+					if figli.item.attivo then
+						Result:=figli.item
+					end
+				end
 			else
 				contesto := trova_contesto (transizione.sorgente, transizione.target)
-			end
-
-			from
-				stato_temp := stato_corrente
-			until
-			 	stato_temp  = contesto
-			loop
-				if attached stato_temp then
-					Result := stato_temp
-					stato_temp := stato_temp.stato_genitore
-				end
-			end
-		end
-
-	trova_transizioni_eseguibili(evento: LINKED_SET[STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]): ARRAY[TRANSIZIONE]
-		-- Arianna & Riccardo 21/05/2020
-		-- restituisce l'array di transizioni che possono essere eseguite nello stato attuale del sistema
-		-- rispettando le specifiche SCXML dell'ordine degli stati nel file .xml e della gerarchia (modello object-oriented)
-		local
-			parallelo_genitore: detachable STATO_AND
-			transizioni: ARRAY[TRANSIZIONE]
-			i: INTEGER
-		do
-			create transizioni.make_empty
-			from
-				i:=conf_base_corrente.lower
-			until
-				i=conf_base_corrente.upper+1
-			loop
-				if attached conf_base_corrente[i].transizione_abilitata (evento, condizioni) as ta then
-					if attached parallelo_genitore implies (parallelo_genitore.contiene_stato (ta.sorgente) implies parallelo_genitore.contiene_stato (ta.target)) then
-						-- risolve il conflitto dell'ordine degli stati nel file .xml
-						-- impedendo di uscire dal parallelo se con lo stesso evento non sono precedentemente uscito
-						if ta.sorgente.stato_atomico or else check_transizioni_discendenti(ta.sorgente,evento,condizioni) then
-							transizioni.force (ta,transizioni.count+1)
-							parallelo_genitore:=trova_parallelo_genitore(ta.target)
-							if parallelo_genitore=void then
-								i:=conf_base_corrente.upper
-							end
-						end
-					end
-				end
-				i:=i+1
-			end
-
-			Result:=transizioni
-		end
-
-	check_transizioni_discendenti(stato: STATO; evento: LINKED_SET[STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
-		-- Arianna & Riccardo 21/05/2020
-		-- controlla che la sorgente della transizione non abbia al suo interno uno stato attivo con transizione attivata dallo stesso evento
-		-- (precedenza secondo il modello object-oriented)
-		do
-			Result:=true
-			across
-				conf_base_corrente as conf
-			loop
-				if stato.contiene_stato (conf.item) and then attached conf.item.transizione_abilitata (evento, condizioni) as ta then
-					if stato.contiene_stato(ta.sorgente) then
-						Result:=false
+				from
+					stato_temp := transizione.sorgente
+				until
+				 	stato_temp = contesto
+				loop
+					if attached stato_temp then
+						Result := stato_temp
+						stato_temp := stato_temp.stato_genitore
 					end
 				end
 			end
-		end
 
-	trova_parallelo_genitore(stato: STATO): detachable STATO_AND
-		-- Arianna & Riccardo 21/05/2020
-		-- restituisce il parallelo più piccolo contenente propriamente 'stato'
-		local
-			stato_temp: STATO
-		do
-			from
-				stato_temp:=stato.stato_genitore
-			until
-				attached{STATO_AND} stato_temp or stato_temp=void
-			loop
-				stato_temp:=stato_temp.stato_genitore
-			end
-
-			if attached{STATO_AND} stato_temp as st then
-				Result:=st
-			end
 		end
 
 	aggiungi_paralleli (target: STATO; prossima_conf_base: ARRAY [STATO])
@@ -269,9 +238,8 @@ feature -- evoluzione della statechart
 					trova_default (stato.stato_default [i], prossima_conf_base)
 					i := i + 1
 				end
-			elseif not prossima_conf_base.has (stato) then
+			else
 				-- `stato' è uno stato atomico
-				-- TODO serve aggiungere un test che impedisca di inserire in prossima_conf_base uno stato se già c'è?'
 				prossima_conf_base.force (stato, prossima_conf_base.count + 1)
 			end
 		end
@@ -285,9 +253,7 @@ feature -- evoluzione della statechart
 			else
 				contesto := trova_contesto (transizione.sorgente, transizione.target)
 			end
-			-- TODO: impostaziona alternativa_1 esegui_uscita(contesto) che risale fino al genitore_piu_grande e poi
-			-- lo visita ricorsivamente urscendo dai suoi discendenti dal basso verso l'alto
-			esegui_azioni_onexit (genitore_piu_grande(stato, transizione))
+			esegui_azioni_onexit (genitore_piu_grande(transizione))
 			esegui_azioni_transizione (transizione.azioni)
 			esegui_azioni_onentry (contesto, transizione.target)
 		end
@@ -417,6 +383,21 @@ feature -- evoluzione della statechart
 		end
 		result := conf_ordinata
 	end
+
+	sorgenti_ordinate(evento: LINKED_SET[STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]): ARRAY[STATO]
+	-- Dati eventi e condizioni, restituisce l'array di sorgenti delle transizioni abilitate rispetto a `conf_base_corrente'
+	-- ordinate dalla più esterna alla più interna e guardando i figli dei paralleli secondo l'ordine del file .xml
+		do
+			create Result.make_empty
+			across
+				conf_base_corrente as cbc
+			loop
+				if attached cbc.item.transizione_abilitata (evento, condizioni) as ta then
+					Result.force (ta.sorgente, Result.count + 1)
+				end
+			end
+			Result := riordina_conf_base(Result)
+		end
 
 	stampa_conf_corrente
 		do
