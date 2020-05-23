@@ -131,5 +131,14 @@ feature -- Test routines
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (P1B,P2A,R1B,R2A)", esecutore.conf_base_corrente.count = 4 and conf_has_state(esecutore.conf_base_corrente,"P1B") and conf_has_state(esecutore.conf_base_corrente,"P2A") and conf_has_state(esecutore.conf_base_corrente,"R1B") and conf_has_state(esecutore.conf_base_corrente,"R2A"))
 		end
-
+	t_non_determinismo_2_6
+	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
+	local
+		esecutore: ESECUTORE
+	do
+		nomi_files_prova [1] := test_data_dir + "esempio_non_determinismo_6.xml"
+  		nomi_files_prova [2] := test_data_dir + "evento_x.txt"
+		create esecutore.make (nomi_files_prova)
+		assert("ERRORE: il sistema non termina in (P1A1B, P1A2, P1A3B, P2A2, P2B, P2C1A, P2C1B, A2, B1, P3B)", esecutore.conf_base_corrente.count = 10 and conf_has_state(esecutore.conf_base_corrente,"P1A1B") and conf_has_state(esecutore.conf_base_corrente,"P1A2")  and conf_has_state(esecutore.conf_base_corrente,"P1A3B") and conf_has_state(esecutore.conf_base_corrente,"P2A2")  and conf_has_state(esecutore.conf_base_corrente,"P2B") and conf_has_state(esecutore.conf_base_corrente,"P2C1A")  and conf_has_state(esecutore.conf_base_corrente,"P2C1B") and conf_has_state(esecutore.conf_base_corrente,"A2")  and conf_has_state(esecutore.conf_base_corrente,"B1") and conf_has_state(esecutore.conf_base_corrente,"P3B"))
+	end
 end

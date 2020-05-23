@@ -235,6 +235,7 @@ feature -- routines forse inutili
 		end
 
 	contiene_stato(stato: STATO): BOOLEAN
+		-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
 		-- controlla se `stato' è contenuto 'propriamente' nel current
 		do
 			if attached stato.stato_genitore as sg then
@@ -247,6 +248,7 @@ feature -- routines forse inutili
 		end
 
 	intersezione_vuota(stato: STATO): BOOLEAN
+	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
 		do
 			if not contiene_stato(stato) and not stato.contiene_stato(current) and current/=stato then
 				Result := true

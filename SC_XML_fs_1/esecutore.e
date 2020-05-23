@@ -119,6 +119,7 @@ feature -- evoluzione della statechart
 		end
 
 	trova_transizioni_eseguibili(evento: LINKED_SET[STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]): ARRAY[TRANSIZIONE]
+		-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
 		-- restituisce l'array di transizioni che possono essere eseguite nello stato attuale del sistema
 		-- rispettando le specifiche SCXML dell'ordine degli stati nel file .xml e della gerarchia (modello object-oriented)
 		local
@@ -170,6 +171,7 @@ feature -- evoluzione della statechart
 		end
 
 	genitore_piu_grande(transizione: TRANSIZIONE): STATO
+	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
 	-- restituisce l'antenato più grande che contiene stato_corrente ed è contenuto nel contesto
 		local
 			contesto, stato_temp: detachable STATO
@@ -385,6 +387,7 @@ feature -- evoluzione della statechart
 	end
 
 	sorgenti_ordinate(evento: LINKED_SET[STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]): ARRAY[STATO]
+	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
 	-- Dati eventi e condizioni, restituisce l'array di sorgenti delle transizioni abilitate rispetto a `conf_base_corrente'
 	-- ordinate dalla più esterna alla più interna e guardando i figli dei paralleli secondo l'ordine del file .xml
 		do
