@@ -233,4 +233,27 @@ feature -- routines forse inutili
 			end
 			Result := transizioni [index]
 		end
+
+	contiene_stato(stato: STATO): BOOLEAN
+		-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
+		-- controlla se `stato' è contenuto 'propriamente' nel current
+		do
+			if attached stato.stato_genitore as sg then
+				if sg = current then
+					Result := true
+				else
+					Result := contiene_stato(sg)
+				end
+			else
+				Result := false
+			end
+		end
+
+	intersezione_vuota(stato: STATO): BOOLEAN
+	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
+		do
+			if not contiene_stato(stato) and not stato.contiene_stato(current) and current/=stato then
+				Result := true
+			end
+		end
 end
