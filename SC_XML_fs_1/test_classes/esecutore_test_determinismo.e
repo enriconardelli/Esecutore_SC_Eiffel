@@ -129,7 +129,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "esempio_non_determinismo_5.xml"
 	  		nomi_files_prova [2] := test_data_dir + "eventi_[y x].txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (P1B,P2A,R1B,R2A)", esecutore.conf_base_corrente.count = 4 and conf_has_state(esecutore.conf_base_corrente,"P1B") and conf_has_state(esecutore.conf_base_corrente,"P2A") and conf_has_state(esecutore.conf_base_corrente,"R1B") and conf_has_state(esecutore.conf_base_corrente,"R2A"))
+			assert("ERRORE: il sistema non termina in (P1B,P2A,G)", esecutore.conf_base_corrente.count = 3 and conf_has_state(esecutore.conf_base_corrente,"P1B") and conf_has_state(esecutore.conf_base_corrente,"P2A") and conf_has_state(esecutore.conf_base_corrente,"G"))
 		end
 	t_non_determinismo_2_6
 	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
