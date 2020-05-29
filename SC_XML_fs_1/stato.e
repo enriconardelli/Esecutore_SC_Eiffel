@@ -239,11 +239,13 @@ feature -- routines forse inutili
 		-- controlla se `stato' è contenuto 'propriamente' nel current
 		do
 			if attached stato.stato_genitore as sg then
-				if sg/=current then
-					Result:=contiene_stato(sg)
+				if sg = current then
+					Result := true
 				else
-					Result:=true
+					Result := contiene_stato(sg)
 				end
+			else
+				Result := false
 			end
 		end
 

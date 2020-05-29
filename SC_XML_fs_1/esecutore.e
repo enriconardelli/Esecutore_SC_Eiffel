@@ -388,8 +388,8 @@ feature -- evoluzione della statechart
 
 	sorgenti_ordinate(evento: LINKED_SET[STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]): ARRAY[STATO]
 	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
-	-- Dati eventi e condizioni, restituisce l'array di sorgenti delle transizioni abilitate rispetto a `conf_base_corrente'
-	-- ordinate dalla più esterna alla più interna e guardando i figli dei paralleli secondo l'ordine del file .xml
+	-- Dati eventi e condizioni, restituisce l'array di sorgenti delle transizioni abilitate nella `conf_base_corrente'
+	-- ordinate secondo l'ordine del file .xml
 		do
 			create Result.make_empty
 			across
