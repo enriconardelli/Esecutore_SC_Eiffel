@@ -1,6 +1,6 @@
 note
 	description: "Classe radice del progetto"
-	author: " Daniele Fakhoury & Eloisa Scarsella "
+	author: "EN + studenti corsi PSI"
 	date: "$Date$"
 	revision: "  "
 
