@@ -55,45 +55,33 @@ feature -- Creazione sia per i test che per esecuzione interattiva
 
 feature -- evoluzione della statechart
 
-	evolvi_SC (istanti: ARRAY [LINKED_SET [STRING]])
+	evolvi_SC (eventi: ARRAY [LINKED_SET [STRING]])
 		local
-			indice_istante_corrente: INTEGER
-			i: INTEGER
+			istante: INTEGER
 			prossima_conf_base: ARRAY [STATO]
 			transizioni_eseguibili: ARRAY[TRANSIZIONE]
 			transizione_corrente: TRANSIZIONE
 		do
 			print ("%Nentrato in evolvi_SC:  %N %N")
 			from
-				indice_istante_corrente := 1
+				istante := 1
 			until
-				stato_final (conf_base_corrente) or indice_istante_corrente > istanti.count
+				stato_final (conf_base_corrente) or istante > eventi.count
 			loop
-				if attached istanti [indice_istante_corrente] as istante_corrente then
-					print ("Istante corrente = ")
-					print (indice_istante_corrente)
-					print ("%N")
-					stampa_conf_corrente
+				if attached eventi [istante] as eventi_correnti then
+					stampa_conf_corrente (istante)
 					create prossima_conf_base.make_empty
-					transizioni_eseguibili:=trova_transizioni_eseguibili(istante_corrente, state_chart.condizioni)
+					transizioni_eseguibili:=trova_transizioni_eseguibili(eventi_correnti, state_chart.condizioni)
 					across conf_base_corrente as cbc
---					from
---						i := conf_base_corrente.lower
---					until
---						i = conf_base_corrente.upper + 1
 					loop
---						transizione_corrente := conf_base_corrente [i].transizione_abilitata (istante_corrente, state_chart.condizioni)
-						transizione_corrente := cbc.item.transizione_abilitata (istante_corrente, state_chart.condizioni)
+						transizione_corrente := cbc.item.transizione_abilitata (eventi_correnti, state_chart.condizioni)
 						if attached transizione_corrente as tc and then transizioni_eseguibili.has(tc) then
---							esegui_azioni (tc, conf_base_corrente [i])
 							esegui_azioni (tc, cbc.item)
 							trova_default (tc.target, prossima_conf_base)
 							aggiungi_paralleli (tc.target, prossima_conf_base)
 						else
---							prossima_conf_base.force (conf_base_corrente [i], prossima_conf_base.count + 1)
 							prossima_conf_base.force (cbc.item, prossima_conf_base.count + 1)
 						end
---						i := i + 1
 					end
 					prossima_conf_base := elimina_stati_inattivi(prossima_conf_base)
 					prossima_conf_base := riordina_conf_base(prossima_conf_base)
@@ -101,10 +89,10 @@ feature -- evoluzione della statechart
 						conf_base_corrente.copy (prossima_conf_base)
 					end
 				end
-				indice_istante_corrente := indice_istante_corrente + 1
+				istante := istante + 1
 			end
 			print ("%NHo terminato l'elaborazione degli eventi%N")
-			stampa_conf_corrente
+			stampa_conf_corrente (istante)
 		end
 
 	trova_transizioni_eseguibili(evento: LINKED_SET[STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]): ARRAY[TRANSIZIONE]
@@ -397,12 +385,15 @@ feature -- utilita
 			Result := riordina_conf_base(Result)
 		end
 
-	stampa_conf_corrente
+	stampa_conf_corrente (indice: INTEGER)
 		do
-			print ("configurazione BASE corrente: ")
-			across conf_base_corrente as cc
+			print ("Istante corrente = ")
+			print (indice)
+			print ("%N")
+			print ("  configurazione BASE corrente: ")
+			across conf_base_corrente as cbc
 			loop
-				print (cc.item.id + " ")
+				print (cbc.item.id + " ")
 			end
 			print (" %N")
 		end
