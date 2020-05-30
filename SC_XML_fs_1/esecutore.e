@@ -60,12 +60,10 @@ feature -- evoluzione della statechart
 			indice_istante_corrente: INTEGER
 			i: INTEGER
 			prossima_conf_base: ARRAY [STATO]
---			condizioni_correnti: HASH_TABLE [BOOLEAN, STRING]
 			transizioni_eseguibili: ARRAY[TRANSIZIONE]
 			transizione_corrente: TRANSIZIONE
 		do
 			print ("%Nentrato in evolvi_SC:  %N %N")
---			create condizioni_correnti.make (1)
 			from
 				indice_istante_corrente := 1
 			until
@@ -76,23 +74,26 @@ feature -- evoluzione della statechart
 					print (indice_istante_corrente)
 					print ("%N")
 					stampa_conf_corrente
---					condizioni_correnti.copy (state_chart.condizioni)
 					create prossima_conf_base.make_empty
 					transizioni_eseguibili:=trova_transizioni_eseguibili(istante_corrente, state_chart.condizioni)
-					from
-						i := conf_base_corrente.lower
-					until
-						i = conf_base_corrente.upper + 1
+					across conf_base_corrente as cbc
+--					from
+--						i := conf_base_corrente.lower
+--					until
+--						i = conf_base_corrente.upper + 1
 					loop
-						transizione_corrente := conf_base_corrente [i].transizione_abilitata (istante_corrente, state_chart.condizioni)
+--						transizione_corrente := conf_base_corrente [i].transizione_abilitata (istante_corrente, state_chart.condizioni)
+						transizione_corrente := cbc.item.transizione_abilitata (istante_corrente, state_chart.condizioni)
 						if attached transizione_corrente as tc and then transizioni_eseguibili.has(tc) then
-							esegui_azioni (tc, conf_base_corrente [i])
+--							esegui_azioni (tc, conf_base_corrente [i])
+							esegui_azioni (tc, cbc.item)
 							trova_default (tc.target, prossima_conf_base)
 							aggiungi_paralleli (tc.target, prossima_conf_base)
 						else
-							prossima_conf_base.force (conf_base_corrente [i], prossima_conf_base.count + 1)
+--							prossima_conf_base.force (conf_base_corrente [i], prossima_conf_base.count + 1)
+							prossima_conf_base.force (cbc.item, prossima_conf_base.count + 1)
 						end
-						i := i + 1
+--						i := i + 1
 					end
 					prossima_conf_base := elimina_stati_inattivi(prossima_conf_base)
 					prossima_conf_base := riordina_conf_base(prossima_conf_base)
