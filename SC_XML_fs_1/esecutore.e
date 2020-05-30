@@ -35,18 +35,18 @@ feature {NONE} -- Creazione e avvio interattivo
 feature -- Creazione per i test
 
 	make (nomi_files: ARRAY [STRING])
-			-- prepara la SC con i parametri passati come argomento
-			-- in Eiffel Studio vanno invece scritti mediante il
-			-- menu "Execution" -> "Execution Parameters" -> "Add"
+			-- prepara ed esegue la SC con i parametri passati come argomento
+			-- per esecuzione interattiva gli argomenti vanno scritti in Eiffel Studio
+			-- nel menu "Execution" -> "Execution Parameters" -> "Add"
 			-- doppio click su spazio bianco accanto a "Arguments"
 			-- scrivere i parametri ognuno tra doppi apici
 		do
 			print ("%N=========%N CREAZIONE INIZIO%N")
 			print ("crea la SC in " + nomi_files [1] + "%N")
 			create state_chart.make (nomi_files [1])
+			create ambiente_corrente.make_empty
 			create conf_base_corrente.make_empty
 			conf_base_corrente.copy (state_chart.stato_iniziale)
-			create ambiente_corrente.make_empty
 			if not state_chart.ha_problemi_con_il_file_della_sc then
 				print ("e la esegue con gli eventi in " + nomi_files [2] + "%N")
 				ambiente_corrente.acquisisci_eventi (nomi_files [2])
