@@ -9,7 +9,6 @@ class
 
 create
 	make
---	, start
 
 feature -- Attributi
 
@@ -21,17 +20,6 @@ feature -- Attributi
 
 	conf_base_corrente: ARRAY [STATO]
 			-- insieme degli stati base nella configurazione corrente della SC e non di tutti gli stati attivi
-
---feature {NONE} -- Creazione e avvio interattivo
-
---	start (nomi_files: ARRAY [STRING])
---			-- prepara la SC e avvia la sua esecuzione
---		do
---			make (nomi_files)
---			print ("%N=========%N EVOLUZIONE INIZIO%N")
---			evolvi_SC (ambiente_corrente.eventi_esterni)
---			print ("%N EVOLUZIONE FINE!%N=========%N")
---		end
 
 feature -- Creazione sia per i test che per esecuzione interattiva
 
