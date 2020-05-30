@@ -67,13 +67,11 @@ feature
 			-- inserisce tutti gli eventi definiti nella SC in eventi_nella_SC
 			across state_chart.stati as  scs
 			loop
-				if attached scs.item.transizioni as transizioni then
-					across transizioni as  t
-					loop
-						if attached t.item.evento as e then
-							eventi_nella_SC.put (True, e)
-							print("inserito in eventi_nella_SC evento: " + e + "%N")
-						end
+				across scs.item.transizioni as  t
+				loop
+					if attached t.item.evento as e then
+						eventi_nella_SC.put (True, e)
+						print("inserito in eventi_nella_SC evento: " + e + "%N")
 					end
 				end
 			end

@@ -17,11 +17,11 @@ feature --attributi
 
 	stati: HASH_TABLE [STATO, STRING]
 			-- serve durante l'istanziazione iniziale di stati, transizione e configurazione
-			-- una volta che ï¿½ terminata non serve piï¿½
+			-- una volta che è terminata non serve più
 
 	condizioni: HASH_TABLE [BOOLEAN, STRING]
 			-- serve durante l'istanziazione iniziale di stati, transizione e configurazione
-			-- una volta che ï¿½ terminata non serve piï¿½
+			-- una volta che è terminata non serve più
 
 	albero: XML_CALLBACKS_NULL_FILTER_DOCUMENT
 			-- rappresenta sotto forma di un albero la SC letta dal file

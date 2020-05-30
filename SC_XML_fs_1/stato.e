@@ -27,9 +27,9 @@ feature -- attributi
 
 	id: STRING
 
-	OnEntry: ARRAY[AZIONE]
+	onEntry: ARRAY[AZIONE]
 
-	OnExit: ARRAY[AZIONE]
+	onExit: ARRAY[AZIONE]
 
 feature --creazione
 
@@ -42,8 +42,8 @@ feature --creazione
 			create stato_default.make_empty
 			create stati_figli.make_empty
 			create transizioni.make_empty
-			create OnEntry.make_empty
-			create OnExit.make_empty
+			create onEntry.make_empty
+			create onExit.make_empty
 		ensure
 			attributo_assegnato: id = un_id
 		end
@@ -88,22 +88,31 @@ feature -- setter
 			ora_e_finale: finale
 		end
 
-	set_OnEntry (una_azione: AZIONE)
+	set_onEntry (una_azione: AZIONE)
 		require
 			e_una_azione: una_azione /= VOID
 		do
-			OnEntry.force(una_azione, OnEntry.count+1)
+			onEntry.force(una_azione, onEntry.count+1)
 		ensure
-			azione_assegnata: OnEntry[OnEntry.count] = una_azione
+			azione_assegnata: onEntry[onEntry.count] = una_azione
 		end
 
-	set_OnExit (una_azione: AZIONE)
+	set_onExit (una_azione: AZIONE)
 		require
 			e_una_azione: una_azione /= VOID
 		do
-			OnExit.force (una_azione,OnExit.count+1)
+			onExit.force (una_azione,onExit.count+1)
 		ensure
-			azione_assegnata: OnExit[OnExit.count] = una_azione
+			azione_assegnata: onExit[onExit.count] = una_azione
+		end
+
+	set_genitore (p_genitore: STATO)
+		require
+			genitore_esistente: p_genitore /= Void
+		do
+			stato_genitore := p_genitore
+		ensure
+			genitore_acquisito: stato_genitore = p_genitore
 		end
 
 feature -- stato
@@ -118,15 +127,6 @@ feature -- routines
 	aggiungi_transizione (tr: TRANSIZIONE)
 		do
 			transizioni.force (tr, transizioni.count + 1)
-		end
-
-	set_genitore (p_genitore: STATO)
-		require
-			genitore_esistente: p_genitore /= Void
-		do
-			stato_genitore := p_genitore
-		ensure
-			genitore_acquisito: stato_genitore = p_genitore
 		end
 
 	transizione_abilitata (eventi_correnti: LINKED_SET [STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]): detachable TRANSIZIONE
