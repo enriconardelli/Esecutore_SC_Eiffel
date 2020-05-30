@@ -8,21 +8,6 @@
 	</datamodel>
 	<parallel id="cronometro">
 		<state id="conteggio" initial="non_conta">
-			<state id="conta">
-				<onentry>
-					<assign expr="true" location="stato_conta" />
-				</onentry>
-				<transition event="avvio" target="non_conta" />
-				<transition event="tick" cond="stato_incrementa" target="conta">
-					<log name="aumenta" />
-				</transition>
-				<transition event="tick" cond="stato_decrementa" target="conta" />
-					<log name="diminuisci" />
-				</transition>
-				<onexit>
-					<assign expr="false" location="stato_conta" />
-				</onexit>
-			</state>
 			<state id="non_conta">
 				<onentry>
 					<assign expr="true" location="stato_non_conta" />
@@ -33,6 +18,23 @@
 				</transition>
 				<onexit>
 					<assign expr="false" location="stato_non_conta" />
+				</onexit>
+			</state>
+			<state id="conta">
+				<onentry>
+					<assign expr="true" location="stato_conta" />
+				</onentry>
+				<transition event="avvio" target="non_conta" >
+					<log name="transizione avvio verso non_conta" />
+				</transition>
+				<transition event="tick" cond="stato_incrementa" target="conta">
+					<log name="aumenta" />
+				</transition>
+				<transition event="tick" cond="stato_decrementa" target="conta" />
+					<log name="diminuisci" />
+				</transition>
+				<onexit>
+					<assign expr="false" location="stato_conta" />
 				</onexit>
 			</state>
 		</state>
