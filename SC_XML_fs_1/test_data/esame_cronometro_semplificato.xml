@@ -10,7 +10,7 @@
 		<state id="conteggio" initial="non_conta">
 			<state id="conta">
 				<onentry>
-					<assign expr="true" location="stato_conta"/>
+					<assign expr="true" location="stato_conta" />
 				</onentry>
 				<transition event="avvio" target="non_conta" />
 				<transition event="tick" cond="stato_incrementa" target="conta">
@@ -20,19 +20,19 @@
 					<log name="diminuisci" />
 				</transition>
 				<onexit>
-					<assign expr="false" location="stato_conta"/>
+					<assign expr="false" location="stato_conta" />
 				</onexit>
 			</state>
 			<state id="non_conta">
 				<onentry>
-					<assign expr="true" location="stato_non_conta"/>
+					<assign expr="true" location="stato_non_conta" />
 				</onentry>
 				<transition event="avvio" target="conta" />
 				<transition event="azzera" target="non_conta">
 					<log name="set_zero" />
 				</transition>
 				<onexit>
-					<assign expr="false" location="stato_non_conta"/>
+					<assign expr="false" location="stato_non_conta" />
 				</onexit>
 			</state>
 		</state>
@@ -55,20 +55,20 @@
 		<state id="variazione" initial="incrementa">
 			<state id="incrementa">
 				<onentry>
-					<assign expr="true" location="stato_incrementa"/>
+					<assign expr="true" location="stato_incrementa" />
 				</onentry>
 				<transition event="inverti" cond="stato_non_conta" target="decrementa" />
 				<onexit>
-					<assign expr="false" location="stato_incrementa"/>
+					<assign expr="false" location="stato_incrementa" />
 				</onexit>
 			</state>
 			<state id="decrementa">
 				<onentry>
-					<assign expr="true" location="stato_decrementa"/>
+					<assign expr="true" location="stato_decrementa" />
 				</onentry>
 				<transition event="inverti" cond="stato_non_conta" target="incrementa" />
 				<onexit>
-					<assign expr="false" location="stato_decrementa"/>
+					<assign expr="false" location="stato_decrementa" />
 				</onexit>
 			</state>
 		</state>
