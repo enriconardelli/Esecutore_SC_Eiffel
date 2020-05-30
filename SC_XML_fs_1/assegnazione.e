@@ -35,7 +35,7 @@ feature -- creazione
 
 	action (condizioni: HASH_TABLE [BOOLEAN, STRING])
 		do
-			print ("Pongo " + condizione_da_modificare + " = " + valore_da_assegnare.out + "%N")
+			print ("ASSIGN: " + condizione_da_modificare + " = " + valore_da_assegnare.out + "%N")
 			modifica_condizioni(condizioni)
 		end
 

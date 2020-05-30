@@ -188,6 +188,7 @@ feature -- routines forse inutili
 
 	numero_transizioni_abilitate (evento_corrente: STRING; hash_delle_condizioni: HASH_TABLE [BOOLEAN, STRING]): INTEGER
 			-- ritorna il numero di transizioni attivabili con evento_corrente nella configurazione corrente
+			-- usata solo nei test
 		do
 			across transizioni as t
 			loop
@@ -202,6 +203,7 @@ feature -- routines forse inutili
 		-- verifica, in caso `una_transizione' senza evento se la condizione e' vera
 		-- Giulia Iezzi, Alessando Filippo 12/apr/2020; EN 21/apr/2020
 		-- TODO completare test per questa feature
+		-- usata solo nei test
 		do
 			if attached una_transizione.evento as e then
 				if e.is_equal (evento_corrente) then
@@ -226,6 +228,7 @@ feature -- routines forse inutili
 		-- ritorna Current se con `evento_corrente' nella configurazione corrente non è attivabile alcuna transizione
 		-- ritorna lo stato a cui porta la transizione di indice minimo attivabile nella configurazione corrente con `evento_corrente'
 		-- Giulia Iezzi, Alessando Filippo 12/apr/2020; EN 21/apr/2020
+		-- non viene mai chiamata
 		do
 			across transizioni as t
 			loop
@@ -240,6 +243,7 @@ feature -- routines forse inutili
 
 	get_transition (evento_corrente: STRING): TRANSIZIONE
 		-- ritorna la transizione abilitata con `evento_corrente'
+		-- non viene mai invocata
 		local
 			index_count: INTEGER
 			index: INTEGER

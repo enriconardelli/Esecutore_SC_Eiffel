@@ -362,7 +362,7 @@ feature -- inizializzazione SC
 						end
 					else
 						if attached stati.item (id_stato) as si then
-							print ("lo stato" + si.id + "ha una transizione non valida %N")
+							print ("lo stato " + si.id + " ha una transizione non valida %N")
 						end
 					end
 				end
@@ -498,7 +498,7 @@ feature -- inizializzazione SC
 				antenati.put (corrente.id, corrente.id)
 				corrente := corrente.genitore
 			end
-				-- trova il piï¿½ basso antenato di p_destinazione in "antenati"
+				-- trova il più basso antenato di p_destinazione in "antenati"
 			from
 				corrente := p_destinazione.genitore
 			until
@@ -510,7 +510,7 @@ feature -- inizializzazione SC
 		end
 
 		-- Aggiungere 'feature' per tracciare quanto accade scrivendo su file model_out.txt:
-		--la SC costruita dal programma (cioï¿½ il file model.xml letto)
+		--la SC costruita dal programma (cioè il file model.xml letto)
 		--la configurazione iniziale in termini di stato e nomi-valori delle condizioni
 		--l'evoluzione della SC in termini di sequenza di quintuple:
 		--stato, evento, condizione, azione, target
