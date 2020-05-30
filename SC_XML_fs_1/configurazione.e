@@ -328,7 +328,7 @@ feature -- inizializzazione SC
 
 	riempi_stato (id_stato: STRING; element: XML_ELEMENT)
 		local
-			transition_list: LIST [XML_ELEMENT] --lista di tutto ciï¿½ che appartiene allo stato
+			transition_list: LIST [XML_ELEMENT] --lista di tutto ciò che appartiene allo stato
 			assign_list: LIST [XML_ELEMENT]
 			transizione: TRANSIZIONE
 		do
@@ -343,7 +343,7 @@ feature -- inizializzazione SC
 						-- TODO gestire fallimento del test per assenza clausola target
 					if attached stati.item (tt.value) as ts then
 						if attached stati.item (id_stato) as sr then
-							if ts.contiene_stato(sr) or else not attached{STATO_AND} trova_pseudo_contesto(sr,ts) then
+							if ts.antenato_di(sr) or else not attached{STATO_AND} trova_pseudo_contesto(sr,ts) then
 								-- evita transizioni tra figli di paralleli
 								create transizione.make_with_target (ts, sr)
 								if attached transition_list.item_for_iteration.attribute_by_name ("type") as tp then
@@ -384,7 +384,7 @@ feature -- inizializzazione SC
 		do
 			if attached{STATO_XOR} sorgente then
 				-- secondo la specifica XML `internal' può essere eseguita solo con sorgente XOR
-				if attached target.stato_genitore as tr_gn then
+				if attached target.genitore as tr_gn then
 					if tr_gn = sorgente then
 						Result := TRUE
 					else
@@ -491,20 +491,20 @@ feature -- inizializzazione SC
 			create antenati.make (0)
 				-- "marca" tutti gli antenati di p_sorgente incluso
 			from
-				corrente := p_sorgente.stato_genitore
+				corrente := p_sorgente.genitore
 			until
 				corrente = Void
 			loop
 				antenati.put (corrente.id, corrente.id)
-				corrente := corrente.stato_genitore
+				corrente := corrente.genitore
 			end
 				-- trova il piï¿½ basso antenato di p_destinazione in "antenati"
 			from
-				corrente := p_destinazione.stato_genitore
+				corrente := p_destinazione.genitore
 			until
 				corrente = Void or else antenati.has (corrente.id)
 			loop
-				corrente := corrente.stato_genitore
+				corrente := corrente.genitore
 			end
 			Result := corrente
 		end

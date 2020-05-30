@@ -46,8 +46,7 @@ feature
 				eventi_sulla_riga := file.last_string.twin.split (' ')
 				create eventi_contemporanei.make
 				eventi_contemporanei.compare_objects
-				across
-					eventi_sulla_riga as er
+				across eventi_sulla_riga as er
 				loop
 					eventi_contemporanei.force (er.item)
 				end

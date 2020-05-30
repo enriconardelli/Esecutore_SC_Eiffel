@@ -21,7 +21,7 @@ feature -- attributi
 
 	stato_default: ARRAY[STATO]
 
-	stato_genitore: detachable STATO
+	genitore: detachable STATO
 
 	stati_figli: ARRAY [STATO]
 
@@ -110,9 +110,9 @@ feature -- setter
 		require
 			genitore_esistente: p_genitore /= Void
 		do
-			stato_genitore := p_genitore
+			genitore := p_genitore
 		ensure
-			genitore_acquisito: stato_genitore = p_genitore
+			genitore_acquisito: genitore = p_genitore
 		end
 
 feature -- stato
@@ -122,12 +122,14 @@ feature -- stato
 			Result := stati_figli.is_empty
 		end
 
-feature -- routines
+feature -- modifica
 
 	aggiungi_transizione (tr: TRANSIZIONE)
 		do
 			transizioni.force (tr, transizioni.count + 1)
 		end
+
+feature -- situazione
 
 	transizione_abilitata (eventi_correnti: LINKED_SET [STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]): detachable TRANSIZIONE
 		local
@@ -153,9 +155,32 @@ feature -- routines
 				index_count := index_count + 1
 			end
 			if Result = Void then
-				if attached stato_genitore as sg then
+				if attached genitore as sg then
 					Result := sg.transizione_abilitata (eventi_correnti, condizioni)
 				end
+			end
+		end
+
+	antenato_di (uno_stato: STATO): BOOLEAN
+		-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
+		-- controlla se il Current è antenato "proprio" di `uno_stato'
+		do
+			if attached uno_stato.genitore as sg then
+				if sg = Current then
+					Result := true
+				else
+					Result := antenato_di (sg)
+				end
+			else -- `uno_stato' non ha antenati
+				Result := false
+			end
+		end
+
+	incomparabile_con(uno_stato: STATO): BOOLEAN
+	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
+		do
+			if Current /= uno_stato and not antenato_di(uno_stato) and not uno_stato.antenato_di(Current) then
+				Result := true
 			end
 		end
 
@@ -234,26 +259,4 @@ feature -- routines forse inutili
 			Result := transizioni [index]
 		end
 
-	contiene_stato(stato: STATO): BOOLEAN
-		-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
-		-- controlla se `stato' è contenuto 'propriamente' nel current
-		do
-			if attached stato.stato_genitore as sg then
-				if sg = current then
-					Result := true
-				else
-					Result := contiene_stato(sg)
-				end
-			else
-				Result := false
-			end
-		end
-
-	intersezione_vuota(stato: STATO): BOOLEAN
-	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
-		do
-			if not contiene_stato(stato) and not stato.contiene_stato(current) and current/=stato then
-				Result := true
-			end
-		end
 end

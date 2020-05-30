@@ -112,10 +112,10 @@ feature -- evoluzione della statechart
 			until
 				i=sorgenti.upper+1
 			loop
-				if i = sorgenti.upper or else not sorgenti[i].contiene_stato(sorgenti[i+1]) then
+				if i = sorgenti.upper or else not sorgenti[i].antenato_di(sorgenti[i+1]) then
 					-- una sorgente che contiene la successiva non deve essere eseguita
 					if attached sorgenti[i].transizione_abilitata (evento, condizioni) as ta then
-						if attached uscita_precedente implies genitore_piu_grande(ta).intersezione_vuota(uscita_precedente) then
+						if attached uscita_precedente implies genitore_piu_grande(ta).incomparabile_con(uscita_precedente) then
 							-- impedendo di uscire dal parallelo se con lo stesso evento non sono precedentemente uscito
 							transizioni.force (ta,transizioni.count+1)
 							uscita_precedente:=genitore_piu_grande(ta)
@@ -173,7 +173,7 @@ feature -- evoluzione della statechart
 				loop
 					if attached stato_temp then
 						Result := stato_temp
-						stato_temp := stato_temp.stato_genitore
+						stato_temp := stato_temp.genitore
 					end
 				end
 			end
@@ -185,7 +185,7 @@ feature -- evoluzione della statechart
 			i: INTEGER
 		do
 			target.set_attivo
-			if attached {STATO_AND} target.stato_genitore  as sgt and then not sgt.attivo then
+			if attached {STATO_AND} target.genitore  as sgt and then not sgt.attivo then
 				from
 					i := sgt.stato_default.lower
 				until
@@ -197,7 +197,7 @@ feature -- evoluzione della statechart
 					i := i + 1
 				end
 			end
-			if attached target.stato_genitore as sgt then
+			if attached target.genitore as sgt then
 				aggiungi_paralleli (sgt, prossima_conf_base)
 			end
 		end
@@ -233,20 +233,20 @@ feature -- evoluzione della statechart
 			create antenati.make (0)
 				-- "marca" tutti gli antenati di p_sorgente incluso
 			from
-				corrente := p_sorgente.stato_genitore
+				corrente := p_sorgente.genitore
 			until
 				corrente = Void
 			loop
 				antenati.put (corrente.id, corrente.id)
-				corrente := corrente.stato_genitore
+				corrente := corrente.genitore
 			end
 				-- trova il pi� basso antenato di p_destinazione in "antenati"
 			from
-				corrente := p_destinazione.stato_genitore
+				corrente := p_destinazione.genitore
 			until
 				corrente = Void or else antenati.has (corrente.id)
 			loop
-				corrente := corrente.stato_genitore
+				corrente := corrente.genitore
 			end
 			Result := corrente
 		end
@@ -321,7 +321,7 @@ feature -- esecuzione azioni
 
 	esegui_azioni_onentry (p_contesto: detachable STATO; p_target: STATO)
 		do
-			if attached p_target.stato_genitore as sg and then sg /= p_contesto then
+			if attached p_target.genitore as sg and then sg /= p_contesto then
 				esegui_azioni_onentry (p_contesto, sg)
 				esegui_onentry(sg)
 			end
