@@ -129,7 +129,7 @@ feature -- routines
 			genitore_acquisito: stato_genitore = p_genitore
 		end
 
-	transizione_abilitata (istante_corrente: LINKED_SET [STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]): detachable TRANSIZIONE
+	transizione_abilitata (eventi_correnti: LINKED_SET [STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]): detachable TRANSIZIONE
 		local
 			index_count: INTEGER
 			transizione_corrente: detachable TRANSIZIONE
@@ -145,7 +145,7 @@ feature -- routines
 				index_count = transizioni.upper + 1 or Result /= Void
 			loop
 				transizione_corrente := transizioni [index_count]
-				evento_abilitato := transizione_corrente.check_evento (istante_corrente)
+				evento_abilitato := transizione_corrente.check_evento (eventi_correnti)
 				condizione_abilitata := transizione_corrente.check_condizione (condizioni)
 				if evento_abilitato and condizione_abilitata then
 					Result := transizioni [index_count]
@@ -154,7 +154,7 @@ feature -- routines
 			end
 			if Result = Void then
 				if attached stato_genitore as sg then
-					Result := sg.transizione_abilitata (istante_corrente, condizioni)
+					Result := sg.transizione_abilitata (eventi_correnti, condizioni)
 				end
 			end
 		end
