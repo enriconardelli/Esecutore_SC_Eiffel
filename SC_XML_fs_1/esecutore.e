@@ -396,5 +396,13 @@ feature -- utilita
 				print (cbc.item.id + " ")
 			end
 			print (" %N")
+			if indice <= ambiente_corrente.eventi_esterni.count then
+				print ("  eventi correnti : ")
+				across ambiente_corrente.eventi_esterni[indice] as eventi_correnti
+				loop
+					print (eventi_correnti.item + " ")
+				end
+				print (" %N")
+			end
 		end
 end

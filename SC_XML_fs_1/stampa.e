@@ -34,7 +34,7 @@ feature -- azione
 
 	action (condizioni: HASH_TABLE [BOOLEAN, STRING])
 		do
-			print ("LOG:   " + testo + "%N")
+			print ("  LOG:   " + testo + "%N")
 		end
 
 end
