@@ -11,7 +11,7 @@
 	<state id="B" initial="B1" >
 		<onentry>
 			<assign location="on_entryB" expr="true" />
-        </onentry>
+		</onentry>
 		<state id="B1">
 			<onentry>
 				<assign location="on_entryB1" expr="true" />

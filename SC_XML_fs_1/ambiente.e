@@ -86,7 +86,7 @@ feature
 				across ee.item as ei
 				loop
 					if not eventi_nella_SC.has (ei.item) then
-						print ("%NATTENZIONE: l'evento " + ei.item + " non viene utilizzato!%N")
+						print ("ATTENZIONE: l'evento " + ei.item + " non viene utilizzato!%N")
 						Result := false
 					end
 				end
