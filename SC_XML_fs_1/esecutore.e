@@ -8,7 +8,8 @@ class
 	ESECUTORE
 
 create
-	make, start
+	make
+--	, start
 
 feature -- Attributi
 
@@ -21,25 +22,26 @@ feature -- Attributi
 	conf_base_corrente: ARRAY [STATO]
 			-- insieme degli stati base nella configurazione corrente della SC e non di tutti gli stati attivi
 
-feature {NONE} -- Creazione e avvio interattivo
+--feature {NONE} -- Creazione e avvio interattivo
 
-	start (nomi_files: ARRAY [STRING])
-			-- prepara la SC e avvia la sua esecuzione
-		do
-			make (nomi_files)
-			print ("%N=========%N EVOLUZIONE INIZIO%N")
-			evolvi_SC (ambiente_corrente.eventi_esterni)
-			print ("%N EVOLUZIONE FINE!%N=========%N")
-		end
+--	start (nomi_files: ARRAY [STRING])
+--			-- prepara la SC e avvia la sua esecuzione
+--		do
+--			make (nomi_files)
+--			print ("%N=========%N EVOLUZIONE INIZIO%N")
+--			evolvi_SC (ambiente_corrente.eventi_esterni)
+--			print ("%N EVOLUZIONE FINE!%N=========%N")
+--		end
 
-feature -- Creazione per i test
+feature -- Creazione sia per i test che per esecuzione interattiva
 
 	make (nomi_files: ARRAY [STRING])
 			-- prepara ed esegue la SC con i parametri passati come argomento
 			-- per esecuzione interattiva gli argomenti vanno scritti in Eiffel Studio
 			-- nel menu "Execution" -> "Execution Parameters" -> "Add"
 			-- doppio click su spazio bianco accanto a "Arguments"
-			-- scrivere i parametri ognuno tra doppi apici
+			-- scrivere i parametri ognuno tra doppi apici includendo l'estensione
+			-- .xml per il file della SC e .txt per il file degli eventi
 		do
 			print ("%N=========%N CREAZIONE INIZIO%N")
 			print ("crea la SC in " + nomi_files [1] + "%N")
@@ -75,7 +77,7 @@ feature -- evoluzione della statechart
 			transizione_corrente: TRANSIZIONE
 		do
 			print ("%Nentrato in evolvi_SC:  %N %N")
-			print ("stato iniziale:  ")
+--			print ("stato iniziale:  ")
 			stampa_conf_corrente
 			create condizioni_correnti.make (1)
 			from
@@ -105,7 +107,7 @@ feature -- evoluzione della statechart
 						end
 						i := i + 1
 					end
-					prossima_conf_base := stati_attivi_conf(prossima_conf_base)
+					prossima_conf_base := elimina_stati_inattivi(prossima_conf_base)
 					prossima_conf_base := riordina_conf_base(prossima_conf_base)
 					if not prossima_conf_base.is_empty then
 						conf_base_corrente.copy (prossima_conf_base)
@@ -114,7 +116,7 @@ feature -- evoluzione della statechart
 				count_istante_corrente := count_istante_corrente + 1
 				stampa_conf_corrente
 			end
-			print ("%NHo terminato l'elaborazione degli eventi nella seguente configurazione base%N")
+			print ("%NHo terminato l'elaborazione degli eventi%N")
 			stampa_conf_corrente
 		end
 
@@ -151,7 +153,7 @@ feature -- evoluzione della statechart
 			Result:=transizioni
 		end
 
-	stati_attivi_conf(conf_da_modificare: ARRAY[STATO]): ARRAY[STATO]
+	elimina_stati_inattivi(conf_da_modificare: ARRAY[STATO]): ARRAY[STATO]
 	-- Arianna & Riccardo 26/04/2020
 	-- elimina stati inattivi dalla configurazione
 		local
@@ -246,20 +248,6 @@ feature -- evoluzione della statechart
 			end
 		end
 
-	esegui_azioni (transizione: TRANSIZIONE; stato: STATO)
-		local
-			contesto: detachable STATO
-		do
-			if transizione.internal then
-				contesto := transizione.sorgente
-			else
-				contesto := trova_contesto (transizione.sorgente, transizione.target)
-			end
-			esegui_azioni_onexit (genitore_piu_grande(transizione))
-			esegui_azioni_transizione (transizione.azioni)
-			esegui_azioni_onentry (contesto, transizione.target)
-		end
-
 	trova_contesto (p_sorgente, p_destinazione: STATO): detachable STATO
 			-- trova il contesto in base alla specifica SCXML secondo cui il contesto
 			-- è il minimo antenato comune PROPRIO a p_sorgente e p_destinazione
@@ -286,6 +274,22 @@ feature -- evoluzione della statechart
 				corrente := corrente.stato_genitore
 			end
 			Result := corrente
+		end
+
+feature -- esecuzione azioni
+
+	esegui_azioni (transizione: TRANSIZIONE; stato: STATO)
+		local
+			contesto: detachable STATO
+		do
+			if transizione.internal then
+				contesto := transizione.sorgente
+			else
+				contesto := trova_contesto (transizione.sorgente, transizione.target)
+			end
+			esegui_azioni_onexit (genitore_piu_grande(transizione))
+			esegui_azioni_transizione (transizione.azioni)
+			esegui_azioni_onentry (contesto, transizione.target)
 		end
 
 	esegui_onexit (p_stato_corrente: STATO)
@@ -348,6 +352,8 @@ feature -- evoluzione della statechart
 			end
 		end
 
+feature -- controllo
+
 	stato_final (stato: ARRAY [STATO]): BOOLEAN
 		require
 			contesto: conf_base_corrente /= VOID
@@ -365,6 +371,8 @@ feature -- evoluzione della statechart
 				i := i + 1
 			end
 		end
+
+feature -- utilita
 
 	riordina_conf_base(conf_base:ARRAY[STATO]): ARRAY[STATO]
 	--Agulini Claudia & Fiorini Federico 11/05/2020
@@ -404,7 +412,7 @@ feature -- evoluzione della statechart
 
 	stampa_conf_corrente
 		do
-			print ("configurazione corrente: ")
+			print ("configurazione BASE corrente: ")
 			across conf_base_corrente as cc
 			loop
 				print (cc.item.id + " ")
