@@ -13,8 +13,9 @@ create
 feature -- Attributi
 
 	eventi_esterni: ARRAY [LINKED_SET [STRING]]
-			-- memorizza gli eventi letti dal file
-			-- l'array rappresenta gli istanti mentre ogni linked_list l'insieme degli eventi che occorrono nell'istante specifico
+			-- memorizza il file degli eventi esterni cui la SC reagisce
+			-- l'array rappresenta tutti gli eventi mentre ogni linked_list
+			-- l'insieme degli eventi che occorrono in uno stesso istante
 
 feature --creazione
 
@@ -64,31 +65,22 @@ feature
 			evento_assente: BOOLEAN
 		do
 			create eventi_nella_SC.make (0)
-
 			-- inserisce tutti gli eventi definiti nella SC in eventi_nella_SC
-			-- TODO convertire from loop in across loop
-			from
-				state_chart.stati.start
-			until
-				state_chart.stati.after
+			across state_chart.stati as  scs
 			loop
-				if attached state_chart.stati.item_for_iteration.transizioni as tr then
-					from
-						j := 1
-					until
-						j = tr.count + 1
+				if attached scs.item.transizioni as transizioni then
+					across transizioni as  t
 					loop
-						if attached tr [j].evento as e then
+						if attached t.item.evento as e then
 							eventi_nella_SC.put (True, e)
 						end
-						j := j + 1
 					end
 				end
-				state_chart.stati.forth
 			end
 
 			-- verifica che ogni evento esterno sia presente nella SC
 			-- TODO convertire from loop in across loop
+--			across eventi_esterni as ee
 			from
 				i := eventi_esterni.lower
 			until
