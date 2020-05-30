@@ -460,16 +460,20 @@ feature -- inizializzazione SC
 			-- crea e inizializza `albero'
 		local
 			parser: XML_PARSER
+			path_file_SC: PATH
 		do
 				--| Instantiate parser
 			create {XML_STANDARD_PARSER} parser.make
 				--| Build tree callbacks
 			create albero.make_null
+			create path_file_SC.make_from_string (nome_file_SC)
 			parser.set_callbacks (albero)
 				--| Parse the `file_name' content
-			parser.parse_from_filename (nome_file_SC)
+			parser.parse_from_path (path_file_SC)
 			if parser.error_occurred then
-				print ("Parsing error!!! %N")
+				print ("Parsing error!!! %N ID: ")
+				print (parser.last_error) print (" - ")
+				print (parser.last_error_description) print ("%N ")
 				ha_problemi_con_il_file_della_sc := TRUE
 			else
 				print ("Parsing OK. %N")
