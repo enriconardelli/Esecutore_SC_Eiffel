@@ -61,8 +61,6 @@ feature
 			-- Segnala l'eventuale presenza di eventi incompatibili
 		local
 			eventi_nella_SC: HASH_TABLE [BOOLEAN, STRING]
-			i, j: INTEGER
-			evento_assente: BOOLEAN
 		do
 			create eventi_nella_SC.make (0)
 			-- inserisce tutti gli eventi definiti nella SC in eventi_nella_SC
@@ -77,32 +75,18 @@ feature
 					end
 				end
 			end
-
 			-- verifica che ogni evento esterno sia presente nella SC
-			-- TODO convertire from loop in across loop
---			across eventi_esterni as ee
-			from
-				i := eventi_esterni.lower
-			until
-				i = eventi_esterni.upper + 1
+			Result := true
+			across eventi_esterni as ee
 			loop
-				-- TODO convertire from loop in across loop
-				from
-					j := eventi_esterni [i].lower
-				until
-					j = eventi_esterni [i].count + 1
+				across ee.item as ei
 				loop
-					if attached eventi_esterni[i].i_th (j) as ei then
-						if not eventi_nella_SC.has (ei) then
-						print ("%NATTENZIONE: l'evento " + ei + " non viene utilizzato!%N")
-						evento_assente := True
-						end
+					if not eventi_nella_SC.has (ei.item) then
+						print ("%NATTENZIONE: l'evento " + ei.item + " non viene utilizzato!%N")
+						Result := false
 					end
-					j := j + 1
 				end
-				i := i + 1
 			end
-			Result := not evento_assente
 		end
 
 end
