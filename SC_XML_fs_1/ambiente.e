@@ -15,7 +15,8 @@ feature -- Attributi
 	eventi_esterni: ARRAY [LINKED_SET [STRING]]
 			-- memorizza il file degli eventi esterni cui la SC reagisce
 			-- l'array rappresenta tutti gli eventi mentre ogni linked_list
-			-- l'insieme degli eventi che occorrono in uno stesso istante
+			-- l'insieme degli eventi che occorrono contemporaneamente, cioè
+			-- nella stesso quanto di tempo rappresentato da una posizione dell'array
 
 feature --creazione
 
@@ -32,8 +33,8 @@ feature
 		local
 			file: PLAIN_TEXT_FILE
 			i: INTEGER
-			events_read: LIST [STRING]
-			istante: LINKED_SET [STRING]
+			eventi_sulla_riga: LIST [STRING]
+			eventi_contemporanei: LINKED_SET [STRING]
 		do
 			create file.make_open_read (nome_file_eventi)
 			from
@@ -42,15 +43,15 @@ feature
 				file.off
 			loop
 				file.read_line
-				events_read := file.last_string.twin.split (' ')
-				create istante.make
-				istante.compare_objects
+				eventi_sulla_riga := file.last_string.twin.split (' ')
+				create eventi_contemporanei.make
+				eventi_contemporanei.compare_objects
 				across
-					events_read as er
+					eventi_sulla_riga as er
 				loop
-					istante.force (er.item)
+					eventi_contemporanei.force (er.item)
 				end
-				eventi_esterni.force (istante, i)
+				eventi_esterni.force (eventi_contemporanei, i)
 				i := i + 1
 			end
 			file.close
@@ -71,6 +72,7 @@ feature
 					loop
 						if attached t.item.evento as e then
 							eventi_nella_SC.put (True, e)
+							print("inserito in eventi_nella_SC evento: " + e + "%N")
 						end
 					end
 				end
