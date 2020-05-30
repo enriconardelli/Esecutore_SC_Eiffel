@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scxml initial="X" version="1.0" xmlns="http://www.w3.org/2005/07/scxml">
 	<datamodel>
+		<data id="stato_conta" expr="false" />
 		<data id="stato_non_conta" expr="true" />
 		<data id="stato_incrementa" expr="true" />
 		<data id="stato_decrementa" expr="false" />		
@@ -8,6 +9,9 @@
 	<parallel id="cronometro">
 		<state id="conteggio" initial="non_conta">
 			<state id="conta">
+				<onentry>
+					<assign expr="true" location="stato_conta"/>
+				</onentry>
 				<transition event="avvio" target="non_conta" />
 				<transition event="tick" cond="stato_incrementa" target="conta">
 					<log name="aumenta" />
@@ -15,6 +19,9 @@
 				<transition event="tick" cond="stato_decrementa" target="conta" />
 					<log name="diminuisci" />
 				</transition>
+				<onexit>
+					<assign expr="false" location="stato_conta"/>
+				</onexit>
 			</state>
 			<state id="non_conta">
 				<onentry>
@@ -33,7 +40,7 @@
 		<state id="visualizzazione" initial="visualizza">
 			<state id="visualizza">
 				<transition event="prendi" target="non_visualizza" />
-				<transition event="tick" target="visualizza">
+				<transition event="tick" cond="stato_conta" target="visualizza">
 					<log name="visore := min + sec" />
 				</transition>
 			</state>
