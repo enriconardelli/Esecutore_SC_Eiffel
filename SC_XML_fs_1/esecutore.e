@@ -57,35 +57,34 @@ feature -- evoluzione della statechart
 
 	evolvi_SC (istanti: ARRAY [LINKED_SET [STRING]])
 		local
-			count_istante_corrente: INTEGER
+			indice_istante_corrente: INTEGER
 			i: INTEGER
 			prossima_conf_base: ARRAY [STATO]
-			condizioni_correnti: HASH_TABLE [BOOLEAN, STRING]
+--			condizioni_correnti: HASH_TABLE [BOOLEAN, STRING]
 			transizioni_eseguibili: ARRAY[TRANSIZIONE]
 			transizione_corrente: TRANSIZIONE
 		do
 			print ("%Nentrato in evolvi_SC:  %N %N")
---			print ("stato iniziale:  ")
-			stampa_conf_corrente
-			create condizioni_correnti.make (1)
+--			create condizioni_correnti.make (1)
 			from
-				count_istante_corrente := 1
+				indice_istante_corrente := 1
 			until
-				stato_final (conf_base_corrente) or count_istante_corrente > istanti.count
+				stato_final (conf_base_corrente) or indice_istante_corrente > istanti.count
 			loop
-				if attached istanti [count_istante_corrente] as istante_corrente then
-					print ("Indice istante corrente = ")
-					print (count_istante_corrente)
+				if attached istanti [indice_istante_corrente] as istante_corrente then
+					print ("Istante corrente = ")
+					print (indice_istante_corrente)
 					print ("%N")
-					condizioni_correnti.copy (state_chart.condizioni)
+					stampa_conf_corrente
+--					condizioni_correnti.copy (state_chart.condizioni)
 					create prossima_conf_base.make_empty
-					transizioni_eseguibili:=trova_transizioni_eseguibili(istante_corrente, condizioni_correnti)
+					transizioni_eseguibili:=trova_transizioni_eseguibili(istante_corrente, state_chart.condizioni)
 					from
 						i := conf_base_corrente.lower
 					until
 						i = conf_base_corrente.upper + 1
 					loop
-						transizione_corrente := conf_base_corrente [i].transizione_abilitata (istante_corrente, condizioni_correnti)
+						transizione_corrente := conf_base_corrente [i].transizione_abilitata (istante_corrente, state_chart.condizioni)
 						if attached transizione_corrente as tc and then transizioni_eseguibili.has(tc) then
 							esegui_azioni (tc, conf_base_corrente [i])
 							trova_default (tc.target, prossima_conf_base)
@@ -101,8 +100,7 @@ feature -- evoluzione della statechart
 						conf_base_corrente.copy (prossima_conf_base)
 					end
 				end
-				count_istante_corrente := count_istante_corrente + 1
-				stampa_conf_corrente
+				indice_istante_corrente := indice_istante_corrente + 1
 			end
 			print ("%NHo terminato l'elaborazione degli eventi%N")
 			stampa_conf_corrente

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scxml initial="X" version="1.0" xmlns="http://www.w3.org/2005/07/scxml">
+<scxml initial="cronometro" version="1.0" xmlns="http://www.w3.org/2005/07/scxml">
 	<datamodel>
 		<data id="stato_conta" expr="false" />
 		<data id="stato_non_conta" expr="true" />
