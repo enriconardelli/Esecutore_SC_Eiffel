@@ -36,24 +36,29 @@ feature
 			eventi_sulla_riga: LIST [STRING]
 			eventi_contemporanei: LINKED_SET [STRING]
 		do
-			create file.make_open_read (nome_file_eventi)
-			from
-				i := 1
-			until
-				file.off
-			loop
-				file.read_line
-				eventi_sulla_riga := file.last_string.twin.split (' ')
-				create eventi_contemporanei.make
-				eventi_contemporanei.compare_objects
-				across eventi_sulla_riga as er
+			create file.make_with_name (nome_file_eventi)
+			if file.exists then
+				file.open_read
+				from
+					i := 1
+				until
+					file.off
 				loop
-					eventi_contemporanei.force (er.item)
+					file.read_line
+					eventi_sulla_riga := file.last_string.twin.split (' ')
+					create eventi_contemporanei.make
+					eventi_contemporanei.compare_objects
+					across eventi_sulla_riga as er
+					loop
+						eventi_contemporanei.force (er.item)
+					end
+					eventi_esterni.force (eventi_contemporanei, i)
+					i := i + 1
 				end
-				eventi_esterni.force (eventi_contemporanei, i)
-				i := i + 1
+				file.close
+			else
+				print ("%N ERRORE: il file " + nome_file_eventi + " non esiste! %N")
 			end
-			file.close
 		end
 
 	verifica_eventi_esterni(state_chart: CONFIGURAZIONE): BOOLEAN
