@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml initial="X" version="1.0" xmlns="http://www.w3.org/2005/07/scxml">
+	<datamodel>
+		<data id="stato_non_conta" expr="true" />
+		<data id="stato_incrementa" expr="true" />
+		<data id="stato_decrementa" expr="false" />		
+	</datamodel>
+	<parallel id="cronometro">
+		<state id="conteggio" initial="non_conta">
+			<state id="conta">
+				<transition event="avvio" target="non_conta" />
+				<transition event="tick" cond="stato_incrementa" target="conta">
+					<log name="aumenta" />
+				</transition>
+				<transition event="tick" cond="stato_decrementa" target="conta" />
+					<log name="diminuisci" />
+				</transition>
+			</state>
+			<state id="non_conta">
+				<onentry>
+					<assign expr="true" location="stato_non_conta"/>
+				</onentry>
+				<transition event="avvio" target="conta" />
+				<transition event="azzera" target="non_conta">
+					<log name="set_zero" />
+				</transition>
+				<onexit>
+					<assign expr="false" location="stato_non_conta"/>
+				</onexit>
+			</state>
+		</state>
+
+		<state id="visualizzazione" initial="visualizza">
+			<state id="visualizza">
+				<transition event="prendi" target="non_visualizza" />
+				<transition event="tick" target="visualizza">
+					<log name="visore := min + sec" />
+				</transition>
+			</state>
+			<state id="non_visualizza">
+				<transition event="prendi" target="visualizza">
+					<log name="visore := min + sec" />
+				</transition>
+				<transition event="azzera" cond="stato_non_conta" target="visualizza">
+			</state>
+		</state>
+		
+		<state id="variazione" initial="incrementa">
+			<state id="incrementa">
+				<onentry>
+					<assign expr="true" location="stato_incrementa"/>
+				</onentry>
+				<transition event="inverti" cond="stato_non_conta" target="decrementa" />
+				<onexit>
+					<assign expr="false" location="stato_incrementa"/>
+				</onexit>
+			</state>
+			<state id="decrementa">
+				<onentry>
+					<assign expr="true" location="stato_decrementa"/>
+				</onentry>
+				<transition event="inverti" cond="stato_non_conta" target="incrementa" />
+				<onexit>
+					<assign expr="false" location="stato_decrementa"/>
+				</onexit>
+			</state>
+		</state>
+	</parallel>
+</scxml>
