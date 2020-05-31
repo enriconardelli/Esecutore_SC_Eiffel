@@ -24,13 +24,11 @@
 				<onentry>
 					<assign expr="true" location="stato_conta" />
 				</onentry>
-				<transition event="avvio" target="non_conta" >
-					<log name="transizione avvio verso non_conta" />
-				</transition>
+				<transition event="avvio" target="non_conta" />
 				<transition event="tick" cond="stato_incrementa" target="conta">
 					<log name="aumenta" />
 				</transition>
-				<transition event="tick" cond="stato_decrementa" target="conta" />
+				<transition event="tick" cond="stato_decrementa" target="conta">
 					<log name="diminuisci" />
 				</transition>
 				<onexit>
@@ -50,7 +48,7 @@
 				<transition event="prendi" target="visualizza">
 					<log name="visore := min + sec" />
 				</transition>
-				<transition event="azzera" cond="stato_non_conta" target="visualizza">
+				<transition event="azzera" cond="stato_non_conta" target="visualizza" />
 			</state>
 		</state>
 		
