@@ -75,7 +75,7 @@ feature
 				loop
 					if attached t.item.evento as e then
 						eventi_nella_SC.put (True, e)
-						print("inserito in eventi_nella_SC evento: " + e + "%N")
+--						print("inserito in eventi_nella_SC evento: " + e + "%N")
 					end
 				end
 			end
