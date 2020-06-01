@@ -182,7 +182,7 @@ feature -- inizializzazione SC
 				if e.item.name ~ "state" and then attached e.item.attribute_by_name ("id") as id_attr then
 					if attached {STATO_XOR} stati.item (id_attr.value) as stato then
 						if attached e.item.attribute_by_name ("initial") as initial_attr and then attached stati.item (initial_attr.value) as initial then
-							stato.set_stato_default (initial)
+							stato.set_default (initial)
 						else
 							print ("ERRORE: lo stato <state> >>" + id_attr.value + "<< non ha un sotto-stato iniziale di default%N")
 						end
@@ -193,7 +193,7 @@ feature -- inizializzazione SC
 				end
 				if e.item.name ~ "parallel" and then attached e.item.attribute_by_name ("id") as id_attr then
 					if attached {STATO_AND} stati.item (id_attr.value) as stato then
-						stato.set_stato_default
+						stato.set_default
 					end
 					assegna_default (e.item.elements)
 				end
@@ -207,13 +207,13 @@ feature -- inizializzazione SC
 			if attached radice.attribute_by_name ("initial") as si then
 				if attached stati.item (si.value) as v then
 					v.set_attivo
-					if not v.stato_default.is_empty then
+					if not v.initial.is_empty then
 						from
-							i := v.stato_default.lower
+							i := v.initial.lower
 						until
-							i = v.stato_default.upper + 1
+							i = v.initial.upper + 1
 						loop
-							imposta_stati_ricorsivo (v.stato_default[i])
+							imposta_stati_ricorsivo (v.initial[i])
 							i := i + 1
 						end
 					else
@@ -249,13 +249,13 @@ feature -- inizializzazione SC
 			i: INTEGER
 		do
 			stato.set_attivo
-			if not stato.stato_default.is_empty then
+			if not stato.initial.is_empty then
 				from
-					i := stato.stato_default.lower
+					i := stato.initial.lower
 				until
-					i = stato.stato_default.upper + 1
+					i = stato.initial.upper + 1
 				loop
-					imposta_stati_ricorsivo (stato.stato_default[i])
+					imposta_stati_ricorsivo (stato.initial[i])
 					i := i + 1
 				end
 			else

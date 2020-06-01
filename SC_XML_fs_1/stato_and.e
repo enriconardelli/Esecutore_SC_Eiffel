@@ -21,7 +21,7 @@ feature -- creazione
 	make_with_id (un_id: STRING)
 		do
 			Precursor (un_id)
-			create stati_figli.make_empty
+			create figli.make_empty
 		end
 
 feature -- setter
@@ -30,19 +30,19 @@ feature -- setter
 		require
 			uno_stato_esistente: uno_stato /= Void
 		do
-			stati_figli.force (uno_stato, stati_figli.count + 1)
+			figli.force (uno_stato, figli.count + 1)
 		end
 
-	set_stato_default
+	set_default
 		local
 			i: INTEGER
 		do
 			from
-				i:= stati_figli.lower
+				i:= figli.lower
 			until
-				i= stati_figli.upper + 1
+				i= figli.upper + 1
 			loop
-				stato_default.force ( stati_figli.item (i) , stato_default.count +1 )
+				initial.force ( figli.item (i) , initial.count +1 )
 				i:= i+1
 			end
 		end

@@ -158,7 +158,7 @@ feature -- evoluzione della statechart
 			if transizione.internal then
 				contesto := transizione.sorgente
 				across
-					transizione.sorgente.stati_figli as figli
+					transizione.sorgente.figli as figli
 				loop
 					if figli.item.attivo then
 						Result:=figli.item
@@ -187,12 +187,12 @@ feature -- evoluzione della statechart
 			target.set_attivo
 			if attached {STATO_AND} target.genitore  as sgt and then not sgt.attivo then
 				from
-					i := sgt.stato_default.lower
+					i := sgt.initial.lower
 				until
-					i = sgt.stato_default.upper + 1
+					i = sgt.initial.upper + 1
 				loop
-					if not sgt.stato_default [i].is_equal(target) then
-						trova_default (sgt.stato_default [i], prossima_conf_base)
+					if not sgt.initial [i].is_equal(target) then
+						trova_default (sgt.initial [i], prossima_conf_base)
 					end
 					i := i + 1
 				end
@@ -208,13 +208,13 @@ feature -- evoluzione della statechart
 		do
 			stato.set_attivo
 			esegui_onentry(stato)
-			if not stato.stato_default.is_empty then
+			if not stato.initial.is_empty then
 				from
-					i := stato.stato_default.lower
+					i := stato.initial.lower
 				until
-					i = stato.stato_default.upper + 1
+					i = stato.initial.upper + 1
 				loop
-					trova_default (stato.stato_default [i], prossima_conf_base)
+					trova_default (stato.initial [i], prossima_conf_base)
 					i := i + 1
 				end
 			else
@@ -294,7 +294,7 @@ feature -- esecuzione azioni
 		do
 			if not stato_uscita.stato_atomico then
 				across
-					stato_uscita.stati_figli as sf
+					stato_uscita.figli as sf
 				loop
 					if sf.item.attivo then
 						esegui_azioni_onexit (sf.item)

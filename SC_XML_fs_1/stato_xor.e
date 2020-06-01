@@ -22,7 +22,7 @@ feature -- creazione
 	make_with_id (un_id: STRING)
 		do
 			Precursor (un_id)
-			create stati_figli.make_empty
+			create figli.make_empty
 		end
 
 feature -- setter
@@ -31,13 +31,13 @@ feature -- setter
 		require
 			uno_stato_esistente: uno_stato /= Void
 		do
-			stati_figli.force (uno_stato, stati_figli.count + 1)
+			figli.force (uno_stato, figli.count + 1)
 		end
 
-	set_stato_default (lo_stato: STATO)
+	set_default (uno_stato: STATO)
 		require
-			uno_stato_esistente: lo_stato /= Void
+			uno_stato_esistente: uno_stato /= Void
 		do
-			stato_default.force (lo_stato, 1)
+			initial.force (uno_stato, 1)
 		end
 end

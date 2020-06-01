@@ -44,17 +44,17 @@ feature -- Test
 			nomi_files_prova [2] := nomi_files_prova [2] + "eventi_xor_1.txt"
 			create esecutore.make (nomi_files_prova)
 			if attached esecutore.state_chart.stati.item ("A") as st then
-				if attached st.stato_default as df then
+				if attached st.initial as df then
 					assert ("ERRORE il sistema non ha impostato correttamente il default di A", df.count = 1 and df[1].id.is_equal ("A1"))
 				end
 			end
 			if attached esecutore.state_chart.stati.item ("A1") as st then
-				if attached st.stato_default as df then
+				if attached st.initial as df then
 					assert ("ERRORE il sistema non ha impostato correttamente il default di A1", df.count = 1 and df[1].id.is_equal ("A1b"))
 				end
 			end
 			if attached esecutore.state_chart.stati.item ("B") as st then
-				if attached st.stato_default as df then
+				if attached st.initial as df then
 					assert ("ERRORE il sistema non ha impostato correttamente il default di B", df.count = 1 and df[1].id.is_equal ("B1"))
 				end
 			end
@@ -68,7 +68,7 @@ feature -- Test
 			nomi_files_prova [2] := nomi_files_prova [2] + "eventi_xor_1.txt"
 			create esecutore.make (nomi_files_prova)
 			if attached esecutore.state_chart.stati.item ("A1") as st then
-				if attached st.stato_default as df then
+				if attached st.initial as df then
 					assert ("ERRORE il sistema non ha impostato correttamente il default di A1", df.count = 1 and df[1].id.is_equal ("A1a"))
 				end
 			end

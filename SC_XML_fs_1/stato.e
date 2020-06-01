@@ -19,11 +19,11 @@ feature -- attributi
 	attivo: BOOLEAN
 		-- indipendentemente se sia uno stato atomico o meno
 
-	stato_default: ARRAY [STATO]
+	initial: ARRAY [STATO]
 
 	genitore: detachable STATO
 
-	stati_figli: ARRAY [STATO]
+	figli: ARRAY [STATO]
 
 	id: STRING
 
@@ -39,8 +39,8 @@ feature --creazione
 		do
 			id := un_id
 			finale := False
-			create stato_default.make_empty
-			create stati_figli.make_empty
+			create initial.make_empty
+			create figli.make_empty
 			create transizioni.make_empty
 			create onEntry.make_empty
 			create onExit.make_empty
@@ -119,7 +119,7 @@ feature -- stato
 	stato_atomico: BOOLEAN
 		-- ritorna vero se lo stato è uno stato atomico
 		do
-			Result := stati_figli.is_empty
+			Result := figli.is_empty
 		end
 
 feature -- modifica
@@ -176,7 +176,7 @@ feature -- situazione
 			end
 		end
 
-	incomparabile_con(uno_stato: STATO): BOOLEAN
+	incomparabile_con (uno_stato: STATO): BOOLEAN
 	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
 		do
 			if Current /= uno_stato and not antenato_di(uno_stato) and not uno_stato.antenato_di(Current) then
