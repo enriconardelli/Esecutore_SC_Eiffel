@@ -33,17 +33,13 @@ feature -- setter
 			figli.force (uno_stato, figli.count + 1)
 		end
 
-	set_default
+	set_initial
 		local
 			i: INTEGER
 		do
-			from
-				i:= figli.lower
-			until
-				i= figli.upper + 1
+			across figli as f
 			loop
-				initial.force ( figli.item (i) , initial.count +1 )
-				i:= i+1
+				initial.force (f.item, initial.count + 1)
 			end
 		end
 end

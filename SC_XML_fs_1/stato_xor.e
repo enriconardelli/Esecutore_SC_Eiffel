@@ -34,7 +34,7 @@ feature -- setter
 			figli.force (uno_stato, figli.count + 1)
 		end
 
-	set_default (uno_stato: STATO)
+	set_initial (uno_stato: STATO)
 		require
 			uno_stato_esistente: uno_stato /= Void
 		do
