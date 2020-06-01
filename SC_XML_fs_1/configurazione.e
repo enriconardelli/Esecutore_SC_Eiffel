@@ -16,15 +16,13 @@ feature --attributi
 		-- l'insieme degli stati base da cui parte la statechart
 
 	stati: HASH_TABLE [STATO, STRING]
-			-- serve durante l'istanziazione iniziale di stati, transizione e configurazione
-			-- una volta che è terminata non serve più
+		-- rappresenta gli stati della statechart
 
 	condizioni: HASH_TABLE [BOOLEAN, STRING]
-			-- serve durante l'istanziazione iniziale di stati, transizione e configurazione
-			-- una volta che è terminata non serve più
+		-- rappresenta le condizioni della statechart
 
 	albero: XML_CALLBACKS_NULL_FILTER_DOCUMENT
-			-- rappresenta sotto forma di un albero XML la SC letta dal file
+		-- rappresenta sotto forma di un albero XML la SC letta dal file
 
 	ha_problemi_con_il_file_della_sc: BOOLEAN
 

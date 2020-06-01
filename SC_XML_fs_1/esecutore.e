@@ -349,9 +349,9 @@ feature -- controllo
 
 feature -- utilita
 
-	riordina_conf_base(conf_base:ARRAY[STATO]): ARRAY[STATO]
-	--Agulini Claudia & Fiorini Federico 11/05/2020
-	--Viene usata per riordinare la configurazione rispettando l' ordine del file xml
+	riordina_conf_base (conf_base: ARRAY[STATO]): ARRAY[STATO]
+	-- Agulini Claudia & Fiorini Federico 11/05/2020
+	-- Viene usata per riordinare la configurazione rispettando l' ordine del file xml
 	local
 		j: INTEGER
 		conf_ordinata: ARRAY[STATO]
@@ -366,10 +366,10 @@ feature -- utilita
 				j := j + 1
 			end
 		end
-		result := conf_ordinata
+		Result := conf_ordinata
 	end
 
-	sorgenti_ordinate(evento: LINKED_SET[STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]): ARRAY[STATO]
+	sorgenti_ordinate (evento: LINKED_SET[STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]): ARRAY[STATO]
 	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
 	-- Dati eventi e condizioni, restituisce l'array di sorgenti delle transizioni abilitate nella `conf_base_corrente'
 	-- ordinate secondo l'ordine del file .xml

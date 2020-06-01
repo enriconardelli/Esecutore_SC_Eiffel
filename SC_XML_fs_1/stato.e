@@ -19,7 +19,7 @@ feature -- attributi
 	attivo: BOOLEAN
 		-- indipendentemente se sia uno stato atomico o meno
 
-	stato_default: ARRAY[STATO]
+	stato_default: ARRAY [STATO]
 
 	genitore: detachable STATO
 
@@ -27,9 +27,9 @@ feature -- attributi
 
 	id: STRING
 
-	onEntry: ARRAY[AZIONE]
+	onEntry: ARRAY [AZIONE]
 
-	onExit: ARRAY[AZIONE]
+	onExit: ARRAY [AZIONE]
 
 feature --creazione
 
