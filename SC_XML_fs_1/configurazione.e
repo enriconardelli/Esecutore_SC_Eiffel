@@ -74,7 +74,7 @@ feature -- supporto alla creazione
 				istanzia_condizioni (f.elements)
 				istanzia_final (f.elements)
 				istanzia_stati (f.elements, Void)
-				set_stati_default (f.elements)
+				assegna_default (f.elements)
 				imposta_stato_iniziale (f)
 				inizializza_stati (f.elements)
 			end
@@ -117,90 +117,86 @@ feature -- inizializzazione SC
 		do
 			across elements as e
 			loop
-				if e.item.name ~ "state" and then attached e.item.attribute_by_name ("id") as att then
+				if e.item.name ~ "state" and then attached e.item.attribute_by_name ("id") as id_attr then
 					if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
 						-- elemento corrente <state> ha figli
 						if attached {STATO_XOR} p_genitore as pg then -- elemento corrente ha genitore XOR
-							stato_temp := create {STATO_XOR}.make_with_id (att.value)
+							stato_temp := create {STATO_XOR}.make_with_id (id_attr.value)
 							stato_temp.set_genitore (pg)
-							stati.extend (stato_temp, att.value)
+							stati.extend (stato_temp, id_attr.value)
 							pg.add_figlio (stato_temp)
 						elseif attached {STATO_AND} p_genitore as pg then -- elemento corrente ha genitore AND
-							stato_temp := create {STATO_XOR}.make_with_id (att.value)
+							stato_temp := create {STATO_XOR}.make_with_id (id_attr.value)
 							stato_temp.set_genitore (pg)
-							stati.extend (stato_temp, att.value)
+							stati.extend (stato_temp, id_attr.value)
 							pg.add_figlio (stato_temp)
 						else -- elemento corrente non ha genitore
-							stati.extend (create {STATO_XOR}.make_with_id (att.value), att.value)
+							stati.extend (create {STATO_XOR}.make_with_id (id_attr.value), id_attr.value)
 						end
 						-- ricorsione sui figli con sé stesso come genitore
-						istanzia_stati (e.item.elements, stati.item (att.value))
+						istanzia_stati (e.item.elements, stati.item (id_attr.value))
 					else -- elemento corrente non ha figli
 						if attached {STATO_XOR} p_genitore as pg then -- elemento corrente ha genitore XOR
-							stato_temp := create {STATO}.make_with_id_and_parent (att.value, pg)
-							stati.extend (stato_temp, att.value)
+							stato_temp := create {STATO}.make_with_id_and_parent (id_attr.value, pg)
+							stati.extend (stato_temp, id_attr.value)
 							pg.add_figlio (stato_temp)
 						elseif attached {STATO_AND} p_genitore as pg then -- elemento corrente ha genitore AND
-							stato_temp := create {STATO}.make_with_id_and_parent (att.value, pg)
-							stati.extend (stato_temp, att.value)
+							stato_temp := create {STATO}.make_with_id_and_parent (id_attr.value, pg)
+							stati.extend (stato_temp, id_attr.value)
 							pg.add_figlio (stato_temp)
 						else -- elemento corrente non ha neanche genitore
-							stati.extend (create {STATO}.make_with_id (att.value), att.value)
+							stati.extend (create {STATO}.make_with_id (id_attr.value), id_attr.value)
 						end
 					end
 				end
-				if e.item.name ~ "parallel" and then attached e.item.attribute_by_name ("id") as att then
+				if e.item.name ~ "parallel" and then attached e.item.attribute_by_name ("id") as id_attr then
 					if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
 						-- elemento corrente <parallel> ha figli
 						if attached {STATO_AND} p_genitore as pg then -- elemento corrente ha genitore AND
-							stato_temp := create {STATO_AND}.make_with_id (att.value)
+							stato_temp := create {STATO_AND}.make_with_id (id_attr.value)
 							stato_temp.set_genitore (pg)
-							stati.extend (stato_temp, att.value)
+							stati.extend (stato_temp, id_attr.value)
 							pg.add_figlio (stato_temp)
 						elseif attached {STATO_XOR} p_genitore as pg then  -- elemento corrente ha genitore XOR
-							stato_temp := create {STATO_AND}.make_with_id (att.value)
+							stato_temp := create {STATO_AND}.make_with_id (id_attr.value)
 							stato_temp.set_genitore (pg)
-							stati.extend (stato_temp, att.value)
+							stati.extend (stato_temp, id_attr.value)
 							pg.add_figlio (stato_temp)
 						else
-							stati.extend (create {STATO_AND}.make_with_id (att.value), att.value)
+							stati.extend (create {STATO_AND}.make_with_id (id_attr.value), id_attr.value)
 						end -- elemento corrente non ha genitore
 						-- ricorsione sui figli con sé stesso come genitore
-						istanzia_stati (e.item.elements, stati.item (att.value))
+						istanzia_stati (e.item.elements, stati.item (id_attr.value))
 					else -- elemento corrente <parallel> non ha figli
-							print ("ERRORE: lo stato <parallel> >>>" + att.value + "<<< non ha figli !%N")
+						print ("ERRORE: lo stato <parallel> >>>" + id_attr.value + "<<< non ha figli !%N")
 					end
 				end
 			end
 		end
 
-	set_stati_default (lis_el: LIST [XML_ELEMENT])
-			-- assegna agli stati presenti nella SC le transizioni con eventi e azioni
+	assegna_default (elements: LIST [XML_ELEMENT])
+			-- assegna agli stati i loro sotto-stati iniziali di default
 		do
-			from
-				lis_el.start
-			until
-				lis_el.after
+			across elements as e
 			loop
-				if lis_el.item_for_iteration.name ~ "state" and then attached lis_el.item_for_iteration.attribute_by_name ("id") as stato then
-					if attached lis_el.item_for_iteration.attribute_by_name ("initial") as df then
-						if attached stati.item (df.value) as st_df then
-							if attached {STATO_XOR} stati.item (stato.value) as pr then
-								pr.set_stato_default (st_df)
-							end
+				if e.item.name ~ "state" and then attached e.item.attribute_by_name ("id") as id_attr then
+					if attached {STATO_XOR} stati.item (id_attr.value) as stato then
+						if attached e.item.attribute_by_name ("initial") as initial_attr and then attached stati.item (initial_attr.value) as initial then
+							stato.set_stato_default (initial)
+						else
+							print ("ERRORE: lo stato <state> >>" + id_attr.value + "<< non ha un sotto-stato iniziale di default%N")
 						end
 					end
-					if lis_el.item_for_iteration.has_element_by_name ("state") or lis_el.item_for_iteration.has_element_by_name ("parallel") then -- elemento corrente ha figli
-						set_stati_default (lis_el.item_for_iteration.elements)
+					if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then -- elemento corrente ha figli
+						assegna_default (e.item.elements)
 					end
 				end
-				if lis_el.item_for_iteration.name ~ "parallel" and then attached lis_el.item_for_iteration.attribute_by_name ("id") as stato then
-					if attached {STATO_AND} stati.item (stato.value) as st then
-						st.set_stato_default
+				if e.item.name ~ "parallel" and then attached e.item.attribute_by_name ("id") as id_attr then
+					if attached {STATO_AND} stati.item (id_attr.value) as stato then
+						stato.set_stato_default
 					end
-					set_stati_default (lis_el.item_for_iteration.elements)
+					assegna_default (e.item.elements)
 				end
-				lis_el.forth
 			end
 		end
 
@@ -233,10 +229,10 @@ feature -- inizializzazione SC
 --						stato_iniziale := v
 --					end
 				else
-					print ("ERRORE: lo stato indicato come 'initial' non ï¿½ uno degli stati in <state>")
+					print ("ERRORE: lo stato indicato come 'initial' non è uno degli stati in <state>")
 				end
 			elseif attached radice.element_by_name ("state") as st then
-					-- l'assenza di "initial" ï¿½ gestita scegliendo il primo dei figli se lo stato ha figli oppure scegliendo sï¿½ stesso se lo stato non ha figli
+					-- l'assenza di "initial" è gestita scegliendo il primo dei figli se lo stato ha figli oppure scegliendo sé stesso se lo stato non ha figli
 				if attached st.attribute_by_name ("id") as id then
 					if attached stati.item (id.value) as df then
 						imposta_stati_ricorsivo (df)
