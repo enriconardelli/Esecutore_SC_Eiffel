@@ -60,6 +60,20 @@ feature -- Test
 			end
 		end
 
+	t_impostazione_default_initial_assente
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "esempio_xor_initial_assente.xml"
+			nomi_files_prova [2] := nomi_files_prova [2] + "eventi_xor_1.txt"
+			create esecutore.make (nomi_files_prova)
+			if attached esecutore.state_chart.stati.item ("A1") as st then
+				if attached st.stato_default as df then
+					assert ("ERRORE il sistema non ha impostato correttamente il default di A1", df.count = 1 and df[1].id.is_equal ("A1a"))
+				end
+			end
+		end
+
 	t_xor_eventi_semplici
 		local
 			esecutore: ESECUTORE
