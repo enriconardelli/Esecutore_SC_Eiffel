@@ -12,7 +12,7 @@ create
 
 feature --attributi
 
-	stato_iniziale: ARRAY[STATO]
+	conf_base_iniziale: ARRAY[STATO]
 		-- l'insieme degli stati base da cui parte la statechart
 
 	stati: HASH_TABLE [STATO, STRING]
@@ -32,7 +32,7 @@ feature -- creazione
 		do
 --			create stato_iniziale.make_with_id (create {STRING}.make_empty)
 --			stato_iniziale.set_final
-			create stato_iniziale.make_empty
+			create conf_base_iniziale.make_empty
 			crea_albero (nome_SC)
 			create stati.make (1)
 			create condizioni.make (1)
@@ -168,7 +168,7 @@ feature -- inizializzazione SC
 						-- ricorsione sui figli con sé stesso come genitore
 						istanzia_stati (e.item.elements, stati.item (id_attr.value))
 					else -- elemento corrente <parallel> non ha figli
-						print ("ERRORE: lo stato <parallel> >>>" + id_attr.value + "<<< non ha figli !%N")
+						print ("ERRORE: lo stato <parallel> >|" + id_attr.value + "|< non ha figli !%N")
 					end
 				end
 			end
@@ -184,7 +184,8 @@ feature -- inizializzazione SC
 						if attached e.item.attribute_by_name ("initial") as initial_attr and then attached stati.item (initial_attr.value) as initial then
 							stato.set_default (initial)
 						else
-							print ("ERRORE: lo stato <state> >>" + id_attr.value + "<< non ha un sotto-stato iniziale di default%N")
+							-- TODO: va assegnato il primo figlio
+							print ("ERRORE: lo stato <state> >|" + id_attr.value + "|< non specifica un sotto-stato iniziale di default%N")
 						end
 					end
 					if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then -- elemento corrente ha figli
@@ -204,35 +205,24 @@ feature -- inizializzazione SC
 		local
 			i: INTEGER
 		do
-			if attached radice.attribute_by_name ("initial") as si then
-				if attached stati.item (si.value) as v then
-					v.set_attivo
-					if not v.initial.is_empty then
-						from
-							i := v.initial.lower
-						until
-							i = v.initial.upper + 1
+			if attached radice.attribute_by_name ("initial") as initial_attr then
+				if attached stati.item (initial_attr.value) as s then
+					-- TODO bisogna verificare che s sia figlio della radice
+					s.set_attivo
+					if s.initial.is_empty then
+						-- s non ha figli
+						conf_base_iniziale.force (s, conf_base_iniziale.count + 1)
+					else -- s ha figli e si scende in ricorsion
+						across s.initial as figli
 						loop
-							imposta_stati_ricorsivo (v.initial[i])
-							i := i + 1
+							imposta_stati_ricorsivo (figli.item)
 						end
-					else
-						stato_iniziale.force (v, stato_iniziale.count + 1)
 					end
---					if attached v.stato_default as df then
---						if not df.id.is_equal (v.id) then
---							imposta_stati_ricorsivo (df)
---						else
---							stato_iniziale := v
---						end
---					else
---						stato_iniziale := v
---					end
 				else
-					print ("ERRORE: lo stato indicato come 'initial' non è uno degli stati in <state>")
+					print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come 'initial' non è uno degli stati in <state>%N")
 				end
 			elseif attached radice.element_by_name ("state") as st then
-					-- l'assenza di "initial" è gestita scegliendo il primo dei figli se lo stato ha figli oppure scegliendo sé stesso se lo stato non ha figli
+				-- l'assenza di "initial" è gestita scegliendo il primo dei figli se lo stato ha figli oppure scegliendo sé stesso se lo stato non ha figli
 				if attached st.attribute_by_name ("id") as id then
 					if attached stati.item (id.value) as df then
 						imposta_stati_ricorsivo (df)
@@ -249,17 +239,14 @@ feature -- inizializzazione SC
 			i: INTEGER
 		do
 			stato.set_attivo
-			if not stato.initial.is_empty then
-				from
-					i := stato.initial.lower
-				until
-					i = stato.initial.upper + 1
+			if stato.initial.is_empty then
+				-- `stato' non fa figli
+				conf_base_iniziale.force (stato, conf_base_iniziale.count + 1)
+			else -- `stato' ha figli e si scende in ricorsione
+				across stato.initial as figli
 				loop
-					imposta_stati_ricorsivo (stato.initial[i])
-					i := i + 1
+					imposta_stati_ricorsivo (figli.item)
 				end
-			else
-				stato_iniziale.force (stato, stato_iniziale.count + 1)
 			end
 		end
 

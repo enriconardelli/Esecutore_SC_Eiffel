@@ -36,7 +36,7 @@ feature -- Creazione sia per i test che per esecuzione interattiva
 			create state_chart.make (nomi_files [1])
 			create ambiente_corrente.make_empty
 			create conf_base_corrente.make_empty
-			conf_base_corrente.copy (state_chart.stato_iniziale)
+			conf_base_corrente.copy (state_chart.conf_base_iniziale)
 			if not state_chart.ha_problemi_con_il_file_della_sc then
 				print ("e la esegue con gli eventi in " + nomi_files [2] + "%N")
 				ambiente_corrente.acquisisci_eventi (nomi_files [2])
