@@ -13,6 +13,7 @@ create
 feature -- attributi
 
 	transizioni: ARRAY [TRANSIZIONE]
+		-- le transizioni che escono dallo stato corrente
 
 	finale: BOOLEAN
 
@@ -20,16 +21,21 @@ feature -- attributi
 		-- indipendentemente se sia uno stato atomico o meno
 
 	initial: ARRAY [STATO]
+		-- il figlio iniziale di default (tutti i figli nel caso di STATO_AND)
 
 	genitore: detachable STATO
+		-- l'eventuale genitore dello stato corrente
 
 	figli: ARRAY [STATO]
+		-- gli stati figli dello stato corrente
 
 	id: STRING
 
 	onEntry: ARRAY [AZIONE]
+		-- le azioni eseguite all'ingresso nello stato (reazioni statiche entering [ns] di Harel)
 
 	onExit: ARRAY [AZIONE]
+		-- le azioni eseguite all'uscita dallo stato (reazioni statiche exiting [xs] di Harel)
 
 feature --creazione
 
