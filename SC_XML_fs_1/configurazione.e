@@ -74,7 +74,7 @@ feature -- supporto alla creazione
 				istanzia_condizioni (f.elements)
 				istanzia_final (f.elements)
 				istanzia_stati (f.elements, Void)
-				assegna_default (f.elements)
+				assegna_initial (f.elements)
 				imposta_stato_iniziale (f)
 				inizializza_stati (f.elements)
 			end
@@ -112,11 +112,13 @@ feature -- inizializzazione SC
 		end
 
 	istanzia_stati (elements: LIST [XML_ELEMENT]; p_genitore: detachable STATO)
+		-- crea gli stati assegnando loro eventuale genitore ed eventuali figli
 		local
 			stato_temp: STATO
 		do
 			across elements as e
 			loop
+				-- TODO: codice da semplificare
 				if e.item.name ~ "state" and then attached e.item.attribute_by_name ("id") as id_attr then
 					if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
 						-- elemento corrente <state> ha figli
@@ -144,11 +146,14 @@ feature -- inizializzazione SC
 							stato_temp := create {STATO}.make_with_id_and_parent (id_attr.value, pg)
 							stati.extend (stato_temp, id_attr.value)
 							pg.add_figlio (stato_temp)
+							-- stati.extend (create {STATO}.make_with_id_and_parent (id_attr.value, pg), id_attr.value)
+							-- pg.add_figlio(stati.item(id_attr.value))
 						else -- elemento corrente non ha neanche genitore
 							stati.extend (create {STATO}.make_with_id (id_attr.value), id_attr.value)
 						end
 					end
 				end
+				-- TODO: codice da semplificare
 				if e.item.name ~ "parallel" and then attached e.item.attribute_by_name ("id") as id_attr then
 					if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
 						-- elemento corrente <parallel> ha figli
@@ -174,29 +179,41 @@ feature -- inizializzazione SC
 			end
 		end
 
-	assegna_default (elements: LIST [XML_ELEMENT])
+	assegna_initial (elements: LIST [XML_ELEMENT])
 			-- assegna agli stati i loro sotto-stati iniziali di default
 		do
 			across elements as e
 			loop
+				-- NB: gli stati atomici non sono né {STATO_XOR} né {STATO_AND}
 				if e.item.name ~ "state" and then attached e.item.attribute_by_name ("id") as id_attr then
 					if attached {STATO_XOR} stati.item (id_attr.value) as stato then
-						if attached e.item.attribute_by_name ("initial") as initial_attr and then attached stati.item (initial_attr.value) as initial then
-							stato.set_default (initial)
+						-- istanza di stato {STATO_XOR} ha certamente figli
+						if attached e.item.attribute_by_name ("initial") as initial_attr then
+							-- c'è attributo 'initial'
+							if attached stati.item (initial_attr.value) as initial_state then
+								-- TODO: bisogna verificare non solo che 'initial' esiste ma che sia anche figlio di 'stato'
+								if stato.figli.has(initial_state) then
+									stato.set_initial (initial_state)
+								else
+									print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come sotto-stato iniziale di default dello stato >|" + stato.id + "|< non e' figlio di questo stato!%N")
+								end
+							else
+								print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come sotto-stato iniziale di default dello stato >|" + stato.id + "|< non esiste!%N")
+							end
 						else
-							-- TODO: va assegnato il primo figlio
-							print ("ERRORE: lo stato <state> >|" + id_attr.value + "|< non specifica un sotto-stato iniziale di default%N")
+							-- TODO: non c'è 'initial' e bisogna assegnarlo
+							print ("ERRORE: lo <state> >|" + stato.id + "|< non specifica attributo 'initial'!%N")
 						end
-					end
-					if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then -- elemento corrente ha figli
-						assegna_default (e.item.elements)
+						-- ricorsione sui figli
+						assegna_initial (e.item.elements)
 					end
 				end
 				if e.item.name ~ "parallel" and then attached e.item.attribute_by_name ("id") as id_attr then
 					if attached {STATO_AND} stati.item (id_attr.value) as stato then
-						stato.set_default
+						stato.set_initial
 					end
-					assegna_default (e.item.elements)
+					-- ricorsione sui figli
+					assegna_initial (e.item.elements)
 				end
 			end
 		end
@@ -207,7 +224,7 @@ feature -- inizializzazione SC
 		do
 			if attached radice.attribute_by_name ("initial") as initial_attr then
 				if attached stati.item (initial_attr.value) as s then
-					-- TODO bisogna verificare che s sia figlio della radice
+					-- TODO bisogna verificare che s sia figlio della radice e non uno stato qualunque
 					s.set_attivo
 					if s.initial.is_empty then
 						-- s non ha figli
@@ -240,7 +257,7 @@ feature -- inizializzazione SC
 		do
 			stato.set_attivo
 			if stato.initial.is_empty then
-				-- `stato' non fa figli
+				-- `stato' non ha un sotto-stato iniziale di default
 				conf_base_iniziale.force (stato, conf_base_iniziale.count + 1)
 			else -- `stato' ha figli e si scende in ricorsione
 				across stato.initial as figli
