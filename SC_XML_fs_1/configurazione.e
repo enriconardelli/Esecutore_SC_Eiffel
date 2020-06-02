@@ -218,26 +218,6 @@ feature -- inizializzazione SC
 			end
 		end
 
-	first_sub_state (element: XML_ELEMENT): STATO
-		local
-			place_holder: INDEXABLE_ITERATION_CURSOR[XML_ELEMENT]
-		do
-			create Result.make_with_id ("")
-			across element.elements as e
-			from place_holder := e.new_cursor
-			until e.item.name ~ "state" or e.item.name ~ "parallel"
-			loop
-				place_holder := e
-			end
-			print("%N trovato primo figlio <state> o <parallel>")
-			stampa_elemento (place_holder.item)
-			if attached place_holder.item.attribute_by_name ("id") as id_attr then
-				if attached stati.item (id_attr.value) as sub_state then
-					Result := sub_state
-				end
-			end
-		end
-
 	imposta_stato_iniziale (radice: XML_ELEMENT)
 		do
 			if attached radice.attribute_by_name ("initial") as initial_attr then
@@ -304,6 +284,26 @@ feature -- inizializzazione SC
 		end
 
 feature -- supporto inizializzazione
+
+	first_sub_state (element: XML_ELEMENT): STATO
+		local
+			place_holder: INDEXABLE_ITERATION_CURSOR[XML_ELEMENT]
+		do
+			create Result.make_with_id ("")
+			across element.elements as e
+			from place_holder := e.new_cursor
+			until e.item.name ~ "state" or e.item.name ~ "parallel"
+			loop
+				place_holder := e
+			end
+			print("%N trovato primo figlio <state> o <parallel>")
+			stampa_elemento (place_holder.item)
+			if attached place_holder.item.attribute_by_name ("id") as id_attr then
+				if attached stati.item (id_attr.value) as sub_state then
+					Result := sub_state
+				end
+			end
+		end
 
 	riempi_stato (id_stato: STRING; element: XML_ELEMENT)
 		local
@@ -519,7 +519,7 @@ feature -- supporto generale
 			if element.has_attribute_by_name ("id") then
 				print (" e id = " + valore_attributo(element, "id"))
 			end
-			print (" ha come elementi figli:%N")
+			print (" che ha come elementi figli:%N")
 			across element.elements as e
 			loop
 				print ("  nome: " + e.item.name)
