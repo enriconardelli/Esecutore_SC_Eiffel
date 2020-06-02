@@ -112,7 +112,7 @@ feature -- inizializzazione SC
 		end
 
 	istanzia_stati (elements: LIST [XML_ELEMENT]; p_genitore: detachable STATO)
-		-- crea gli stati assegnando loro eventuale genitore ed eventuali figli
+		-- crea gli stati assegnando loro l'eventuale genitore e gli eventuali figli
 		local
 			stato_temp: STATO
 		do
@@ -180,10 +180,11 @@ feature -- inizializzazione SC
 		end
 
 	assegna_initial (elements: LIST [XML_ELEMENT])
-			-- assegna agli stati i loro sotto-stati iniziali di default
+			-- assegna ricorsivamente agli stati i loro sotto-stati iniziali di default
 		do
 			across elements as e
 			loop
+				stampa_elemento (e.item)
 				-- NB: gli stati atomici non sono né {STATO_XOR} né {STATO_AND}
 				if e.item.name ~ "state" and then attached e.item.attribute_by_name ("id") as id_attr then
 					if attached {STATO_XOR} stati.item (id_attr.value) as stato then
@@ -191,7 +192,6 @@ feature -- inizializzazione SC
 						if attached e.item.attribute_by_name ("initial") as initial_attr then
 							-- c'è attributo 'initial'
 							if attached stati.item (initial_attr.value) as initial_state then
-								-- TODO: bisogna verificare non solo che 'initial' esiste ma che sia anche figlio di 'stato'
 								if stato.figli.has(initial_state) then
 									stato.set_initial (initial_state)
 								else
@@ -201,6 +201,7 @@ feature -- inizializzazione SC
 								print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come sotto-stato iniziale di default dello stato >|" + stato.id + "|< non esiste!%N")
 							end
 						else
+							-- if e.item.elements then
 							-- TODO: non c'è 'initial' e bisogna assegnarlo
 							print ("ERRORE: lo <state> >|" + stato.id + "|< non specifica attributo 'initial'!%N")
 						end
@@ -219,10 +220,9 @@ feature -- inizializzazione SC
 		end
 
 	imposta_stato_iniziale (radice: XML_ELEMENT)
-		local
-			i: INTEGER
 		do
 			if attached radice.attribute_by_name ("initial") as initial_attr then
+				stampa_elemento(radice)
 				if attached stati.item (initial_attr.value) as s then
 					-- TODO bisogna verificare che s sia figlio della radice e non uno stato qualunque
 					s.set_attivo
@@ -252,8 +252,6 @@ feature -- inizializzazione SC
 		end
 
 	imposta_stati_ricorsivo (stato: STATO)
-		local
-			i: INTEGER
 		do
 			stato.set_attivo
 			if stato.initial.is_empty then
@@ -494,6 +492,32 @@ feature -- supporto generale
 				corrente := corrente.genitore
 			end
 			Result := corrente
+		end
+
+	stampa_elemento (element: XML_ELEMENT)
+		do
+
+			print ("%NXML_ELEMENT = " + element.name)
+			if element.has_attribute_by_name ("id") then
+				print (" e id = " + valore_attributo(element, "id"))
+			end
+			print (" ha come elementi figli:%N")
+			across element.elements as e
+			loop
+				print ("  nome: " + e.item.name)
+				if e.item.has_attribute_by_name ("id") then
+					print (" e id = " + valore_attributo(e.item, "id"))
+				end
+				print ("%N")
+			end
+		end
+
+	valore_attributo (element: XML_ELEMENT; attribute_name: STRING): STRING
+		do
+			create Result.make_empty
+			if attached element.attribute_by_name (attribute_name) as attr then
+				Result := attr.value
+			end
 		end
 
 		-- Aggiungere 'feature' per tracciare quanto accade scrivendo su file model_out.txt:
