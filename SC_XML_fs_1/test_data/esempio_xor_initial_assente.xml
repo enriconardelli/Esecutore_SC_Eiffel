@@ -8,10 +8,13 @@
 		<data id="on_exitA1b" expr="false" />
 		<data id="on_exitA1a" expr="false" />
 	</datamodel>
-	<state id="B" initial="A2" >
+	<state id="B" >
 		<onentry>
 			<assign location="on_entryB" expr="true" />
 		</onentry>
+		<onexit>
+			<log name="exiting from B" />
+		</onexit>
 		<state id="B1">
 			<onentry>
 				<assign location="on_entryB1" expr="true" />
@@ -23,8 +26,8 @@
 		<transition event="e2" target="A1a" />
 	</state>
 
-	<state id="A" initial="X">
-		<state id="A1" >
+	<state id="A">
+		<state id="A1" initial="A1b">
 			<state id="A1a">
 				<transition event="e3" target="A2" />
 				<transition event="e3" target="A1b" />
