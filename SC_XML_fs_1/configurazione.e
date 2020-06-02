@@ -184,13 +184,13 @@ feature -- inizializzazione SC
 		do
 			across elements as e
 			loop
-				stampa_elemento (e.item)
+				debug ("xml_print") stampa_elemento(e.item) end
 				-- NB: gli stati atomici non sono né {STATO_XOR} né {STATO_AND}
 				if e.item.name ~ "state" and then attached e.item.attribute_by_name ("id") as id_attr then
 					if attached {STATO_XOR} stati.item (id_attr.value) as stato then
 						-- istanza di stato {STATO_XOR} ha certamente figli
 						if attached e.item.attribute_by_name ("initial") as initial_attr then
-							-- c'è attributo 'initial'
+							-- `e.item' ha attributo 'initial'
 							if attached stati.item (initial_attr.value) as initial_state then
 								if stato.figli.has(initial_state) then
 									stato.set_initial (initial_state)
@@ -200,10 +200,9 @@ feature -- inizializzazione SC
 							else
 								print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come sotto-stato iniziale di default dello stato >|" + stato.id + "|< non esiste!%N")
 							end
-						else
-							-- if e.item.elements then
-							-- TODO: non c'è 'initial' e bisogna assegnarlo
-							print ("ERRORE: lo <state> >|" + stato.id + "|< non specifica attributo 'initial'!%N")
+						else -- `e.item' non ha attributo 'initial''
+							print ("AVVISO: lo <state> >|" + stato.id + "|< non specifica attributo 'initial', si sceglie il primo figlio che sia <state> o <parallel>.%N")
+							stato.set_initial (first_sub_state(e.item))
 						end
 						-- ricorsione sui figli
 						assegna_initial (e.item.elements)
@@ -219,10 +218,29 @@ feature -- inizializzazione SC
 			end
 		end
 
+	first_sub_state (element: XML_ELEMENT): STATO
+		local
+			place_holder: INDEXABLE_ITERATION_CURSOR[XML_ELEMENT]
+		do
+			create Result.make_with_id ("")
+			across element.elements as e
+			from place_holder := e.new_cursor
+			until e.item.name ~ "state" or e.item.name ~ "parallel"
+			loop
+				place_holder := e
+			end
+			print("%N trovato primo figlio <state> o <parallel>")
+			stampa_elemento (place_holder.item)
+			if attached place_holder.item.attribute_by_name ("id") as id_attr then
+				if attached stati.item (id_attr.value) as sub_state then
+					Result := sub_state
+				end
+			end
+		end
+
 	imposta_stato_iniziale (radice: XML_ELEMENT)
 		do
 			if attached radice.attribute_by_name ("initial") as initial_attr then
-				stampa_elemento(radice)
 				if attached stati.item (initial_attr.value) as s then
 					-- TODO bisogna verificare che s sia figlio della radice e non uno stato qualunque
 					s.set_attivo
