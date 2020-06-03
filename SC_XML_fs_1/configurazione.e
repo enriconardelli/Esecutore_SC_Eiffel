@@ -91,13 +91,16 @@ feature -- inizializzazione SC
 					across data as d
 					loop
 						if attached {XML_ATTRIBUTE} d.item.attribute_by_name ("id") as nome and then attached {XML_ATTRIBUTE} d.item.attribute_by_name ("expr") as valore then
+							-- TODO: avvisare se "id" o "expr" sono assenti
+							-- TODO: avvisare se il valore di "id" è stringa vuota
+							-- TODO: avvisare se il valore di "expr" è diverso da "true" o "false"
 							condizioni.extend (valore.value ~ "true", nome.value)
 						end
 					end
 				end
 			end
-				-- aggiunge condizione_vuota che è sempre true e si applica alle transizioni che hanno condizione void (cfr riempi_stato)
-			condizioni.extend (true, "condizione_vuota")
+			-- aggiunge condizione_vuota che è sempre true e si applica alle transizioni che hanno condizione void (cfr riempi_stato)
+			condizioni.extend (True, "condizione_vuota")
 		end
 
 	istanzia_final (elements: LIST [XML_ELEMENT])
@@ -106,6 +109,7 @@ feature -- inizializzazione SC
 			across elements as e
 			loop
 				if e.item.name ~ "final" and then attached e.item.attribute_by_name ("id") as id then
+					-- TODO: avvisare se "id" è assente
 					stati.extend (create {STATO}.make_final_with_id (id.value), id.value)
 				end
 			end
@@ -119,6 +123,7 @@ feature -- inizializzazione SC
 			across elements as e
 			loop
 				if e.item.name ~ "state" and then attached e.item.attribute_by_name ("id") as id_attr then
+					-- TODO: avvisare se "id" è assente
 					if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
 						-- elemento corrente <state> ha figli
 						if attached p_genitore as pg then
@@ -143,6 +148,7 @@ feature -- inizializzazione SC
 					end
 				end
 				if e.item.name ~ "parallel" and then attached e.item.attribute_by_name ("id") as id_attr then
+					-- TODO: avvisare se "id" è assente
 					if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
 						-- elemento corrente <parallel> ha figli
 						if attached p_genitore as pg then
@@ -183,7 +189,7 @@ feature -- inizializzazione SC
 							else
 								print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come sotto-stato iniziale di default dello stato >|" + stato.id + "|< non esiste!%N")
 							end
-						else -- `e.item' non ha attributo 'initial''
+						else -- `e.item' non ha attributo 'initial'
 							print ("AVVISO: lo <state> >|" + stato.id + "|< non specifica attributo 'initial', si sceglie il primo figlio che sia <state> o <parallel>.%N")
 							stato.set_initial (first_sub_state(e.item))
 						end
