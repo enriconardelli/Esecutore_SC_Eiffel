@@ -10,20 +10,20 @@ class
 inherit
 
 	STATO
-	redefine
-		make_with_id
-	end
+--	redefine
+--		make_with_id
+--	end
 
 create
-	make_with_id
+	make_with_id, make_with_id_and_parent
 
-feature -- creazione
+--feature -- creazione
 
-	make_with_id (un_id: STRING)
-		do
-			Precursor (un_id)
-			create figli.make_empty
-		end
+--	make_with_id (un_id: STRING)
+--		do
+--			Precursor (un_id)
+--			create figli.make_empty
+--		end
 
 feature -- setter
 
