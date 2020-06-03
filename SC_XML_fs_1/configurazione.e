@@ -123,13 +123,11 @@ feature -- inizializzazione SC
 					if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
 						-- elemento corrente <state> ha figli
 						if attached {STATO_XOR} p_genitore as pg then -- elemento corrente ha genitore XOR
-							stato_temp := create {STATO_XOR}.make_with_id (id_attr.value)
-							stato_temp.set_genitore (pg)
+							stato_temp := create {STATO_XOR}.make_with_id_and_parent (id_attr.value, pg)
 							stati.extend (stato_temp, id_attr.value)
 							pg.add_figlio (stato_temp)
 						elseif attached {STATO_AND} p_genitore as pg then -- elemento corrente ha genitore AND
-							stato_temp := create {STATO_XOR}.make_with_id (id_attr.value)
-							stato_temp.set_genitore (pg)
+							stato_temp := create {STATO_XOR}.make_with_id_and_parent (id_attr.value, pg)
 							stati.extend (stato_temp, id_attr.value)
 							pg.add_figlio (stato_temp)
 						else -- elemento corrente non ha genitore
@@ -146,8 +144,6 @@ feature -- inizializzazione SC
 							stato_temp := create {STATO}.make_with_id_and_parent (id_attr.value, pg)
 							stati.extend (stato_temp, id_attr.value)
 							pg.add_figlio (stato_temp)
-							-- stati.extend (create {STATO}.make_with_id_and_parent (id_attr.value, pg), id_attr.value)
-							-- pg.add_figlio(stati.item(id_attr.value))
 						else -- elemento corrente non ha neanche genitore
 							stati.extend (create {STATO}.make_with_id (id_attr.value), id_attr.value)
 						end
@@ -158,13 +154,13 @@ feature -- inizializzazione SC
 					if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
 						-- elemento corrente <parallel> ha figli
 						if attached {STATO_AND} p_genitore as pg then -- elemento corrente ha genitore AND
-							stato_temp := create {STATO_AND}.make_with_id (id_attr.value)
-							stato_temp.set_genitore (pg)
+							stato_temp := create {STATO_AND}.make_with_id_and_parent (id_attr.value, pg)
+--							stato_temp.set_genitore (pg)
 							stati.extend (stato_temp, id_attr.value)
 							pg.add_figlio (stato_temp)
 						elseif attached {STATO_XOR} p_genitore as pg then  -- elemento corrente ha genitore XOR
-							stato_temp := create {STATO_AND}.make_with_id (id_attr.value)
-							stato_temp.set_genitore (pg)
+							stato_temp := create {STATO_AND}.make_with_id_and_parent (id_attr.value, pg)
+--							stato_temp.set_genitore (pg)
 							stati.extend (stato_temp, id_attr.value)
 							pg.add_figlio (stato_temp)
 						else
@@ -289,7 +285,7 @@ feature -- supporto inizializzazione
 		local
 			place_holder: INDEXABLE_ITERATION_CURSOR[XML_ELEMENT]
 		do
-			create Result.make_with_id ("")
+			create Result.make_with_id ("null_state")
 			across element.elements as e
 			from place_holder := e.new_cursor
 			until e.item.name ~ "state" or e.item.name ~ "parallel"
