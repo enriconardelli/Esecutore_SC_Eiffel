@@ -1,8 +1,13 @@
 ﻿note
-	description: "Clase che rappresenta lo stato della state chart"
-	author: "Gabriele Cacchioni & Davide Canalis "
-	date: "9-04-2015"
-	revision: "0.1"
+	description: "Classe che rappresenta lo stato della state chart"
+	author: "EN + studenti corsi PSI"
+	date: ""
+	revision: ""
+
+-- classe da ristrutturare trasformandola in deferred con due sotto-classi per stati atomici e gerarchici,
+-- STATO_ATOMICO è effective, mentre STATO_GERARCHIO è anch'essa deferred
+-- ed ha come sotto-classi STATO_XOR e STATO_AND
+-- spostare feature figli, add_Figlio, make_with_parent in STATO_GERARCHICO
 
 class
 	STATO
@@ -134,6 +139,13 @@ feature -- modifica
 	aggiungi_transizione (una_transizione: TRANSIZIONE)
 		do
 			transizioni.force (una_transizione, transizioni.count + 1)
+		end
+
+	add_figlio (uno_stato: STATO)
+		require
+			uno_stato_esistente: uno_stato /= Void
+		do
+			figli.force (uno_stato, figli.count + 1)
 		end
 
 feature -- situazione
