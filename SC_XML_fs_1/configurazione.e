@@ -118,54 +118,41 @@ feature -- inizializzazione SC
 		do
 			across elements as e
 			loop
-				-- TODO: codice da semplificare
 				if e.item.name ~ "state" and then attached e.item.attribute_by_name ("id") as id_attr then
 					if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
 						-- elemento corrente <state> ha figli
-						if attached {STATO_XOR} p_genitore as pg then -- elemento corrente ha genitore XOR
+						if attached p_genitore as pg then
+							-- istanzio elemento corrente con genitore e glielo assegno come figlio
 							stato_temp := create {STATO_XOR}.make_with_id_and_parent (id_attr.value, pg)
-							stati.extend (stato_temp, id_attr.value)
 							pg.add_figlio (stato_temp)
-						elseif attached {STATO_AND} p_genitore as pg then -- elemento corrente ha genitore AND
-							stato_temp := create {STATO_XOR}.make_with_id_and_parent (id_attr.value, pg)
-							stati.extend (stato_temp, id_attr.value)
-							pg.add_figlio (stato_temp)
-						else -- elemento corrente non ha genitore
-							stati.extend (create {STATO_XOR}.make_with_id (id_attr.value), id_attr.value)
+						else -- istanzio elemento corrente senza genitore
+							stato_temp := create {STATO_XOR}.make_with_id (id_attr.value)
 						end
+						stati.extend (stato_temp, id_attr.value)
 						-- ricorsione sui figli con sé stesso come genitore
 						istanzia_stati (e.item.elements, stati.item (id_attr.value))
-					else -- elemento corrente non ha figli
-						if attached {STATO_XOR} p_genitore as pg then -- elemento corrente ha genitore XOR
+					else -- elemento corrente <state> non ha figli
+						if attached p_genitore as pg then
+							-- istanzio elemento corrente con genitore e glielo assegno come figlio
 							stato_temp := create {STATO}.make_with_id_and_parent (id_attr.value, pg)
-							stati.extend (stato_temp, id_attr.value)
 							pg.add_figlio (stato_temp)
-						elseif attached {STATO_AND} p_genitore as pg then -- elemento corrente ha genitore AND
-							stato_temp := create {STATO}.make_with_id_and_parent (id_attr.value, pg)
-							stati.extend (stato_temp, id_attr.value)
-							pg.add_figlio (stato_temp)
-						else -- elemento corrente non ha neanche genitore
-							stati.extend (create {STATO}.make_with_id (id_attr.value), id_attr.value)
+						else -- istanzio elemento corrente senza genitore
+							stato_temp := create {STATO}.make_with_id (id_attr.value)
 						end
+						stati.extend (stato_temp, id_attr.value)
 					end
 				end
-				-- TODO: codice da semplificare
 				if e.item.name ~ "parallel" and then attached e.item.attribute_by_name ("id") as id_attr then
 					if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
 						-- elemento corrente <parallel> ha figli
-						if attached {STATO_AND} p_genitore as pg then -- elemento corrente ha genitore AND
+						if attached p_genitore as pg then
+							-- istanzio elemento corrente con genitore e glielo assegno come figlio
 							stato_temp := create {STATO_AND}.make_with_id_and_parent (id_attr.value, pg)
---							stato_temp.set_genitore (pg)
-							stati.extend (stato_temp, id_attr.value)
 							pg.add_figlio (stato_temp)
-						elseif attached {STATO_XOR} p_genitore as pg then  -- elemento corrente ha genitore XOR
-							stato_temp := create {STATO_AND}.make_with_id_and_parent (id_attr.value, pg)
---							stato_temp.set_genitore (pg)
-							stati.extend (stato_temp, id_attr.value)
-							pg.add_figlio (stato_temp)
-						else
-							stati.extend (create {STATO_AND}.make_with_id (id_attr.value), id_attr.value)
-						end -- elemento corrente non ha genitore
+						else -- istanzio elemento corrente senza genitore
+							stato_temp := create {STATO_AND}.make_with_id (id_attr.value)
+						end
+						stati.extend (stato_temp, id_attr.value)
 						-- ricorsione sui figli con sé stesso come genitore
 						istanzia_stati (e.item.elements, stati.item (id_attr.value))
 					else -- elemento corrente <parallel> non ha figli
