@@ -41,7 +41,7 @@ feature --creazione
 
 	make_with_id (un_id: STRING)
 		require
-			non_e_una_stringa_vuota: un_id /= Void
+			non_e_stringa_nulla: not (un_id ~ "")
 		do
 			id := un_id
 			finale := False
@@ -56,23 +56,24 @@ feature --creazione
 
 	make_final_with_id (un_id: STRING)
 		require
-			non_e_una_stringa_vuota: un_id /= Void
+			non_e_stringa_nulla: not (un_id ~ "")
 		do
 			make_with_id (un_id)
 			set_final
 		ensure
 			attributo_assegnato: id = un_id
+			final_assegnato: finale = True
 		end
 
-	make_with_id_and_parent (un_id: STRING; p_genitore: STATO)
+	make_with_id_and_parent (un_id: STRING; un_genitore: STATO)
 		require
-			non_e_una_stringa_vuota: un_id /= Void
-			genitore_esistente: p_genitore /= Void
+			non_e_stringa_nulla: not (un_id ~ "")
 		do
 			make_with_id (un_id)
-			set_genitore(p_genitore)
+			set_genitore(un_genitore)
 		ensure
 			attributo_assegnato: id = un_id
+			genitore_assegnato: genitore = un_genitore
 		end
 
 feature -- setter
@@ -89,14 +90,14 @@ feature -- setter
 
 	set_final
 		do
-			finale := TRUE
+			finale := True
 		ensure
 			ora_e_finale: finale
 		end
 
 	set_onEntry (una_azione: AZIONE)
 		require
-			e_una_azione: una_azione /= VOID
+			e_una_azione: una_azione /= Void
 		do
 			onEntry.force(una_azione, onEntry.count+1)
 		ensure
@@ -105,20 +106,20 @@ feature -- setter
 
 	set_onExit (una_azione: AZIONE)
 		require
-			e_una_azione: una_azione /= VOID
+			e_una_azione: una_azione /= Void
 		do
 			onExit.force (una_azione,onExit.count+1)
 		ensure
 			azione_assegnata: onExit[onExit.count] = una_azione
 		end
 
-	set_genitore (p_genitore: STATO)
+	set_genitore (un_genitore: STATO)
 		require
-			genitore_esistente: p_genitore /= Void
+			genitore_esistente: un_genitore /= Void
 		do
-			genitore := p_genitore
+			genitore := un_genitore
 		ensure
-			genitore_acquisito: genitore = p_genitore
+			genitore_acquisito: genitore = un_genitore
 		end
 
 feature -- stato
@@ -130,9 +131,9 @@ feature -- stato
 
 feature -- modifica
 
-	aggiungi_transizione (tr: TRANSIZIONE)
+	aggiungi_transizione (una_transizione: TRANSIZIONE)
 		do
-			transizioni.force (tr, transizioni.count + 1)
+			transizioni.force (una_transizione, transizioni.count + 1)
 		end
 
 feature -- situazione
