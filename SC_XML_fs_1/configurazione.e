@@ -250,23 +250,19 @@ feature -- inizializzazione SC
 			end
 		end
 
-	inizializza_stati (lis_el: LIST [XML_ELEMENT])
+	inizializza_stati (elements: LIST [XML_ELEMENT])
 			-- assegna agli stati presenti nella SC le transizioni con eventi e azioni
 		do
-			from
-				lis_el.start
-			until
-				lis_el.after
+			across elements as e
 			loop
-				if lis_el.item_for_iteration.name ~ "state" and then attached lis_el.item_for_iteration.attribute_by_name ("id") as stato_xml then
-					inizializza_stati (lis_el.item_for_iteration.elements)
-					riempi_stato (stato_xml.value, lis_el.item_for_iteration)
+				if e.item.name ~ "state" and then attached e.item.attribute_by_name ("id") as stato_xml then
+					inizializza_stati (e.item.elements)
+					riempi_stato (stato_xml.value, e.item)
 				end
-				if lis_el.item_for_iteration.name ~ "parallel" and then attached lis_el.item_for_iteration.attribute_by_name ("id") as stato_xml then
-					inizializza_stati (lis_el.item_for_iteration.elements)
-					riempi_stato (stato_xml.value, lis_el.item_for_iteration)
+				if e.item.name ~ "parallel" and then attached e.item.attribute_by_name ("id") as stato_xml then
+					inizializza_stati (e.item.elements)
+					riempi_stato (stato_xml.value, e.item)
 				end
-				lis_el.forth
 			end
 		end
 
