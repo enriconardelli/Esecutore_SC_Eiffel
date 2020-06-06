@@ -75,7 +75,7 @@ feature -- supporto alla creazione
 				istanzia_final (f.elements)
 				istanzia_stati (f.elements, Void)
 				assegna_initial (f.elements)
-				imposta_stato_iniziale (f)
+				assegna_conf_base_iniziale_radice (f)
 				inizializza_stati (f.elements)
 			end
 		end
@@ -207,47 +207,45 @@ feature -- inizializzazione SC
 			end
 		end
 
-	imposta_stato_iniziale (radice: XML_ELEMENT)
+	assegna_conf_base_iniziale_radice (radice: XML_ELEMENT)
+		-- inizializza `conf_base_iniziale' in base a stato top iniziale e poi invoca inizializzazione ricorsiva con esso
+		-- NB: gli stati "top" della SC non hanno genitore
+		local
+			iniziale_SC: STATO
 		do
 			if attached radice.attribute_by_name ("initial") as initial_attr then
-				if attached stati.item (initial_attr.value) as s then
-					-- TODO bisogna verificare che s sia figlio della radice e non uno stato qualunque
-					s.set_attivo
-					if s.initial.is_empty then
-						-- s non ha figli
-						conf_base_iniziale.force (s, conf_base_iniziale.count + 1)
-					else -- s ha figli e si scende in ricorsion
-						across s.initial as figli
-						loop
-							imposta_stati_ricorsivo (figli.item)
-						end
+				if attached stati.item (initial_attr.value) as r then
+					if not attached r.genitore then
+						iniziale_SC := r
+					else
+						print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come stato iniziale della statechart non è uno degli stati 'top'!%N")
 					end
-				else
-					print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come 'initial' non è uno degli stati in <state>%N")
+				else -- l'initial della radice non esiste
+					print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come stato iniziale della statechart non esiste!%N")
 				end
-			elseif attached radice.element_by_name ("state") as st then
-				-- l'assenza di "initial" è gestita scegliendo il primo dei figli se lo stato ha figli oppure scegliendo sé stesso se lo stato non ha figli
-				if attached st.attribute_by_name ("id") as id then
-					if attached stati.item (id.value) as df then
-						imposta_stati_ricorsivo (df)
-					end
-				end
---			else -- TODO oppure segnalando errore se il nodo ï¿½ la radice <scxml>
---				print ("ERRORE: manca lo stato 'initial' nel file e non c'ï¿½ la gestione della sua assenza %N")
---					-- TODO gestire la scelta dello stato iniziale in caso di assenza dell'attributo 'initial' nel file .xml
+			else -- la SC non specifica un sotto-stato iniziale di default si sceglie il primo
+				print ("AVVISO: la SC non specifica attributo 'initial', si sceglie il primo figlio che sia <state> o <parallel>.%N")
+				iniziale_SC := first_sub_state (radice)
+			end
+			if attached iniziale_SC as isc then
+				assegna_conf_base_iniziale(isc)
+			else
+				print ("------- stato iniziale della SC erroneamente specificato%N")
 			end
 		end
 
-	imposta_stati_ricorsivo (stato: STATO)
+	assegna_conf_base_iniziale (stato: STATO)
+		-- assegna ricorsivamente gli stati a `conf_base_iniziale' a partire dallo stato gerarchico iniziale della SC
+		-- NB: ogni stato gerarchico della SC ha il campo `initial' non vuoto
 		do
 			stato.set_attivo
 			if stato.initial.is_empty then
-				-- `stato' non ha un sotto-stato iniziale di default
+				-- `stato' è uno stato atomico
 				conf_base_iniziale.force (stato, conf_base_iniziale.count + 1)
-			else -- `stato' ha figli e si scende in ricorsione
+			else -- `stato' è uno stato gerarchico e si scende in ricorsione
 				across stato.initial as figli
 				loop
-					imposta_stati_ricorsivo (figli.item)
+					assegna_conf_base_iniziale (figli.item)
 				end
 			end
 		end
@@ -285,8 +283,10 @@ feature -- supporto inizializzazione
 			loop
 				place_holder := e
 			end
-			print("%N trovato primo figlio <state> o <parallel>")
-			stampa_elemento (place_holder.item)
+			debug ("initial")
+				print("AVVISO: trovato primo figlio <state> o <parallel>%N")
+				stampa_elemento (place_holder.item)
+			end
 			if attached place_holder.item.attribute_by_name ("id") as id_attr then
 				if attached stati.item (id_attr.value) as sub_state then
 					Result := sub_state
@@ -517,6 +517,7 @@ feature -- supporto generale
 				end
 				print ("%N")
 			end
+			print ("%N")
 		end
 
 	valore_attributo (element: XML_ELEMENT; attribute_name: STRING): STRING
