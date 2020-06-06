@@ -76,7 +76,7 @@ feature -- supporto alla creazione
 				istanzia_stati (f.elements, Void)
 				assegna_initial (f.elements)
 				assegna_conf_base_iniziale_radice (f)
-				inizializza_stati (f.elements)
+				completa_stati (f.elements)
 			end
 		end
 
@@ -87,10 +87,11 @@ feature -- inizializzazione SC
 		do
 			across elements as e
 			loop
-				if e.item.name ~ "datamodel" and then attached e.item.elements as data then
+				if e.item.name ~ "datamodel" and attached e.item.elements as data then
+					-- TODO: avvisare se il datamodel è vuoto
 					across data as d
 					loop
-						if attached {XML_ATTRIBUTE} d.item.attribute_by_name ("id") as nome and then attached {XML_ATTRIBUTE} d.item.attribute_by_name ("expr") as valore then
+						if attached {XML_ATTRIBUTE} d.item.attribute_by_name ("id") as nome and attached {XML_ATTRIBUTE} d.item.attribute_by_name ("expr") as valore then
 							-- TODO: avvisare se "id" o "expr" sono assenti
 							-- TODO: avvisare se il valore di "id" è stringa vuota
 							-- TODO: avvisare se il valore di "expr" è diverso da "true" o "false"
@@ -108,7 +109,7 @@ feature -- inizializzazione SC
 		do
 			across elements as e
 			loop
-				if e.item.name ~ "final" and then attached e.item.attribute_by_name ("id") as id then
+				if e.item.name ~ "final" and attached e.item.attribute_by_name ("id") as id then
 					-- TODO: avvisare se "id" è assente
 					stati.extend (create {STATO}.make_final_with_id (id.value), id.value)
 				end
@@ -122,8 +123,11 @@ feature -- inizializzazione SC
 		do
 			across elements as e
 			loop
-				if e.item.name ~ "state" and then attached e.item.attribute_by_name ("id") as id_attr then
-					-- TODO: avvisare se "id" è assente
+				if (e.item.name ~ "state" or e.item.name ~ "parallel") and not attached e.item.attribute_by_name ("id") then
+					print ("ERRORE: il seguente elemento non ha 'id':%N")
+					stampa_elemento (e.item)
+				end
+				if e.item.name ~ "state" and attached e.item.attribute_by_name ("id") as id_attr then
 					if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
 						-- elemento corrente <state> ha figli
 						if attached p_genitore as pg then
@@ -147,8 +151,7 @@ feature -- inizializzazione SC
 						stati.extend (stato_temp, id_attr.value)
 					end
 				end
-				if e.item.name ~ "parallel" and then attached e.item.attribute_by_name ("id") as id_attr then
-					-- TODO: avvisare se "id" è assente
+				if e.item.name ~ "parallel" and attached e.item.attribute_by_name ("id") as id_attr then
 					if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
 						-- elemento corrente <parallel> ha figli
 						if attached p_genitore as pg then
@@ -170,12 +173,13 @@ feature -- inizializzazione SC
 
 	assegna_initial (elements: LIST [XML_ELEMENT])
 			-- assegna ricorsivamente agli stati i loro sotto-stati iniziali di default
+			-- NB: assenza di 'id' viene controllata in `istanzia_stati'
 		do
 			across elements as e
 			loop
 				debug ("xml_print") stampa_elemento(e.item) end
 				-- NB: gli stati atomici non sono né {STATO_XOR} né {STATO_AND}
-				if e.item.name ~ "state" and then attached e.item.attribute_by_name ("id") as id_attr then
+				if e.item.name ~ "state" and attached e.item.attribute_by_name ("id") as id_attr then
 					if attached {STATO_XOR} stati.item (id_attr.value) as stato then
 						-- istanza di stato {STATO_XOR} ha certamente figli
 						if attached e.item.attribute_by_name ("initial") as initial_attr then
@@ -197,7 +201,7 @@ feature -- inizializzazione SC
 						assegna_initial (e.item.elements)
 					end
 				end
-				if e.item.name ~ "parallel" and then attached e.item.attribute_by_name ("id") as id_attr then
+				if e.item.name ~ "parallel" and attached e.item.attribute_by_name ("id") as id_attr then
 					if attached {STATO_AND} stati.item (id_attr.value) as stato then
 						stato.set_initial
 					end
@@ -250,19 +254,15 @@ feature -- inizializzazione SC
 			end
 		end
 
-	inizializza_stati (elements: LIST [XML_ELEMENT])
-			-- assegna agli stati presenti nella SC le transizioni con eventi e azioni
+	completa_stati (elements: LIST [XML_ELEMENT])
+			-- assegna ricorsivamente agli stati le transizioni con eventi e azioni
 		do
 			across elements as e
 			loop
-				if e.item.name ~ "state" or e.item.name ~ "parallel" then
-					if attached e.item.attribute_by_name ("id") as stato_xml then
-						inizializza_stati (e.item.elements)
-						riempi_stato (stato_xml.value, e.item)
-					else
-						print ("ERRORE: il seguente elemento non ha 'id':%N")
-						stampa_elemento (e.item)
-					end
+				if (e.item.name ~ "state" or e.item.name ~ "parallel") and attached e.item.attribute_by_name ("id") as id_stato then
+					-- assenza di 'id' viene controllata in `istanzia_stati'
+					completa_stati (e.item.elements)
+					assegna_transizioni (id_stato.value, e.item)
 				end
 			end
 		end
@@ -291,7 +291,8 @@ feature -- supporto inizializzazione
 			end
 		end
 
-	riempi_stato (id_stato: STRING; element: XML_ELEMENT)
+	assegna_transizioni (stato: STRING; element: XML_ELEMENT)
+		-- completa lo `stato' assegnandogli le transizioni con relativi eventi ed azioni
 		local
 			transition_list: LIST [XML_ELEMENT] --lista di tutto ciò che appartiene allo stato
 			assign_list: LIST [XML_ELEMENT]
@@ -304,10 +305,10 @@ feature -- supporto inizializzazione
 				transition_list.after
 			loop
 					-- TODO gestire separatamente feature di creazione transizione che torna o transizione o errore
-				if transition_list.item_for_iteration.name ~ "transition" and then attached transition_list.item_for_iteration.attribute_by_name ("target") as tt then
+				if transition_list.item_for_iteration.name ~ "transition" and attached transition_list.item_for_iteration.attribute_by_name ("target") as tt then
 						-- TODO gestire fallimento del test per assenza clausola target
 					if attached stati.item (tt.value) as ts then
-						if attached stati.item (id_stato) as sr then
+						if attached stati.item (stato) as sr then
 							if ts.antenato_di(sr) or else not attached{STATO_AND} trova_pseudo_contesto(sr,ts) then
 								-- evita transizioni tra figli di paralleli
 								create transizione.make_with_target (ts, sr)
@@ -320,25 +321,25 @@ feature -- supporto inizializzazione
 								assegnazione_condizione (transition_list, transizione)
 								assign_list := transition_list.item_for_iteration.elements
 								assegnazione_azioni (assign_list, transizione)
-								if attached stati.item (id_stato) as si then
+								if attached stati.item (stato) as si then
 									si.aggiungi_transizione (transizione)
 								end
 							end
 						end
 					else
-						if attached stati.item (id_stato) as si then
+						if attached stati.item (stato) as si then
 							print ("ERRORE: lo stato >|" + si.id + "|< ha una transizione non valida %N")
 						end
 					end
 				end
 				if transition_list.item_for_iteration.name ~ "onentry" then
 					if attached transition_list.item_for_iteration.elements as list then
-						istanzia_onentry (id_stato, list)
+						istanzia_onentry (stato, list)
 					end
 				end
 				if transition_list.item_for_iteration.name ~ "onexit" then
 					if attached transition_list.item_for_iteration.elements as list then
-						istanzia_onexit (id_stato, list)
+						istanzia_onexit (stato, list)
 					end
 				end
 				transition_list.forth
@@ -357,7 +358,7 @@ feature -- supporto inizializzazione
 				assign_list.after
 			loop
 				if assign_list.item_for_iteration.name ~ "assign" then
-					if attached assign_list.item_for_iteration.attribute_by_name ("location") as luogo and then attached assign_list.item_for_iteration.attribute_by_name ("expr") as expr then
+					if attached assign_list.item_for_iteration.attribute_by_name ("location") as luogo and attached assign_list.item_for_iteration.attribute_by_name ("expr") as expr then
 						if expr.value ~ "false" then
 							transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, FALSE), i)
 						elseif expr.value ~ "true" then
@@ -365,7 +366,7 @@ feature -- supporto inizializzazione
 						end
 					end
 				end
-				if assign_list.item_for_iteration.name ~ "log" and then attached assign_list.item_for_iteration.attribute_by_name ("name") as name then
+				if assign_list.item_for_iteration.name ~ "log" and attached assign_list.item_for_iteration.attribute_by_name ("name") as name then
 					if attached name.value then
 						transizione.azioni.force (create {STAMPA}.make_with_text (name.value), i)
 					end
@@ -414,7 +415,7 @@ feature -- supporto inizializzazione
 				elements.after
 			loop
 				if elements.item_for_iteration.name ~ "assign" then
-					if attached elements.item_for_iteration.attribute_by_name ("location") as luogo and then attached elements.item_for_iteration.attribute_by_name ("expr") as expr then
+					if attached elements.item_for_iteration.attribute_by_name ("location") as luogo and attached elements.item_for_iteration.attribute_by_name ("expr") as expr then
 						if expr.value ~ "false" then
 							if attached stati.item (id_stato) as si then
 								si.set_onentry (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, FALSE))
@@ -426,7 +427,7 @@ feature -- supporto inizializzazione
 						end
 					end
 				end
-				if elements.item_for_iteration.name ~ "log" and then attached elements.item_for_iteration.attribute_by_name ("name") as name then
+				if elements.item_for_iteration.name ~ "log" and attached elements.item_for_iteration.attribute_by_name ("name") as name then
 					if attached stati.item (id_stato) as si then
 						if attached name.value then
 							si.set_onentry (create {STAMPA}.make_with_text (name.value))
@@ -445,7 +446,7 @@ feature -- supporto inizializzazione
 				elements.after
 			loop
 				if elements.item_for_iteration.name ~ "assign" then
-					if attached elements.item_for_iteration.attribute_by_name ("location") as luogo and then attached elements.item_for_iteration.attribute_by_name ("expr") as expr then
+					if attached elements.item_for_iteration.attribute_by_name ("location") as luogo and attached elements.item_for_iteration.attribute_by_name ("expr") as expr then
 						if expr.value ~ "false" then
 							if attached stati.item (id_stato) as si then
 								si.set_onexit (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, FALSE))
@@ -457,7 +458,7 @@ feature -- supporto inizializzazione
 						end
 					end
 				end
-				if elements.item_for_iteration.name ~ "log" and then attached elements.item_for_iteration.attribute_by_name ("name") as name then
+				if elements.item_for_iteration.name ~ "log" and attached elements.item_for_iteration.attribute_by_name ("name") as name then
 					if attached stati.item (id_stato) as si then
 						if attached name.value then
 							si.set_onexit (create {STAMPA}.make_with_text (name.value))
