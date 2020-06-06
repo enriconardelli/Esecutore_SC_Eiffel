@@ -255,13 +255,14 @@ feature -- inizializzazione SC
 		do
 			across elements as e
 			loop
-				if e.item.name ~ "state" and then attached e.item.attribute_by_name ("id") as stato_xml then
-					inizializza_stati (e.item.elements)
-					riempi_stato (stato_xml.value, e.item)
-				end
-				if e.item.name ~ "parallel" and then attached e.item.attribute_by_name ("id") as stato_xml then
-					inizializza_stati (e.item.elements)
-					riempi_stato (stato_xml.value, e.item)
+				if e.item.name ~ "state" or e.item.name ~ "parallel" then
+					if attached e.item.attribute_by_name ("id") as stato_xml then
+						inizializza_stati (e.item.elements)
+						riempi_stato (stato_xml.value, e.item)
+					else
+						print ("ERRORE: il seguente elemento non ha 'id':%N")
+						stampa_elemento (e.item)
+					end
 				end
 			end
 		end
@@ -326,7 +327,7 @@ feature -- supporto inizializzazione
 						end
 					else
 						if attached stati.item (id_stato) as si then
-							print ("lo stato " + si.id + " ha una transizione non valida %N")
+							print ("ERRORE: lo stato >|" + si.id + "|< ha una transizione non valida %N")
 						end
 					end
 				end
