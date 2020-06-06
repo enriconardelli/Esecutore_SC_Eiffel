@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" >
-
-	<state id="A">
 		<parallel id="A2">
 			<onentry>
 				<log name="on_entry_A2" />
@@ -93,7 +91,4 @@
 					<log name="on_exit_A1" />
 				</onexit>
 		</state>
-
-	</state>
-		
 </scxml>
