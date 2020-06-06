@@ -42,13 +42,13 @@ feature -- Creazione sia per i test che per esecuzione interattiva
 				ambiente_corrente.acquisisci_eventi (nomi_files [2])
 				print ("acquisiti eventi %N")
 				if not ambiente_corrente.verifica_eventi_esterni (state_chart) then
-					print ("WARNING nel file ci sono eventi che la SC non conosce %N")
+					print ("AVVISO: nel file ci sono eventi che la SC non conosce %N")
 				end
 				print ("eventi verificati, si esegue la SC %N")
 				evolvi_SC (ambiente_corrente.eventi_esterni)
 			else
 				print ("Ci sono problemi con il file xml.%N")
-				print ("Programma terminato.%N")
+				print ("Non si esegue la SC.%N")
 			end
 			print ("%N CREAZIONE FINE%N=========%N")
 		end
