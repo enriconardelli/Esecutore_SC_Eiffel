@@ -438,13 +438,16 @@ feature -- supporto inizializzazione
 
 	istanzia_onentry (stato: STATO; elements: LIST [XML_ELEMENT])
 		do
-			from
-				elements.start
-			until
-				elements.after
+			across elements as e
+--			from
+--				elements.start
+--			until
+--				elements.after
 			loop
-				if elements.item_for_iteration.name ~ "assign" then
-					if attached elements.item_for_iteration.attribute_by_name ("location") as luogo and attached elements.item_for_iteration.attribute_by_name ("expr") as expr then
+				if e.item.name ~ "assign" then
+--				if elements.item_for_iteration.name ~ "assign" then
+					if attached e.item.attribute_by_name ("location") as luogo and attached e.item.attribute_by_name ("expr") as expr then
+--					if attached elements.item_for_iteration.attribute_by_name ("location") as luogo and attached elements.item_for_iteration.attribute_by_name ("expr") as expr then
 						if expr.value ~ "false" then
 							stato.set_onentry (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, False))
 						elseif expr.value ~ "true" then
@@ -452,37 +455,34 @@ feature -- supporto inizializzazione
 						end
 					end
 				end
-				if elements.item_for_iteration.name ~ "log" and attached elements.item_for_iteration.attribute_by_name ("name") as name then
+				if e.item.name ~ "log" and attached e.item.attribute_by_name ("name") as name then
+--				if elements.item_for_iteration.name ~ "log" and attached elements.item_for_iteration.attribute_by_name ("name") as name then
 					if attached name.value then
 						stato.set_onentry (create {STAMPA}.make_with_text (name.value))
 					end
 				end
-				elements.forth
+--				elements.forth
 			end
 		end
 
 	istanzia_onexit (stato: STATO; elements: LIST [XML_ELEMENT])
 		do
-			from
-				elements.start
-			until
-				elements.after
+			across elements as e
 			loop
-				if elements.item_for_iteration.name ~ "assign" then
-					if attached elements.item_for_iteration.attribute_by_name ("location") as luogo and attached elements.item_for_iteration.attribute_by_name ("expr") as expr then
+				if e.item.name ~ "assign" then
+					if attached e.item.attribute_by_name ("location") as luogo and attached e.item.attribute_by_name ("expr") as expr then
 						if expr.value ~ "false" then
-							stato.set_onexit (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, FALSE))
+							stato.set_onexit (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, False))
 						elseif expr.value ~ "true" then
-							stato.set_onexit (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, TRUE))
+							stato.set_onexit (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, True))
 						end
 					end
 				end
-				if elements.item_for_iteration.name ~ "log" and attached elements.item_for_iteration.attribute_by_name ("name") as name then
-						if attached name.value then
-							stato.set_onexit (create {STAMPA}.make_with_text (name.value))
-						end
+				if e.item.name ~ "log" and attached e.item.attribute_by_name ("name") as name then
+					if attached name.value then
+						stato.set_onexit (create {STAMPA}.make_with_text (name.value))
+					end
 				end
-				elements.forth
 			end
 		end
 
