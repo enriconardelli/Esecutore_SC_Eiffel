@@ -29,8 +29,8 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-		    nomi_files_prova [1] := test_data_dir + "sc_xor.xml"
-			nomi_files_prova [2] := test_data_dir + "e_xor_2.txt"
+		    nomi_files_prova [1] := test_data_dir + "esempio_xor.xml"
+			nomi_files_prova [2] := test_data_dir + "eventi_xor_2.txt"
 			create esecutore.make (nomi_files_prova)
 			assert ("ERRORE il sistema non ha eseguito l'azione on_entryB", esecutore.state_chart.condizioni.item ("on_entryB"))
 			assert ("ERRORE il sistema non ha eseguito l'azione on_entryB1", esecutore.state_chart.condizioni.item ("on_entryB1"))
@@ -46,8 +46,8 @@ feature -- Test
     local
       esecutore: ESECUTORE
     do
-      nomi_files_prova [1] := test_data_dir + "sc_azioni_uscita.xml"
-        nomi_files_prova [2] := test_data_dir + "e_azioni_uscita.txt"
+      nomi_files_prova [1] := test_data_dir + "esempio_azioni_uscita.xml"
+        nomi_files_prova [2] := test_data_dir + "eventi_azioni_uscita.txt"
       create esecutore.make (nomi_files_prova)
       assert("ERRORE 5.1 non esco da X", esecutore.state_chart.condizioni.item ("on_exitX"))
       assert("ERRORE 5.2 non esco da A", esecutore.state_chart.condizioni.item ("on_exitA"))
@@ -61,8 +61,8 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "sc_entrata_2_azioni.xml"
-	  		nomi_files_prova [2] := test_data_dir + "e_entrata_2.txt"
+			nomi_files_prova [1] := test_data_dir + "esempio_entrata_2_azioni.xml"
+	  		nomi_files_prova [2] := test_data_dir + "eventi_entrata_2.txt"
 			create esecutore.make (nomi_files_prova)
 			assert ("ERRORE 3.1 il sistema non ha eseguito l'azione on_exitA1", esecutore.state_chart.condizioni.item ("on_exitA1"))
 			assert ("ERRORE 3.2 il sistema non ha eseguito l'azione on_entryA2",  esecutore.state_chart.condizioni.item ("on_entryA2"))
@@ -80,8 +80,8 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "sc_transizione_interna.xml"
-	  		nomi_files_prova [2] := test_data_dir + "e_transizione_interna.txt"
+			nomi_files_prova [1] := test_data_dir + "esempio_transizione_interna.xml"
+	  		nomi_files_prova [2] := test_data_dir + "eventi_transizione_interna.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE 4.1 esco da S", not esecutore.state_chart.condizioni.item ("on_exitS"))
 			assert("ERRORE 4.2 entro in S", not esecutore.state_chart.condizioni.item ("on_entryS"))
@@ -94,8 +94,8 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "sc_onexit_complesso.xml"
-			nomi_files_prova [2] := test_data_dir + "e_onexit_complesso.txt"
+			nomi_files_prova [1] := test_data_dir + "esempio_onexit_complesso.xml"
+			nomi_files_prova [2] := test_data_dir + "eventi_onexit_complesso.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("Errore 1: lo stato di arrivo non è T", conf_has_state(esecutore.conf_base_corrente,"T"))
 			assert("Errore B2: non doveva venir eseguita l' onexit di B2", not esecutore.state_chart.condizioni.item("on_exitB2"))
@@ -123,8 +123,8 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "sc_onexit_complesso.xml"
-			nomi_files_prova [2] := test_data_dir + "e_onexit_complesso_2.txt"
+			nomi_files_prova [1] := test_data_dir + "esempio_onexit_complesso.xml"
+			nomi_files_prova [2] := test_data_dir + "eventi_onexit_complesso_2.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("Errore 1: lo stato di arrivo non è T", conf_has_state(esecutore.conf_base_corrente,"T"))
 			assert("Errore B2: non viene eseguita l' onexit di B2", esecutore.state_chart.condizioni.item("on_exitB2"))
@@ -152,8 +152,8 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "sc_onexit_complesso.xml"
-			nomi_files_prova [2] := test_data_dir + "e_onexit_complesso_3.txt"
+			nomi_files_prova [1] := test_data_dir + "esempio_onexit_complesso.xml"
+			nomi_files_prova [2] := test_data_dir + "eventi_onexit_complesso_3.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("Errore B2: non viene eseguita l' onexit di B2", esecutore.state_chart.condizioni.item("on_exitB2"))
 			assert("Errore S: non viene eseguita l' onexit di S", esecutore.state_chart.condizioni.item("on_exitS"))
