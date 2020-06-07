@@ -357,38 +357,42 @@ feature -- supporto inizializzazione
 		end
 
 	assegnazione_azioni (assign_list: LIST [XML_ELEMENT]; transizione: TRANSIZIONE)
-		-- viene richiamata in riempi_stato; assegna le azioni alla transizione
---		local
---			i: INTEGER
+		-- assegna le azioni in `assign_list' alla `transizione'
 		do
---			i := 1
 			across assign_list as al
---			from
---				assign_list.start
---			until
---				assign_list.after
 			loop
---				if assign_list.item_for_iteration.name ~ "assign" then
 				if al.item.name ~ "assign" then
---					if attached assign_list.item_for_iteration.attribute_by_name ("location") as luogo and attached assign_list.item_for_iteration.attribute_by_name ("expr") as expr then
-					if attached al.item.attribute_by_name ("location") as luogo and attached al.item.attribute_by_name ("expr") as expr then
-						if expr.value ~ "false" then
-							transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, False), transizione.azioni.count+1)
-						elseif expr.value ~ "true" then
-							transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, True), transizione.azioni.count+1)
+					if not attached al.item.attribute_by_name ("location") or not attached al.item.attribute_by_name ("expr") then
+						print ("ERRORE: l'azione <assign> nella transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'location' oppure 'expr'!")
+					else
+						if attached al.item.attribute_by_name ("location") as luogo and attached al.item.attribute_by_name ("expr") as expr then
+							if expr.value ~ "false" then
+								transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, False), transizione.azioni.count+1)
+							elseif expr.value ~ "true" then
+								transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, True), transizione.azioni.count+1)
+							end
 						end
 					end
 				end
---				if assign_list.item_for_iteration.name ~ "log" and attached assign_list.item_for_iteration.attribute_by_name ("name") as name then
-				if al.item.name ~ "log" and attached al.item.attribute_by_name ("name") as name then
-					if attached name.value then
-						transizione.azioni.force (create {STAMPA}.make_with_text (name.value), transizione.azioni.count+1)
-					end
+				if al.item.name ~ "log" then
+					assegnazione_azione_log (al.item, transizione)
+--					if attached al.item.attribute_by_name ("name") as name then
+--						transizione.azioni.force (create {STAMPA}.make_with_text (name.value), transizione.azioni.count+1)
+--					else
+--						print("ERRORE: l'azione <log> nella transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'name'!")
+--					end
 				end
---				i := i + 1
---				assign_list.forth
 			end
-				--TODO: creare vettore di azioni generiche
+			--TODO: creare vettore di azioni generiche
+		end
+
+	assegnazione_azione_log (p_azione: XML_ELEMENT; transizione: TRANSIZIONE)
+		do
+			if attached p_azione.attribute_by_name ("name") as name then
+				transizione.azioni.force (create {STAMPA}.make_with_text (name.value), transizione.azioni.count+1)
+			else
+				print("ERRORE: l'azione <log> nella transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'name'!")
+			end
 		end
 
 --	assegnazione_evento (transition_list: LIST [XML_ELEMENT]; transizione: TRANSIZIONE)
