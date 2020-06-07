@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="A">
+
+	<state id="A">
+		<parallel id="A2">
+			<onentry>
+				<log name="on_entry_A2" />
+			</onentry>
+			<onexit>
+				<log name="on_exit_A2" />
+			</onexit>
+	
+			<state id="A2A" initial="A2A1">
+				<onentry>
+					<log name="on_entry_A2A" />
+				</onentry>
+
+				<state id="A2A1" >
+					<onentry>
+						<log name="on_entry_A2A1" />
+					</onentry>
+					<transition event="x" target="A1" />
+					<onexit>
+						<log name="on_exit_A2A1" />
+					</onexit>
+				</state>
+				<state id="A2A2" >
+					<onentry>
+						<log name="on_entry_A2A2" />
+					</onentry>
+					<onexit>
+						<log name="on_exit_A2A2" />
+					</onexit>
+				</state>
+
+				<onexit>
+					<log name="on_exit_A2A" />
+				</onexit>
+			</state>
+			
+			<state id="A2B" initial="A2B1">
+				<onentry>
+					<log name="on_entry_A2B" />
+				</onentry>
+				<onexit>
+					<log name="on_exit_A2B" />
+				</onexit>
+
+				<state id="A2B1" >
+					<onentry>
+						<log name="on_entry_A2B1" />
+					</onentry>
+					<onexit>
+						<log name="on_exit_A2B1" />
+					</onexit>
+				</state>
+				
+				<state id="A2B2" >
+					<onentry>
+						<log name="on_entry_A2B2" />
+					</onentry>
+					<onexit>
+						<log name="on_exit_A2B2" />
+					</onexit>
+				</state>
+			</state>
+
+			<state id = "p">
+				<onentry>
+					<log name="on_entry_p" />
+				</onentry>
+				<onexit>
+					<log name="on_exit_p" />
+				</onexit>
+			</state>
+		</parallel>
+		
+		<onentry>
+				<log name="on_entry_A" />
+		</onentry>
+		<onexit>
+				<log name="on_exit_A" />
+		</onexit>
+
+		<state id="A1">
+				<onentry>
+					<log name="on_entry_A1" />
+				</onentry>
+				<transition event="y" target="A2B2">
+					<log name="con evento y da A1 a A2B2">
+				</transition>
+				<onexit>
+					<log name="on_exit_A1" />
+				</onexit>
+		</state>
+
+	</state>
+		
+</scxml>

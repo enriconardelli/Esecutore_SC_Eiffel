@@ -24,8 +24,8 @@ feature -- Test routines
 		do
 			create a_path.make_current
 			test_data_dir.append_character(a_path.directory_separator)
-			create configurazione_prova.make(test_data_dir + "tre_stati_atomici.xml")
-			create altro_configurazione_prova.make(test_data_dir + "tre_stati_atomici.xml")
+			create configurazione_prova.make(test_data_dir + "sc_tre_stati_atomici.xml")
+			create altro_configurazione_prova.make(test_data_dir + "sc_tre_stati_atomici.xml")
 		end
 
 feature -- Test routines
@@ -35,7 +35,7 @@ feature -- Test routines
 			ambiente: AMBIENTE
 		do
 			create ambiente.make_empty
-			ambiente.acquisisci_eventi (test_data_dir + "tre_stati_atomici_eventi_6.txt")
+			ambiente.acquisisci_eventi (test_data_dir + "e_tre_stati_atomici_6.txt")
 			-- in "tre_stati_atomici_eventi_6.xml" ci sono eventi non noti alla SC
 			assert("non viene rilevato evento esterno assente",ambiente.verifica_eventi_esterni(configurazione_prova)=False)
 		end
@@ -45,7 +45,7 @@ feature -- Test routines
 			ambiente: AMBIENTE
 		do
 			create ambiente.make_empty
-			ambiente.acquisisci_eventi (test_data_dir + "tre_stati_atomici_eventi_5.txt")
+			ambiente.acquisisci_eventi (test_data_dir + "e_tre_stati_atomici_5.txt")
 			-- tutti gli eventi in "tre_stati_atomici_eventi_5.xml" sono noti alla SC
 			assert("viene falsamente rilevato assenza di evento esterno assente",ambiente.verifica_eventi_esterni(altro_configurazione_prova)=True)
 		end

@@ -16,7 +16,7 @@ feature -- Test routines
 	on_prepare
 		do
 		    precursor
-			nomi_files_prova[1] := test_data_dir + "cronometro_semplice.xml"
+			nomi_files_prova[1] := test_data_dir + "sc_cronometro_semplice.xml"
 			nomi_files_prova[2] := test_data_dir
 		end
 
@@ -27,7 +27,7 @@ feature -- Test Cronometro
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova[2] := nomi_files_prova[2] + "cronometro_semplice_eventi_1.txt"
+			nomi_files_prova[2] := nomi_files_prova[2] + "e_cronometro_semplice_1.txt"
 			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (RUNNING)", esecutore.conf_base_corrente.count = 1 and esecutore.conf_base_corrente[1].id.is_equal("running") )
 		end
@@ -37,7 +37,7 @@ feature -- Test Cronometro
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova[2] := nomi_files_prova[2] + "cronometro_semplice_eventi_2.txt"
+			nomi_files_prova[2] := nomi_files_prova[2] + "e_cronometro_semplice_2.txt"
 			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (STOPPED)", esecutore.conf_base_corrente.count = 1 and esecutore.conf_base_corrente[1].id.is_equal ("stopped"))
 		end
@@ -47,7 +47,7 @@ feature -- Test Cronometro
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova[2] := nomi_files_prova[2] + "cronometro_semplice_eventi_3.txt"
+			nomi_files_prova[2] := nomi_files_prova[2] + "e_cronometro_semplice_3.txt"
 			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (RESET)", esecutore.conf_base_corrente.count = 1 and esecutore.conf_base_corrente[1].id.is_equal ("reset"))
 		end
@@ -57,7 +57,7 @@ feature -- Test Cronometro
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova[2] := nomi_files_prova[2] + "cronometro_semplice_eventi_4.txt"
+			nomi_files_prova[2] := nomi_files_prova[2] + "e_cronometro_semplice_4.txt"
 			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (PAUSED)", esecutore.conf_base_corrente.count = 1 and esecutore.conf_base_corrente[1].id.is_equal ("paused"))
 		end
@@ -67,7 +67,7 @@ feature -- Test Cronometro
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova[2] := nomi_files_prova[2] + "cronometro_semplice_eventi_5.txt"
+			nomi_files_prova[2] := nomi_files_prova[2] + "e_cronometro_semplice_5.txt"
 			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (RUNNING)", esecutore.conf_base_corrente.count = 1 and esecutore.conf_base_corrente[1].id.is_equal ("running"))
 		end
@@ -77,7 +77,7 @@ feature -- Test Cronometro
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova[2] := nomi_files_prova[2] + "cronometro_semplice_eventi_multipli_1.txt"
+			nomi_files_prova[2] := nomi_files_prova[2] + "e_multipli_cronometro_semplice_1.txt"
 			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (PAUSED)", esecutore.conf_base_corrente.count = 1 and esecutore.conf_base_corrente[1].id.is_equal ("paused"))
 		end
@@ -87,7 +87,7 @@ feature -- Test Cronometro
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova[2] := nomi_files_prova[2] + "cronometro_semplice_eventi_multipli_2.txt"
+			nomi_files_prova[2] := nomi_files_prova[2] + "e_multipli_cronometro_semplice_2.txt"
 			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (STOPPED)", esecutore.conf_base_corrente.count = 1 and esecutore.conf_base_corrente[1].id.is_equal ("stopped"))
 		end
@@ -97,7 +97,7 @@ feature -- Test Cronometro
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova[2] := nomi_files_prova[2] + "cronometro_semplice_eventi_multipli_3.txt"
+			nomi_files_prova[2] := nomi_files_prova[2] + "e_multipli_cronometro_semplice_3.txt"
 			create esecutore.make(nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (RESET)", esecutore.conf_base_corrente.count = 1 and esecutore.conf_base_corrente[1].id.is_equal ("reset"))
 		end
