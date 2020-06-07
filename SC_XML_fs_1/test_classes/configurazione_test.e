@@ -32,14 +32,14 @@ feature -- Test routines
 			test_data_dir.append_character(a_path.directory_separator)
 		    create nomi_files_prova.make_filled ("", 1, 2)
 		    create ambiente_prova.make_empty
-			nomi_files_prova [1] := test_data_dir + "tre_stati_atomici.xml"
-			nomi_files_prova [2] := test_data_dir + "tre_stati_atomici_eventi.txt"
+			nomi_files_prova [1] := test_data_dir + "sc_tre_stati_atomici.xml"
+			nomi_files_prova [2] := test_data_dir + "e_tre_stati_atomici.txt"
 
 			create configurazione_prova.make (nomi_files_prova [1])
 
 			create nomi_files_prova.make_filled ("", 1, 2)
-			nomi_files_prova[1] := test_data_dir + "cronometro.xml"
-			nomi_files_prova[2] := test_data_dir + "cronometro_eventi.txt"
+			nomi_files_prova[1] := test_data_dir + "sc_cronometro.xml"
+			nomi_files_prova[2] := test_data_dir + "e_cronometro.txt"
 
 			create altra_configurazione_prova.make (nomi_files_prova [1])
 		end
