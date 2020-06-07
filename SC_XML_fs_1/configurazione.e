@@ -371,32 +371,44 @@ feature -- supporto inizializzazione
 		end
 
 	assegnazione_azione_assign (p_azione: XML_ELEMENT; transizione: TRANSIZIONE)
+		local
+			evento: STRING
 		do
-			if not attached p_azione.attribute_by_name ("location") or not attached p_azione.attribute_by_name ("expr") then
-				print ("ERRORE: l'azione <assign> nella transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'location' oppure 'expr'!%N")
+			if attached transizione.evento as te then
+				evento := te
 			else
-				if attached p_azione.attribute_by_name ("location") as luogo and attached p_azione.attribute_by_name ("expr") as expr then
-					if expr.value ~ "false" then
-						transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, False), transizione.azioni.count+1)
-					elseif expr.value ~ "true" then
-						transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, True), transizione.azioni.count+1)
-					else
-						if attached transizione.evento as te then
-							print ("ERRORE: l'azione <assign> nella transizione con evento >|" + te + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< assegna alla <location> di nome >|" + luogo.value + "|< come <expr> il valore >|" + expr.value + "|< diverso sia da 'true' che da 'false'!%N")
-						else
-							print ("ERRORE: l'azione <assign> nella transizione con evento >|" + "NULL" + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< assegna alla <location> di nome >|" + luogo.value + "|< come <expr> il valore >|" + expr.value + "|< diverso sia da 'true' che da 'false'!%N")
-						end
-					end
+				evento := "NULL"
+			end
+			if not attached p_azione.attribute_by_name ("location") as luogo then
+				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'location'!%N")
+			elseif not condizioni.has (luogo.value) then
+				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< indica una 'location' di valore >|" + luogo.value + "|< che non esiste nelle condizioni della SC!%N")
+			elseif not attached p_azione.attribute_by_name ("expr") as valore then
+				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'expr'!%N")
+			elseif not (valore.value ~ "false" or valore.value ~ "true") then
+				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< assegna alla <location> di nome >|" + luogo.value + "|< come <expr> il valore >|" + valore.value + "|< diverso sia da 'true' che da 'false'!%N")
+			else
+				if valore.value ~ "false" then
+					transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, False), transizione.azioni.count+1)
+				else
+					transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, True), transizione.azioni.count+1)
 				end
 			end
 		end
 
 	assegnazione_azione_log (p_azione: XML_ELEMENT; transizione: TRANSIZIONE)
+		local
+			evento: STRING
 		do
+			if attached transizione.evento as te then
+				evento := te
+			else
+				evento := "NULL"
+			end
 			if attached p_azione.attribute_by_name ("name") as name then
 				transizione.azioni.force (create {STAMPA}.make_with_text (name.value), transizione.azioni.count+1)
 			else
-				print("ERRORE: l'azione <log> nella transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'name'!%N")
+				print("ERRORE: l'azione <log> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'name'!%N")
 			end
 		end
 
