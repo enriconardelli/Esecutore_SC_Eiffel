@@ -7,23 +7,22 @@ note
 class
 	TRANSIZIONE
 
-
 create
 	make_with_target
 
-feature --creazione
+feature -- creazione
 
-	make_with_target(tr_target, tr_sorgente: STATO)
+	make_with_target(stato_destinazione, stato_sorgente: STATO)
 		do
-			set_target(tr_target)
-			set_sorgente(tr_sorgente)
+			set_sorgente(stato_sorgente)
+			set_target(stato_destinazione)
             create azioni.make_empty
-			evento:= Void
-			internal:= FALSE
-			condizione:= "condizione_vuota"
+			evento := Void
+			internal := False
+			condizione := "condizione_vuota"
 		end
 
-feature --attributi
+feature -- attributi
 
 	evento: detachable STRING
 
@@ -37,7 +36,7 @@ feature --attributi
 
 	internal: BOOLEAN
 
-feature --setter
+feature -- setter
 
 	set_evento (a_string: STRING)
 		require
@@ -72,7 +71,7 @@ feature --setter
 			internal := TRUE
 		end
 
-feature --check
+feature -- check
 
 	check_evento (istante: LINKED_SET [STRING] ): BOOLEAN
 		do
@@ -86,7 +85,7 @@ feature --check
 		end
 
 	check_condizione (hash_delle_condizioni: HASH_TABLE [BOOLEAN, STRING] ): BOOLEAN
-	--Controlla se la condizione dell'evento è verificata.
+	-- Controlla se la condizione dell'evento è verificata.
 	do
 		if condizione ~ "condizione_vuota" then
 				result:= TRUE

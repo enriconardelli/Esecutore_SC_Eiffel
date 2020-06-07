@@ -127,6 +127,7 @@ feature -- inizializzazione SC
 					print ("ERRORE: il seguente elemento non ha 'id':%N")
 					stampa_elemento (e.item)
 				end
+				-- TODO: controllare se esiste già uno stato con 'id' in `stati'
 				if e.item.name ~ "state" and attached e.item.attribute_by_name ("id") as id_attr then
 					if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
 						-- elemento corrente <state> ha figli
@@ -262,6 +263,10 @@ feature -- inizializzazione SC
 				if (e.item.name ~ "state" or e.item.name ~ "parallel") and attached e.item.attribute_by_name ("id") as id_stato then
 					-- assenza di 'id' viene controllata in `istanzia_stati'
 					completa_stati (e.item.elements)
+--					if attached stati.item (id_stato.value) as stato then
+--						-- lo stato viene creato in `stati' da `istanzia_stati'
+--						assegna_transizioni (stato, e.item)
+--					end
 					assegna_transizioni (id_stato.value, e.item)
 				end
 			end
@@ -299,6 +304,7 @@ feature -- supporto inizializzazione
 			transizione: TRANSIZIONE
 		do
 			transition_list := element.elements
+--			across transition_list as e
 			from
 				transition_list.start
 			until
@@ -307,9 +313,11 @@ feature -- supporto inizializzazione
 					-- TODO gestire separatamente feature di creazione transizione che torna o transizione o errore
 				if transition_list.item_for_iteration.name ~ "transition" and attached transition_list.item_for_iteration.attribute_by_name ("target") as tt then
 						-- TODO gestire fallimento del test per assenza clausola target
+					stampa_elemento (transition_list.item_for_iteration)
 					if attached stati.item (tt.value) as ts then
+						-- TODO: passare non stato come stringa ma come STATE avendone già verificato l'esistenza
 						if attached stati.item (stato) as sr then
-							if ts.antenato_di(sr) or else not attached{STATO_AND} trova_pseudo_contesto(sr,ts) then
+							if ts.antenato_di(sr) or else not attached {STATO_AND} trova_pseudo_contesto(sr,ts) then
 								-- evita transizioni tra figli di paralleli
 								create transizione.make_with_target (ts, sr)
 								if attached transition_list.item_for_iteration.attribute_by_name ("type") as tp then
@@ -317,8 +325,10 @@ feature -- supporto inizializzazione
 										transizione.set_internal
 									end
 								end
-								assegnazione_evento (transition_list, transizione)
-								assegnazione_condizione (transition_list, transizione)
+--								assegnazione_evento (transition_list, transizione)
+								assegnazione_evento (transition_list.item_for_iteration, transizione)
+--								assegnazione_condizione (transition_list, transizione)
+								assegnazione_condizione (transition_list.item_for_iteration, transizione)
 								assign_list := transition_list.item_for_iteration.elements
 								assegnazione_azioni (assign_list, transizione)
 								if attached stati.item (stato) as si then
@@ -347,46 +357,54 @@ feature -- supporto inizializzazione
 		end
 
 	assegnazione_azioni (assign_list: LIST [XML_ELEMENT]; transizione: TRANSIZIONE)
-			--viene richiamata in riempi_stato; assegna le azioni alla transizione
-		local
-			i: INTEGER
+		-- viene richiamata in riempi_stato; assegna le azioni alla transizione
+--		local
+--			i: INTEGER
 		do
-			i := 1
-			from
-				assign_list.start
-			until
-				assign_list.after
+--			i := 1
+			across assign_list as al
+--			from
+--				assign_list.start
+--			until
+--				assign_list.after
 			loop
-				if assign_list.item_for_iteration.name ~ "assign" then
-					if attached assign_list.item_for_iteration.attribute_by_name ("location") as luogo and attached assign_list.item_for_iteration.attribute_by_name ("expr") as expr then
+--				if assign_list.item_for_iteration.name ~ "assign" then
+				if al.item.name ~ "assign" then
+--					if attached assign_list.item_for_iteration.attribute_by_name ("location") as luogo and attached assign_list.item_for_iteration.attribute_by_name ("expr") as expr then
+					if attached al.item.attribute_by_name ("location") as luogo and attached al.item.attribute_by_name ("expr") as expr then
 						if expr.value ~ "false" then
-							transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, FALSE), i)
+							transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, False), transizione.azioni.count+1)
 						elseif expr.value ~ "true" then
-							transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, TRUE), i)
+							transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, True), transizione.azioni.count+1)
 						end
 					end
 				end
-				if assign_list.item_for_iteration.name ~ "log" and attached assign_list.item_for_iteration.attribute_by_name ("name") as name then
+--				if assign_list.item_for_iteration.name ~ "log" and attached assign_list.item_for_iteration.attribute_by_name ("name") as name then
+				if al.item.name ~ "log" and attached al.item.attribute_by_name ("name") as name then
 					if attached name.value then
-						transizione.azioni.force (create {STAMPA}.make_with_text (name.value), i)
+						transizione.azioni.force (create {STAMPA}.make_with_text (name.value), transizione.azioni.count+1)
 					end
 				end
-				i := i + 1
-				assign_list.forth
+--				i := i + 1
+--				assign_list.forth
 			end
 				--TODO: creare vettore di azioni generiche
 		end
 
-	assegnazione_evento (transition_list: LIST [XML_ELEMENT]; transizione: TRANSIZIONE)
+--	assegnazione_evento (transition_list: LIST [XML_ELEMENT]; transizione: TRANSIZIONE)
+	assegnazione_evento (transition: XML_ELEMENT; transizione: TRANSIZIONE)
 		do
-			if attached transition_list.item_for_iteration.attribute_by_name ("event") as event then
+--			if attached transition_list.item_for_iteration.attribute_by_name ("event") as event then
+			if attached transition.attribute_by_name ("event") as event then
 				transizione.set_evento (event.value)
 			end
 		end
 
-	assegnazione_condizione (transition_list: LIST [XML_ELEMENT]; transizione: TRANSIZIONE)
+--	assegnazione_condizione (transition_list: LIST [XML_ELEMENT]; transizione: TRANSIZIONE)
+	assegnazione_condizione (transition: XML_ELEMENT; transizione: TRANSIZIONE)
 		do
-			if attached transition_list.item_for_iteration.attribute_by_name ("cond") as cond then
+--			if attached transition_list.item_for_iteration.attribute_by_name ("cond") as cond then
+			if attached transition.attribute_by_name ("cond") as cond then
 				transizione.set_condizione (cond.value)
 			else
 				transizione.set_condizione ("condizione_vuota")
