@@ -296,7 +296,6 @@ feature -- supporto inizializzazione
 			end
 		end
 
---	assegna_transizioni (stato: STRING; element: XML_ELEMENT)
 	assegna_transizioni (stato: STATO; element: XML_ELEMENT)
 		-- completa lo `stato' assegnandogli le transizioni con relativi eventi ed azioni
 		local
@@ -317,8 +316,6 @@ feature -- supporto inizializzazione
 --					stampa_elemento (transition_list.item_for_iteration)
 					if attached stati.item (tt.value) as ts then
 						-- TODO: passare non stato come stringa ma come STATE avendone già verificato l'esistenza
---						if attached stati.item (stato) as sr then
---							if ts.antenato_di(sr) or else not attached {STATO_AND} trova_pseudo_contesto(sr,ts) then
 							if ts.antenato_di(stato) or else not attached {STATO_AND} trova_pseudo_contesto(stato,ts) then
 								-- evita transizioni tra figli di paralleli
 								create transizione.make_with_target (ts, stato)
@@ -331,17 +328,10 @@ feature -- supporto inizializzazione
 								assegnazione_condizione (transition_list.item_for_iteration, transizione)
 								assign_list := transition_list.item_for_iteration.elements
 								assegnazione_azioni (assign_list, transizione)
---								if attached stati.item (stato) as si then
---									si.aggiungi_transizione (transizione)
 								stato.aggiungi_transizione (transizione)
---								end
 							end
---						end
 					else
---						if attached stati.item (stato) as si then
---							print ("ERRORE: lo stato >|" + si.id + "|< ha una transizione non valida %N")
---						end
-						print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione non valida %N")
+						print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + tt.value + "|< che non appartiene alla SC!%N")
 					end
 				end
 				if transition_list.item_for_iteration.name ~ "onentry" then
@@ -446,7 +436,6 @@ feature -- supporto inizializzazione
 			end
 		end
 
---	istanzia_onentry (id_stato: STRING; elements: LIST [XML_ELEMENT])
 	istanzia_onentry (stato: STATO; elements: LIST [XML_ELEMENT])
 		do
 			from
@@ -457,31 +446,21 @@ feature -- supporto inizializzazione
 				if elements.item_for_iteration.name ~ "assign" then
 					if attached elements.item_for_iteration.attribute_by_name ("location") as luogo and attached elements.item_for_iteration.attribute_by_name ("expr") as expr then
 						if expr.value ~ "false" then
---							if attached stati.item (id_stato) as si then
---								si.set_onentry (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, FALSE))
---							end
 							stato.set_onentry (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, False))
 						elseif expr.value ~ "true" then
---							if attached stati.item (id_stato) as si then
---								si.set_onentry (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, TRUE))
---							end
 							stato.set_onentry (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, True))
 						end
 					end
 				end
 				if elements.item_for_iteration.name ~ "log" and attached elements.item_for_iteration.attribute_by_name ("name") as name then
---					if attached stati.item (id_stato) as si then
-						if attached name.value then
---							si.set_onentry (create {STAMPA}.make_with_text (name.value))
-							stato.set_onentry (create {STAMPA}.make_with_text (name.value))
-						end
---					end
+					if attached name.value then
+						stato.set_onentry (create {STAMPA}.make_with_text (name.value))
+					end
 				end
 				elements.forth
 			end
 		end
 
---	istanzia_onexit (id_stato: STRING; elements: LIST [XML_ELEMENT])
 	istanzia_onexit (stato: STATO; elements: LIST [XML_ELEMENT])
 		do
 			from
@@ -492,25 +471,16 @@ feature -- supporto inizializzazione
 				if elements.item_for_iteration.name ~ "assign" then
 					if attached elements.item_for_iteration.attribute_by_name ("location") as luogo and attached elements.item_for_iteration.attribute_by_name ("expr") as expr then
 						if expr.value ~ "false" then
---							if attached stati.item (id_stato) as si then
---								si.set_onexit (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, FALSE))
---							end
 							stato.set_onexit (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, FALSE))
 						elseif expr.value ~ "true" then
---							if attached stati.item (id_stato) as si then
---								si.set_onexit (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, TRUE))
---							end
 							stato.set_onexit (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, TRUE))
 						end
 					end
 				end
 				if elements.item_for_iteration.name ~ "log" and attached elements.item_for_iteration.attribute_by_name ("name") as name then
---					if attached stati.item (id_stato) as si then
 						if attached name.value then
---							si.set_onexit (create {STAMPA}.make_with_text (name.value))
 							stato.set_onexit (create {STAMPA}.make_with_text (name.value))
 						end
---					end
 				end
 				elements.forth
 			end
