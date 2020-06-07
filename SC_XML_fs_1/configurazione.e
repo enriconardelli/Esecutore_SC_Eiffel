@@ -325,9 +325,7 @@ feature -- supporto inizializzazione
 										transizione.set_internal
 									end
 								end
---								assegnazione_evento (transition_list, transizione)
 								assegnazione_evento (transition_list.item_for_iteration, transizione)
---								assegnazione_condizione (transition_list, transizione)
 								assegnazione_condizione (transition_list.item_for_iteration, transizione)
 								assign_list := transition_list.item_for_iteration.elements
 								assegnazione_azioni (assign_list, transizione)
@@ -376,11 +374,6 @@ feature -- supporto inizializzazione
 				end
 				if al.item.name ~ "log" then
 					assegnazione_azione_log (al.item, transizione)
---					if attached al.item.attribute_by_name ("name") as name then
---						transizione.azioni.force (create {STAMPA}.make_with_text (name.value), transizione.azioni.count+1)
---					else
---						print("ERRORE: l'azione <log> nella transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'name'!")
---					end
 				end
 			end
 			--TODO: creare vettore di azioni generiche
@@ -395,19 +388,15 @@ feature -- supporto inizializzazione
 			end
 		end
 
---	assegnazione_evento (transition_list: LIST [XML_ELEMENT]; transizione: TRANSIZIONE)
 	assegnazione_evento (transition: XML_ELEMENT; transizione: TRANSIZIONE)
 		do
---			if attached transition_list.item_for_iteration.attribute_by_name ("event") as event then
 			if attached transition.attribute_by_name ("event") as event then
 				transizione.set_evento (event.value)
 			end
 		end
 
---	assegnazione_condizione (transition_list: LIST [XML_ELEMENT]; transizione: TRANSIZIONE)
 	assegnazione_condizione (transition: XML_ELEMENT; transizione: TRANSIZIONE)
 		do
---			if attached transition_list.item_for_iteration.attribute_by_name ("cond") as cond then
 			if attached transition.attribute_by_name ("cond") as cond then
 				transizione.set_condizione (cond.value)
 			else
