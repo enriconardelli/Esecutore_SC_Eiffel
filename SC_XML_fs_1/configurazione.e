@@ -313,7 +313,7 @@ feature -- supporto inizializzazione
 					-- TODO gestire separatamente feature di creazione transizione che torna o transizione o errore
 				if transition_list.item_for_iteration.name ~ "transition" and attached transition_list.item_for_iteration.attribute_by_name ("target") as tt then
 						-- TODO gestire fallimento del test per assenza clausola target
-					stampa_elemento (transition_list.item_for_iteration)
+--					stampa_elemento (transition_list.item_for_iteration)
 					if attached stati.item (tt.value) as ts then
 						-- TODO: passare non stato come stringa ma come STATE avendone già verificato l'esistenza
 						if attached stati.item (stato) as sr then
@@ -360,23 +360,35 @@ feature -- supporto inizializzazione
 			across assign_list as al
 			loop
 				if al.item.name ~ "assign" then
-					if not attached al.item.attribute_by_name ("location") or not attached al.item.attribute_by_name ("expr") then
-						print ("ERRORE: l'azione <assign> nella transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'location' oppure 'expr'!")
-					else
-						if attached al.item.attribute_by_name ("location") as luogo and attached al.item.attribute_by_name ("expr") as expr then
-							if expr.value ~ "false" then
-								transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, False), transizione.azioni.count+1)
-							elseif expr.value ~ "true" then
-								transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, True), transizione.azioni.count+1)
-							end
-						end
-					end
-				end
-				if al.item.name ~ "log" then
+					assegnazione_azione_assign (al.item, transizione)
+				elseif al.item.name ~ "log" then
 					assegnazione_azione_log (al.item, transizione)
+				else
+					print ("AVVISO: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< specifica un'azione >|" + al.item.name + "|< sconosciuta!%N")
 				end
 			end
 			--TODO: creare vettore di azioni generiche
+		end
+
+	assegnazione_azione_assign (p_azione: XML_ELEMENT; transizione: TRANSIZIONE)
+		do
+			if not attached p_azione.attribute_by_name ("location") or not attached p_azione.attribute_by_name ("expr") then
+				print ("ERRORE: l'azione <assign> nella transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'location' oppure 'expr'!%N")
+			else
+				if attached p_azione.attribute_by_name ("location") as luogo and attached p_azione.attribute_by_name ("expr") as expr then
+					if expr.value ~ "false" then
+						transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, False), transizione.azioni.count+1)
+					elseif expr.value ~ "true" then
+						transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, True), transizione.azioni.count+1)
+					else
+						if attached transizione.evento as te then
+							print ("ERRORE: l'azione <assign> nella transizione con evento >|" + te + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< assegna alla <location> di nome >|" + luogo.value + "|< come <expr> il valore >|" + expr.value + "|< diverso sia da 'true' che da 'false'!%N")
+						else
+							print ("ERRORE: l'azione <assign> nella transizione con evento >|" + "NULL" + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< assegna alla <location> di nome >|" + luogo.value + "|< come <expr> il valore >|" + expr.value + "|< diverso sia da 'true' che da 'false'!%N")
+						end
+					end
+				end
+			end
 		end
 
 	assegnazione_azione_log (p_azione: XML_ELEMENT; transizione: TRANSIZIONE)
@@ -384,7 +396,7 @@ feature -- supporto inizializzazione
 			if attached p_azione.attribute_by_name ("name") as name then
 				transizione.azioni.force (create {STAMPA}.make_with_text (name.value), transizione.azioni.count+1)
 			else
-				print("ERRORE: l'azione <log> nella transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'name'!")
+				print("ERRORE: l'azione <log> nella transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'name'!%N")
 			end
 		end
 
