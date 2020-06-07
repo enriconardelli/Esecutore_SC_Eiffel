@@ -299,46 +299,39 @@ feature -- supporto inizializzazione
 	assegna_transizioni (stato: STATO; element: XML_ELEMENT)
 		-- completa lo `stato' assegnandogli le transizioni con relativi eventi ed azioni
 		local
-			transition_list: LIST [XML_ELEMENT] --lista di tutto ciò che appartiene allo stato
 			transizione: TRANSIZIONE
 		do
-			transition_list := element.elements
---			across transition_list as e
-			from
-				transition_list.start
-			until
-				transition_list.after
+			across element.elements as e
 			loop
 					-- TODO gestire separatamente feature di creazione transizione che torna o transizione o errore
-				if transition_list.item_for_iteration.name ~ "transition" and attached transition_list.item_for_iteration.attribute_by_name ("target") as tt then
+				if e.item.name ~ "transition" and attached e.item.attribute_by_name ("target") as tt then
 						-- TODO gestire fallimento del test per assenza clausola target
---					stampa_elemento (transition_list.item_for_iteration)
+					stampa_elemento (e.item)
 					if attached stati.item (tt.value) as ts then
 						-- TODO: passare non stato come stringa ma come STATE avendone già verificato l'esistenza
 							if ts.antenato_di(stato) or else not attached {STATO_AND} trova_pseudo_contesto(stato,ts) then
 								-- evita transizioni tra figli di paralleli
 								create transizione.make_with_target (ts, stato)
-								if attached transition_list.item_for_iteration.attribute_by_name ("type") as tp then
+								if attached e.item.attribute_by_name ("type") as tp then
 									if tp.value ~ "internal" and verifica_internal (transizione.sorgente, transizione.target) then
 										transizione.set_internal
 									end
 								end
-								assegna_evento (transition_list.item_for_iteration, transizione)
-								assegna_condizione (transition_list.item_for_iteration, transizione)
-								assegna_azioni (transition_list.item_for_iteration.elements, transizione)
+								assegna_evento (e.item, transizione)
+								assegna_condizione (e.item, transizione)
+								assegna_azioni (e.item.elements, transizione)
 								stato.aggiungi_transizione (transizione)
 							end
 					else
 						print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + tt.value + "|< che non appartiene alla SC!%N")
 					end
 				end
-				if transition_list.item_for_iteration.name ~ "onentry" then
-					istanzia_onentry (stato, transition_list.item_for_iteration.elements)
+				if e.item.name ~ "onentry" then
+					istanzia_onentry (stato, e.item.elements)
 				end
-				if transition_list.item_for_iteration.name ~ "onexit" then
-					istanzia_onexit (stato, transition_list.item_for_iteration.elements)
+				if e.item.name ~ "onexit" then
+					istanzia_onexit (stato, e.item.elements)
 				end
-				transition_list.forth
 			end
 		end
 
