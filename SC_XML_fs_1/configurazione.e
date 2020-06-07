@@ -323,9 +323,9 @@ feature -- supporto inizializzazione
 										transizione.set_internal
 									end
 								end
-								assegnazione_evento (transition_list.item_for_iteration, transizione)
-								assegnazione_condizione (transition_list.item_for_iteration, transizione)
-								assegnazione_azioni (transition_list.item_for_iteration.elements, transizione)
+								assegna_evento (transition_list.item_for_iteration, transizione)
+								assegna_condizione (transition_list.item_for_iteration, transizione)
+								assegna_azioni (transition_list.item_for_iteration.elements, transizione)
 								stato.aggiungi_transizione (transizione)
 							end
 					else
@@ -342,23 +342,23 @@ feature -- supporto inizializzazione
 			end
 		end
 
-	assegnazione_azioni (assign_list: LIST [XML_ELEMENT]; transizione: TRANSIZIONE)
+	assegna_azioni (assign_list: LIST [XML_ELEMENT]; transizione: TRANSIZIONE)
 		-- assegna le azioni in `assign_list' alla `transizione'
 		do
 			across assign_list as al
 			loop
 				if al.item.name ~ "assign" then
-					assegnazione_azione_assign (al.item, transizione)
+					assegna_azione_assign (al.item, transizione)
 				elseif al.item.name ~ "log" then
-					assegnazione_azione_log (al.item, transizione)
+					assegna_azione_log (al.item, transizione)
 				else
 					print ("AVVISO: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< specifica un'azione >|" + al.item.name + "|< sconosciuta!%N")
 				end
 			end
-			--TODO: creare vettore di azioni generiche
+			-- TODO: creare vettore di azioni generiche
 		end
 
-	assegnazione_azione_assign (p_azione: XML_ELEMENT; transizione: TRANSIZIONE)
+	assegna_azione_assign (p_azione: XML_ELEMENT; transizione: TRANSIZIONE)
 		local
 			evento: STRING
 		do
@@ -384,7 +384,7 @@ feature -- supporto inizializzazione
 			end
 		end
 
-	assegnazione_azione_log (p_azione: XML_ELEMENT; transizione: TRANSIZIONE)
+	assegna_azione_log (p_azione: XML_ELEMENT; transizione: TRANSIZIONE)
 		local
 			evento: STRING
 		do
@@ -400,14 +400,14 @@ feature -- supporto inizializzazione
 			end
 		end
 
-	assegnazione_evento (transition: XML_ELEMENT; transizione: TRANSIZIONE)
+	assegna_evento (transition: XML_ELEMENT; transizione: TRANSIZIONE)
 		do
 			if attached transition.attribute_by_name ("event") as event then
 				transizione.set_evento (event.value)
 			end
 		end
 
-	assegnazione_condizione (transition: XML_ELEMENT; transizione: TRANSIZIONE)
+	assegna_condizione (transition: XML_ELEMENT; transizione: TRANSIZIONE)
 		do
 			if attached transition.attribute_by_name ("cond") as cond then
 				transizione.set_condizione (cond.value)
