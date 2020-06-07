@@ -300,7 +300,6 @@ feature -- supporto inizializzazione
 		-- completa lo `stato' assegnandogli le transizioni con relativi eventi ed azioni
 		local
 			transition_list: LIST [XML_ELEMENT] --lista di tutto ciò che appartiene allo stato
-			assign_list: LIST [XML_ELEMENT]
 			transizione: TRANSIZIONE
 		do
 			transition_list := element.elements
@@ -326,8 +325,7 @@ feature -- supporto inizializzazione
 								end
 								assegnazione_evento (transition_list.item_for_iteration, transizione)
 								assegnazione_condizione (transition_list.item_for_iteration, transizione)
-								assign_list := transition_list.item_for_iteration.elements
-								assegnazione_azioni (assign_list, transizione)
+								assegnazione_azioni (transition_list.item_for_iteration.elements, transizione)
 								stato.aggiungi_transizione (transizione)
 							end
 					else
@@ -335,14 +333,10 @@ feature -- supporto inizializzazione
 					end
 				end
 				if transition_list.item_for_iteration.name ~ "onentry" then
-					if attached transition_list.item_for_iteration.elements as list then
-						istanzia_onentry (stato, list)
-					end
+					istanzia_onentry (stato, transition_list.item_for_iteration.elements)
 				end
 				if transition_list.item_for_iteration.name ~ "onexit" then
-					if attached transition_list.item_for_iteration.elements as list then
-						istanzia_onexit (stato, list)
-					end
+					istanzia_onexit (stato, transition_list.item_for_iteration.elements)
 				end
 				transition_list.forth
 			end
@@ -439,15 +433,9 @@ feature -- supporto inizializzazione
 	istanzia_onentry (stato: STATO; elements: LIST [XML_ELEMENT])
 		do
 			across elements as e
---			from
---				elements.start
---			until
---				elements.after
 			loop
 				if e.item.name ~ "assign" then
---				if elements.item_for_iteration.name ~ "assign" then
 					if attached e.item.attribute_by_name ("location") as luogo and attached e.item.attribute_by_name ("expr") as expr then
---					if attached elements.item_for_iteration.attribute_by_name ("location") as luogo and attached elements.item_for_iteration.attribute_by_name ("expr") as expr then
 						if expr.value ~ "false" then
 							stato.set_onentry (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, False))
 						elseif expr.value ~ "true" then
@@ -456,12 +444,10 @@ feature -- supporto inizializzazione
 					end
 				end
 				if e.item.name ~ "log" and attached e.item.attribute_by_name ("name") as name then
---				if elements.item_for_iteration.name ~ "log" and attached elements.item_for_iteration.attribute_by_name ("name") as name then
 					if attached name.value then
 						stato.set_onentry (create {STAMPA}.make_with_text (name.value))
 					end
 				end
---				elements.forth
 			end
 		end
 
