@@ -15,7 +15,7 @@ feature -- Test routines
 
 	t_non_determinismo_1_1
 	 --Filippo & Iezzi 08/05/2020
-	 --finisce in C perché esegue la transizione più interna
+	 --finisce in C perchÃ© esegue la transizione piÃ¹ interna
 		local
 			esecutore: ESECUTORE
 		do
@@ -27,7 +27,7 @@ feature -- Test routines
 
 	t_non_determinismo_1_2
 	 --Filippo & Iezzi 08/05/2020
-	 --finisce in B perchè compare prima nel file xml
+	 --finisce in B perchÃ¨ compare prima nel file xml
 		local
 			esecutore: ESECUTORE
 		do
@@ -39,7 +39,7 @@ feature -- Test routines
 
 	t_non_determinismo_1_3
 	 --Filippo & Iezzi 08/05/2020
-	 --finisce in D1 perchè esegue la transizione dal primo stato della configurazione
+	 --finisce in D1 perchÃ¨ esegue la transizione dal primo stato della configurazione
 		local
 			esecutore: ESECUTORE
 		do
@@ -51,7 +51,7 @@ feature -- Test routines
 
 	t_non_determinismo_1_4
 	 --Filippo & Iezzi 08/05/2020
-	 --finisce in D1 perchè esegue la transizione dal primo stato della configurazione
+	 --finisce in D1 perchÃ¨ esegue la transizione dal primo stato della configurazione
 		local
 			esecutore: ESECUTORE
 		do
@@ -96,11 +96,13 @@ feature -- Test routines
 
 	t_non_determinismo_2_1
 	-- Arianna Calzuola & Riccardo Malandruccolo 08/05/2020
+	-- TODO: fallisce perchÃ© in P2A (che viene prima nel file xml) non trova transizioni con evento 'x',
+	-- quindi risale fino a quando non trova la transizioni interna di T
 		local
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova [1] := test_data_dir + "non_determinismo_2_1.xml"
-	  		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_1_eventi.txt"
+  		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_1_eventi.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (P1B,P2A)", esecutore.conf_base_corrente.count = 2 and conf_has_state(esecutore.conf_base_corrente,"P1B") and conf_has_state(esecutore.conf_base_corrente,"P2A"))
 		end
@@ -111,7 +113,7 @@ feature -- Test routines
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova [1] := test_data_dir + "non_determinismo_2_2.xml"
-	  		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_2_eventi.txt"
+  		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_2_eventi.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE 2_2.1: il sistema entra in due stati XOR", esecutore.conf_base_corrente.count = 1)
 			assert("ERRORE 2_2.2: il sistema non entra in A", conf_has_state(esecutore.conf_base_corrente,"A"))
@@ -119,11 +121,12 @@ feature -- Test routines
 
 	t_non_determinismo_2_3
 	-- Arianna Calzuola & Riccardo Malandruccolo 08/05/2020
+	-- TODO: non completamente risolto
 		local
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova [1] := test_data_dir + "non_determinismo_2_3.xml"
-	  		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_3_eventi.txt"
+  		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_3_eventi.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE 2_3.1: il sistema esce dallo stato P parallelo", esecutore.conf_base_corrente.count = 2)
 			assert("ERRORE 2_3.2: il sistema non entra in (B,P2)", conf_has_state(esecutore.conf_base_corrente,"B") and conf_has_state(esecutore.conf_base_corrente,"P2"))
@@ -135,7 +138,7 @@ feature -- Test routines
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova [1] := test_data_dir + "non_determinismo_2_4.xml"
-	  		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_4_eventi.txt"
+  		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_4_eventi.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (P1A2,P1B1,P2)", esecutore.conf_base_corrente.count = 3 and conf_has_state(esecutore.conf_base_corrente,"P1A2") and conf_has_state(esecutore.conf_base_corrente,"P1B1") and conf_has_state(esecutore.conf_base_corrente,"P2"))
 		end
@@ -146,7 +149,7 @@ feature -- Test routines
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova [1] := test_data_dir + "non_determinismo_2_5.xml"
-	  		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_5_1_eventi.txt"
+  		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_5_1_eventi.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (P1B,P2A,R1B,R2A)", esecutore.conf_base_corrente.count = 4 and conf_has_state(esecutore.conf_base_corrente,"P1B") and conf_has_state(esecutore.conf_base_corrente,"P2A") and conf_has_state(esecutore.conf_base_corrente,"R1B") and conf_has_state(esecutore.conf_base_corrente,"R2A"))
 		end
@@ -157,7 +160,7 @@ feature -- Test routines
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova [1] := test_data_dir + "non_determinismo_2_5.xml"
-	  		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_5_2_eventi.txt"
+  		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_5_2_eventi.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (P1B,P2A,G)", esecutore.conf_base_corrente.count = 3 and conf_has_state(esecutore.conf_base_corrente,"P1B") and conf_has_state(esecutore.conf_base_corrente,"P2A") and conf_has_state(esecutore.conf_base_corrente,"G"))
 		end
@@ -168,7 +171,7 @@ feature -- Test routines
 		esecutore: ESECUTORE
 	do
 		nomi_files_prova [1] := test_data_dir + "non_determinismo_2_6.xml"
-  		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_6_eventi.txt"
+ 		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_6_eventi.txt"
 		create esecutore.make (nomi_files_prova)
 		assert("ERRORE: il sistema non termina in (P1A1B, P1A2, P1A3B, P2A2, P2B, P2C1A, P2C1B, A2, B1, P3B)", esecutore.conf_base_corrente.count = 10 and conf_has_state(esecutore.conf_base_corrente,"P1A1B") and conf_has_state(esecutore.conf_base_corrente,"P1A2")  and conf_has_state(esecutore.conf_base_corrente,"P1A3B") and conf_has_state(esecutore.conf_base_corrente,"P2A2")  and conf_has_state(esecutore.conf_base_corrente,"P2B") and conf_has_state(esecutore.conf_base_corrente,"P2C1A")  and conf_has_state(esecutore.conf_base_corrente,"P2C1B") and conf_has_state(esecutore.conf_base_corrente,"A2")  and conf_has_state(esecutore.conf_base_corrente,"B1") and conf_has_state(esecutore.conf_base_corrente,"P3B"))
 	end

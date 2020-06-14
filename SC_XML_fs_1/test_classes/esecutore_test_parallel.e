@@ -95,7 +95,7 @@ feature -- Test
 			nomi_files_prova [1] := test_data_dir + "parallelo_una_profondita.xml"
 			nomi_files_prova [2] := test_data_dir + "parallelo_una_profondita_eventi.txt"
 			create esecutore.make (nomi_files_prova)
-			 assert ("ERRORE lo stato corrente non è (A,UNO)", conf_has_state(esecutore.conf_base_corrente,"A") and conf_has_state(esecutore.conf_base_corrente,"UNO"))
+			 assert ("ERRORE lo stato corrente non Ã¨ (A,UNO)", conf_has_state(esecutore.conf_base_corrente,"A") and conf_has_state(esecutore.conf_base_corrente,"UNO"))
 		end
 
 	t_parallelo_piu_profondo
@@ -105,7 +105,7 @@ feature -- Test
 			nomi_files_prova [1] := test_data_dir + "parallelo_piu_profondo.xml"
 			nomi_files_prova [2] := test_data_dir + "parallelo_piu_profondo_eventi.txt"
 			create esecutore.make (nomi_files_prova)
-			 assert ("ERRORE lo stato corrente non è (A2A1, P1, P2)", conf_has_state(esecutore.conf_base_corrente,"A2A1") and conf_has_state(esecutore.conf_base_corrente,"P1") and conf_has_state(esecutore.conf_base_corrente,"P2"))
+			 assert ("ERRORE lo stato corrente non Ã¨ (A2A1, P1, P2)", conf_has_state(esecutore.conf_base_corrente,"A2A1") and conf_has_state(esecutore.conf_base_corrente,"P1") and conf_has_state(esecutore.conf_base_corrente,"P2"))
 		end
 
 	t_misto_parallel_1
@@ -116,20 +116,20 @@ feature -- Test
 			nomi_files_prova [1] := test_data_dir + "multi_parallel_1.xml"
 			nomi_files_prova [2] := test_data_dir + "multi_parallel_1_eventi.txt"
 			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE lo configurazione base corrente non è (A,B2,B1)", conf_has_state(esecutore.conf_base_corrente,"A") and conf_has_state(esecutore.conf_base_corrente,"B1") and conf_has_state(esecutore.conf_base_corrente,"B2"))
+			assert ("ERRORE lo configurazione base corrente non Ã¨ (A,B2,B1)", conf_has_state(esecutore.conf_base_corrente,"A") and conf_has_state(esecutore.conf_base_corrente,"B1") and conf_has_state(esecutore.conf_base_corrente,"B2"))
 		end
 
 	t_transizioni_interne_parallel
 	--Claudia & Federico 01/05/2020
 	--Quando vengono eseguite transizioni all' interno di uno stato parallelo, a sua volta contenuto in uno stato parallelo
-	--Viene "scordata" la configurazione a livello più alto (nell' esecuzione di questo test la configurazione finale dovrebbe contenere anche lo stato B1, che invece non appare)
+	--Viene "scordata" la configurazione a livello piÃ¹ alto (nell' esecuzione di questo test la configurazione finale dovrebbe contenere anche lo stato B1, che invece non appare)
 	local
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova [1] := test_data_dir + "transizioni_interne_parallelo.xml"
 			nomi_files_prova [2] := test_data_dir + "transizioni_interne_parallelo_eventi.txt"
 			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE lo configurazione base corrente non è (A1A2,A1B,A1C,B1)", conf_has_state(esecutore.conf_base_corrente,"A1A2") and conf_has_state(esecutore.conf_base_corrente,"A1B") and conf_has_state(esecutore.conf_base_corrente,"A1C") and conf_has_state(esecutore.conf_base_corrente,"B1"))
+			assert ("ERRORE lo configurazione base corrente non Ã¨ (A1A2,A1B,A1C,B1)", conf_has_state(esecutore.conf_base_corrente,"A1A2") and conf_has_state(esecutore.conf_base_corrente,"A1B") and conf_has_state(esecutore.conf_base_corrente,"A1C") and conf_has_state(esecutore.conf_base_corrente,"B1"))
 		end
 
 	t_transizione_non_ammissibile
@@ -138,9 +138,9 @@ feature -- Test
 		esecutore: ESECUTORE
 	do
 		nomi_files_prova [1] := test_data_dir + "transizione_non_ammissibile.xml"
-  		nomi_files_prova [2] := test_data_dir + "transizione_non_ammissibile_eventi.txt"
+ 		nomi_files_prova [2] := test_data_dir + "transizione_non_ammissibile_eventi.txt"
 		create esecutore.make (nomi_files_prova)
-		assert ("ERRORE lo stato corrente non è (P1, P2)", conf_has_state(esecutore.conf_base_corrente,"P1") and conf_has_state(esecutore.conf_base_corrente,"P2"))
+		assert ("ERRORE lo stato corrente non Ã¨ (P1, P2)", conf_has_state(esecutore.conf_base_corrente,"P1") and conf_has_state(esecutore.conf_base_corrente,"P2"))
 	end
 
 	t_internal_con_sorgente_parallelo
@@ -150,7 +150,7 @@ feature -- Test
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova [1] := test_data_dir + "internal_da_parallelo.xml"
-	  		nomi_files_prova [2] := test_data_dir + "internal_da_parallelo_eventi.txt"
+  		nomi_files_prova [2] := test_data_dir + "internal_da_parallelo_eventi.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (P1,P2B)", esecutore.conf_base_corrente.count = 2 and conf_has_state(esecutore.conf_base_corrente,"P1") and conf_has_state(esecutore.conf_base_corrente,"P2B"))
 		end
@@ -161,7 +161,7 @@ feature -- Test
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova [1] := test_data_dir + "transizione_figlio_genitore.xml"
-	  		nomi_files_prova [2] := test_data_dir + "transizione_figlio_genitore_eventi.txt"
+  		nomi_files_prova [2] := test_data_dir + "transizione_figlio_genitore_eventi.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (P1A1,P1B1,P2)", esecutore.conf_base_corrente.count = 3 and conf_has_state(esecutore.conf_base_corrente,"P1A1") and conf_has_state(esecutore.conf_base_corrente,"P1B1") and conf_has_state(esecutore.conf_base_corrente,"P2"))
 		end

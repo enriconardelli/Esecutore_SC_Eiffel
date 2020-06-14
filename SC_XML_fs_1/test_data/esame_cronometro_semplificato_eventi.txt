@@ -1,0 +1,36 @@
+avvio
+tick
+tick
+tick
+tick
+tick
+prendi
+tick
+tick
+tick
+prendi
+tick
+inverti
+tick
+tick
+inverti tick
+tick
+avvio
+tick
+inverti tick
+avvio
+tick
+tick
+azzera
+tick
+tick
+tick
+avvio
+tick
+azzera
+tick
+inverti
+tick
+tick
+tick
+avvio

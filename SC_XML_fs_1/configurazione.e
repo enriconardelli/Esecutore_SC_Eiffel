@@ -100,7 +100,7 @@ feature -- inizializzazione SC
 					end
 				end
 			end
-			-- aggiunge condizione_vuota che è sempre true e si applica alle transizioni che hanno condizione void (cfr riempi_stato)
+			-- aggiunge condizione_vuota che è sempre true e si applica alle transizioni che hanno condizione void (cfr `completa_stati')
 			condizioni.extend (True, "condizione_vuota")
 		end
 
@@ -178,7 +178,7 @@ feature -- inizializzazione SC
 		do
 			across elements as e
 			loop
-				debug ("xml_print") stampa_elemento(e.item) end
+				debug ("SC_assegna_initial") if e.item.name ~ "state" or e.item.name ~ "parallel" then stampa_elemento(e.item) end end
 				-- NB: gli stati atomici non sono né {STATO_XOR} né {STATO_AND}
 				if e.item.name ~ "state" and attached e.item.attribute_by_name ("id") as id_attr then
 					if attached {STATO_XOR} stati.item (id_attr.value) as stato then
@@ -267,85 +267,60 @@ feature -- inizializzazione SC
 						-- lo stato esiste perché viene creato in `stati' da `istanzia_stati'
 						assegna_transizioni (stato, e.item)
 					end
---					assegna_transizioni (id_stato.value, e.item)
 				end
 			end
 		end
 
 feature -- supporto inizializzazione
 
-	first_sub_state (element: XML_ELEMENT): STATO
-		local
-			place_holder: INDEXABLE_ITERATION_CURSOR[XML_ELEMENT]
-		do
-			create Result.make_with_id ("null_state")
-			across element.elements as e
-			from place_holder := e.new_cursor
-			until e.item.name ~ "state" or e.item.name ~ "parallel"
-			loop
-				place_holder := e
-			end
-			debug ("initial")
-				print("AVVISO: trovato primo figlio <state> o <parallel>%N")
-				stampa_elemento (place_holder.item)
-			end
-			if attached place_holder.item.attribute_by_name ("id") as id_attr then
-				if attached stati.item (id_attr.value) as sub_state then
-					Result := sub_state
-				end
-			end
-		end
-
 	assegna_transizioni (stato: STATO; element: XML_ELEMENT)
-		-- completa lo `stato' assegnandogli le transizioni con relativi eventi ed azioni
+		-- completa lo `stato' assegnandogli
+		-- le transizioni con relativi eventi ed azioni
+		-- gli altri discendenti come onentry e onexit
 		local
-			transition_list: LIST [XML_ELEMENT] --lista di tutto ciò che appartiene allo stato
 			transizione: TRANSIZIONE
 		do
-			transition_list := element.elements
---			across transition_list as e
-			from
-				transition_list.start
-			until
-				transition_list.after
+			across element.elements as e
 			loop
-					-- TODO gestire separatamente feature di creazione transizione che torna o transizione o errore
-				if transition_list.item_for_iteration.name ~ "transition" and attached transition_list.item_for_iteration.attribute_by_name ("target") as tt then
-						-- TODO gestire fallimento del test per assenza clausola target
---					stampa_elemento (transition_list.item_for_iteration)
-					if attached stati.item (tt.value) as ts then
-						-- TODO: passare non stato come stringa ma come STATE avendone già verificato l'esistenza
-							if ts.antenato_di(stato) or else not attached {STATO_AND} trova_pseudo_contesto(stato,ts) then
-								-- evita transizioni tra figli di paralleli
-								create transizione.make_with_target (ts, stato)
-								if attached transition_list.item_for_iteration.attribute_by_name ("type") as tp then
-									if tp.value ~ "internal" and verifica_internal (transizione.sorgente, transizione.target) then
+				if e.item.name ~ "transition" then
+					debug ("SC_assegna_transizioni") stampa_elemento (e.item) end
+					if attached e.item.attribute_by_name ("target") as t then
+						if attached stati.item (t.value) as destinazione then
+							if not transizione_illegale (stato, destinazione) then
+								create transizione.make_with_target (destinazione, stato)
+								if attached e.item.attribute_by_name ("type") as type then
+									if type.value ~ "internal" and verifica_internal (transizione.sorgente, transizione.target) then
 										transizione.set_internal
 									end
 								end
-								assegna_evento (transition_list.item_for_iteration, transizione)
-								assegna_condizione (transition_list.item_for_iteration, transizione)
-								assegna_azioni (transition_list.item_for_iteration.elements, transizione)
+								assegna_evento (e.item, transizione)
+								assegna_condizione (e.item, transizione)
+								assegna_azioni (e.item.elements, transizione)
 								stato.aggiungi_transizione (transizione)
+							else
+								print ("ERRORE: transizione non legale! ")
+								print ("da >|" + stato.id + "|< a >|" + destinazione.id + "|< %N")
 							end
+						else
+							print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value + "|< che non appartiene alla SC!%N")
+						end
 					else
-						print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + tt.value + "|< che non appartiene alla SC!%N")
+						print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")
 					end
 				end
-				if transition_list.item_for_iteration.name ~ "onentry" then
-					istanzia_onentry (stato, transition_list.item_for_iteration.elements)
+				if e.item.name ~ "onentry" then
+					istanzia_onentry (stato, e.item.elements)
 				end
-				if transition_list.item_for_iteration.name ~ "onexit" then
-					istanzia_onexit (stato, transition_list.item_for_iteration.elements)
+				if e.item.name ~ "onexit" then
+					istanzia_onexit (stato, e.item.elements)
 				end
-				transition_list.forth
 			end
 		end
 
-	assegna_azioni (assign_list: LIST [XML_ELEMENT]; transizione: TRANSIZIONE)
-		-- assegna le azioni in `assign_list' alla `transizione'
+	assegna_azioni (action_list: LIST [XML_ELEMENT]; transizione: TRANSIZIONE)
+		-- assegna le azioni in `action_list' alla `transizione'
 		do
-			across assign_list as al
+			across action_list as al
 			loop
 				if al.item.name ~ "assign" then
 					assegna_azione_assign (al.item, transizione)
@@ -355,7 +330,6 @@ feature -- supporto inizializzazione
 					print ("AVVISO: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< specifica un'azione >|" + al.item.name + "|< sconosciuta!%N")
 				end
 			end
-			-- TODO: creare vettore di azioni generiche
 		end
 
 	assegna_azione_assign (p_azione: XML_ELEMENT; transizione: TRANSIZIONE)
@@ -402,6 +376,7 @@ feature -- supporto inizializzazione
 
 	assegna_evento (transition: XML_ELEMENT; transizione: TRANSIZIONE)
 		do
+			-- TODO: capire se gestire l'assenza dell'evento con evento convenzionale "NULL" come si fa per condizione_vuota
 			if attached transition.attribute_by_name ("event") as event then
 				transizione.set_evento (event.value)
 			end
@@ -474,26 +449,70 @@ feature -- supporto inizializzazione
 
 feature -- supporto generale
 
-	trova_pseudo_contesto (p_sorgente, p_destinazione: STATO): detachable STATO
-		-- trova il minimo antenato comune PROPRIO a p_sorgente e p_destinazione
-		-- (può essere anche AND)
+	first_sub_state (element: XML_ELEMENT): STATO
+		local
+			place_holder: INDEXABLE_ITERATION_CURSOR[XML_ELEMENT]
+		do
+			create Result.make_with_id ("null_state")
+			across element.elements as e
+			from place_holder := e.new_cursor
+			until e.item.name ~ "state" or e.item.name ~ "parallel"
+			loop
+				place_holder := e
+			end
+			debug ("SC_first_sub_state")
+				print("AVVISO: trovato primo figlio <state> o <parallel>%N")
+				stampa_elemento (place_holder.item)
+			end
+			if attached place_holder.item.attribute_by_name ("id") as id_attr then
+				if attached stati.item (id_attr.value) as sub_state then
+					Result := sub_state
+				end
+			end
+		end
+
+	transizione_verticale (p_sorgente, p_destinazione: STATO): BOOLEAN
+			-- ritorna vero se `p_sorgente' e `p_destinazione' sono uno antenato dell'altro
+		do
+			Result := p_sorgente.antenato_di (p_destinazione) or p_destinazione.antenato_di (p_sorgente)
+		end
+
+	catena_di_paralleli (basso, alto: STATO): BOOLEAN
+			-- ritorna vero se dal genitore di `basso' c'è una catena continua di <parallel> fino ad `alto' che è il "mac"
+		local
+			corrente: STATO
+		do
+			corrente := basso.genitore
+			if corrente = alto then
+				Result := True
+			elseif attached {STATO_XOR} corrente then
+				Result := False
+			else
+				if attached corrente as c then
+					Result := catena_di_paralleli (c, alto)
+				end
+			end
+		end
+
+	minimo_antenato_comune (p_sorgente, p_destinazione: STATO): detachable STATO
+			-- torna il minimo antenato comune eventualmente coincidente con uno dei due
 		local
 			antenati: HASH_TABLE [STRING, STRING]
 			corrente: STATO
 		do
 			create antenati.make (0)
-				-- "marca" tutti gli antenati di p_sorgente incluso
+				-- "marca" tutti gli antenati di p_sorgente lui compreso
 			from
-				corrente := p_sorgente.genitore
+				corrente := p_sorgente
 			until
 				corrente = Void
 			loop
 				antenati.put (corrente.id, corrente.id)
 				corrente := corrente.genitore
 			end
-				-- trova il più basso antenato di p_destinazione in "antenati"
+				-- trova il più basso antenato di p_destinazione in "antenati" a partire da lui stesso
 			from
-				corrente := p_destinazione.genitore
+				corrente := p_destinazione
 			until
 				corrente = Void or else antenati.has (corrente.id)
 			loop
@@ -502,11 +521,43 @@ feature -- supporto generale
 			Result := corrente
 		end
 
+	transizione_illegale (p_sorgente, p_destinazione: STATO): BOOLEAN
+			-- transizione è illegale se il minimo antenato comune (mac) è <parallel> e:
+			-- sorgente e destinazione sono uno antenato dell'altro e sono tutti <parallel> dal più alto al genitore del più basso
+			-- mac è diverso da entrambi (attraversamento frontiera)
+		local
+			stato_mac, altro_stato: STATO
+		do
+			debug ("sc_transizione_illegale") print ("transizione da >|" + p_sorgente.id + "|< a >|" + p_destinazione.id + "|< ") end
+			stato_mac := minimo_antenato_comune(p_sorgente, p_destinazione)
+			if attached {STATO_AND} stato_mac then
+				if transizione_verticale (p_sorgente, p_destinazione) then
+					if stato_mac = p_sorgente then
+						altro_stato := p_destinazione
+					else
+						altro_stato := p_sorgente
+					end
+					if catena_di_paralleli (altro_stato, stato_mac) then
+						Result := True
+						debug ("sc_transizione_illegale") print(" illegale: transizione con MAC <parallel> in verticale e catena di <parallel> %N") end
+					end
+				else -- stato_mac è diverso da entrambi
+						Result := True
+						debug ("sc_transizione_illegale") print(" illegale: transizione con MAC <parallel> in orizzontale tra discendenti del MAC(attraversa la frontiera)%N") end
+				end
+			end
+		end
+
 	stampa_elemento (element: XML_ELEMENT)
 		do
 
 			print ("%NXML_ELEMENT = " + element.name)
-			if element.has_attribute_by_name ("id") then
+			if element.name ~ "transition" then
+				print ("%N   con evento " +  valore_attributo(element, "event"))
+				print ("%N   con condizione " +  valore_attributo(element, "cond"))
+				print ("%N   con destinazione " +  valore_attributo(element, "target"))
+				print ("%N")
+			elseif element.has_attribute_by_name ("id") then
 				print (" e id = " + valore_attributo(element, "id"))
 			end
 			print (" che ha come elementi figli:%N")
