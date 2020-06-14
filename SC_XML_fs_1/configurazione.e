@@ -95,7 +95,7 @@ feature -- inizializzazione SC
 						loop
 							if attached {XML_ATTRIBUTE} data.item.attribute_by_name ("id") as nome then
 								if nome.value ~ "" then
-									print ("ERRORE: elemento <data> con attributo 'id' di valore stringa vuota!%N")
+									print ("ERRORE: elemento <data> con 'id' di valore stringa vuota!%N")
 								elseif attached {XML_ATTRIBUTE} data.item.attribute_by_name ("expr") as valore then
 									if valore_booleano(valore.value) then
 										condizioni.extend (valore.value.as_lower ~ "true", nome.value)
@@ -135,50 +135,60 @@ feature -- inizializzazione SC
 		do
 			across elements as e
 			loop
-				if (e.item.name ~ "state" or e.item.name ~ "parallel") and not attached e.item.attribute_by_name ("id") then
-					print ("ERRORE: il seguente elemento non ha 'id':%N")
-					stampa_elemento (e.item)
-				end
-				-- TODO: controllare se esiste già uno stato con 'id' in `stati'
-				if e.item.name ~ "state" and attached e.item.attribute_by_name ("id") as id_attr then
-					if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
-						-- elemento corrente <state> ha figli
-						if attached p_genitore as pg then
-							-- istanzio elemento corrente con genitore e glielo assegno come figlio
-							stato_temp := create {STATO_XOR}.make_with_id_and_parent (id_attr.value, pg)
-							pg.add_figlio (stato_temp)
-						else -- istanzio elemento corrente senza genitore
-							stato_temp := create {STATO_XOR}.make_with_id (id_attr.value)
+				if (e.item.name ~ "state" or e.item.name ~ "parallel") then
+					if not attached e.item.attribute_by_name ("id") then
+						print ("ERRORE: il seguente elemento non ha 'id':%N")
+						stampa_elemento (e.item)
+					elseif attached e.item.attribute_by_name ("id") as id_attr then
+						if id_attr.value ~ "" then
+							print ("ERRORE: il seguente elemento ha un 'id' di valore stringa vuota!%N")
+							stampa_elemento (e.item)
+						elseif stati.has(id_attr.value) then
+							print ("ERRORE: il seguente elemento ha un 'id' duplicato!%N")
+							stampa_elemento (e.item)
+						else
+							if e.item.name ~ "state" then
+								if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
+									-- elemento corrente <state> ha figli
+									if attached p_genitore as pg then
+										-- istanzio elemento corrente con genitore e glielo assegno come figlio
+										stato_temp := create {STATO_XOR}.make_with_id_and_parent (id_attr.value, pg)
+										pg.add_figlio (stato_temp)
+									else -- istanzio elemento corrente senza genitore
+										stato_temp := create {STATO_XOR}.make_with_id (id_attr.value)
+									end
+									stati.extend (stato_temp, id_attr.value)
+									-- ricorsione sui figli con sé stesso come genitore
+									istanzia_stati (e.item.elements, stati.item (id_attr.value))
+								else -- elemento corrente <state> non ha figli
+									if attached p_genitore as pg then
+										-- istanzio elemento corrente con genitore e glielo assegno come figlio
+										stato_temp := create {STATO}.make_with_id_and_parent (id_attr.value, pg)
+										pg.add_figlio (stato_temp)
+									else -- istanzio elemento corrente senza genitore
+										stato_temp := create {STATO}.make_with_id (id_attr.value)
+									end
+									stati.extend (stato_temp, id_attr.value)
+								end
+							end
+							if e.item.name ~ "parallel" then
+								if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
+									-- elemento corrente <parallel> ha figli
+									if attached p_genitore as pg then
+										-- istanzio elemento corrente con genitore e glielo assegno come figlio
+										stato_temp := create {STATO_AND}.make_with_id_and_parent (id_attr.value, pg)
+										pg.add_figlio (stato_temp)
+									else -- istanzio elemento corrente senza genitore
+										stato_temp := create {STATO_AND}.make_with_id (id_attr.value)
+									end
+									stati.extend (stato_temp, id_attr.value)
+									-- ricorsione sui figli con sé stesso come genitore
+									istanzia_stati (e.item.elements, stati.item (id_attr.value))
+								else -- elemento corrente <parallel> non ha figli
+									print ("ERRORE: lo stato <parallel> >|" + id_attr.value + "|< non ha figli !%N")
+								end
+							end
 						end
-						stati.extend (stato_temp, id_attr.value)
-						-- ricorsione sui figli con sé stesso come genitore
-						istanzia_stati (e.item.elements, stati.item (id_attr.value))
-					else -- elemento corrente <state> non ha figli
-						if attached p_genitore as pg then
-							-- istanzio elemento corrente con genitore e glielo assegno come figlio
-							stato_temp := create {STATO}.make_with_id_and_parent (id_attr.value, pg)
-							pg.add_figlio (stato_temp)
-						else -- istanzio elemento corrente senza genitore
-							stato_temp := create {STATO}.make_with_id (id_attr.value)
-						end
-						stati.extend (stato_temp, id_attr.value)
-					end
-				end
-				if e.item.name ~ "parallel" and attached e.item.attribute_by_name ("id") as id_attr then
-					if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
-						-- elemento corrente <parallel> ha figli
-						if attached p_genitore as pg then
-							-- istanzio elemento corrente con genitore e glielo assegno come figlio
-							stato_temp := create {STATO_AND}.make_with_id_and_parent (id_attr.value, pg)
-							pg.add_figlio (stato_temp)
-						else -- istanzio elemento corrente senza genitore
-							stato_temp := create {STATO_AND}.make_with_id (id_attr.value)
-						end
-						stati.extend (stato_temp, id_attr.value)
-						-- ricorsione sui figli con sé stesso come genitore
-						istanzia_stati (e.item.elements, stati.item (id_attr.value))
-					else -- elemento corrente <parallel> non ha figli
-						print ("ERRORE: lo stato <parallel> >|" + id_attr.value + "|< non ha figli !%N")
 					end
 				end
 			end
@@ -186,7 +196,7 @@ feature -- inizializzazione SC
 
 	assegna_initial (elements: LIST [XML_ELEMENT])
 			-- assegna ricorsivamente agli stati i loro sotto-stati iniziali di default
-			-- NB: assenza di 'id' viene controllata in `istanzia_stati'
+			-- NB: regolarità di 'id' viene controllata in `istanzia_stati'
 		do
 			across elements as e
 			loop
