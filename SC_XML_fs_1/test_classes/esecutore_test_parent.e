@@ -19,7 +19,7 @@ feature -- Test routines
 	on_prepare
 		do
 			precursor
-			nomi_files_prova [1] := test_data_dir + "esempio_xor.xml"
+			nomi_files_prova [1] := test_data_dir + "xor.xml"
 			nomi_files_prova [2] := test_data_dir
 		end
 
@@ -29,7 +29,7 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [2] := nomi_files_prova [2] + "eventi_xor_1.txt"
+			nomi_files_prova [2] := nomi_files_prova [2] + "xor_eventi_1.txt"
 			create esecutore.make (nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (A1b)", esecutore.conf_base_corrente.count = 1 and esecutore.conf_base_corrente[1].id.is_equal ("A1b"))
 			if attached esecutore.conf_base_corrente[1].genitore as sp then
@@ -41,7 +41,7 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [2] := nomi_files_prova [2] + "eventi_xor_1.txt"
+			nomi_files_prova [2] := nomi_files_prova [2] + "xor_eventi_1.txt"
 			create esecutore.make (nomi_files_prova)
 			if attached esecutore.state_chart.stati.item ("A") as st then
 				if attached st.initial as df then
@@ -64,8 +64,8 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "esempio_xor_initial_assente.xml"
-			nomi_files_prova [2] := nomi_files_prova [2] + "eventi_xor_1.txt"
+			nomi_files_prova [1] := test_data_dir + "xor_initial_assente.xml"
+			nomi_files_prova [2] := nomi_files_prova [2] + "xor_initial_assente_eventi.txt"
 			create esecutore.make (nomi_files_prova)
 			if attached esecutore.state_chart.stati.item ("A") as st then
 				if attached st.initial as df then
@@ -83,8 +83,8 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "esempio_entrata_2_azioni_initial_assente.xml"
-			nomi_files_prova [2] := nomi_files_prova [2] + "eventi_entrata_2.txt"
+			nomi_files_prova [1] := test_data_dir + "entrata_2_azioni_initial_assente.xml"
+			nomi_files_prova [2] := nomi_files_prova [2] + "entrata_2_azioni_initial_assente_eventi.txt"
 			create esecutore.make (nomi_files_prova)
 			if attached esecutore.state_chart.stati.item ("A") as st then
 				if attached st.initial as df then
@@ -97,7 +97,7 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [2] := nomi_files_prova [2] + "eventi_xor_2.txt"
+			nomi_files_prova [2] := nomi_files_prova [2] + "xor_eventi_2.txt"
 			create esecutore.make (nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (B1)", esecutore.conf_base_corrente.count = 1 and esecutore.conf_base_corrente[1].id.is_equal ("B1"))
 		end
@@ -106,7 +106,7 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [2] := nomi_files_prova [2] + "eventi_xor_3.txt"
+			nomi_files_prova [2] := nomi_files_prova [2] + "xor_eventi_3.txt"
 			create esecutore.make (nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto (B2)", esecutore.conf_base_corrente.count = 1 and esecutore.conf_base_corrente[1].id.is_equal ("B2"))
 		end

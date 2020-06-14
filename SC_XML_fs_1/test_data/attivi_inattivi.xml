@@ -1,0 +1,27 @@
+<scxml version="1.0" initial="A">
+	<parallel id="A">
+		<state id="A1" initial="A11">
+			<parallel id="A11">
+				<state id="A111">
+				</state>
+				<state id="A112">
+				</state>
+			</parallel>
+		</state>
+
+		<parallel id="A2">
+			<state id="A21" initial="A21A">
+				<state id="A21A">
+					<transition event="e" target="B"/>	
+				</state>
+			</state>
+			<state id="A22" initial="A22A">
+				<state id="A22A"></state>
+			</state>
+		</parallel>
+	</parallel>
+
+	<state id="B">
+		<transition event="f" target="A112"/>
+	</state>
+</scxml>

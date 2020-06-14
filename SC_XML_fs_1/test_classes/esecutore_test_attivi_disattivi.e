@@ -19,8 +19,8 @@ feature -- Test routines
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "esempio_test_attivi_inattivi.xml"
-			nomi_files_prova [2] := test_data_dir + "eventi_xor_1.txt"
+			nomi_files_prova [1] := test_data_dir + "attivi_inattivi.xml"
+			nomi_files_prova [2] := test_data_dir + "attivi_inattivi_eventi_1.txt"
 			create esecutore.make (nomi_files_prova)
 			assert ("ERRORE 1.1 non attiva A", attached esecutore.state_chart.stati.item("A") as item and then item.attivo)
 			assert ("ERRORE 1.2 non attiva A1", attached esecutore.state_chart.stati.item("A1") as item and then item.attivo)
@@ -41,8 +41,8 @@ feature -- Test routines
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "esempio_test_attivi_inattivi.xml"
-			nomi_files_prova [2] := test_data_dir + "eventi_test_inattivi.txt"
+			nomi_files_prova [1] := test_data_dir + "attivi_inattivi.xml"
+			nomi_files_prova [2] := test_data_dir + "attivi_inattivi_eventi_2.txt"
 			create esecutore.make (nomi_files_prova)
 			assert ("ERRORE 2.1 non disattiva A111", attached esecutore.state_chart.stati.item("A111") as item and then not item.attivo)
 			assert ("ERRORE 2.2 non disattiva A112", attached esecutore.state_chart.stati.item("A112") as item and then not item.attivo)
@@ -60,8 +60,8 @@ feature -- Test routines
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "esempio_test_attivi_inattivi.xml"
-			nomi_files_prova [2] := test_data_dir + "eventi_test_attivi.txt"
+			nomi_files_prova [1] := test_data_dir + "attivi_inattivi.xml"
+			nomi_files_prova [2] := test_data_dir + "attivi_inattivi_eventi_3.txt"
 			create esecutore.make (nomi_files_prova)
 			assert ("ERRORE 3.1 non attiva A111", attached esecutore.state_chart.stati.item("A111") as item and then item.attivo)
 			assert ("ERRORE 3.2 non attiva A112", attached esecutore.state_chart.stati.item("A112") as item and then item.attivo)
