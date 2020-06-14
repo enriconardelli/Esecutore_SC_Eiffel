@@ -87,15 +87,27 @@ feature -- inizializzazione SC
 		do
 			across elements as e
 			loop
-				if e.item.name ~ "datamodel" and attached e.item.elements as data then
-					-- TODO: avvisare se il datamodel è vuoto
-					across data as d
-					loop
-						if attached {XML_ATTRIBUTE} d.item.attribute_by_name ("id") as nome and attached {XML_ATTRIBUTE} d.item.attribute_by_name ("expr") as valore then
-							-- TODO: avvisare se "id" o "expr" sono assenti
-							-- TODO: avvisare se il valore di "id" è stringa vuota
-							-- TODO: avvisare se il valore di "expr" è diverso da "true" o "false"
-							condizioni.extend (valore.value ~ "true", nome.value)
+				if e.item.name ~ "datamodel" then
+					if e.item.elements.is_empty then
+						print ("AVVISO: il <datamodel> non contiene elementi <data>!%N")
+					else
+						across e.item.elements as data
+						loop
+							if attached {XML_ATTRIBUTE} data.item.attribute_by_name ("id") as nome then
+								if nome.value ~ "" then
+									print ("ERRORE: elemento <data> con attributo 'id' di valore stringa vuota!%N")
+								elseif attached {XML_ATTRIBUTE} data.item.attribute_by_name ("expr") as valore then
+									if valore_booleano(valore.value) then
+										condizioni.extend (valore.value.as_lower ~ "true", nome.value)
+									else
+										print ("ERRORE: elemento <data> con id >|" + nome.value + "<| assegna a 'expr' il valore >|" + valore.value + "<| non booleano!%N")
+									end
+								else
+									print ("ERRORE: elemento <data> con id >|" + nome.value + "<| senza attributo 'expr'!%N")
+								end
+							else
+								print ("ERRORE: elemento <data> senza attributo 'id'!%N")
+							end
 						end
 					end
 				end
@@ -578,6 +590,11 @@ feature -- supporto generale
 			if attached element.attribute_by_name (attribute_name) as attr then
 				Result := attr.value
 			end
+		end
+
+	valore_booleano (valore: READABLE_STRING_32): BOOLEAN
+		do
+			Result := valore.as_lower ~ "true" or valore.as_lower ~ "false"
 		end
 
 		-- Aggiungere 'feature' per tracciare quanto accade scrivendo su file model_out.txt:
