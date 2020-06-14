@@ -286,7 +286,7 @@ feature -- supporto inizializzazione
 					debug ("SC_assegna_transizioni") stampa_elemento (e.item) end
 					if attached e.item.attribute_by_name ("target") as t then
 						if attached stati.item (t.value) as destinazione then
-							if not transizione_illegittima (stato, destinazione) then
+							if not transizione_illegale (stato, destinazione) then
 								create transizione.make_with_target (destinazione, stato)
 								if attached e.item.attribute_by_name ("type") as type then
 									if type.value ~ "internal" and verifica_internal (transizione.sorgente, transizione.target) then
@@ -298,7 +298,7 @@ feature -- supporto inizializzazione
 								assegna_azioni (e.item.elements, transizione)
 								stato.aggiungi_transizione (transizione)
 							else
-								print ("ERRORE: transizione non legittima! ")
+								print ("ERRORE: transizione non legale! ")
 								print ("da >|" + stato.id + "|< a >|" + destinazione.id + "|< %N")
 							end
 						else
@@ -521,14 +521,14 @@ feature -- supporto generale
 			Result := corrente
 		end
 
-	transizione_illegittima (p_sorgente, p_destinazione: STATO): BOOLEAN
-			-- transizione è illegittima se il minimo antenato comune (mac) è <parallel> e:
+	transizione_illegale (p_sorgente, p_destinazione: STATO): BOOLEAN
+			-- transizione è illegale se il minimo antenato comune (mac) è <parallel> e:
 			-- sorgente e destinazione sono uno antenato dell'altro e sono tutti <parallel> dal più alto al genitore del più basso
 			-- mac è diverso da entrambi (attraversamento frontiera)
 		local
 			stato_mac, altro_stato: STATO
 		do
-			debug ("sc_transizione_illegittima") print ("transizione da >|" + p_sorgente.id + "|< a >|" + p_destinazione.id + "|< ") end
+			debug ("sc_transizione_illegale") print ("transizione da >|" + p_sorgente.id + "|< a >|" + p_destinazione.id + "|< ") end
 			stato_mac := minimo_antenato_comune(p_sorgente, p_destinazione)
 			if attached {STATO_AND} stato_mac then
 				if transizione_verticale (p_sorgente, p_destinazione) then
@@ -539,11 +539,11 @@ feature -- supporto generale
 					end
 					if catena_di_paralleli (altro_stato, stato_mac) then
 						Result := True
-						debug ("sc_transizione_illegittima") print(" illegittima: transizione con MAC <parallel> in verticale e catena di <parallel> %N") end
+						debug ("sc_transizione_illegale") print(" illegale: transizione con MAC <parallel> in verticale e catena di <parallel> %N") end
 					end
 				else -- stato_mac è diverso da entrambi
 						Result := True
-						debug ("sc_transizione_illegittima") print(" illegittima: transizione con MAC <parallel> in orizzontale tra discendenti del MAC(attraversa la frontiera)%N") end
+						debug ("sc_transizione_illegale") print(" illegale: transizione con MAC <parallel> in orizzontale tra discendenti del MAC(attraversa la frontiera)%N") end
 				end
 			end
 		end
