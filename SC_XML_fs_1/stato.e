@@ -4,7 +4,7 @@
 	date: ""
 	revision: ""
 
--- classe da ristrutturare trasformandola in deferred con due sotto-classi per stati atomici e gerarchici,
+-- TODO: classe da ristrutturare trasformandola in deferred con due sotto-classi per stati atomici e gerarchici,
 -- STATO_ATOMICO è effective, mentre STATO_GERARCHIO è anch'essa deferred
 -- ed ha come sotto-classi STATO_XOR e STATO_AND
 -- spostare feature figli, add_Figlio, make_with_parent in STATO_GERARCHICO
