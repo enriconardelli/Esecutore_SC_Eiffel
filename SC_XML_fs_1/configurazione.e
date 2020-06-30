@@ -136,7 +136,7 @@ feature -- inizializzazione SC
 		do
 			across elements as e
 			loop
-				if (e.item.name ~ "state" or e.item.name ~ "parallel" or e.item.name ~ "history") then
+				if (e.item.name ~ "state" or e.item.name ~ "parallel") then
 					if not attached e.item.attribute_by_name ("id") then
 						print ("ERRORE: il seguente elemento non ha 'id':%N")
 						stampa_elemento (e.item)

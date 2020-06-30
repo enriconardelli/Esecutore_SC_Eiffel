@@ -266,25 +266,19 @@ feature -- evoluzione della statechart
 		do
 			stato.set_attivo
 			esegui_onentry(stato)
-			if not stato.figli.is_empty then
-				from
-					i := stato.figli.lower
-				until
-					i = stato.figli.upper + 1 -- or storia.stati_memorizzati.has(stato.figli[i]) (se arrivo su un parallelo voglio leggerli tutti i figli)
-				loop
-					if storia.stati_memorizzati.has(stato.figli[i]) then
-						if storia.deep then
-							segui_storia (stato.figli[i], storia, prossima_conf_base)
-						else
-							trova_default (stato.figli[i],prossima_conf_base)
-							--aggiungi_paralleli (stato, prossima_conf_base)
-						end
+			from
+				i := stato.figli.lower
+			until
+				i = stato.figli.upper + 1 -- or storia.stati_memorizzati.has(stato.figli[i]) (se arrivo su un parallelo voglio leggerli tutti i figli)
+			loop
+				if storia.stati_memorizzati.has(stato.figli[i]) then
+					if storia.deep then
+						segui_storia (stato.figli[i], storia, prossima_conf_base)
+					else
+						trova_default (stato.figli[i],prossima_conf_base)
 					end
-					i := i + 1
 				end
-			else
-				-- `stato' è uno stato atomico
-				prossima_conf_base.force (stato, prossima_conf_base.count + 1)
+				i := i + 1
 			end
 		end
 
