@@ -76,6 +76,7 @@ feature -- evoluzione della statechart
 					loop
 						transizione_corrente := cbc.item.transizione_abilitata (eventi_correnti, state_chart.condizioni)
 						if attached transizione_corrente as tc and then transizioni_eseguibili.has(tc) then
+							salva_storia(cbc.item,genitore_piu_grande(tc))
 							esegui_azioni (tc, cbc.item)
 							trova_default (tc.target, prossima_conf_base)
 							aggiungi_paralleli (tc.target, prossima_conf_base)
@@ -93,6 +94,38 @@ feature -- evoluzione della statechart
 			end
 			print ("%NHo terminato l'elaborazione degli eventi%N")
 			stampa_conf_corrente (istante)
+		end
+
+	salva_storia(stato_conf_base, stato_uscente: STATO)
+		local
+			stato_temp: STATO
+			percorso_uscita: ARRAY[STATO]
+		do
+			if stato_uscente /= stato_conf_base then
+				-- se esco da uno stato atomico non ho storia
+				create percorso_uscita.make_empty
+				from
+					stato_temp := stato_conf_base
+				until
+					stato_temp = stato_uscente
+				loop
+					percorso_uscita.force(stato_temp, percorso_uscita.count + 1)
+
+					if attached stato_temp.genitore as gen then
+						stato_temp := gen
+					end
+
+					if attached stato_temp.storia as storia then
+						if storia.deep then
+							-- se la storia è "deep" salvo tutto l'array del percorso
+							storia.memorizza_stati (percorso_uscita)
+						else
+							-- se la storia è "shallow" salvo solo lo stato uscente allo stesso livello della storia
+							storia.memorizza_stati (create {ARRAY[STATO]}.make_filled(percorso_uscita[percorso_uscita.upper],0,0))
+						end
+					end
+				end
+			end
 		end
 
 	trova_transizioni_eseguibili(evento: LINKED_SET[STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]): ARRAY[TRANSIZIONE]
@@ -206,15 +239,47 @@ feature -- evoluzione della statechart
 		local
 			i: INTEGER
 		do
+			if attached stato.storia as storia and then not storia.stati_memorizzati.is_empty then
+				segui_storia(stato,storia,prossima_conf_base)
+			else
+				stato.set_attivo
+				esegui_onentry(stato)
+				if not stato.initial.is_empty then
+					from
+						i := stato.initial.lower
+					until
+						i = stato.initial.upper + 1
+					loop
+						trova_default (stato.initial [i], prossima_conf_base)
+						i := i + 1
+					end
+				else
+					-- `stato' è uno stato atomico
+					prossima_conf_base.force (stato, prossima_conf_base.count + 1)
+				end
+			end
+		end
+
+	segui_storia (stato: STATO; storia: STORIA; prossima_conf_base: ARRAY [STATO])
+		local
+			i: INTEGER
+		do
 			stato.set_attivo
 			esegui_onentry(stato)
-			if not stato.initial.is_empty then
+			if not stato.figli.is_empty then
 				from
-					i := stato.initial.lower
+					i := stato.figli.lower
 				until
-					i = stato.initial.upper + 1
+					i = stato.figli.upper + 1 -- or storia.stati_memorizzati.has(stato.figli[i]) (se arrivo su un parallelo voglio leggerli tutti i figli)
 				loop
-					trova_default (stato.initial [i], prossima_conf_base)
+					if storia.stati_memorizzati.has(stato.figli[i]) then
+						if storia.deep then
+							segui_storia (stato.figli[i], storia, prossima_conf_base)
+						else
+							trova_default (stato.figli[i],prossima_conf_base)
+							--aggiungi_paralleli (stato, prossima_conf_base)
+						end
+					end
 					i := i + 1
 				end
 			else

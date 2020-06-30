@@ -132,10 +132,11 @@ feature -- inizializzazione SC
 		-- crea gli stati assegnando loro l'eventuale genitore e gli eventuali figli
 		local
 			stato_temp: STATO
+			storia_temp: STORIA
 		do
 			across elements as e
 			loop
-				if (e.item.name ~ "state" or e.item.name ~ "parallel") then
+				if (e.item.name ~ "state" or e.item.name ~ "parallel" or e.item.name ~ "history") then
 					if not attached e.item.attribute_by_name ("id") then
 						print ("ERRORE: il seguente elemento non ha 'id':%N")
 						stampa_elemento (e.item)
@@ -160,6 +161,15 @@ feature -- inizializzazione SC
 									stati.extend (stato_temp, id_attr.value)
 									-- ricorsione sui figli con sé stesso come genitore
 									istanzia_stati (e.item.elements, stati.item (id_attr.value))
+									if e.item.has_element_by_name ("history") and attached e.item.element_by_name ("history") as his then
+										if attached his.attribute_by_name ("type") as tp and then tp.value ~ "deep" then
+											storia_temp := create {STORIA}.make_deep_history (id_attr.value, stato_temp)
+											stato_temp.add_storia (storia_temp)
+										else
+											storia_temp := create {STORIA}.make_history (id_attr.value, stato_temp)
+											stato_temp.add_storia (storia_temp)
+										end
+									end
 								else -- elemento corrente <state> non ha figli
 									if attached p_genitore as pg then
 										-- istanzio elemento corrente con genitore e glielo assegno come figlio

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="T">
+    <state id="T" initial="P">
+      <state id="P" initial="P1">
+        <state id="P1">
+          <transition event="x" target="P2"/>
+        </state>
+        <state id="P2">
+          <transition event="x" target="P3"/>
+        </state>
+        <state id="P3"></state>
+        
+        <history id="Ph" type="shallow"/>
+        <transition event="B" target="R"/>
+        <transition event="D" target="R2A"/>
+      </state>
+    
+      <state id="R" initial="R1">
+        <state id="R1">
+          <transition event="x" target="R2"/>
+        </state>
+        <state id="R2" initial="R2A">
+          <state id="R2A">
+            <transition event="x" target="R2B"/>
+          </state>
+          <state id="R2B"></state>
+        <transition event="y" target="R1"/>
+        </state>
+        
+        <history id="Rh*" type="deep"/>
+        <transition event="A" target="P"/>
+        <transition event="C" target="P1"/>
+      </state>
+   </state>
+
+</scxml>
