@@ -27,7 +27,7 @@
         <transition event="y" target="R1"/>
         </state>
         
-        <history id="Rh*" type="deep"/>
+        <history id="Rh" type="deep"/>
         <transition event="A" target="P"/>
         <transition event="C" target="P1"/>
       </state>

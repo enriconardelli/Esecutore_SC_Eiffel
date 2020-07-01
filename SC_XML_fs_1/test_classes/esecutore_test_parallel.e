@@ -215,4 +215,15 @@ feature -- Test
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (R1)", conf_has_state(esecutore.conf_base_corrente,"R1"))
 		end
+
+	t_storia_con_parallelo
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "storia_con_parallelo.xml"
+  			nomi_files_prova [2] := test_data_dir + "storia_con_parallelo_eventi.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (A2, B2)", conf_has_state(esecutore.conf_base_corrente,"A2") and conf_has_state(esecutore.conf_base_corrente,"B2"))
+		end
+
 end
