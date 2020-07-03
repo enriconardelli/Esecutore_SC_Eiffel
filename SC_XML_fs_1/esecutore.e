@@ -76,7 +76,7 @@ feature -- evoluzione della statechart
 					loop
 						transizione_corrente := cbc.item.transizione_abilitata (eventi_correnti, state_chart.condizioni)
 						if attached transizione_corrente as tc and then transizioni_eseguibili.has(tc) then
-							salva_storia(cbc.item,genitore_piu_grande(tc))
+							salva_storie(genitore_piu_grande(tc))
 							esegui_azioni (tc, cbc.item)
 							trova_default (tc.target, prossima_conf_base)
 							aggiungi_paralleli (tc.target, prossima_conf_base)
@@ -96,7 +96,18 @@ feature -- evoluzione della statechart
 			stampa_conf_corrente (istante)
 		end
 
-	salva_storia(stato_conf_base, stato_uscente: STATO)
+	salva_storie(stato_uscente: STATO)
+		do
+			across
+				conf_base_corrente as cbc
+			loop
+				if stato_uscente.antenato_di (cbc.item)	then
+					salva_percorso(cbc.item, stato_uscente)
+				end
+			end
+		end
+
+	salva_percorso(stato_conf_base, stato_uscente: STATO)
 		local
 			stato_temp: STATO
 			percorso_uscita: ARRAY[STATO]
@@ -118,10 +129,10 @@ feature -- evoluzione della statechart
 					if attached stato_temp.storia as storia then
 						if storia.deep then
 							-- se la storia è "deep" salvo tutto l'array del percorso
-							storia.memorizza_stati (percorso_uscita)
+							storia.aggiungi_stati (percorso_uscita)
 						else
 							-- se la storia è "shallow" salvo solo lo stato uscente allo stesso livello della storia
-							storia.memorizza_stati (create {ARRAY[STATO]}.make_filled(percorso_uscita[percorso_uscita.upper],0,0))
+							storia.aggiungi_stati (create {ARRAY[STATO]}.make_filled(percorso_uscita[percorso_uscita.upper],0,0))
 						end
 					end
 				end
@@ -210,7 +221,6 @@ feature -- evoluzione della statechart
 					end
 				end
 			end
-
 		end
 
 	aggiungi_paralleli (target: STATO; prossima_conf_base: ARRAY [STATO])
@@ -241,6 +251,7 @@ feature -- evoluzione della statechart
 		do
 			if attached stato.storia as storia and then not storia.stati_memorizzati.is_empty then
 				segui_storia(stato,storia,prossima_conf_base)
+				storia.svuota_memoria
 			else
 				stato.set_attivo
 				esegui_onentry(stato)
@@ -270,14 +281,13 @@ feature -- evoluzione della statechart
 				from
 					i := stato.figli.lower
 				until
-					i = stato.figli.upper + 1 -- or storia.stati_memorizzati.has(stato.figli[i]) (se arrivo su un parallelo voglio leggerli tutti i figli)
+					i = stato.figli.upper + 1
 				loop
 					if storia.stati_memorizzati.has(stato.figli[i]) then
 						if storia.deep then
 							segui_storia (stato.figli[i], storia, prossima_conf_base)
 						else
 							trova_default (stato.figli[i],prossima_conf_base)
-							--aggiungi_paralleli (stato, prossima_conf_base)
 						end
 					end
 					i := i + 1
@@ -287,6 +297,32 @@ feature -- evoluzione della statechart
 				prossima_conf_base.force (stato, prossima_conf_base.count + 1)
 			end
 		end
+
+--	segui_storia (stato: STATO; storia: STORIA; prossima_conf_base: ARRAY [STATO])
+--		--secondo modo
+--		local
+--			i: INTEGER
+--			prova: ARRAY [STATO]
+--		do
+--			stato.set_attivo
+--			esegui_onentry(stato)
+--			if storia.deep then
+--				create prova.make_empty
+--				prova := riordina_conf_base(storia.stati_memorizzati)
+--				across
+--					prova as sm
+--				loop
+--					sm.item.set_attivo
+--					esegui_onentry(sm.item)
+--					if sm.item.stato_atomico then
+--						prossima_conf_base.force (sm.item, prossima_conf_base.count + 1)
+--					end
+--				end
+--			else
+--				trova_default (storia.stati_memorizzati[1],prossima_conf_base)
+--				--aggiungi_paralleli (stato, prossima_conf_base)
+--			end
+--		end
 
 	trova_contesto (p_sorgente, p_destinazione: STATO): detachable STATO
 			-- trova il contesto in base alla specifica SCXML secondo cui il contesto
@@ -389,6 +425,9 @@ feature -- esecuzione azioni
 			if attached p_target.genitore as sg and then sg /= p_contesto then
 				esegui_azioni_onentry (p_contesto, sg)
 				esegui_onentry(sg)
+				if attached sg.storia as storia then
+					storia.svuota_memoria
+				end
 			end
 		end
 

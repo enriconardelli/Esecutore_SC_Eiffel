@@ -37,14 +37,25 @@ feature
 
 feature
 
-	memorizza_stati (stati: ARRAY[STATO])
+--	memorizza_stati (stati: ARRAY[STATO])
+--	do
+--		stati_memorizzati.copy(stati)
+--	end
+	aggiungi_stati(stati: ARRAY[STATO])
 	do
-		stati_memorizzati.copy(stati)
+		across
+			stati as st
+		loop
+			if not stati_memorizzati.has (st.item) then
+				stati_memorizzati.force(st.item, stati_memorizzati.upper + 1)
+			end
+		end
 	end
 
 	svuota_memoria
 	do
 		stati_memorizzati.make_empty
 	end
+
 
 end
