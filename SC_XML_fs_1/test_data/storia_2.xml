@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="A">
+  <parallel id="A">
+	<transition event="y" target="B2B"></transition>
+      <state id = "A1" initial="P">
+          <history id="A1h" type="deep"/>
+          <parallel id="P">
+        <state id="P1" initial = "R">
+          <parallel id="R">
+            <state id="R1" initial="R1A">
+              <state id="R1A">
+                <transition event="x" target="R1B"></transition>
+              </state>
+              <state id="R1B"/>
+            </state>
+            <state id="R2" initial="R2A">
+              <state id="R2A"/>
+            </state>
+          </parallel>
+        </state>
+    
+        <state id="P2" initial = "S">
+            <history id="Sh" type="shallow"/>
+          <parallel id="S">
+            <state id="S1" initial="S1A">
+              <state id="S1A"/>
+              <state id="S1B">
+                <transition event="b" target="B"></transition>
+              </state>
+            </state>
+            <state id="S2">
+                <transition event="x" target="P2A2"></transition>
+            </state>
+    
+          </parallel>
+          <state id="P2A" initial = "P2A1">
+              <state id="P2A1"/>
+              <state id="P2A2">
+                  <transition event="z" target="S1B"/>
+              </state>
+          </state>
+        </state>
+
+  </parallel>
+      </state>
+      <state id = "A2" initial="A2A">
+          <history id="A2h" type="shallow"/>
+          <state id = "A2A" initial="A2A1">
+              <state id = "A2A1" initial="A2A1A">
+                  <state id = "A2A1A">
+                      <transition event="x" target="A2A1B"/>
+                      <transition event="z" target="A2C2"/>
+                  </state>
+                  <state id = "A2A1B"/>
+              </state>
+          </state>
+          <state id = "A2B" initial="A2B1">
+              <history id="A2Bh" type="deep"/>
+              <state id = "A2B1"/>
+              <state id = "A2B2" initial="A2B2A">
+                  <state id = "A2B2A"/>
+                  <parallel id="H">
+                      <state id = "H1" initial="H1A">
+                          <state id = "H1A">
+                              <transition event="r" target="H1B"/>
+                          </state>
+                          <state id = "H1B">
+                              <transition event="u" target="C"/>
+                          </state>
+                      </state>
+                      <state id = "H2"/>
+                  </parallel>   
+              </state>
+          </state>
+          <state id = "A2C" initial="A2C1">
+              <state id = "A2C1">
+                  <transition event="j" target="H1A"/>
+              </state>
+              <state id = "A2C2"/>
+          </state>
+      </state>
+  </parallel>
+  <state id="B" initial="B1">
+      <history id="Bh" type="shallow"/>
+      <transition event="a" target="A"></transition>
+      <transition event="h" target="C"></transition>
+    <state id="B1"/>
+    <state id="B2" initial="B2A">
+        <state id="B2A">
+             <transition event="x" target="B1"></transition>
+        </state> 
+        <state id="B2B"/>
+    </state> 
+  </state>
+  <state id="C">
+       <transition event="h" target="B"></transition>
+        <transition event="y" target="A2"></transition>
+  </state>
+</scxml>
