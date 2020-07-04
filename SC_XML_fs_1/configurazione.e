@@ -161,14 +161,21 @@ feature -- inizializzazione SC
 									stati.extend (stato_temp, id_attr.value)
 									-- ricorsione sui figli con sé stesso come genitore
 									istanzia_stati (e.item.elements, stati.item (id_attr.value))
-									if e.item.has_element_by_name ("history") and attached e.item.element_by_name ("history") as his then
-										if attached his.attribute_by_name ("type") as tp and then tp.value ~ "deep" then
-											storia_temp := create {STORIA_DEEP}.make_history (id_attr.value, stato_temp)
-											stato_temp.add_storia (storia_temp)
+									if attached{STATO_XOR} stato_temp as st_xor and then e.item.has_element_by_name ("history") and then attached e.item.element_by_name ("history") as his then
+										if attached his.attribute_by_name ("id") as his_id then
+											if attached his.attribute_by_name ("type") as tp and then tp.value ~ "deep" then
+												storia_temp := create {STORIA_DEEP}.make_history_with_id (his_id.value, st_xor)
+											else
+												storia_temp := create {STORIA_SHALLOW}.make_history_with_id (his_id.value, st_xor)
+											end
 										else
-											storia_temp := create {STORIA_SHALLOW}.make_history (id_attr.value, stato_temp)
-											stato_temp.add_storia (storia_temp)
+											if attached his.attribute_by_name ("type") as tp and then tp.value ~ "deep" then
+												storia_temp := create {STORIA_DEEP}.make_history (st_xor)
+											else
+												storia_temp := create {STORIA_SHALLOW}.make_history (st_xor)
+											end
 										end
+										stato_temp.add_storia (storia_temp)
 									end
 								else -- elemento corrente <state> non ha figli
 									if attached p_genitore as pg then
