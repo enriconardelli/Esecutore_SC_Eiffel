@@ -269,63 +269,56 @@ feature -- evoluzione della statechart
 			end
 		end
 
-	segui_storia (stato: STATO; storia: STORIA; prossima_conf_base: ARRAY [STATO])
-		local
-			i: INTEGER
-		do
-			stato.set_attivo
-			esegui_onentry(stato)
-			if not stato.figli.is_empty then
-				from
-					i := stato.figli.lower
-				until
-					i = stato.figli.upper + 1
-				loop
-					if attached{STORIA_DEEP} storia as st and then st.stati_memorizzati.has(stato.figli[i]) then
-						segui_storia (stato.figli[i], storia, prossima_conf_base)
-					elseif attached{STORIA_SHALLOW} storia as st and then st.stato_memorizzato = stato.figli[i] then
-						trova_default (stato.figli[i],prossima_conf_base)
-					end
---					if storia.stati_memorizzati.has(stato.figli[i]) then
---						if storia.deep then
---							segui_storia (stato.figli[i], storia, prossima_conf_base)
---						else
---							trova_default (stato.figli[i],prossima_conf_base)
---						end
---					end
-					i := i + 1
-				end
-			else
-				-- `stato' è uno stato atomico
-				prossima_conf_base.force (stato, prossima_conf_base.count + 1)
-			end
-		end
-
 --	segui_storia (stato: STATO; storia: STORIA; prossima_conf_base: ARRAY [STATO])
---		--secondo modo
 --		local
 --			i: INTEGER
---			prova: ARRAY [STATO]
 --		do
 --			stato.set_attivo
 --			esegui_onentry(stato)
---			if storia.deep then
---				create prova.make_empty
---				prova := riordina_conf_base(storia.stati_memorizzati)
---				across
---					prova as sm
+--			if not stato.figli.is_empty then
+--				from
+--					i := stato.figli.lower
+--				until
+--					i = stato.figli.upper + 1
 --				loop
---					sm.item.set_attivo
---					esegui_onentry(sm.item)
---					if sm.item.stato_atomico then
---						prossima_conf_base.force (sm.item, prossima_conf_base.count + 1)
+--					if attached{STORIA_DEEP} storia as st and then st.stati_memorizzati.has(stato.figli[i]) then
+--						segui_storia (stato.figli[i], storia, prossima_conf_base)
+--					elseif attached{STORIA_SHALLOW} storia as st and then st.stato_memorizzato = stato.figli[i] then
+--						trova_default (stato.figli[i],prossima_conf_base)
 --					end
+--					i := i + 1
 --				end
 --			else
---				trova_default (storia.stati_memorizzati[1],prossima_conf_base)
---				--aggiungi_paralleli (stato, prossima_conf_base)
+--				-- `stato' è uno stato atomico
+--				prossima_conf_base.force (stato, prossima_conf_base.count + 1)
 --			end
 --		end
+
+	segui_storia (stato: STATO; storia: STORIA; prossima_conf_base: ARRAY [STATO])
+		--secondo modo
+		local
+			i: INTEGER
+			prova: ARRAY [STATO]
+		do
+			stato.set_attivo
+			esegui_onentry(stato)
+			if attached{STORIA_DEEP} storia as st then
+				create prova.make_empty
+				prova := riordina_conf_base(st.stati_memorizzati)
+				across
+					prova as sm
+				loop
+					sm.item.set_attivo
+					esegui_onentry(sm.item)
+					if sm.item.stato_atomico then
+						prossima_conf_base.force (sm.item, prossima_conf_base.count + 1)
+					end
+				end
+			elseif attached{STORIA_SHALLOW} storia as st and then attached st.stato_memorizzato as sm then
+				trova_default (sm, prossima_conf_base)
+				--aggiungi_paralleli (stato, prossima_conf_base)
+			end
+		end
 
 	trova_contesto (p_sorgente, p_destinazione: STATO): detachable STATO
 			-- trova il contesto in base alla specifica SCXML secondo cui il contesto
