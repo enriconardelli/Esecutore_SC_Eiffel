@@ -126,14 +126,12 @@ feature -- evoluzione della statechart
 						stato_temp := gen
 					end
 
-					if attached stato_temp.storia as storia then
-						if storia.deep then
-							-- se la storia è "deep" salvo tutto l'array del percorso
-							storia.aggiungi_stati (percorso_uscita)
-						else
-							-- se la storia è "shallow" salvo solo lo stato uscente allo stesso livello della storia
-							storia.aggiungi_stati (create {ARRAY[STATO]}.make_filled(percorso_uscita[percorso_uscita.upper],0,0))
-						end
+					if attached{STORIA_DEEP} stato_temp.storia as storia then
+						-- se la storia è "deep" salvo tutto l'array del percorso
+						storia.aggiungi_stati (percorso_uscita)
+					elseif attached{STORIA_SHALLOW} stato_temp.storia as storia then
+						-- se la storia è "shallow" salvo solo lo stato uscente allo stesso livello della storia
+						storia.memorizza_stato (percorso_uscita[percorso_uscita.upper])
 					end
 				end
 			end
@@ -249,8 +247,8 @@ feature -- evoluzione della statechart
 		local
 			i: INTEGER
 		do
-			if attached stato.storia as storia and then not storia.stati_memorizzati.is_empty then
-				segui_storia(stato,storia,prossima_conf_base)
+			if attached stato.storia as storia and then not storia.storia_vuota then
+				segui_storia(stato, storia, prossima_conf_base)
 				storia.svuota_memoria
 			else
 				stato.set_attivo
@@ -283,13 +281,18 @@ feature -- evoluzione della statechart
 				until
 					i = stato.figli.upper + 1
 				loop
-					if storia.stati_memorizzati.has(stato.figli[i]) then
-						if storia.deep then
-							segui_storia (stato.figli[i], storia, prossima_conf_base)
-						else
-							trova_default (stato.figli[i],prossima_conf_base)
-						end
+					if attached{STORIA_DEEP} storia as st and then st.stati_memorizzati.has(stato.figli[i]) then
+						segui_storia (stato.figli[i], storia, prossima_conf_base)
+					elseif attached{STORIA_SHALLOW} storia as st and then st.stato_memorizzato = stato.figli[i] then
+						trova_default (stato.figli[i],prossima_conf_base)
 					end
+--					if storia.stati_memorizzati.has(stato.figli[i]) then
+--						if storia.deep then
+--							segui_storia (stato.figli[i], storia, prossima_conf_base)
+--						else
+--							trova_default (stato.figli[i],prossima_conf_base)
+--						end
+--					end
 					i := i + 1
 				end
 			else

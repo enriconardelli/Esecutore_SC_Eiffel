@@ -163,10 +163,10 @@ feature -- inizializzazione SC
 									istanzia_stati (e.item.elements, stati.item (id_attr.value))
 									if e.item.has_element_by_name ("history") and attached e.item.element_by_name ("history") as his then
 										if attached his.attribute_by_name ("type") as tp and then tp.value ~ "deep" then
-											storia_temp := create {STORIA}.make_deep_history (id_attr.value, stato_temp)
+											storia_temp := create {STORIA_DEEP}.make_history (id_attr.value, stato_temp)
 											stato_temp.add_storia (storia_temp)
 										else
-											storia_temp := create {STORIA}.make_history (id_attr.value, stato_temp)
+											storia_temp := create {STORIA_SHALLOW}.make_history (id_attr.value, stato_temp)
 											stato_temp.add_storia (storia_temp)
 										end
 									end
