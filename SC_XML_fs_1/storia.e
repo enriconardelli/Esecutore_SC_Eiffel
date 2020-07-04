@@ -9,9 +9,9 @@ deferred class
 
 feature
 
-	genitore: STATO
+	genitore: STATO_XOR
 
-	id: STRING
+	id: detachable STRING
 
 feature
 

@@ -11,7 +11,7 @@ inherit
 	STORIA
 
 create
-	make_history
+	make_history_with_id, make_history
 
 feature
 
@@ -19,11 +19,17 @@ feature
 
 feature
 
-	make_history (un_id: STRING; un_genitore: STATO)
+	make_history_with_id (un_id: STRING; un_genitore: STATO_XOR)
 	do
 		create stati_memorizzati.make_empty
 		genitore := un_genitore
 		id := un_id
+	end
+
+	make_history (un_genitore: STATO_XOR)
+	do
+		create stati_memorizzati.make_empty
+		genitore := un_genitore
 	end
 
 	aggiungi_stati(stati: ARRAY[STATO])
