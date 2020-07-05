@@ -248,7 +248,7 @@ feature -- evoluzione della statechart
 			i: INTEGER
 		do
 			if attached stato.storia as storia and then not storia.storia_vuota then
-				segui_storia(stato, storia, prossima_conf_base)
+				segui_storia(stato, prossima_conf_base)
 				storia.svuota_memoria
 			else
 				stato.set_attivo
@@ -269,7 +269,31 @@ feature -- evoluzione della statechart
 			end
 		end
 
---	segui_storia (stato: STATO; storia: STORIA; prossima_conf_base: ARRAY [STATO])
+	segui_storia (stato: STATO; prossima_conf_base: ARRAY [STATO])
+		require
+			attached stato.storia as storia and then not storia.storia_vuota
+		do
+			stato.set_attivo
+			esegui_onentry(stato)
+			if attached{STORIA_DEEP} stato.storia as st then
+				across
+					-- riordina_conf_base(st.stati_memorizzati) as sm
+					-- sono già salvati in modo ordinato
+					st.stati_memorizzati as sm
+				loop
+					sm.item.set_attivo
+					esegui_onentry(sm.item)
+					if sm.item.stato_atomico then
+						prossima_conf_base.force (sm.item, prossima_conf_base.count + 1)
+					end
+				end
+			elseif attached{STORIA_SHALLOW} stato.storia as st and then attached st.stato_memorizzato as sm then
+				trova_default (sm, prossima_conf_base)
+			end
+		end
+
+--		segui_storia (stato: STATO; storia: STORIA; prossima_conf_base: ARRAY [STATO])
+--			-- alternativa
 --		local
 --			i: INTEGER
 --		do
@@ -293,32 +317,6 @@ feature -- evoluzione della statechart
 --				prossima_conf_base.force (stato, prossima_conf_base.count + 1)
 --			end
 --		end
-
-	segui_storia (stato: STATO; storia: STORIA; prossima_conf_base: ARRAY [STATO])
-		--secondo modo
-		local
-			i: INTEGER
-			prova: ARRAY [STATO]
-		do
-			stato.set_attivo
-			esegui_onentry(stato)
-			if attached{STORIA_DEEP} storia as st then
-				create prova.make_empty
-				prova := riordina_conf_base(st.stati_memorizzati)
-				across
-					prova as sm
-				loop
-					sm.item.set_attivo
-					esegui_onentry(sm.item)
-					if sm.item.stato_atomico then
-						prossima_conf_base.force (sm.item, prossima_conf_base.count + 1)
-					end
-				end
-			elseif attached{STORIA_SHALLOW} storia as st and then attached st.stato_memorizzato as sm then
-				trova_default (sm, prossima_conf_base)
-				--aggiungi_paralleli (stato, prossima_conf_base)
-			end
-		end
 
 	trova_contesto (p_sorgente, p_destinazione: STATO): detachable STATO
 			-- trova il contesto in base alla specifica SCXML secondo cui il contesto

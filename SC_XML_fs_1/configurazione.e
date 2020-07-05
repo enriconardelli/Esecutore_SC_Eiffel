@@ -162,13 +162,14 @@ feature -- inizializzazione SC
 									-- ricorsione sui figli con sé stesso come genitore
 									istanzia_stati (e.item.elements, stati.item (id_attr.value))
 									if attached{STATO_XOR} stato_temp as st_xor and then e.item.has_element_by_name ("history") and then attached e.item.element_by_name ("history") as his then
+										-- se uno stato composto ha più di una storia viene salvata solo la prima
 										if attached his.attribute_by_name ("id") as his_id then
 											if attached his.attribute_by_name ("type") as tp and then tp.value ~ "deep" then
 												storia_temp := create {STORIA_DEEP}.make_history_with_id (his_id.value, st_xor)
 											else
 												storia_temp := create {STORIA_SHALLOW}.make_history_with_id (his_id.value, st_xor)
 											end
-										else
+										else -- non è necessario che la storia abbia un id
 											if attached his.attribute_by_name ("type") as tp and then tp.value ~ "deep" then
 												storia_temp := create {STORIA_DEEP}.make_history (st_xor)
 											else
