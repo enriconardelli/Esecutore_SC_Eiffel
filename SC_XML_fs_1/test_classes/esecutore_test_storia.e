@@ -16,6 +16,7 @@ inherit
 feature -- Test routines
 
 	t_verifica_parallelo_non_ha_storia
+		-- verifica che `storia' come attributo di un parallelo non viene considerata
 		local
 			esecutore: ESECUTORE
 		do
@@ -136,6 +137,7 @@ feature -- Test routines
 		end
 
 	t_storia_con_parallelo_2
+		-- verifica che l'ordine in cui vengono salvati gli stati nella storia è corretto
 		local
 			esecutore: ESECUTORE
 		do
