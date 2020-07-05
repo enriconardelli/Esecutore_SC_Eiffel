@@ -1,7 +1,7 @@
 note
 	description: "Summary description for {STORIA_SHALLOW}."
 	author: "Arianna Calzuola & Riccardo Malandruccolo"
-	date: "$Date$"
+	date: "04/07/20"
 	revision: "$Revision$"
 
 class

@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="P">
 
-      <state id="P" initial="Q">
+      <state id="P" initial="T">
         <history id="Ph"/>
+	   <state id="T">
+		<transition event="f" target="Q"/>
+	   </state>
         <state id="Q" initial="R">
           <history id="Qh" type="deep"/>
-          
+          	
             <parallel id="R">
           
             <state id="R1" initial="R1A">

@@ -97,6 +97,8 @@ feature -- evoluzione della statechart
 		end
 
 	salva_storie(stato_uscente: STATO)
+	-- Arianna & Riccardo 05/07/2020
+	-- imposta le storie nei discendenti dello stato_uscente
 		do
 			across
 				conf_base_corrente as cbc
@@ -108,20 +110,20 @@ feature -- evoluzione della statechart
 		end
 
 	salva_percorso(stato_conf_base, stato_uscente: STATO)
+	-- Arianna & Riccardo 05/07/2020
 		local
 			stato_temp: STATO
-			percorso_uscita: ARRAY[STATO]
+			percorso_uscita: LINKED_LIST[STATO]
 		do
 			if stato_uscente /= stato_conf_base then
 				-- se esco da uno stato atomico non ho storia
-				create percorso_uscita.make_empty
+				create percorso_uscita.make
 				from
 					stato_temp := stato_conf_base
 				until
 					stato_temp = stato_uscente
 				loop
-					percorso_uscita.force(stato_temp, percorso_uscita.count + 1)
-
+					percorso_uscita.put_front (stato_temp)
 					if attached stato_temp.genitore as gen then
 						stato_temp := gen
 					end
@@ -131,7 +133,7 @@ feature -- evoluzione della statechart
 						storia.aggiungi_stati (percorso_uscita)
 					elseif attached{STORIA_SHALLOW} stato_temp.storia as storia then
 						-- se la storia è "shallow" salvo solo lo stato uscente allo stesso livello della storia
-						storia.memorizza_stato (percorso_uscita[percorso_uscita.upper])
+						storia.memorizza_stato (percorso_uscita.first)
 					end
 				end
 			end
@@ -270,15 +272,13 @@ feature -- evoluzione della statechart
 		end
 
 	segui_storia (stato: STATO; prossima_conf_base: ARRAY [STATO])
-		require
-			attached stato.storia as storia and then not storia.storia_vuota
+	-- Arianna & Riccardo 05/07/2020
+	-- segue il percorso indicato dalla storia
 		do
 			stato.set_attivo
 			esegui_onentry(stato)
 			if attached{STORIA_DEEP} stato.storia as st then
 				across
-					-- riordina_conf_base(st.stati_memorizzati) as sm
-					-- sono già salvati in modo ordinato
 					st.stati_memorizzati as sm
 				loop
 					sm.item.set_attivo
@@ -293,6 +293,7 @@ feature -- evoluzione della statechart
 		end
 
 --		segui_storia (stato: STATO; storia: STORIA; prossima_conf_base: ARRAY [STATO])
+--			-- Arianna & Riccardo 01/07/2020
 --			-- alternativa
 --		local
 --			i: INTEGER

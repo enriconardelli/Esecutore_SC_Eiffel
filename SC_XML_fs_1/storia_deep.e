@@ -1,7 +1,7 @@
 note
 	description: "Summary description for {STORIA_DEEP}."
 	author: "Arianna Calzuola & Riccardo Malandruccolo"
-	date: "$Date$"
+	date: "04/07/20"
 	revision: "$Revision$"
 
 class
@@ -35,7 +35,7 @@ feature -- creazione
 
 feature -- gestione storia
 
-	aggiungi_stati (stati: ARRAY [STATO])
+	aggiungi_stati (stati: LINKED_LIST [STATO])
 		do
 			across
 				stati as st
