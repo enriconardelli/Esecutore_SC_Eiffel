@@ -1,26 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="P">
+	<datamodel>
+		<data expr="false" id="on_entryP"/>
+		<data expr="false" id="on_entryP2"/>
+		<data expr="false" id="on_entryA"/>
+		<data expr="false" id="on_entryB"/>
+		<data expr="false" id="on_entryA2"/>
+		<data expr="false" id="on_entryB2"/>
+	</datamodel>
 
       <state id="P" initial="P1">
+		<onentry>
+			<assign location="on_entryP" expr="true" />
+		</onentry>
         
         <state id="P1">
           <transition event="y" target="P2"/>
         </state>
         
         <parallel id="P2">
+		<onentry>
+			<assign location="on_entryP2" expr="true" />
+		</onentry>
           
           <state id="A" initial="A1">
+			<onentry>
+				<assign location="on_entryA" expr="true" />
+			</onentry>
             <state id="A1">
               <transition event="x" target="A2"/>
             </state>
-            <state id="A2"/>
+            <state id="A2">
+			<onentry>
+				<assign location="on_entryA2" expr="true" />
+			</onentry>
+		</state>
           </state>
 
           <state id="B" initial="B1">
+			<onentry>
+				<assign location="on_entryB" expr="true" />
+			</onentry>
             <state id="B1">
               <transition event="x" target="B2"/>
             </state>
-            <state id="B2"/>
+            <state id="B2">
+			<onentry>
+				<assign location="on_entryB2" expr="true" />
+			</onentry>
+		</state>
           </state>
           
           <transition event="y" target="P1"/>
