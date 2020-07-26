@@ -16,7 +16,7 @@ inherit
 feature -- Test routines
 
 	t_verifica_parallelo_non_ha_storia
-		-- verifica che `storia' come attributo di un parallelo non viene considerata
+		-- verifica che <history> come figlio diretto di un parallelo non viene considerato
 		local
 			esecutore: ESECUTORE
 		do
@@ -94,6 +94,16 @@ feature -- Test routines
   			nomi_files_prova [2] := test_data_dir + "storia_complesso_eventi_2.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (R1B,R2A,S1B,S2,H1B,H2)", conf_has_state(esecutore.conf_base_corrente,"R1B") and conf_has_state(esecutore.conf_base_corrente,"R2A") and conf_has_state(esecutore.conf_base_corrente,"S1B") and conf_has_state(esecutore.conf_base_corrente,"S2") and conf_has_state(esecutore.conf_base_corrente,"H1B") and conf_has_state(esecutore.conf_base_corrente,"H2"))
+		end
+
+	t_storia_complesso_3
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "storia_complesso.xml"
+  			nomi_files_prova [2] := test_data_dir + "storia_complesso_eventi_3.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (R1B,R2A,P2A2,A2A1A)", conf_has_state(esecutore.conf_base_corrente,"R1B") and conf_has_state(esecutore.conf_base_corrente,"R2A") and conf_has_state(esecutore.conf_base_corrente,"P2A2") and conf_has_state(esecutore.conf_base_corrente,"A2A1A"))
 		end
 
 	t_storie_inscatolate_1
