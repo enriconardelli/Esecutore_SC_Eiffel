@@ -156,6 +156,26 @@ feature -- Test routines
 			assert("ERRORE: il sistema non termina in (R1A,R2B)", conf_has_state(esecutore.conf_base_corrente,"R1A") and conf_has_state(esecutore.conf_base_corrente,"R2B"))
 		end
 
+	t_storie_inscatolate_variazione_1
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_variazione.xml"
+  			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_variazione_eventi_1.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (R1B,R2A)", conf_has_state(esecutore.conf_base_corrente,"R1B") and conf_has_state(esecutore.conf_base_corrente,"R2A"))
+		end
+
+	t_storie_inscatolate_variazione_2
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_variazione.xml"
+  			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_variazione_eventi_2.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (R1B,R2A)", conf_has_state(esecutore.conf_base_corrente,"R1B") and conf_has_state(esecutore.conf_base_corrente,"R2A"))
+		end
+
 	t_storia_con_parallelo_1
 		local
 			esecutore: ESECUTORE
@@ -189,7 +209,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_parallelo.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_parallelo_eventi_3.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (A2, B2)", conf_has_state(esecutore.conf_base_corrente,"A2") and conf_has_state(esecutore.conf_base_corrente,"B2"))
+			assert("ERRORE: il sistema non termina in (A1, B1)", conf_has_state(esecutore.conf_base_corrente,"A1") and conf_has_state(esecutore.conf_base_corrente,"B1"))
 		end
 
 
