@@ -182,6 +182,17 @@ feature -- Test routines
 			assert("ERRORE_parallelo_2_6: la storia non salva lo stato B2", (attached esecutore.state_chart.stati.item("P") as item and then attached{STORIA_DEEP} item.storia as storia and then storia.stati_memorizzati[5].id ~ "B2"))
 		end
 
+	t_storia_con_parallelo_3
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "storia_con_parallelo.xml"
+  			nomi_files_prova [2] := test_data_dir + "storia_con_parallelo_eventi_3.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (A2, B2)", conf_has_state(esecutore.conf_base_corrente,"A2") and conf_has_state(esecutore.conf_base_corrente,"B2"))
+		end
+
+
 end
 
 
