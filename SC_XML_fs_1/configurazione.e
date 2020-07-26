@@ -100,10 +100,10 @@ feature -- inizializzazione SC
 									if valore_booleano(valore.value) then
 										condizioni.extend (valore.value.as_lower ~ "true", nome.value)
 									else
-										print ("ERRORE: elemento <data> con id >|" + nome.value + "<| assegna a 'expr' il valore >|" + valore.value + "<| non booleano!%N")
+										print ("ERRORE: elemento <data> con id >|" + nome.value + "|< assegna a 'expr' il valore >|" + valore.value + "|< non booleano!%N")
 									end
 								else
-									print ("ERRORE: elemento <data> con id >|" + nome.value + "<| senza attributo 'expr'!%N")
+									print ("ERRORE: elemento <data> con id >|" + nome.value + "|< senza attributo 'expr'!%N")
 								end
 							else
 								print ("ERRORE: elemento <data> senza attributo 'id'!%N")
