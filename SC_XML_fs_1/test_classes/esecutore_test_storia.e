@@ -66,6 +66,26 @@ feature -- Test routines
 			assert("ERRORE: il sistema non termina in (P3)", conf_has_state(esecutore.conf_base_corrente,"P3"))
 		end
 
+	t_storia_tra_xor_4_1
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "storia_tra_xor.xml"
+  			nomi_files_prova [2] := test_data_dir + "storia_tra_xor_eventi_4_1.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (P2)", conf_has_state(esecutore.conf_base_corrente,"P2"))
+		end
+
+	t_storia_tra_xor_4_2
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "storia_tra_xor.xml"
+  			nomi_files_prova [2] := test_data_dir + "storia_tra_xor_eventi_4_2.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (R2B)", conf_has_state(esecutore.conf_base_corrente,"R2B"))
+		end
+
 	t_storia_tra_xor_5
 		local
 			esecutore: ESECUTORE
