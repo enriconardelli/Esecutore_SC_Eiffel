@@ -20,7 +20,7 @@
         </state>
     
         <state id="P2" initial = "S">
-            <history id="Sh" type="shallow"/>
+            <history id="P2h" type="shallow"/>
           <parallel id="S">
             <state id="S1" initial="S1A">
               <state id="S1A"/>

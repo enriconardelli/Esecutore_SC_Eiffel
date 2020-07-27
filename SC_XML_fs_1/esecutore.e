@@ -94,11 +94,28 @@ feature -- evoluzione della statechart
 	-- Arianna & Riccardo 05/07/2020
 	-- imposta le storie nei discendenti dello stato_uscente
 		do
+			pulisci_storie(stato_uscente)
 			across
 				conf_base_corrente as cbc
 			loop
 				if stato_uscente.antenato_di (cbc.item)	then
 					salva_percorso(cbc.item, stato_uscente)
+				end
+			end
+		end
+
+	pulisci_storie(stato: STATO)
+	-- Arianna & Riccardo 26/07/2020
+	-- elimina gli stati salvati nella storia di 'stato' e in quelle dei suoi discendenti
+		do
+			if not stato.stato_atomico then
+				if attached stato.storia as storia then
+					storia.svuota_memoria
+				end
+				across
+					stato.figli as sf
+				loop
+					pulisci_storie(sf.item)
 				end
 			end
 		end
@@ -207,7 +224,11 @@ feature -- evoluzione della statechart
 			Result := transizione.sorgente
 
 			if transizione.internal then
-				contesto := transizione.sorgente
+				if transizione.sorgente.antenato_di (transizione.target) then
+					contesto := transizione.sorgente
+				else
+					contesto := transizione.target
+				end
 				across
 					transizione.sorgente.figli as figli
 				loop
@@ -258,7 +279,6 @@ feature -- evoluzione della statechart
 		do
 			if attached stato.storia as storia and then not storia.storia_vuota then
 				segui_storia(stato, prossima_conf_base)
-				storia.svuota_memoria
 			else
 				stato.set_attivo
 				esegui_onentry(stato)
@@ -361,7 +381,11 @@ feature -- esecuzione azioni
 			contesto: detachable STATO
 		do
 			if transizione.internal then
-				contesto := transizione.sorgente
+				if transizione.sorgente.antenato_di (transizione.target) then
+					contesto := transizione.sorgente
+				else
+					contesto := transizione.target
+				end
 			else
 				contesto := trova_contesto (transizione.sorgente, transizione.target)
 			end
@@ -427,9 +451,6 @@ feature -- esecuzione azioni
 			if attached p_target.genitore as sg and then sg /= p_contesto then
 				esegui_azioni_onentry (p_contesto, sg)
 				esegui_onentry(sg)
-				if attached sg.storia as storia then
-					storia.svuota_memoria
-				end
 			end
 		end
 

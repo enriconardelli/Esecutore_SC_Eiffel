@@ -212,6 +212,65 @@ feature -- Test routines
 			assert("ERRORE: il sistema non termina in (A1, B1)", conf_has_state(esecutore.conf_base_corrente,"A1") and conf_has_state(esecutore.conf_base_corrente,"B1"))
 		end
 
+	t_storia_con_internal_1
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "storia_con_internal.xml"
+  			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_1.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.conf_base_corrente,"S1"))
+		end
+
+	t_storia_con_internal_2
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "storia_con_internal.xml"
+  			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_2.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+		end
+
+	t_storia_con_internal_3
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "storia_con_internal.xml"
+  			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_3.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+		end
+
+	t_storia_con_internal_4
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "storia_con_internal.xml"
+  			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_4.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.conf_base_corrente,"S1"))
+		end
+
+	t_storia_con_internal_5
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "storia_con_internal.xml"
+  			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_5.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.conf_base_corrente,"S1"))
+		end
+
+	t_storia_con_internal_6
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "storia_con_internal.xml"
+  			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_6.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+		end
 
 end
 
