@@ -334,7 +334,7 @@ feature -- supporto inizializzazione
 							if not transizione_illegale (stato, destinazione) then
 								create transizione.make_with_target (destinazione, stato)
 								if attached e.item.attribute_by_name ("type") as type then
-									if type.value ~ "internal" and attached{STATO_XOR} transizione.sorgente then
+									if type.value ~ "internal" and attached{STATO_XOR} transizione.sorgente and then not transizione.sorgente.incomparabile_con(transizione.sorgente) then
 										transizione.set_internal
 									end
 								end
