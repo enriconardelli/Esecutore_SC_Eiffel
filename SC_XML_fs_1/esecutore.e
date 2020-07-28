@@ -98,55 +98,57 @@ feature -- evoluzione della statechart
 			across
 				conf_base_corrente as cbc
 			loop
-				if stato_uscente.antenato_di (cbc.item)	then
-					salva_percorso(cbc.item, stato_uscente)
+				if stato_uscente.antenato_di (cbc.item) or stato_uscente = cbc.item then
+					salva_percorso(cbc.item)
 				end
 			end
 		end
 
-	pulisci_storie(stato: STATO)
+	pulisci_storie(stato_uscente: STATO)
 	-- Arianna & Riccardo 26/07/2020
-	-- elimina gli stati salvati nella storia di 'stato' e in quelle dei suoi discendenti
+	-- svuota le storie che dovranno essere aggiornate subito dopo
+		local
+			stato_temp: detachable STATO
 		do
-			if not stato.stato_atomico then
-				if attached stato.storia as storia then
-					storia.svuota_memoria
-				end
-				across
-					stato.figli as sf
-				loop
-					pulisci_storie(sf.item)
+			across
+				conf_base_corrente as cbc
+			loop
+				if stato_uscente.antenato_di (cbc.item) or stato_uscente = cbc.item then
+					from
+						stato_temp := cbc.item
+					until
+						stato_temp = void
+					loop
+						if attached stato_temp.storia as storia then
+							storia.svuota_memoria
+						end
+						stato_temp := stato_temp.genitore
+					end
 				end
 			end
 		end
 
-	salva_percorso(stato_conf_base, stato_uscente: STATO)
+	salva_percorso(stato_conf_base: STATO)
 	-- Arianna & Riccardo 05/07/2020
 		local
-			stato_temp: STATO
+			stato_temp: detachable STATO
 			percorso_uscita: LINKED_LIST[STATO]
 		do
-			if stato_uscente /= stato_conf_base then
-				-- se esco da uno stato atomico non ho storia
-				create percorso_uscita.make
-				from
-					stato_temp := stato_conf_base
-				until
-					stato_temp = stato_uscente
-				loop
-					percorso_uscita.put_front (stato_temp)
-					if attached stato_temp.genitore as gen then
-						stato_temp := gen
-					end
-
-					if attached{STORIA_DEEP} stato_temp.storia as storia then
-						-- se la storia è "deep" salvo tutto l'array del percorso
-						storia.aggiungi_stati (percorso_uscita)
-					elseif attached{STORIA_SHALLOW} stato_temp.storia as storia then
-						-- se la storia è "shallow" salvo solo lo stato uscente allo stesso livello della storia
-						storia.memorizza_stato (percorso_uscita.first)
-					end
+			create percorso_uscita.make
+			from
+				stato_temp := stato_conf_base
+			until
+				stato_temp = void
+			loop
+				if attached{STORIA_DEEP} stato_temp.storia as storia then
+					-- se la storia è "deep" salvo tutto l'array del percorso
+					storia.aggiungi_stati (percorso_uscita)
+				elseif attached{STORIA_SHALLOW} stato_temp.storia as storia then
+					-- se la storia è "shallow" salvo solo lo stato uscente allo stesso livello della storia
+					storia.memorizza_stato (percorso_uscita.first)
 				end
+				percorso_uscita.put_front (stato_temp)
+				stato_temp := stato_temp.genitore
 			end
 		end
 
