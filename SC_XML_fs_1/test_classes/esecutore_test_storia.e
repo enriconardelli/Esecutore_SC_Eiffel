@@ -262,6 +262,16 @@ feature -- Test routines
 			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.conf_base_corrente,"S1"))
 		end
 
+	t_storia_con_internal_variazione_5
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "storia_con_internal_variazione.xml"
+  			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_5.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+		end
+
 	t_storia_con_internal_6
 		local
 			esecutore: ESECUTORE
