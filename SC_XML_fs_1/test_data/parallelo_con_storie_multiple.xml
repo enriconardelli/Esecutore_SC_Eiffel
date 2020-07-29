@@ -31,10 +31,10 @@
             </state>
         <transition event="z" target="T" type="internal"/>
 		</parallel>
+		<transition event="w" target="S"/> 
 	</state>
 	
 	<state id="S">
 		<transition event="v" target="T"/> 
-		<transition event="w" target="T"/> 
 	</state>
 </scxml>
