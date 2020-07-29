@@ -281,6 +281,15 @@ feature -- Test routines
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
 		end
+	t_storie_con_parallelo_multiple
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "parallelo_con_storie_multiple.xml"
+  			nomi_files_prova [2] := test_data_dir + "parallelo_con_storie_multiple_eventi.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (P1A, P2B1, P3B)", conf_has_state(esecutore.conf_base_corrente,"P1A") and conf_has_state(esecutore.conf_base_corrente,"P2B1") and conf_has_state(esecutore.conf_base_corrente,"P3B"))
+		end
 
 end
 

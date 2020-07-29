@@ -98,9 +98,7 @@ feature -- evoluzione della statechart
 			across
 				conf_base_corrente as cbc
 			loop
-				print(stato_uscente.id)
 				if stato_uscente.antenato_di (cbc.item)	then
-					print(cbc.item.id)
 					salva_percorso(cbc.item, stato_uscente)
 				end
 			end
