@@ -334,7 +334,7 @@ feature -- supporto inizializzazione
 							if not transizione_illegale (stato, destinazione) then
 								create transizione.make_with_target (destinazione, stato)
 								if attached e.item.attribute_by_name ("type") as type then
-									if type.value ~ "internal" and attached{STATO_XOR} transizione.sorgente and then not transizione.sorgente.incomparabile_con(transizione.sorgente) then
+									if type.value ~ "internal" and verifica_internal(transizione) then
 										transizione.set_internal
 									end
 								end
@@ -359,6 +359,15 @@ feature -- supporto inizializzazione
 				if e.item.name ~ "onexit" then
 					istanzia_onexit (stato, e.item.elements)
 				end
+			end
+		end
+
+	verifica_internal(transizione: TRANSIZIONE): BOOLEAN
+		do
+			if (attached{STATO_XOR} transizione.sorgente as ts and then ts.antenato_di(transizione.target)) or else
+			   (transizione.target.antenato_di (transizione.sorgente)) or else
+			   (transizione.target = transizione.sorgente) then
+			   	Result := true
 			end
 		end
 

@@ -587,7 +587,7 @@ feature -- Test routines
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "storia_con_internal.xml"
+			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_shallow.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_09.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))

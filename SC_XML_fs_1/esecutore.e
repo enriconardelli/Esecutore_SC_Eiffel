@@ -305,34 +305,18 @@ feature -- evoluzione della statechart
 	segui_storia (stato: STATO; prossima_conf_base: ARRAY [STATO])
 	-- Arianna & Riccardo 05/07/2020
 	-- segue il percorso indicato dalla storia
-		local
-			stato_con_storia: detachable STATO
-			i: INTEGER
 		do
 			stato.set_attivo
 			esegui_onentry(stato)
 			if attached{STORIA_DEEP} stato.storia as st then
-				from
-					i := st.stati_memorizzati.lower
-				until
-					i = st.stati_memorizzati.upper + 1
+				across
+					st.stati_memorizzati as sm
 				loop
-					if attached{STORIA_DEEP} st.stati_memorizzati[i].storia as storia then
-						stato_con_storia := st.stati_memorizzati[i]
-						segui_storia (st.stati_memorizzati[i], prossima_conf_base)
-					elseif attached{STORIA_SHALLOW} st.stati_memorizzati[i].storia as storia then
-						if attached storia.stato_memorizzato as sm and then sm /= st.stati_memorizzati[i + 1] then
-							trova_default (sm, prossima_conf_base)
-						end
+					sm.item.set_attivo
+					esegui_onentry(sm.item)
+					if sm.item.stato_atomico then
+						prossima_conf_base.force (sm.item, prossima_conf_base.count + 1)
 					end
-					if not attached stato_con_storia or else (attached stato_con_storia as scs and then not scs.antenato_di(st.stati_memorizzati[i])) then
-						st.stati_memorizzati[i].set_attivo
-						esegui_onentry(st.stati_memorizzati[i])
-						if st.stati_memorizzati[i].stato_atomico then
-							prossima_conf_base.force (st.stati_memorizzati[i], prossima_conf_base.count + 1)
-						end
-					end
-					i := i + 1
 				end
 			elseif attached{STORIA_SHALLOW} stato.storia as st and then attached st.stato_memorizzato as sm then
 				trova_default (sm, prossima_conf_base)
