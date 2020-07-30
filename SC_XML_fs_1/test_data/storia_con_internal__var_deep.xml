@@ -13,6 +13,7 @@
 			</state>
 
 			<transition event="z1" target="T" type="internal"/>
+      <transition event="z2" target="T"/>
 			<transition event="z" target="T"/>
 			<transition event="b" target="R"/>
 		</state>
