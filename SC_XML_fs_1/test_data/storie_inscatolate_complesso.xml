@@ -46,6 +46,7 @@
                       </state>
                   <transition event="e2" target="P"/>
                   </state>
+              <transition event="e3" target="F"/>
               </state>
               <state id="F" initial="F1">
                   <history id="Fh"/>
@@ -73,6 +74,7 @@
                   <transition event="e2" target="T2"/>
               </state>
               <transition event="y" target="H"/>
+              <transition event="i5" target="J" type="internal"/>
           </state>
       <transition event="z" target="A"/>
       <transition event="i4" target="F" type="internal"/>
