@@ -7,7 +7,7 @@
           <history id="Hh" type="deep"/>
               <state id="T" initial="T1">
                   <state id="T1" initial="P">
-                  <history id="T1h" type="deep"/>
+                    <history id="T1h" type="deep"/>
                       <parallel id="P">
                           <state id="P1" initial="P1A">
                           <history id="P1h"/>
@@ -25,12 +25,14 @@
                                   <transition event="e1" target="Q"/>
                               </state>
                           </state>
+                          <transition event="e2" target="S"/>
                       </parallel>
                       <state id="Q">
                           <transition event="e2" target="R"/>
                       </state>
                   </state>
                   <state id="T2" initial="R">
+                      <history id="T2h" type="deep"/>
                       <state id="R" initial="R1">
                           <state id="R1">
                               <transition event="e1" target="R2"/>
@@ -40,11 +42,13 @@
                           </state>
                       </state>
                       <state id="S">
+                        <transition event="e1" target="F2"/>
                       </state>
                   <transition event="e2" target="P"/>
                   </state>
               </state>
               <state id="F" initial="F1">
+                  <history id="Fh"/>
                   <state id="F1">
                       <transition event="e1" target="F2"/>
                   </state>
@@ -66,6 +70,7 @@
               </state>
               <state id="I2">
                   <transition event="e1" target="I1"/>
+                  <transition event="e2" target="T2"/>
               </state>
               <transition event="y" target="H"/>
           </state>

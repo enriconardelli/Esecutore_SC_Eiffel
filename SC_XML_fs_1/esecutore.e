@@ -94,7 +94,14 @@ feature -- evoluzione della statechart
 	-- Arianna & Riccardo 05/07/2020
 	-- imposta le storie nei discendenti dello stato_uscente
 		do
-			pulisci_storie(stato_uscente)
+		--	pulisci_storie(stato_uscente)
+			across
+				conf_base_corrente as cbc
+			loop
+				if stato_uscente.antenato_di (cbc.item)	then
+					pulisci_storie(cbc.item, stato_uscente)
+				end
+			end
 			across
 				conf_base_corrente as cbc
 			loop
@@ -104,18 +111,22 @@ feature -- evoluzione della statechart
 			end
 		end
 
-	pulisci_storie(stato: STATO)
+	pulisci_storie(stato_base, stato_uscita: STATO)
 	-- Arianna & Riccardo 26/07/2020
 	-- elimina gli stati salvati nella storia di 'stato' e in quelle dei suoi discendenti
+		local
+			stato_temp: STATO
 		do
-			if not stato.stato_atomico then
-				if attached stato.storia as storia then
+			from
+				stato_temp := stato_base
+			until
+				stato_temp = stato_uscita
+			loop
+				if attached stato_temp.storia as storia then
 					storia.svuota_memoria
 				end
-				across
-					stato.figli as sf
-				loop
-					pulisci_storie(sf.item)
+				if attached stato_temp.genitore as gen then
+					stato_temp := gen
 				end
 			end
 		end
@@ -281,6 +292,7 @@ feature -- evoluzione della statechart
 		local
 			i: INTEGER
 		do
+			print(stato.id)
 			if attached stato.storia as storia and then not storia.storia_vuota then
 				segui_storia(stato, prossima_conf_base)
 			else

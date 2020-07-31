@@ -662,6 +662,86 @@ feature -- Test routines
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (P1A, P2B1, P3B)", conf_has_state(esecutore.conf_base_corrente,"P1A") and conf_has_state(esecutore.conf_base_corrente,"P2B1") and conf_has_state(esecutore.conf_base_corrente,"P3B"))
 		end
+
+	t_storie_inscatolate_complesso_01
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_complesso.xml"
+  			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_complesso_eventi_01.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (Q)", conf_has_state(esecutore.conf_base_corrente,"Q"))
+		end
+
+	t_storie_inscatolate_complesso_02
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_complesso.xml"
+  			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_complesso_eventi_02.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (P1B,P2A)", conf_has_state(esecutore.conf_base_corrente,"P1B") and conf_has_state(esecutore.conf_base_corrente,"P2A"))
+		end
+
+	t_storie_inscatolate_complesso_03
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_complesso.xml"
+  			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_complesso_eventi_03.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (Q)", conf_has_state(esecutore.conf_base_corrente,"Q"))
+		end
+
+	t_storie_inscatolate_complesso_04
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_complesso.xml"
+  			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_complesso_eventi_04.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (I2)", conf_has_state(esecutore.conf_base_corrente,"I2"))
+		end
+
+	t_storie_inscatolate_complesso_05
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_complesso.xml"
+  			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_complesso_eventi_05.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (P1A,P2A)", conf_has_state(esecutore.conf_base_corrente,"P1A") and conf_has_state(esecutore.conf_base_corrente,"P2A"))
+		end
+
+	t_storie_inscatolate_complesso_06
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_complesso.xml"
+  			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_complesso_eventi_06.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (S)", conf_has_state(esecutore.conf_base_corrente,"S"))
+		end
+
+	t_storie_inscatolate_complesso_07
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_complesso.xml"
+  			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_complesso_eventi_07.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (R2)", conf_has_state(esecutore.conf_base_corrente,"R2"))
+		end
+
+	t_storie_inscatolate_complesso_08
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_complesso.xml"
+  			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_complesso_eventi_08.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (P1B,P2A)", conf_has_state(esecutore.conf_base_corrente,"P1B") and conf_has_state(esecutore.conf_base_corrente,"P2A"))
+		end
 end
 
 
