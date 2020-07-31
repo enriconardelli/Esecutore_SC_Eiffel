@@ -92,16 +92,9 @@ feature -- evoluzione della statechart
 
 	salva_storie(stato_uscente: STATO)
 	-- Arianna & Riccardo 05/07/2020
-	-- imposta le storie nei discendenti dello stato_uscente
+	-- aggiorna le storie nei discendenti dello 'stato_uscente'
 		do
-		--	pulisci_storie(stato_uscente)
-			across
-				conf_base_corrente as cbc
-			loop
-				if stato_uscente.antenato_di (cbc.item)	then
-					pulisci_storie(cbc.item, stato_uscente)
-				end
-			end
+			pulisci_storie(stato_uscente)
 			across
 				conf_base_corrente as cbc
 			loop
@@ -111,28 +104,35 @@ feature -- evoluzione della statechart
 			end
 		end
 
-	pulisci_storie(stato_base, stato_uscita: STATO)
+	pulisci_storie(stato_uscita: STATO)
 	-- Arianna & Riccardo 26/07/2020
-	-- elimina gli stati salvati nella storia di 'stato' e in quelle dei suoi discendenti
+	-- elimina gli stati salvati in tutte le storie che si incontrano nel percorso dai stati della conf_base_corrente allo 'stato_uscita'
 		local
 			stato_temp: STATO
 		do
-			from
-				stato_temp := stato_base
-			until
-				stato_temp = stato_uscita
+			across
+				conf_base_corrente as cbc
 			loop
-				if attached stato_temp.storia as storia then
-					storia.svuota_memoria
-				end
-				if attached stato_temp.genitore as gen then
-					stato_temp := gen
+				if stato_uscita.antenato_di (cbc.item)	then
+					from
+						stato_temp := cbc.item
+					until
+						stato_temp = stato_uscita
+					loop
+						if attached stato_temp.storia as storia then
+							storia.svuota_memoria
+						end
+						if attached stato_temp.genitore as gen then
+							stato_temp := gen
+						end
+					end
 				end
 			end
 		end
 
 	salva_percorso(stato_conf_base, stato_uscente: STATO)
 	-- Arianna & Riccardo 05/07/2020
+	-- memorizza i percorsi di uscita partendo da 'stato_conf_base' e arrivando fino a 'stato_uscente'
 		local
 			stato_temp: STATO
 			percorso_uscita: LINKED_LIST[STATO]
@@ -194,25 +194,6 @@ feature -- evoluzione della statechart
 			Result:=transizioni
 		end
 
---	elimina_stati_inattivi(conf_da_modificare: ARRAY[STATO]): ARRAY[STATO]
---	-- Arianna & Riccardo 26/04/2020
---	-- elimina stati inattivi dalla configurazione
---		local
---			i: INTEGER
---		do
---			create Result.make_empty
---			from
---				i := conf_da_modificare.lower
---			until
---				i = conf_da_modificare.upper+1
---			loop
---				if conf_da_modificare[i].attivo then
---					Result.force(conf_da_modificare[i],Result.count+1)
---				end
---				i := i+1
---			end
---		end
-
 	aggiungi_stati_attivi(conf_da_modificare: ARRAY[STATO])
 	-- Arianna & Riccardo 05/07/2020
 	-- aggiunge stati attivi alla configurazione
@@ -228,7 +209,7 @@ feature -- evoluzione della statechart
 
 	genitore_piu_grande(transizione: TRANSIZIONE): STATO
 	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
-	-- restituisce l'antenato più grande che contiene stato_corrente ed è contenuto nel contesto
+	-- restituisce l'antenato più grande dal quale si esce con 'transizione'
 		local
 			contesto, stato_temp: detachable STATO
 		do
@@ -289,10 +270,11 @@ feature -- evoluzione della statechart
 		end
 
 	trova_default (stato: STATO; prossima_conf_base: ARRAY [STATO])
+	-- segue le transizioni di default e aggiunge lo stato atomico alla 'prossima_conf_base'
+	-- se è presente una storia (non vuota) allora viene seguita al posto delle transizioni di default
 		local
 			i: INTEGER
 		do
-			print(stato.id)
 			if attached stato.storia as storia and then not storia.storia_vuota then
 				segui_storia(stato, prossima_conf_base)
 			else
@@ -334,33 +316,6 @@ feature -- evoluzione della statechart
 				trova_default (sm, prossima_conf_base)
 			end
 		end
-
---		segui_storia (stato: STATO; storia: STORIA; prossima_conf_base: ARRAY [STATO])
---			-- Arianna & Riccardo 01/07/2020
---			-- alternativa
---		local
---			i: INTEGER
---		do
---			stato.set_attivo
---			esegui_onentry(stato)
---			if not stato.figli.is_empty then
---				from
---					i := stato.figli.lower
---				until
---					i = stato.figli.upper + 1
---				loop
---					if attached{STORIA_DEEP} storia as st and then st.stati_memorizzati.has(stato.figli[i]) then
---						segui_storia (stato.figli[i], storia, prossima_conf_base)
---					elseif attached{STORIA_SHALLOW} storia as st and then st.stato_memorizzato = stato.figli[i] then
---						trova_default (stato.figli[i],prossima_conf_base)
---					end
---					i := i + 1
---				end
---			else
---				-- `stato' è uno stato atomico
---				prossima_conf_base.force (stato, prossima_conf_base.count + 1)
---			end
---		end
 
 	trova_contesto (p_sorgente, p_destinazione: STATO): detachable STATO
 			-- trova il contesto in base alla specifica SCXML secondo cui il contesto
