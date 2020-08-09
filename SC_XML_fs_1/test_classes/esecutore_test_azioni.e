@@ -190,4 +190,150 @@ feature -- Test
 			assert("ERRORE_A2: non viene eseguita l' onentry di A2", esecutore.state_chart.condizioni.item ("on_entryA2"))
 			assert("ERRORE_B2: non viene eseguita l' onentry di B2", esecutore.state_chart.condizioni.item ("on_entryB2"))
 		end
+
+	t_azioni_con_interi_1_1
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_1.xml"
+  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_1_eventi_1.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (Y)", conf_has_state(esecutore.conf_base_corrente,"Y"))
+		end
+
+	t_azioni_con_interi_1_2
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_1.xml"
+  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_1_eventi_2.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (Y)", esecutore.state_chart.data_interi.item ("N") = 20)
+			assert("ERRORE: il sistema non termina in (Y)", esecutore.state_chart.data_interi.item ("M") = 4)
+			assert("ERRORE: il sistema non termina in (Y)", conf_has_state(esecutore.conf_base_corrente,"Y"))
+		end
+
+	t_azioni_con_interi_1_3
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_1.xml"
+  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_1_eventi_3.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (A1,B2)", conf_has_state(esecutore.conf_base_corrente,"A1") and conf_has_state(esecutore.conf_base_corrente,"B2"))
+		end
+
+	t_azioni_con_interi_2_1
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_2.xml"
+  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_2_eventi_1.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (P1B, P2B)", conf_has_state(esecutore.conf_base_corrente,"P1B") and conf_has_state(esecutore.conf_base_corrente,"P2B"))
+			assert("ERRORE: M è diverso da 3",  esecutore.state_chart.data_interi.item ("M") = 0)
+     		assert("ERRORE: N è diverso da 0", esecutore.state_chart.data_interi.item ("N") = -1)
+		end
+
+	t_azioni_con_interi_2_2
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_2.xml"
+  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_2_eventi_2.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (C)", conf_has_state(esecutore.conf_base_corrente,"C"))
+			assert("ERRORE: M è diverso da 6",  esecutore.state_chart.data_interi.item ("M") = 6)
+     		assert("ERRORE: N è diverso da 2", esecutore.state_chart.data_interi.item ("N") = 2)
+		end
+
+	t_azioni_con_interi_2_3
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_2.xml"
+  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_2_eventi_3.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (D)", conf_has_state(esecutore.conf_base_corrente,"D"))
+			assert("ERRORE: M è diverso da 8",  esecutore.state_chart.data_interi.item ("M") = 8)
+     		assert("ERRORE: N è diverso da 1", esecutore.state_chart.data_interi.item ("N") = 1)
+		end
+
+	t_azioni_con_interi_3_1
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_3.xml"
+  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_3_eventi_1.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (D)", conf_has_state(esecutore.conf_base_corrente,"D"))
+			assert("ERRORE: M è diverso da 3",  esecutore.state_chart.data_interi.item ("M") = 3)
+     		assert("ERRORE: L è diverso da 10", esecutore.state_chart.data_interi.item ("L") = 10)
+     		assert("ERRORE: K è diverso da true", esecutore.state_chart.condizioni.item ("K"))
+		end
+
+	t_azioni_con_interi_3_2
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_3.xml"
+  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_3_eventi_2.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (B1B, B2A)", conf_has_state(esecutore.conf_base_corrente,"B1B") and conf_has_state(esecutore.conf_base_corrente,"B2A"))
+			assert("ERRORE: M è diverso da 3",  esecutore.state_chart.data_interi.item ("M") = 3)
+     		assert("ERRORE: L è diverso da 3", esecutore.state_chart.data_interi.item ("L") = 3)
+     		assert("ERRORE: K è diverso da false", not esecutore.state_chart.condizioni.item ("K"))
+		end
+
+	t_azioni_con_interi_3_variazione_1
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_3_variazione.xml"
+  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_3_variazione_eventi_1.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (B1C, B2A)", conf_has_state(esecutore.conf_base_corrente,"B1C") and conf_has_state(esecutore.conf_base_corrente,"B2A"))
+			assert("ERRORE: M è diverso da 3",  esecutore.state_chart.data_interi.item ("M") = 3)
+     		assert("ERRORE: L è diverso da 10", esecutore.state_chart.data_interi.item ("L") = 10)
+     		assert("ERRORE: K è diverso da true", esecutore.state_chart.condizioni.item ("K"))
+		end
+
+	t_azioni_con_interi_3_variazione_2
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_3_variazione.xml"
+  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_3_variazione_eventi_2.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (C)", conf_has_state(esecutore.conf_base_corrente,"C"))
+			assert("ERRORE: M è diverso da 4",  esecutore.state_chart.data_interi.item ("M") = 4)
+     		assert("ERRORE: L è diverso da 3", esecutore.state_chart.data_interi.item ("L") = 3)
+     		assert("ERRORE: K è diverso da true",  esecutore.state_chart.condizioni.item ("K"))
+		end
+
+	t_azioni_con_interi_3_variazione_3
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_3_variazione.xml"
+  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_3_variazione_eventi_3.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (B1C, B2A)", conf_has_state(esecutore.conf_base_corrente,"B1C") and conf_has_state(esecutore.conf_base_corrente,"B2A"))
+			assert("ERRORE: M è diverso da 3",  esecutore.state_chart.data_interi.item ("M") = 3)
+     		assert("ERRORE: L è diverso da 10", esecutore.state_chart.data_interi.item ("L") = 10)
+     		assert("ERRORE: K è diverso da true", esecutore.state_chart.condizioni.item ("K"))
+		end
+
+	t_azioni_con_interi_3_variazione_4
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_3_variazione.xml"
+  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_3_variazione_eventi_4.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (B1A, B2A)", conf_has_state(esecutore.conf_base_corrente,"B1A") and conf_has_state(esecutore.conf_base_corrente,"B2A"))
+			assert("ERRORE: M è diverso da 3",  esecutore.state_chart.data_interi.item ("M") = 3)
+     		assert("ERRORE: L è diverso da 3", esecutore.state_chart.data_interi.item ("L") = 3)
+     		assert("ERRORE: K è diverso da true", esecutore.state_chart.condizioni.item ("K"))
+		end
 end

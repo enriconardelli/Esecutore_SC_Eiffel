@@ -108,38 +108,35 @@ feature -- check
 		loc: STRING
 		cond_num: INTEGER
 	do
-		if data.has (condizione) then
-			if condizione.has ('<') then
-				loc := condizione.substring (1,   condizione.index_of ('<', 1) - 1)
-				if condizione.has_substring ("<=") then
-					cond_num := condizione.substring (condizione.index_of ('<', 1) + 2, condizione.count).to_integer
-					Result := data.item (loc) <= cond_num
-				else
-					cond_num := condizione.substring ( condizione.index_of ('<', 1) + 1, condizione.count).to_integer
-					Result := data.item (loc) < cond_num
-				end
-			elseif condizione.has ('>') then
-				loc := condizione.substring (1,  condizione.index_of ('>', 1) - 1)
-				if condizione.has_substring (">=") then
-					cond_num := condizione.substring (condizione.index_of ('>', 1) + 2, condizione.count).to_integer
-					Result := data.item (loc) >= cond_num
-				else
-					cond_num := condizione.substring ( condizione.index_of ('>', 1) + 1, condizione.count).to_integer
-					Result := data.item (loc) > cond_num
-				end
-			elseif condizione.has ('=') then
-				if condizione.has_substring ("/=") then
-					loc := condizione.substring (1,   condizione.index_of ('/', 1) - 1)
-					cond_num := condizione.substring (condizione.index_of ('/', 1) + 2, condizione.count).to_integer
-					Result := data.item (loc) /= cond_num
-				else
-					loc := condizione.substring (1,  condizione.index_of ('=', 1) - 1)
-					cond_num := condizione.substring ( condizione.index_of ('=', 1) + 1, condizione.count).to_integer
-					Result := data.item (loc) = cond_num
-				end
+		Result := true
+		if condizione.has ('<') then
+			loc := condizione.substring (1,   condizione.index_of ('<', 1) - 1)
+			if condizione.has_substring ("<=") then
+				cond_num := condizione.substring (condizione.index_of ('<', 1) + 2, condizione.count).to_integer
+				Result := data.item (loc) <= cond_num
+			else
+				cond_num := condizione.substring ( condizione.index_of ('<', 1) + 1, condizione.count).to_integer
+				Result := data.item (loc) < cond_num
 			end
-		else
-			Result := true
+		elseif condizione.has ('>') then
+			loc := condizione.substring (1,  condizione.index_of ('>', 1) - 1)
+			if condizione.has_substring (">=") then
+				cond_num := condizione.substring (condizione.index_of ('>', 1) + 2, condizione.count).to_integer
+				Result := data.item (loc) >= cond_num
+			else
+				cond_num := condizione.substring ( condizione.index_of ('>', 1) + 1, condizione.count).to_integer
+				Result := data.item (loc) > cond_num
+			end
+		elseif condizione.has ('=') then
+			if condizione.has_substring ("/=") then
+				loc := condizione.substring (1,   condizione.index_of ('/', 1) - 1)
+				cond_num := condizione.substring (condizione.index_of ('/', 1) + 2, condizione.count).to_integer
+				Result := data.item (loc) /= cond_num
+			else
+				loc := condizione.substring (1,  condizione.index_of ('=', 1) - 1)
+				cond_num := condizione.substring ( condizione.index_of ('=', 1) + 1, condizione.count).to_integer
+				Result := data.item (loc) = cond_num
+			end
 		end
 	end
 end
