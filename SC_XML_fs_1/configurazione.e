@@ -21,6 +21,9 @@ feature --attributi
 	condizioni: HASH_TABLE [BOOLEAN, STRING]
 		-- rappresenta le condizioni della statechart
 
+	data_interi: HASH_TABLE [INTEGER, STRING]
+		-- rappresenta i <data> di tipo intero e il loro valore
+
 	albero: XML_CALLBACKS_NULL_FILTER_DOCUMENT
 		-- rappresenta sotto forma di un albero XML la SC letta dal file
 
@@ -36,6 +39,7 @@ feature -- creazione
 			crea_albero (nome_SC)
 			create stati.make (1)
 			create condizioni.make (1)
+			create data_interi.make (1)
 			crea_stati_e_condizioni
 		end
 
@@ -99,6 +103,9 @@ feature -- inizializzazione SC
 								elseif attached {XML_ATTRIBUTE} data.item.attribute_by_name ("expr") as valore then
 									if valore_booleano(valore.value) then
 										condizioni.extend (valore.value.as_lower ~ "true", nome.value)
+									elseif valore.value.is_integer then
+										data_interi.extend (valore.value.to_integer, nome.value)
+										print("Data: " + nome.value + " = " + data_interi[nome.value].out + "%N")
 									else
 										print ("ERRORE: elemento <data> con id >|" + nome.value + "|< assegna a 'expr' il valore >|" + valore.value + "|< non booleano!%N")
 									end
@@ -397,17 +404,23 @@ feature -- supporto inizializzazione
 			end
 			if not attached p_azione.attribute_by_name ("location") as luogo then
 				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'location'!%N")
-			elseif not condizioni.has (luogo.value) then
-				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< indica una 'location' di valore >|" + luogo.value + "|< che non esiste nelle condizioni della SC!%N")
+			elseif not condizioni.has (luogo.value) and not data_interi.has (luogo.value) then
+				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< indica una 'location' di valore >|" + luogo.value + "|< che non esiste nelle condizioni e nei data della SC!%N")
 			elseif not attached p_azione.attribute_by_name ("expr") as valore then
 				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'expr'!%N")
-			elseif not (valore.value ~ "false" or valore.value ~ "true") then
-				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< assegna alla <location> di nome >|" + luogo.value + "|< come <expr> il valore >|" + valore.value + "|< diverso sia da 'true' che da 'false'!%N")
+			elseif not (valore.value ~ "false" or valore.value ~ "true" or valore.value ~ "inc" or valore.value ~ "dec") and not valore.value.is_integer then
+				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< assegna alla <location> di nome >|" + luogo.value + "|< come <expr> il valore >|" + valore.value + "|< non intero e diverso sia da 'true' che da 'false' che da 'inc' che da 'dec'!%N")
 			else
 				if valore.value ~ "false" then
 					transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, False), transizione.azioni.count+1)
-				else
+				elseif valore.value ~ "true" then
 					transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, True), transizione.azioni.count+1)
+				elseif valore.value.is_integer then
+					transizione.azioni.force (create {ASSEGNAZIONE}.make_with_data_and_value (luogo.value, valore.value.to_integer), transizione.azioni.count+1)
+				elseif valore.value ~ "inc" then
+					transizione.azioni.force (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "inc"), transizione.azioni.count+1)
+				elseif valore.value ~ "dec" then
+					transizione.azioni.force (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "dec"), transizione.azioni.count+1)
 				end
 			end
 		end
@@ -455,6 +468,12 @@ feature -- supporto inizializzazione
 							stato.set_onentry (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, False))
 						elseif expr.value ~ "true" then
 							stato.set_onentry (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, True))
+						elseif expr.value ~ "inc" then
+							stato.set_onentry (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "inc"))
+						elseif expr.value ~ "dec" then
+							stato.set_onentry (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "dec"))
+						elseif expr.value.is_integer then
+							stato.set_onentry (create {ASSEGNAZIONE}.make_with_data_and_value (luogo.value, expr.value.to_integer))
 						end
 					end
 				end
@@ -476,6 +495,12 @@ feature -- supporto inizializzazione
 							stato.set_onexit (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, False))
 						elseif expr.value ~ "true" then
 							stato.set_onexit (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, True))
+						elseif expr.value ~ "inc" then
+							stato.set_onexit (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "inc"))
+						elseif expr.value ~ "dec" then
+							stato.set_onexit (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "dec"))
+						elseif expr.value.is_integer then
+							stato.set_onexit (create {ASSEGNAZIONE}.make_with_data_and_value (luogo.value, expr.value.to_integer))
 						end
 					end
 				end

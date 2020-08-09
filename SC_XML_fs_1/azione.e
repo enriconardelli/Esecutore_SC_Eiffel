@@ -9,7 +9,7 @@ deferred class
 
 feature --generica
 
-	action (condizioni: HASH_TABLE [BOOLEAN, STRING])
+	action (condizioni: HASH_TABLE [BOOLEAN, STRING]; valori_data: HASH_TABLE [INTEGER, STRING])
 		deferred
 		end
 

@@ -32,7 +32,7 @@ feature -- creazione
 
 feature -- azione
 
-	action (condizioni: HASH_TABLE [BOOLEAN, STRING])
+	action (condizioni: HASH_TABLE [BOOLEAN, STRING]; valori_data: HASH_TABLE [INTEGER, STRING])
 		do
 			print ("  LOG:   " + testo + "%N")
 		end
