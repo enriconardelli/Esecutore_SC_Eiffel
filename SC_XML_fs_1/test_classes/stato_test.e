@@ -31,6 +31,8 @@ feature {NONE} -- Supporto
 
 	cond_prova, cond_prova_senza_evento: HASH_TABLE [BOOLEAN, STRING]
 
+	data_prova: HASH_TABLE [INTEGER, STRING]
+
 	eventi_prova: LINKED_SET [STRING]
 
 feature {NONE} -- Events
@@ -66,6 +68,8 @@ feature {NONE} -- Events
 			cond_prova.put (False, "cond1")
 			cond_prova.put (False, "cond2")
 			cond_prova.put (False, "cond3")
+
+			create data_prova.make (1)
 
 			--creo stato di prova senza evento
 			-- ha 3 transizioni che portano su 3 target distinti
@@ -163,8 +167,8 @@ feature -- Test routines
 	local t:TRANSIZIONE
 		do
 			set_eventi_prova ("non", "non", "non")
-			t:=stato_prova.transizione_abilitata (eventi_prova, cond_prova)
-			assert ("ERRORE: transizione abilitata con evento non_esistente", stato_prova.transizione_abilitata (eventi_prova, cond_prova) = Void)
+			t:=stato_prova.transizione_abilitata (eventi_prova, cond_prova, data_prova)
+			assert ("ERRORE: transizione abilitata con evento non_esistente", stato_prova.transizione_abilitata (eventi_prova, cond_prova, data_prova) = Void)
 		end
 
 	t_abilitata_con_evento_unica
@@ -172,14 +176,14 @@ feature -- Test routines
 		do
 			set_cond_prova (TRUE, TRUE, TRUE)
 			set_eventi_prova ("non", "evento2", "non")
-			assert ("ERRORE: transizione abilitata con evento unica non rilevata", stato_prova.transizione_abilitata (eventi_prova, cond_prova) = transizione_prova_2)
+			assert ("ERRORE: transizione abilitata con evento unica non rilevata", stato_prova.transizione_abilitata (eventi_prova, cond_prova, data_prova) = transizione_prova_2)
 		end
 
 	t_abilitata_con_evento_molteplici
 		do
 			set_cond_prova (TRUE, FALSE, TRUE)
 			set_eventi_prova ("evento1", "evento2", "evento3")
-			assert ("ERRORE: transizione abilitata con evento molteplici non rivela quella corretta", stato_prova.transizione_abilitata (eventi_prova, cond_prova) = transizione_prova_1)
+			assert ("ERRORE: transizione abilitata con evento molteplici non rivela quella corretta", stato_prova.transizione_abilitata (eventi_prova, cond_prova, data_prova) = transizione_prova_1)
 		end
 
 	t_attivabile_con_evento

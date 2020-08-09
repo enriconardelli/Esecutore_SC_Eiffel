@@ -84,14 +84,62 @@ feature -- check
 			end
 		end
 
-	check_condizione (hash_delle_condizioni: HASH_TABLE [BOOLEAN, STRING] ): BOOLEAN
+	check_condizioni (condizioni: HASH_TABLE [BOOLEAN, STRING]; data: HASH_TABLE [INTEGER, STRING]): BOOLEAN
+	do
+		result := check_condizione_booleano (condizioni) and check_condizione_intero (data)
+	end
+
+	check_condizione_booleano (condizioni: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
 	-- Controlla se la condizione dell'evento è verificata.
 	do
 		if condizione ~ "condizione_vuota" then
-				result:= TRUE
+			result:= true
 		else
-			result:= hash_delle_condizioni.item (condizione)
+			if condizioni.has (condizione) then
+				result:= condizioni.item (condizione)
+			else
+				result:= true
+			end
 		end
 	end
 
+	check_condizione_intero(data: HASH_TABLE [INTEGER, STRING]): BOOLEAN
+	local
+		loc: STRING
+		cond_num: INTEGER
+	do
+		if data.has (condizione) then
+			if condizione.has ('<') then
+				loc := condizione.substring (1,   condizione.index_of ('<', 1) - 1)
+				if condizione.has_substring ("<=") then
+					cond_num := condizione.substring (condizione.index_of ('<', 1) + 2, condizione.count).to_integer
+					Result := data.item (loc) <= cond_num
+				else
+					cond_num := condizione.substring ( condizione.index_of ('<', 1) + 1, condizione.count).to_integer
+					Result := data.item (loc) < cond_num
+				end
+			elseif condizione.has ('>') then
+				loc := condizione.substring (1,  condizione.index_of ('>', 1) - 1)
+				if condizione.has_substring (">=") then
+					cond_num := condizione.substring (condizione.index_of ('>', 1) + 2, condizione.count).to_integer
+					Result := data.item (loc) >= cond_num
+				else
+					cond_num := condizione.substring ( condizione.index_of ('>', 1) + 1, condizione.count).to_integer
+					Result := data.item (loc) > cond_num
+				end
+			elseif condizione.has ('=') then
+				if condizione.has_substring ("/=") then
+					loc := condizione.substring (1,   condizione.index_of ('/', 1) - 1)
+					cond_num := condizione.substring (condizione.index_of ('/', 1) + 2, condizione.count).to_integer
+					Result := data.item (loc) /= cond_num
+				else
+					loc := condizione.substring (1,  condizione.index_of ('=', 1) - 1)
+					cond_num := condizione.substring ( condizione.index_of ('=', 1) + 1, condizione.count).to_integer
+					Result := data.item (loc) = cond_num
+				end
+			end
+		else
+			Result := true
+		end
+	end
 end
