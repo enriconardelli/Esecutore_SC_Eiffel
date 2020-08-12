@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="reset">
 	<datamodel>
-		<data id="running$value" expr="0" />
-		<data id="paused$value" expr="0" />
-		<data id="stopped$value" expr="0" />
-		<data id="reset$value" expr="0" />
+		<data id="running$value" expr="false" />
+		<data id="paused$value" expr="false" />
+		<data id="stopped$value" expr="false" />
+		<data id="reset$value" expr="false" />
 	</datamodel>
 	<state id="reset">
 		<transition event="watch_start" target="running" />

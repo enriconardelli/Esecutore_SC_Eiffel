@@ -75,6 +75,23 @@ feature -- Test routines
 			assert ("ERRORE 3.10 non attiva A2", attached esecutore.state_chart.stati.item("A2") as item and then item.attivo)
 		end
 
+	t_test_attivi_su_storia
+		-- Arianna & Riccardo 05/07/2020
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "storie_inscatolate.xml"
+			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_eventi_2.txt"
+			create esecutore.make (nomi_files_prova)
+			assert ("ERRORE 4.1 non attiva R", attached esecutore.state_chart.stati.item("R") as item and then item.attivo)
+			assert ("ERRORE 4.2 non attiva R1", attached esecutore.state_chart.stati.item("R1") as item and then item.attivo)
+			assert ("ERRORE 4.3 non attiva R2", attached esecutore.state_chart.stati.item("R2") as item and then item.attivo)
+			assert ("ERRORE 4.4 non attiva R1B", attached esecutore.state_chart.stati.item("R1B") as item and then item.attivo)
+			assert ("ERRORE 4.5 non attiva R2A", attached esecutore.state_chart.stati.item("R2A") as item and then item.attivo)
+			assert ("ERRORE 4.6 attiva R1A", attached esecutore.state_chart.stati.item("R1A") as item and then not item.attivo)
+			assert ("ERRORE 4.7 attiva R2B", attached esecutore.state_chart.stati.item("R2B") as item and then not item.attivo)
+		end
+
 end
 
 

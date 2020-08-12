@@ -60,7 +60,6 @@ feature -- evoluzione della statechart
 			istante: INTEGER
 			prossima_conf_base: ARRAY [STATO]
 			transizioni_eseguibili: ARRAY[TRANSIZIONE]
-			transizione_corrente: TRANSIZIONE
 		do
 			print ("%Nentrato in evolvi_SC:  %N %N")
 			from
@@ -71,19 +70,15 @@ feature -- evoluzione della statechart
 				if attached eventi [istante] as eventi_correnti then
 					stampa_conf_corrente (istante)
 					create prossima_conf_base.make_empty
-					transizioni_eseguibili:=trova_transizioni_eseguibili(eventi_correnti, state_chart.condizioni)
-					across conf_base_corrente as cbc
+					transizioni_eseguibili:= trova_transizioni_eseguibili(eventi_correnti, state_chart.condizioni)
+					across transizioni_eseguibili as te
 					loop
-						transizione_corrente := cbc.item.transizione_abilitata (eventi_correnti, state_chart.condizioni)
-						if attached transizione_corrente as tc and then transizioni_eseguibili.has(tc) then
-							esegui_azioni (tc, cbc.item)
-							trova_default (tc.target, prossima_conf_base)
-							aggiungi_paralleli (tc.target, prossima_conf_base)
-						else
-							prossima_conf_base.force (cbc.item, prossima_conf_base.count + 1)
-						end
+						salva_storie(genitore_piu_grande(te.item))
+						esegui_azioni (te.item)
+						trova_default (te.item.target, prossima_conf_base)
+						aggiungi_paralleli (te.item.target, prossima_conf_base)
 					end
-					prossima_conf_base := elimina_stati_inattivi(prossima_conf_base)
+					aggiungi_stati_attivi(prossima_conf_base)
 					prossima_conf_base := riordina_conf_base(prossima_conf_base)
 					if not prossima_conf_base.is_empty then
 						conf_base_corrente.copy (prossima_conf_base)
@@ -93,6 +88,77 @@ feature -- evoluzione della statechart
 			end
 			print ("%NHo terminato l'elaborazione degli eventi%N")
 			stampa_conf_corrente (istante)
+		end
+
+	salva_storie(stato_uscente: STATO)
+	-- Arianna & Riccardo 05/07/2020
+	-- aggiorna le storie nei discendenti dello 'stato_uscente'
+		do
+			pulisci_storie(stato_uscente)
+			across
+				conf_base_corrente as cbc
+			loop
+				if stato_uscente.antenato_di (cbc.item)	then
+					salva_percorso(cbc.item, stato_uscente)
+				end
+			end
+		end
+
+	pulisci_storie(stato_uscita: STATO)
+	-- Arianna & Riccardo 26/07/2020
+	-- elimina gli stati salvati in tutte le storie che si incontrano nel percorso dai stati della conf_base_corrente allo 'stato_uscita'
+		local
+			stato_temp: STATO
+		do
+			across
+				conf_base_corrente as cbc
+			loop
+				if stato_uscita.antenato_di (cbc.item)	then
+					from
+						stato_temp := cbc.item
+					until
+						stato_temp = stato_uscita
+					loop
+						if attached stato_temp.storia as storia then
+							storia.svuota_memoria
+						end
+						if attached stato_temp.genitore as gen then
+							stato_temp := gen
+						end
+					end
+				end
+			end
+		end
+
+	salva_percorso(stato_conf_base, stato_uscente: STATO)
+	-- Arianna & Riccardo 05/07/2020
+	-- memorizza i percorsi di uscita partendo da 'stato_conf_base' e arrivando fino a 'stato_uscente'
+		local
+			stato_temp: STATO
+			percorso_uscita: LINKED_LIST[STATO]
+		do
+			if stato_uscente /= stato_conf_base then
+				-- se esco da uno stato atomico non ho storia
+				create percorso_uscita.make
+				from
+					stato_temp := stato_conf_base
+				until
+					stato_temp = stato_uscente
+				loop
+					percorso_uscita.put_front (stato_temp)
+					if attached stato_temp.genitore as gen then
+						stato_temp := gen
+					end
+
+					if attached{STORIA_DEEP} stato_temp.storia as storia then
+						-- se la storia è "deep" salvo tutto l'array del percorso
+						storia.aggiungi_stati (percorso_uscita)
+					elseif attached{STORIA_SHALLOW} stato_temp.storia as storia then
+						-- se la storia è "shallow" salvo solo lo stato uscente allo stesso livello della storia
+						storia.memorizza_stato (percorso_uscita.first)
+					end
+				end
+			end
 		end
 
 	trova_transizioni_eseguibili(evento: LINKED_SET[STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]): ARRAY[TRANSIZIONE]
@@ -128,40 +194,42 @@ feature -- evoluzione della statechart
 			Result:=transizioni
 		end
 
-	elimina_stati_inattivi(conf_da_modificare: ARRAY[STATO]): ARRAY[STATO]
-	-- Arianna & Riccardo 26/04/2020
-	-- elimina stati inattivi dalla configurazione
-		local
-			i: INTEGER
+	aggiungi_stati_attivi(conf_da_modificare: ARRAY[STATO])
+	-- Arianna & Riccardo 05/07/2020
+	-- aggiunge stati attivi alla configurazione
 		do
-			create Result.make_empty
-			from
-				i:=conf_da_modificare.lower
-			until
-				i=conf_da_modificare.upper+1
+			across
+				conf_base_corrente as cbc
 			loop
-				if conf_da_modificare[i].attivo then
-					Result.force(conf_da_modificare[i],Result.count+1)
+				if cbc.item.attivo then
+					conf_da_modificare.force(cbc.item,conf_da_modificare.count + 1)
 				end
-				i:=i+1
 			end
 		end
 
 	genitore_piu_grande(transizione: TRANSIZIONE): STATO
 	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
-	-- restituisce l'antenato più grande che contiene stato_corrente ed è contenuto nel contesto
+	-- restituisce l'antenato più grande dal quale si esce con 'transizione'
 		local
 			contesto, stato_temp: detachable STATO
 		do
 			Result := transizione.sorgente
-
 			if transizione.internal then
-				contesto := transizione.sorgente
-				across
-					transizione.sorgente.figli as figli
-				loop
-					if figli.item.attivo then
-						Result:=figli.item
+				if transizione.sorgente.antenato_di (transizione.target) then
+					across
+						transizione.sorgente.figli as figli
+					loop
+						if figli.item.attivo then
+							Result:=figli.item
+						end
+					end
+				else
+					across
+						transizione.target.figli as figli
+					loop
+						if figli.item.attivo then
+							Result:=figli.item
+						end
 					end
 				end
 			else
@@ -177,7 +245,6 @@ feature -- evoluzione della statechart
 					end
 				end
 			end
-
 		end
 
 	aggiungi_paralleli (target: STATO; prossima_conf_base: ARRAY [STATO])
@@ -203,23 +270,50 @@ feature -- evoluzione della statechart
 		end
 
 	trova_default (stato: STATO; prossima_conf_base: ARRAY [STATO])
+	-- segue le transizioni di default e aggiunge lo stato atomico alla 'prossima_conf_base'
+	-- se è presente una storia (non vuota) allora viene seguita al posto delle transizioni di default
 		local
 			i: INTEGER
 		do
+			if attached stato.storia as storia and then not storia.storia_vuota then
+				segui_storia(stato, prossima_conf_base)
+			else
+				stato.set_attivo
+				esegui_onentry(stato)
+				if not stato.initial.is_empty then
+					from
+						i := stato.initial.lower
+					until
+						i = stato.initial.upper + 1
+					loop
+						trova_default (stato.initial [i], prossima_conf_base)
+						i := i + 1
+					end
+				else
+					-- `stato' è uno stato atomico
+					prossima_conf_base.force (stato, prossima_conf_base.count + 1)
+				end
+			end
+		end
+
+	segui_storia (stato: STATO; prossima_conf_base: ARRAY [STATO])
+	-- Arianna & Riccardo 05/07/2020
+	-- segue il percorso indicato dalla storia
+		do
 			stato.set_attivo
 			esegui_onentry(stato)
-			if not stato.initial.is_empty then
-				from
-					i := stato.initial.lower
-				until
-					i = stato.initial.upper + 1
+			if attached{STORIA_DEEP} stato.storia as st then
+				across
+					st.stati_memorizzati as sm
 				loop
-					trova_default (stato.initial [i], prossima_conf_base)
-					i := i + 1
+					sm.item.set_attivo
+					esegui_onentry(sm.item)
+					if sm.item.stato_atomico then
+						prossima_conf_base.force (sm.item, prossima_conf_base.count + 1)
+					end
 				end
-			else
-				-- `stato' è uno stato atomico
-				prossima_conf_base.force (stato, prossima_conf_base.count + 1)
+			elseif attached{STORIA_SHALLOW} stato.storia as st and then attached st.stato_memorizzato as sm then
+				trova_default (sm, prossima_conf_base)
 			end
 		end
 
@@ -253,12 +347,16 @@ feature -- evoluzione della statechart
 
 feature -- esecuzione azioni
 
-	esegui_azioni (transizione: TRANSIZIONE; stato: STATO)
+	esegui_azioni (transizione: TRANSIZIONE)
 		local
 			contesto: detachable STATO
 		do
 			if transizione.internal then
-				contesto := transizione.sorgente
+				if transizione.sorgente.antenato_di (transizione.target) then
+					contesto := transizione.sorgente
+				else
+					contesto := transizione.target
+				end
 			else
 				contesto := trova_contesto (transizione.sorgente, transizione.target)
 			end
