@@ -56,6 +56,17 @@ feature --test
 			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A,B11,B21 )", esecutore.conf_base_corrente.count = 3 and conf_has_state(esecutore.conf_base_corrente,"A") and conf_has_state(esecutore.conf_base_corrente,"B11") and conf_has_state(esecutore.conf_base_corrente,"B21") )
 		end
 
+	t_costrutto_fork_3_1
+	 --Filippo & Iezzi
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "costrutto_fork_3.xml"
+			nomi_files_prova [2] := test_data_dir + "costrutto_fork_eventi_non_fork.txt"
+			create esecutore.make (nomi_files_prova)
+			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A,B11,B22 )", esecutore.conf_base_corrente.count = 3 and conf_has_state(esecutore.conf_base_corrente,"A") and conf_has_state(esecutore.conf_base_corrente,"B11") and conf_has_state(esecutore.conf_base_corrente,"B22") )
+		end
+
 	t_costrutto_fork_4
 	 --Filippo & Iezzi
 		local
@@ -67,6 +78,16 @@ feature --test
 			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A,B1,C )", esecutore.conf_base_corrente.count = 3 and conf_has_state(esecutore.conf_base_corrente,"A") and conf_has_state(esecutore.conf_base_corrente,"B1") and conf_has_state(esecutore.conf_base_corrente,"C") )
 		end
 
+	t_costrutto_fork_4_1
+	 --Filippo & Iezzi
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "costrutto_fork_4.xml"
+			nomi_files_prova [2] := test_data_dir + "costrutto_fork_eventi_non_fork.txt"
+			create esecutore.make (nomi_files_prova)
+			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A,B1,C )", esecutore.conf_base_corrente.count = 3 and conf_has_state(esecutore.conf_base_corrente,"A") and conf_has_state(esecutore.conf_base_corrente,"B1") and conf_has_state(esecutore.conf_base_corrente,"C") )
+		end
 
 
 
