@@ -307,24 +307,28 @@ feature -- supporto inizializzazione
 				if e.item.name ~ "transition" then
 					debug ("SC_assegna_transizioni") stampa_elemento (e.item) end
 					if attached e.item.attribute_by_name ("target") as t then
-						if attached stati.item (t.value.split(' ').first) as destinazione then
-							if not transizione_illegale (stato, destinazione) then
-								create transizione.make_with_target (destinazione, stato)
-								if attached e.item.attribute_by_name ("type") as type then
-									if type.value ~ "internal" and verifica_internal (transizione.sorgente, transizione.target) then
-										transizione.set_internal
+						across t.value.split(' ') as it
+						--scorro tutti i multitarget splittati e crea x transizioni?
+						loop
+							if attached stati.item (it.item) as destinazione then
+								if not transizione_illegale (stato, destinazione) then
+									create transizione.make_with_target (destinazione, stato)
+									if attached e.item.attribute_by_name ("type") as type then
+										if type.value ~ "internal" and verifica_internal (transizione.sorgente, transizione.target) then
+											transizione.set_internal
+										end
 									end
+									assegna_evento (e.item, transizione)
+									assegna_condizione (e.item, transizione)
+									assegna_azioni (e.item.elements, transizione)
+									stato.aggiungi_transizione (transizione)
+								else
+									print ("ERRORE: transizione non legale! ")
+									print ("da >|" + stato.id + "|< a >|" + destinazione.id + "|< %N")
 								end
-								assegna_evento (e.item, transizione)
-								assegna_condizione (e.item, transizione)
-								assegna_azioni (e.item.elements, transizione)
-								stato.aggiungi_transizione (transizione)
 							else
-								print ("ERRORE: transizione non legale! ")
-								print ("da >|" + stato.id + "|< a >|" + destinazione.id + "|< %N")
+								print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value + "|< che non appartiene alla SC!%N")
 							end
-						else
-							print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value + "|< che non appartiene alla SC!%N")
 						end
 					else
 						print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")
