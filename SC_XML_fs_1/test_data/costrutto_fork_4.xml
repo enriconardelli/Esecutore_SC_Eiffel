@@ -3,9 +3,9 @@
 	<state id="S">
 		<transition event="e" target="A B1 C">
 		</transition>
-		<transition event="f" target="B1">
-		</transition>
 		<transition event="f" target="A">
+		</transition>
+		<transition event="f" target="B1">
 		</transition>
 		<transition event="f" target="C">
 		</transition>			
