@@ -20,6 +20,7 @@ feature -- creazione
 			evento := Void
 			internal := False
 			condizione := "condizione_vuota"
+			fork:=False
 		end
 
 feature -- attributi
@@ -35,6 +36,8 @@ feature -- attributi
 	target: STATO
 
 	internal: BOOLEAN
+
+	fork:BOOLEAN
 
 feature -- setter
 
@@ -69,6 +72,11 @@ feature -- setter
 	set_internal
 		do
 			internal := TRUE
+		end
+
+	set_fork
+		do
+			fork := TRUE
 		end
 
 feature -- check

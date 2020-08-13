@@ -308,7 +308,7 @@ feature -- supporto inizializzazione
 					debug ("SC_assegna_transizioni") stampa_elemento (e.item) end
 					if attached e.item.attribute_by_name ("target") as t then
 						across t.value.split(' ') as it
-						--scorro tutti i multitarget splittati e crea x transizioni?
+						--scorro tutti i multitarget splittati e crea x transizioni
 						loop
 							if attached stati.item (it.item) as destinazione then
 								if not transizione_illegale (stato, destinazione) then
@@ -317,6 +317,10 @@ feature -- supporto inizializzazione
 										if type.value ~ "internal" and verifica_internal (transizione.sorgente, transizione.target) then
 											transizione.set_internal
 										end
+									end
+									if  t.value.split(' ').count>1  --se c'è un multitarget la indico come transizione fork
+									then
+										transizione.set_fork
 									end
 									assegna_evento (e.item, transizione)
 									assegna_condizione (e.item, transizione)
