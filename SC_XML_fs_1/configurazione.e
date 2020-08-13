@@ -307,7 +307,7 @@ feature -- supporto inizializzazione
 				if e.item.name ~ "transition" then
 					debug ("SC_assegna_transizioni") stampa_elemento (e.item) end
 					if attached e.item.attribute_by_name ("target") as t then
-						if attached stati.item (t.value) as destinazione then
+						if attached stati.item (t.value.split(' ').first) as destinazione then
 							if not transizione_illegale (stato, destinazione) then
 								create transizione.make_with_target (destinazione, stato)
 								if attached e.item.attribute_by_name ("type") as type then
