@@ -149,8 +149,8 @@ feature -- inizializzazione SC
 						print ("ERRORE: il seguente elemento non ha 'id':%N")
 						stampa_elemento (e.item)
 					elseif attached e.item.attribute_by_name ("id") as id_attr then
-						if id_attr.value ~ "" then
-							print ("ERRORE: il seguente elemento ha un 'id' di valore stringa vuota!%N")
+						if id_attr.value ~ "" or id_attr.value.is_whitespace then
+							print ("ERRORE: il seguente elemento ha un 'id' di valore stringa vuota o blank!%N")
 							stampa_elemento (e.item)
 						elseif stati.has(id_attr.value) then
 							print ("ERRORE: il seguente elemento ha un 'id' duplicato!%N")
