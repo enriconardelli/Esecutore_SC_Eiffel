@@ -172,7 +172,6 @@ feature -- Test routines
 		end
 
 	t_abilitata_con_evento_unica
-	local t: TRANSIZIONE
 		do
 			set_cond_prova (TRUE, TRUE, TRUE)
 			set_eventi_prova ("non", "evento2", "non")
