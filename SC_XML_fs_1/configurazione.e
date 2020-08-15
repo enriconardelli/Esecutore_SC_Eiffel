@@ -18,11 +18,11 @@ feature --attributi
 	stati: HASH_TABLE [STATO, STRING]
 		-- rappresenta gli stati della statechart
 
-	condizioni: HASH_TABLE [BOOLEAN, STRING]
-		-- rappresenta le condizioni della statechart
+	variabili_booleane: HASH_TABLE [BOOLEAN, STRING]
+		-- rappresenta le variabili (cioè i <data> del <datamodel>) di tipo booleano e il loro valore
 
-	data_interi: HASH_TABLE [INTEGER, STRING]
-		-- rappresenta i <data> di tipo intero e il loro valore
+	variabili_intere: HASH_TABLE [INTEGER, STRING]
+		-- rappresenta le variabili (cioè i <data> del <datamodel>) di tipo intero e il loro valore
 
 	albero: XML_CALLBACKS_NULL_FILTER_DOCUMENT
 		-- rappresenta sotto forma di un albero XML la SC letta dal file
@@ -38,8 +38,8 @@ feature -- creazione
 			create conf_base_iniziale.make_empty
 			crea_albero (nome_SC)
 			create stati.make (1)
-			create condizioni.make (1)
-			create data_interi.make (1)
+			create variabili_booleane.make (1)
+			create variabili_intere.make (1)
 			crea_stati_e_condizioni
 		end
 
@@ -75,7 +75,7 @@ feature -- supporto alla creazione
 			--	inizializza ogni stato con le sue transizioni con eventi ed azioni
 		do
 			if attached {XML_ELEMENT} albero.document.first as f then
-				istanzia_condizioni (f.elements)
+				istanzia_variabili (f.elements)
 				istanzia_final (f.elements)
 				istanzia_stati (f.elements, Void)
 				assegna_initial (f.elements)
@@ -86,8 +86,8 @@ feature -- supporto alla creazione
 
 feature -- inizializzazione SC
 
-	istanzia_condizioni (elements: LIST [XML_ELEMENT])
-			-- istanzia nella SC le condizioni presenti in <datamodel>
+	istanzia_variabili (elements: LIST [XML_ELEMENT])
+			-- istanzia nella SC le variabili presenti in <datamodel>
 		do
 			across elements as e
 			loop
@@ -98,16 +98,17 @@ feature -- inizializzazione SC
 						across e.item.elements as data
 						loop
 							if attached {XML_ATTRIBUTE} data.item.attribute_by_name ("id") as nome then
-								if nome.value ~ "" then
-									print ("ERRORE: elemento <data> con 'id' di valore stringa vuota!%N")
+								if nome.value ~ "" or nome.value.is_whitespace then
+									print ("ERRORE: elemento <data> con 'id' >|" + nome.value + "|< di valore stringa vuota o blank!%N")
 								elseif attached {XML_ATTRIBUTE} data.item.attribute_by_name ("expr") as valore then
 									if valore_booleano(valore.value) then
-										condizioni.extend (valore.value.as_lower ~ "true", nome.value)
+										variabili_booleane.extend (valore.value.as_lower ~ "true", nome.value)
+										debug ("SC_inizializza_variabili") print("Booleano: " + nome.value + " = " + variabili_booleane[nome.value].out + "%N") end
 									elseif valore.value.is_integer then
-										data_interi.extend (valore.value.to_integer, nome.value)
-										print("Data: " + nome.value + " = " + data_interi[nome.value].out + "%N")
+										variabili_intere.extend (valore.value.to_integer, nome.value)
+										debug ("SC_inizializza_variabili") print("Intero: " + nome.value + " = " + variabili_intere[nome.value].out + "%N") end
 									else
-										print ("ERRORE: elemento <data> con id >|" + nome.value + "|< assegna a 'expr' il valore >|" + valore.value + "|< non booleano!%N")
+										print ("ERRORE: elemento <data> con id >|" + nome.value + "|< assegna a 'expr' il valore >|" + valore.value + "|< non booleano e non intero!%N")
 									end
 								else
 									print ("ERRORE: elemento <data> con id >|" + nome.value + "|< senza attributo 'expr'!%N")
@@ -120,7 +121,7 @@ feature -- inizializzazione SC
 				end
 			end
 			-- aggiunge condizione_vuota che è sempre true e si applica alle transizioni che hanno condizione void (cfr `completa_stati')
-			condizioni.extend (True, "condizione_vuota")
+			variabili_booleane.extend (True, "condizione_vuota")
 		end
 
 	istanzia_final (elements: LIST [XML_ELEMENT])
@@ -404,7 +405,7 @@ feature -- supporto inizializzazione
 			end
 			if not attached p_azione.attribute_by_name ("location") as luogo then
 				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'location'!%N")
-			elseif not condizioni.has (luogo.value) and not data_interi.has (luogo.value) then
+			elseif not variabili_booleane.has (luogo.value) and not variabili_intere.has (luogo.value) then
 				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< indica una 'location' di valore >|" + luogo.value + "|< che non esiste nelle condizioni e nei data della SC!%N")
 			elseif not attached p_azione.attribute_by_name ("expr") as valore then
 				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'expr'!%N")
