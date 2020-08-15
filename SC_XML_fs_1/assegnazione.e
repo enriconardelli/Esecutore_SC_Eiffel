@@ -41,7 +41,7 @@ feature -- creazione per booleani
 			condizioni.replace (valore_bool_da_assegnare, elemento_da_modificare)
 		end
 
-	action_with_boolean (condizioni: HASH_TABLE [BOOLEAN, STRING])
+	azione_su_booleano (condizioni: HASH_TABLE [BOOLEAN, STRING])
 		do
 			if condizioni.has (elemento_da_modificare) then
 				print ("  ASSIGN: " + elemento_da_modificare + " = " + valore_bool_da_assegnare.out + "%N")
@@ -81,7 +81,7 @@ feature -- creazione per interi
 			end
 		end
 
-	action_with_integer (valori_data: HASH_TABLE [INTEGER, STRING])
+	azione_su_intero (valori_data: HASH_TABLE [INTEGER, STRING])
 		do
 			if attached tipo_di_aggiornamento as type and valori_data.has (elemento_da_modificare) then
 				print ("  ASSIGN: " + type + " " + elemento_da_modificare + "%N")
@@ -94,9 +94,16 @@ feature -- creazione per interi
 
 feature
 
-	action (condizioni: HASH_TABLE [BOOLEAN, STRING]; valori_data: HASH_TABLE [INTEGER, STRING])
+--	action (condizioni: HASH_TABLE [BOOLEAN, STRING]; valori_data: HASH_TABLE [INTEGER, STRING])
+--		do
+--			action_with_boolean (condizioni)
+--			action_with_integer (valori_data)
+--		end
+
+	esegui (condizioni: HASH_TABLE [BOOLEAN, STRING]; valori_data: HASH_TABLE [INTEGER, STRING])
 		do
-			action_with_boolean (condizioni)
-			action_with_integer (valori_data)
+			svolgi (agent azione_su_booleano (condizioni))
+			svolgi (agent azione_su_intero (valori_data))
 		end
+
 end

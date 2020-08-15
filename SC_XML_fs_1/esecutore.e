@@ -373,7 +373,7 @@ feature -- esecuzione azioni
 				across
 					p_stato_corrente.onexit as ox
 				loop
-					ox.item.action (state_chart.condizioni, state_chart.data_interi)
+					ox.item.esegui (state_chart.condizioni, state_chart.data_interi)
 				end
 			end
 		end
@@ -384,7 +384,7 @@ feature -- esecuzione azioni
 				across
 					p_stato_corrente.onentry as oe
 				loop
-					oe.item.action (state_chart.condizioni, state_chart.data_interi)
+					oe.item.esegui (state_chart.condizioni, state_chart.data_interi)
 				end
 			end
 		end
@@ -414,7 +414,7 @@ feature -- esecuzione azioni
 			until
 				i = p_azioni.upper + 1
 			loop
-				p_azioni [i].action (state_chart.condizioni, state_chart.data_interi)
+				p_azioni [i].esegui (state_chart.condizioni, state_chart.data_interi)
 				i := i + 1
 			end
 		end
