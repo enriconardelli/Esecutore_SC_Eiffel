@@ -75,7 +75,7 @@ feature -- supporto alla creazione
 			--	inizializza ogni stato con le sue transizioni con eventi ed azioni
 		do
 			if attached {XML_ELEMENT} albero.document.first as f then
-				istanzia_variabili (f.elements)
+				istanzia_datamodel (f.elements)
 				istanzia_final (f.elements)
 				istanzia_stati (f.elements, Void)
 				assegna_initial (f.elements)
@@ -86,8 +86,8 @@ feature -- supporto alla creazione
 
 feature -- inizializzazione SC
 
-	istanzia_variabili (elements: LIST [XML_ELEMENT])
-			-- istanzia nella SC le variabili presenti in <datamodel>
+	istanzia_datamodel (elements: LIST [XML_ELEMENT])
+			-- istanzia il <datamodel>, che può essere anche suddiviso in più nodi
 		do
 			across elements as e
 			loop
@@ -95,29 +95,35 @@ feature -- inizializzazione SC
 					if e.item.elements.is_empty then
 						print ("AVVISO: il <datamodel> non contiene elementi <data>!%N")
 					else
-						across e.item.elements as data
-						loop
-							if attached {XML_ATTRIBUTE} data.item.attribute_by_name ("id") as nome then
-								if nome.value ~ "" or nome.value.is_whitespace then
-									print ("ERRORE: elemento <data> con 'id' >|" + nome.value + "|< di valore stringa vuota o blank!%N")
-								elseif attached {XML_ATTRIBUTE} data.item.attribute_by_name ("expr") as valore then
-									if valore_booleano (valore.value) then
-										variabili_booleane.extend (valore.value.as_lower ~ "true", nome.value)
-										debug ("SC_inizializza_variabili") print("Booleano: " + nome.value + " = " + variabili_booleane[nome.value].out + "%N") end
-									elseif valore_intero (valore.value) then
-										variabili_intere.extend (valore.value.to_integer, nome.value)
-										debug ("SC_inizializza_variabili") print("Intero: " + nome.value + " = " + variabili_intere[nome.value].out + "%N") end
-									else
-										print ("ERRORE: elemento <data> con id >|" + nome.value + "|< assegna a 'expr' il valore >|" + valore.value + "|< non booleano e non intero!%N")
-									end
-								else
-									print ("ERRORE: elemento <data> con id >|" + nome.value + "|< senza attributo 'expr'!%N")
-								end
-							else
-								print ("ERRORE: elemento <data> senza attributo 'id'!%N")
-							end
-						end
+						istanzia_variabili (e.item.elements)
 					end
+				end
+			end
+		end
+
+	istanzia_variabili (data_elements: LIST [XML_ELEMENT])
+			-- istanzia nella SC le variabili presenti in <datamodel>
+		do
+			across data_elements as data
+			loop
+				if attached {XML_ATTRIBUTE} data.item.attribute_by_name ("id") as nome then
+					if nome.value ~ "" or nome.value.is_whitespace then
+						print ("ERRORE: elemento <data> con 'id' >|" + nome.value + "|< di valore stringa vuota o blank!%N")
+					elseif attached {XML_ATTRIBUTE} data.item.attribute_by_name ("expr") as valore then
+						if valore_booleano (valore.value) then
+							variabili_booleane.extend (valore.value.as_lower ~ "true", nome.value)
+							debug ("SC_inizializza_variabili") print("Booleano: " + nome.value + " = " + variabili_booleane[nome.value].out + "%N") end
+						elseif valore_intero (valore.value) then
+							variabili_intere.extend (valore.value.to_integer, nome.value)
+							debug ("SC_inizializza_variabili") print("Intero: " + nome.value + " = " + variabili_intere[nome.value].out + "%N") end
+						else
+							print ("ERRORE: elemento <data> con id >|" + nome.value + "|< assegna a 'expr' il valore >|" + valore.value + "|< non booleano e non intero!%N")
+						end
+					else
+						print ("ERRORE: elemento <data> con id >|" + nome.value + "|< senza attributo 'expr'!%N")
+					end
+				else
+					print ("ERRORE: elemento <data> senza attributo 'id'!%N")
 				end
 			end
 			-- aggiunge condizione_vuota che è sempre true e si applica alle transizioni che hanno condizione void (cfr `completa_stati')
