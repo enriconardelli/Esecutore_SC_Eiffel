@@ -111,15 +111,6 @@ feature -- inizializzazione SC
 						print ("ERRORE: elemento <data> con 'id' >|" + nome.value + "|< di valore stringa vuota o blank!%N")
 					elseif attached {XML_ATTRIBUTE} data.item.attribute_by_name ("expr") as valore then
 						assegna_variabile (nome.value, valore.value)
---						if valore_booleano (valore.value) then
---							variabili_booleane.extend (valore.value.as_lower ~ "true", nome.value)
---							debug ("SC_inizializza_variabili") print("Booleano: " + nome.value + " = " + variabili_booleane[nome.value].out + "%N") end
---						elseif valore_intero (valore.value) then
---							variabili_intere.extend (valore.value.to_integer, nome.value)
---							debug ("SC_inizializza_variabili") print("Intero: " + nome.value + " = " + variabili_intere[nome.value].out + "%N") end
---						else
---							print ("ERRORE: elemento <data> con id >|" + nome.value + "|< assegna a 'expr' il valore >|" + valore.value + "|< non booleano e non intero!%N")
---						end
 					else
 						print ("ERRORE: elemento <data> con id >|" + nome.value + "|< senza attributo 'expr'!%N")
 					end
