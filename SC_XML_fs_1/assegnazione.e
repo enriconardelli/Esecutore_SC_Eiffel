@@ -1,7 +1,7 @@
 note
 	description: "La classe che rappresenta l'azione di assegnazione"
-	author: "Gabriele Cacchioni & Davide Canalis & Daniele Fakhoury & Eloisa Scarsella"
-	date: "9-04-2015"
+	author: "EN + studenti corsi PSI"
+	date: "$Date$"
 	revision: "0"
 
 class
@@ -12,7 +12,7 @@ inherit
 	AZIONE
 
 create
-	crea_assegnazione
+	make
 
 feature --attributi
 
@@ -30,7 +30,7 @@ feature --attributi
 
 feature -- creazione parametrica
 
-	crea_assegnazione (variabile, espressione: STRING)
+	make (variabile, espressione: STRING)
 	do
 		elemento_da_modificare := variabile
 		if valore_booleano (espressione) then

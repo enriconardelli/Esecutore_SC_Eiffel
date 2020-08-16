@@ -159,6 +159,7 @@ feature -- inizializzazione SC
 
 	istanzia_stati (elements: LIST [XML_ELEMENT]; p_genitore: detachable STATO)
 		-- crea gli stati assegnando loro l'eventuale genitore e gli eventuali figli
+		-- TODO: feature troppo complessa, va semplificata
 		local
 			stato_temp: STATO
 			storia_temp: STORIA
@@ -249,6 +250,7 @@ feature -- inizializzazione SC
 	assegna_initial (elements: LIST [XML_ELEMENT])
 		-- assegna ricorsivamente agli stati i loro sotto-stati iniziali di default
 		-- NB: regolarità di 'id' viene controllata in `istanzia_stati'
+		-- TODO: feature complessa, da semplificare
 		do
 			across
 				elements as e
@@ -380,9 +382,7 @@ feature -- inizializzazione transizioni
 		local
 			transizione: TRANSIZIONE
 		do
-			debug ("SC_assegna_transizioni")
-				stampa_elemento (transition_element)
-			end
+			debug ("SC_assegna_transizioni") stampa_elemento (transition_element) end
 			if attached transition_element.attribute_by_name ("target") as t then
 				if attached stati.item (t.value) as destinazione then
 					if not transizione_illegale (stato, destinazione) then
@@ -538,7 +538,7 @@ feature -- inizializzazione azioni
 			testo: STRING
 		do
 			if assign_ammissibile (p_azione).esito ~ "OK" then
-				transizione.azioni.force (create {ASSEGNAZIONE}.crea_assegnazione (assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore), transizione.azioni.count + 1)
+				transizione.azioni.force (create {ASSEGNAZIONE}.make (assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore), transizione.azioni.count + 1)
 			else
 				testo := "nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|<"
 				stampa_assign_errata (p_azione, testo, assign_ammissibile (p_azione).esito, assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore)
@@ -630,7 +630,7 @@ feature -- inizializzazione onentry/onexit
 			testo: STRING
 		do
 			if assign_ammissibile (p_azione).esito ~ "OK" then
-				stato.set_onentry (create {ASSEGNAZIONE}.crea_assegnazione (assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore))
+				stato.set_onentry (create {ASSEGNAZIONE}.make (assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore))
 			else
 				testo := "specificata in <onentry> per lo stato >|" + stato.id + "|<"
 				stampa_assign_errata (p_azione, testo, assign_ammissibile (p_azione).esito, assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore)
@@ -642,7 +642,7 @@ feature -- inizializzazione onentry/onexit
 			testo: STRING
 		do
 			if assign_ammissibile (p_azione).esito ~ "OK" then
-				stato.set_onexit (create {ASSEGNAZIONE}.crea_assegnazione (assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore))
+				stato.set_onexit (create {ASSEGNAZIONE}.make (assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore))
 			else
 				testo := "specificata in <onexit> per lo stato >|" + stato.id + "|<"
 				stampa_assign_errata (p_azione, testo, assign_ammissibile (p_azione).esito, assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore)
