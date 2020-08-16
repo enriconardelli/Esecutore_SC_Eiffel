@@ -329,7 +329,7 @@ feature -- inizializzazione SC
 					completa_stati (e.item.elements)
 					if attached stati.item (id_stato.value) as stato then
 						-- lo stato esiste perché viene creato in `stati' da `istanzia_stati'
-						assegna_transizioni (stato, e.item)
+						assegna_figli (stato, e.item)
 					end
 				end
 			end
@@ -337,29 +337,74 @@ feature -- inizializzazione SC
 
 feature -- supporto inizializzazione
 
-	assegna_transizioni (stato: STATO; element: XML_ELEMENT)
-		-- completa lo `stato' assegnandogli
-		-- le transizioni con relativi eventi ed azioni
-		-- gli altri discendenti come onentry e onexit
+	assegna_figli (stato: STATO; element: XML_ELEMENT)
+		-- completa lo `stato' assegnandogli i suoi discendenti
+		-- * transizioni con relativi eventi ed azioni
+		-- * azioni onentry e onexit
 		local
 			transizione: TRANSIZIONE
 		do
 			across element.elements as e
 			loop
 				if e.item.name ~ "transition" then
-					debug ("SC_assegna_transizioni") stampa_elemento (e.item) end
-					if attached e.item.attribute_by_name ("target") as t then
+					assegna_transizione (stato, e.item)
+--					debug ("SC_assegna_transizioni") stampa_elemento (e.item) end
+--					if attached e.item.attribute_by_name ("target") as t then
+--						if attached stati.item (t.value) as destinazione then
+--							if not transizione_illegale (stato, destinazione) then
+--								create transizione.make_with_target (destinazione, stato)
+--								if attached e.item.attribute_by_name ("type") as type then
+--									if type.value ~ "internal" and verifica_internal(transizione) then
+--										transizione.set_internal
+--									end
+--								end
+--								assegna_evento (e.item, transizione)
+--								assegna_condizione (e.item, transizione)
+--								assegna_azioni (e.item.elements, transizione)
+--								stato.aggiungi_transizione (transizione)
+--							else
+--								print ("ERRORE: transizione non legale! ")
+--								print ("da >|" + stato.id + "|< a >|" + destinazione.id + "|< %N")
+--							end
+--						else
+--							print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value + "|< che non appartiene alla SC!%N")
+--						end
+--					else
+--						print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")
+--					end
+				end
+				if e.item.name ~ "onentry" then
+					assegna_onentry (e.item.elements, stato)
+				end
+				if e.item.name ~ "onexit" then
+					assegna_onexit (e.item.elements, stato)
+				end
+			end
+		end
+
+	assegna_transizione (stato: STATO; element: XML_ELEMENT)
+		-- completa lo `stato' assegnandogli i suoi discendenti
+--		-- * transizioni con relativi eventi ed azioni
+--		-- * azioni onentry e onexit
+		local
+			transizione: TRANSIZIONE
+		do
+--			across element.elements as e
+--			loop
+--				if e.item.name ~ "transition" then
+					debug ("SC_assegna_transizioni") stampa_elemento (element) end
+					if attached element.attribute_by_name ("target") as t then
 						if attached stati.item (t.value) as destinazione then
 							if not transizione_illegale (stato, destinazione) then
 								create transizione.make_with_target (destinazione, stato)
-								if attached e.item.attribute_by_name ("type") as type then
+								if attached element.attribute_by_name ("type") as type then
 									if type.value ~ "internal" and verifica_internal(transizione) then
 										transizione.set_internal
 									end
 								end
-								assegna_evento (e.item, transizione)
-								assegna_condizione (e.item, transizione)
-								assegna_azioni (e.item.elements, transizione)
+								assegna_evento (element, transizione)
+								assegna_condizione (element, transizione)
+								assegna_azioni (element.elements, transizione)
 								stato.aggiungi_transizione (transizione)
 							else
 								print ("ERRORE: transizione non legale! ")
@@ -371,14 +416,14 @@ feature -- supporto inizializzazione
 					else
 						print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")
 					end
-				end
-				if e.item.name ~ "onentry" then
-					assegna_onentry (e.item.elements, stato)
-				end
-				if e.item.name ~ "onexit" then
-					assegna_onexit (e.item.elements, stato)
-				end
-			end
+--				end
+--				if e.item.name ~ "onentry" then
+--					assegna_onentry (e.item.elements, stato)
+--				end
+--				if e.item.name ~ "onexit" then
+--					assegna_onexit (e.item.elements, stato)
+--				end
+--			end
 		end
 
 	verifica_internal(transizione: TRANSIZIONE): BOOLEAN
