@@ -412,11 +412,13 @@ feature -- supporto inizializzazione
 			elseif not valore_ammissibile(valore.value) then
 				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< assegna alla <location> di nome >|" + luogo.value + "|< come <expr> il valore >|" + valore.value + "|< non intero e diverso sia da 'true' che da 'false' che da 'inc' che da 'dec'!%N")
 			else
-				if valore.value.as_lower ~ "false" then
-					transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, False), transizione.azioni.count+1)
-				elseif valore.value.as_lower ~ "true" then
-					transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, True), transizione.azioni.count+1)
-				elseif valore.value.is_integer then
+				if valore_booleano(valore.value) then
+					transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, valore.value.as_lower ~ "true"), transizione.azioni.count+1)
+--				if valore.value.as_lower ~ "false" then
+--					transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, False), transizione.azioni.count+1)
+--				elseif valore.value.as_lower ~ "true" then
+--					transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, True), transizione.azioni.count+1)
+				elseif valore_intero(valore.value) then
 					transizione.azioni.force (create {ASSEGNAZIONE}.make_with_data_and_value (luogo.value, valore.value.to_integer), transizione.azioni.count+1)
 				elseif valore.value ~ "inc" then
 					transizione.azioni.force (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "inc"), transizione.azioni.count+1)
@@ -656,14 +658,14 @@ feature -- supporto generale
 			Result := valore.is_integer
 		end
 
-	operazione (valore: READABLE_STRING_32): BOOLEAN
+	valore_operazione (valore: READABLE_STRING_32): BOOLEAN
 		do
 			Result := valore.as_lower ~ "inc" or valore.as_lower ~ "dec"
 		end
 
 	valore_ammissibile (valore: READABLE_STRING_32): BOOLEAN
 		do
-			Result := valore_booleano(valore) or valore_intero(valore) or operazione(valore)
+			Result := valore_booleano(valore) or valore_intero(valore) or valore_operazione(valore)
 		end
 
 		-- Aggiungere 'feature' per tracciare quanto accade scrivendo su file model_out.txt:
