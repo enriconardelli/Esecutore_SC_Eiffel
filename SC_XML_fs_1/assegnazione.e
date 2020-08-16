@@ -19,10 +19,10 @@ feature --attributi
 	elemento_da_modificare: STRING
 		-- id del <data> di tipo booleano o intero
 
-	valore_bool_da_assegnare: BOOLEAN
+	booleano_da_assegnare: BOOLEAN
 		-- valore booleano da riassegnare
 
-	valore_int_da_assegnare: INTEGER
+	intero_da_assegnare: INTEGER
 		-- valore intero da riassegnare
 
 	tipo_di_aggiornamento: detachable STRING
@@ -34,9 +34,9 @@ feature -- creazione parametrica
 	do
 		elemento_da_modificare := variabile
 		if valore_booleano (espressione) then
-			valore_bool_da_assegnare := espressione.as_lower ~ "true"
+			booleano_da_assegnare := espressione.as_lower ~ "true"
 		elseif valore_intero (espressione) then
-			valore_int_da_assegnare := espressione.to_integer
+			intero_da_assegnare := espressione.to_integer
 		elseif valore_operazione (espressione) then
 			tipo_di_aggiornamento := espressione
 		end
@@ -46,13 +46,13 @@ feature -- modifica per booleani
 
 	modifica_condizioni (condizioni: HASH_TABLE [BOOLEAN, STRING])
 		do
-			condizioni.replace (valore_bool_da_assegnare, elemento_da_modificare)
+			condizioni.replace (booleano_da_assegnare, elemento_da_modificare)
 		end
 
 	azione_su_booleano (condizioni: HASH_TABLE [BOOLEAN, STRING])
 		do
 			if condizioni.has (elemento_da_modificare) then
-				print ("  ASSIGN: " + elemento_da_modificare + " = " + valore_bool_da_assegnare.out + "%N")
+				print ("  ASSIGN: " + elemento_da_modificare + " = " + booleano_da_assegnare.out + "%N")
 				modifica_condizioni(condizioni)
 			end
 		end
@@ -70,7 +70,7 @@ feature -- modifica per interi
 					print("  -> data " + elemento_da_modificare + " = " + valori_data[elemento_da_modificare].out + "%N")
 				end
 			else
-				valori_data.replace (valore_int_da_assegnare, elemento_da_modificare)
+				valori_data.replace (intero_da_assegnare, elemento_da_modificare)
 				print("  -> data " + elemento_da_modificare + " = " + valori_data[elemento_da_modificare].out + "%N")
 			end
 		end
@@ -81,7 +81,7 @@ feature -- modifica per interi
 				print ("  ASSIGN: " + type + " " + elemento_da_modificare + "%N")
 				modifica_valori(valori_data)
 			elseif valori_data.has (elemento_da_modificare) then
-				print ("  ASSIGN: " + elemento_da_modificare + " = " + valore_int_da_assegnare.out + "%N")
+				print ("  ASSIGN: " + elemento_da_modificare + " = " + intero_da_assegnare.out + "%N")
 				modifica_valori(valori_data)
 			end
 		end

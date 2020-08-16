@@ -101,10 +101,10 @@ feature -- inizializzazione SC
 								if nome.value ~ "" or nome.value.is_whitespace then
 									print ("ERRORE: elemento <data> con 'id' >|" + nome.value + "|< di valore stringa vuota o blank!%N")
 								elseif attached {XML_ATTRIBUTE} data.item.attribute_by_name ("expr") as valore then
-									if valore_booleano(valore.value) then
+									if valore_booleano (valore.value) then
 										variabili_booleane.extend (valore.value.as_lower ~ "true", nome.value)
 										debug ("SC_inizializza_variabili") print("Booleano: " + nome.value + " = " + variabili_booleane[nome.value].out + "%N") end
-									elseif valore.value.is_integer then
+									elseif valore_intero (valore.value) then
 										variabili_intere.extend (valore.value.to_integer, nome.value)
 										debug ("SC_inizializza_variabili") print("Intero: " + nome.value + " = " + variabili_intere[nome.value].out + "%N") end
 									else
