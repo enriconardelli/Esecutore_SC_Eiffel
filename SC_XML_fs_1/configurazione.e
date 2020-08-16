@@ -33,8 +33,6 @@ feature -- creazione
 
 	make (nome_SC: STRING)
 		do
---			create stato_iniziale.make_with_id (create {STRING}.make_empty)
---			stato_iniziale.set_final
 			create conf_base.make_empty
 			crea_albero (nome_SC)
 			create stati.make (1)

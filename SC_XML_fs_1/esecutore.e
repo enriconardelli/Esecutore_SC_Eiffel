@@ -18,11 +18,6 @@ feature -- Attributi
 	ambiente_corrente: AMBIENTE
 			-- rappresenta l'ambiente in cui la SC si evolve
 
---	conf_base_corrente: ARRAY [STATO]
---			-- insieme degli stati base nella configurazione corrente della SC e non di tutti gli stati attivi
-
-
-
 feature -- Creazione sia per i test che per esecuzione interattiva
 
 	make (nomi_files: ARRAY [STRING])
@@ -37,8 +32,6 @@ feature -- Creazione sia per i test che per esecuzione interattiva
 			print ("crea la SC in " + nomi_files [1] + "%N")
 			create state_chart.make (nomi_files [1])
 			create ambiente_corrente.make_empty
---			create conf_base_corrente.make_empty
---			conf_base_corrente.copy (state_chart.conf_base)
 			if not state_chart.ha_problemi_con_il_file_della_sc then
 				print ("e la esegue con gli eventi in " + nomi_files [2] + "%N")
 				ambiente_corrente.acquisisci_eventi (nomi_files [2])
@@ -67,7 +60,6 @@ feature -- evoluzione della statechart
 			from
 				istante := 1
 			until
---				stato_final (conf_base_corrente) or istante > eventi.count
 				stato_final (state_chart.conf_base) or istante > eventi.count
 			loop
 				if attached eventi [istante] as eventi_correnti then
@@ -84,7 +76,6 @@ feature -- evoluzione della statechart
 					aggiungi_stati_attivi(prossima_conf_base)
 					prossima_conf_base := riordina_conf_base(prossima_conf_base)
 					if not prossima_conf_base.is_empty then
---						conf_base_corrente.copy (prossima_conf_base)
 						state_chart.conf_base.copy (prossima_conf_base)
 					end
 				end
@@ -100,7 +91,6 @@ feature -- evoluzione della statechart
 		do
 			pulisci_storie(stato_uscente)
 			across
---				conf_base_corrente as cbc
 				state_chart.conf_base as cbc
 			loop
 				if stato_uscente.antenato_di (cbc.item)	then
@@ -116,7 +106,6 @@ feature -- evoluzione della statechart
 			stato_temp: STATO
 		do
 			across
---				conf_base_corrente as cbc
 				state_chart.conf_base as cbc
 			loop
 				if stato_uscita.antenato_di (cbc.item)	then
@@ -205,7 +194,6 @@ feature -- evoluzione della statechart
 	-- aggiunge stati attivi alla configurazione
 		do
 			across
---				conf_base_corrente as cbc
 				state_chart.conf_base as cbc
 			loop
 				if cbc.item.attivo then
@@ -341,7 +329,7 @@ feature -- evoluzione della statechart
 				antenati.put (corrente.id, corrente.id)
 				corrente := corrente.genitore
 			end
-				-- trova il pi� basso antenato di p_destinazione in "antenati"
+				-- trova il piu' basso antenato di p_destinazione in "antenati"
 			from
 				corrente := p_destinazione.genitore
 			until
@@ -436,22 +424,15 @@ feature -- controllo
 
 	stato_final (stato: ARRAY [STATO]): BOOLEAN
 		require
---			contesto: conf_base_corrente /= VOID
 			contesto: state_chart.conf_base /= Void
 		local
 			i: INTEGER
 		do
 			across state_chart.conf_base as cbc
---			from
---				i := conf_base_corrente.lower
---			until
---				i = conf_base_corrente.upper + 1
 			loop
---				if conf_base_corrente [i].finale then
 				if cbc.item.finale then
 					result := True
 				end
---				i := i + 1
 			end
 		end
 
@@ -484,7 +465,6 @@ feature -- utilita
 		do
 			create Result.make_empty
 			across
---				conf_base_corrente as cbc
 				state_chart.conf_base as cbc
 			loop
 				if attached cbc.item.transizione_abilitata (evento, condizioni, data) as ta then
@@ -501,7 +481,6 @@ feature -- utilita
 			print ("%N")
 			print ("  configurazione BASE corrente: ")
 			across
---				conf_base_corrente as cbc
 				state_chart.conf_base as cbc
 			loop
 				print (cbc.item.id + " ")
