@@ -39,8 +39,12 @@
 		</parallel>
 		<state id="C" >
 			<onentry>
-				<assign expr="true" location="K"/>
-				<assign expr="inc" location="M"/>
+				<assign expr="true" ltion="K"/>
+				<assign expr="inc" location="MMMM"/>
+				<assign ex="true" location="K"/>
+				<assign expr="trueeee" location="K"/>
+				<log nae="esecuzione di <onentry> (ns) all'ingresso in C" />
+				<azione_sbagliata />
 			</onentry>
 		</state>
 	</state>
@@ -48,6 +52,8 @@
 	<state id="D" >
 		<onexit>
 			<assign expr="3" location="L"/>
+			<log nae="esecuzione di <onexit> (xs) all'uscita da D" />
+			<azione_sbagliata />
 		</onexit>
 		<transition event="y" target="A" >
 			<assign expr="false" location="K"/>

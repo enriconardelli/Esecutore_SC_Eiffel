@@ -362,7 +362,7 @@ feature -- supporto inizializzazione
 					end
 				end
 				if e.item.name ~ "onentry" then
-					istanzia_onentry (stato, e.item.elements)
+					assegna_onentry (e.item.elements, stato)
 				end
 				if e.item.name ~ "onexit" then
 					istanzia_onexit (stato, e.item.elements)
@@ -404,20 +404,16 @@ feature -- supporto inizializzazione
 				evento := "NULL"
 			end
 			if not attached p_azione.attribute_by_name ("location") as luogo then
-				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'location'!%N")
+				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'location'!%N")
 			elseif not variabili_booleane.has (luogo.value) and not variabili_intere.has (luogo.value) then
-				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< indica una 'location' di valore >|" + luogo.value + "|< che non esiste nel <datamodel> della SC!%N")
+				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< indica una 'location' di valore >|" + luogo.value + "|< che non esiste nel <datamodel> della SC!%N")
 			elseif not attached p_azione.attribute_by_name ("expr") as valore then
-				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'expr'!%N")
+				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'expr'!%N")
 			elseif not valore_ammissibile(valore.value) then
-				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< assegna alla <location> di nome >|" + luogo.value + "|< come <expr> il valore >|" + valore.value + "|< non intero e diverso sia da 'true' che da 'false' che da 'inc' che da 'dec'!%N")
+				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< assegna alla <location> di nome >|" + luogo.value + "|< come <expr> il valore >|" + valore.value + "|< non intero e diverso sia da 'true' che da 'false' che da 'inc' che da 'dec'!%N")
 			else
 				if valore_booleano(valore.value) then
 					transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, valore.value.as_lower ~ "true"), transizione.azioni.count+1)
---				if valore.value.as_lower ~ "false" then
---					transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, False), transizione.azioni.count+1)
---				elseif valore.value.as_lower ~ "true" then
---					transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, True), transizione.azioni.count+1)
 				elseif valore_intero(valore.value) then
 					transizione.azioni.force (create {ASSEGNAZIONE}.make_with_data_and_value (luogo.value, valore.value.to_integer), transizione.azioni.count+1)
 				elseif valore.value ~ "inc" then
@@ -440,7 +436,7 @@ feature -- supporto inizializzazione
 			if attached p_azione.attribute_by_name ("name") as name then
 				transizione.azioni.force (create {STAMPA}.make_with_text (name.value), transizione.azioni.count+1)
 			else
-				print("ERRORE: l'azione <log> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'name'!%N")
+				print("ERRORE: l'azione <log> nella transizione con evento >|" + evento + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'name'!%N")
 			end
 		end
 
@@ -461,30 +457,51 @@ feature -- supporto inizializzazione
 			end
 		end
 
-	istanzia_onentry (stato: STATO; elements: LIST [XML_ELEMENT])
+	assegna_onentry (action_list: LIST [XML_ELEMENT]; stato: STATO)
+		-- assegna le azioni in `action_list' allo `stato'
 		do
-			across elements as e
+			across action_list as al
 			loop
-				if e.item.name ~ "assign" then
-					if attached e.item.attribute_by_name ("location") as luogo and attached e.item.attribute_by_name ("expr") as expr then
-						if expr.value ~ "false" then
-							stato.set_onentry (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, False))
-						elseif expr.value ~ "true" then
-							stato.set_onentry (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, True))
-						elseif expr.value ~ "inc" then
-							stato.set_onentry (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "inc"))
-						elseif expr.value ~ "dec" then
-							stato.set_onentry (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "dec"))
-						elseif expr.value.is_integer then
-							stato.set_onentry (create {ASSEGNAZIONE}.make_with_data_and_value (luogo.value, expr.value.to_integer))
-						end
-					end
+				if al.item.name ~ "assign" then
+					assegna_onentry_assign (al.item, stato)
+				elseif al.item.name ~ "log" then
+					assegna_onentry_log (al.item, stato)
+				else
+					print ("ERRORE: l'azione >|" + al.item.name + "|< specificata in <onentry> per lo stato >|" + stato.id + "|< non e' ammissibile!%N")
 				end
-				if e.item.name ~ "log" and attached e.item.attribute_by_name ("name") as name then
-					if attached name.value then
-						stato.set_onentry (create {STAMPA}.make_with_text (name.value))
-					end
+			end
+		end
+
+	assegna_onentry_assign (p_azione: XML_ELEMENT; stato: STATO)
+		do
+--			if attached p_azione.attribute_by_name ("location") as luogo and attached p_azione.attribute_by_name ("expr") as valore then
+			if not attached p_azione.attribute_by_name ("location") as luogo then
+				print ("ERRORE: l'azione <assign> specificata in <onentry> per lo stato >|" + stato.id + "|< non ha attributo 'location'!%N")
+			elseif not variabili_booleane.has (luogo.value) and not variabili_intere.has (luogo.value) then
+				print ("ERRORE: l'azione <assign> specificata in <onentry> per lo stato >|" + stato.id + "|< indica una 'location' di valore >|" + luogo.value + "|< che non esiste nel <datamodel> della SC!%N")
+			elseif not attached p_azione.attribute_by_name ("expr") as valore then
+				print ("ERRORE: l'azione <assign> specificata in <onentry> per lo stato >|" + stato.id + "|< non ha attributo 'expr'!%N")
+			elseif not valore_ammissibile(valore.value) then
+				print ("ERRORE: l'azione <assign> specificata in <onentry> per lo stato >|" + stato.id + "|< assegna alla <location> di nome >|" + luogo.value + "|< come <expr> il valore >|" + valore.value + "|< non intero e diverso sia da 'true' che da 'false' che da 'inc' che da 'dec'!%N")
+			else
+				if valore_booleano(valore.value) then
+					stato.set_onentry (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, valore.value.as_lower ~ "true"))
+				elseif valore_intero(valore.value) then
+					stato.set_onentry (create {ASSEGNAZIONE}.make_with_data_and_value (luogo.value, valore.value.to_integer))
+				elseif valore.value ~ "inc" then
+					stato.set_onentry (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "inc"))
+				elseif valore.value ~ "dec" then
+					stato.set_onentry (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "dec"))
 				end
+			end
+		end
+
+	assegna_onentry_log (p_azione: XML_ELEMENT; stato: STATO)
+		do
+			if attached p_azione.attribute_by_name ("name") as name then
+				stato.set_onentry (create {STAMPA}.make_with_text (name.value))
+			else
+				print("ERRORE: l'azione <log> specificata in <onentry> per lo stato >|" + stato.id + "|< non ha attributo 'name'!%N")
 			end
 		end
 
@@ -506,11 +523,14 @@ feature -- supporto inizializzazione
 							stato.set_onexit (create {ASSEGNAZIONE}.make_with_data_and_value (luogo.value, expr.value.to_integer))
 						end
 					end
-				end
-				if e.item.name ~ "log" and attached e.item.attribute_by_name ("name") as name then
-					if attached name.value then
+				elseif e.item.name ~ "log" then
+					if attached e.item.attribute_by_name ("name") as name then
 						stato.set_onexit (create {STAMPA}.make_with_text (name.value))
+					else
+						print("ERRORE: l'azione <log> specificata in <onexit> per lo stato >|" + stato.id + "|< non ha attributo 'name'!%N")
 					end
+				else
+					print ("ERRORE: l'azione >|" + e.item.name + "|< specificata in <onexit> per lo stato >|" + stato.id + "|< non e' ammissibile!%N")
 				end
 			end
 		end
