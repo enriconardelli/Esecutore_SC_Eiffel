@@ -365,7 +365,7 @@ feature -- supporto inizializzazione
 					assegna_onentry (e.item.elements, stato)
 				end
 				if e.item.name ~ "onexit" then
-					istanzia_onexit (stato, e.item.elements)
+					assegna_onexit (e.item.elements, stato)
 				end
 			end
 		end
@@ -376,6 +376,23 @@ feature -- supporto inizializzazione
 			   (transizione.target.antenato_di (transizione.sorgente)) or else
 			   (transizione.target = transizione.sorgente) then
 			   	Result := true
+			end
+		end
+
+	assegna_evento (transition: XML_ELEMENT; transizione: TRANSIZIONE)
+		do
+			-- TODO: capire se gestire l'assenza dell'evento con evento convenzionale "NULL" come si fa per condizione_vuota
+			if attached transition.attribute_by_name ("event") as event then
+				transizione.set_evento (event.value)
+			end
+		end
+
+	assegna_condizione (transition: XML_ELEMENT; transizione: TRANSIZIONE)
+		do
+			if attached transition.attribute_by_name ("cond") as cond then
+				transizione.set_condizione (cond.value)
+			else
+				transizione.set_condizione ("condizione_vuota")
 			end
 		end
 
@@ -440,23 +457,6 @@ feature -- supporto inizializzazione
 			end
 		end
 
-	assegna_evento (transition: XML_ELEMENT; transizione: TRANSIZIONE)
-		do
-			-- TODO: capire se gestire l'assenza dell'evento con evento convenzionale "NULL" come si fa per condizione_vuota
-			if attached transition.attribute_by_name ("event") as event then
-				transizione.set_evento (event.value)
-			end
-		end
-
-	assegna_condizione (transition: XML_ELEMENT; transizione: TRANSIZIONE)
-		do
-			if attached transition.attribute_by_name ("cond") as cond then
-				transizione.set_condizione (cond.value)
-			else
-				transizione.set_condizione ("condizione_vuota")
-			end
-		end
-
 	assegna_onentry (action_list: LIST [XML_ELEMENT]; stato: STATO)
 		-- assegna le azioni in `action_list' allo `stato'
 		do
@@ -472,9 +472,23 @@ feature -- supporto inizializzazione
 			end
 		end
 
+	assegna_onexit (action_list: LIST [XML_ELEMENT]; stato: STATO)
+		-- assegna le azioni in `action_list' allo `stato'
+		do
+			across action_list as al
+			loop
+				if al.item.name ~ "assign" then
+					assegna_onexit_assign (al.item, stato)
+				elseif al.item.name ~ "log" then
+					assegna_onexit_log (al.item, stato)
+				else
+					print ("ERRORE: l'azione >|" + al.item.name + "|< specificata in <onexit> per lo stato >|" + stato.id + "|< non e' ammissibile!%N")
+				end
+			end
+		end
+
 	assegna_onentry_assign (p_azione: XML_ELEMENT; stato: STATO)
 		do
---			if attached p_azione.attribute_by_name ("location") as luogo and attached p_azione.attribute_by_name ("expr") as valore then
 			if not attached p_azione.attribute_by_name ("location") as luogo then
 				print ("ERRORE: l'azione <assign> specificata in <onentry> per lo stato >|" + stato.id + "|< non ha attributo 'location'!%N")
 			elseif not variabili_booleane.has (luogo.value) and not variabili_intere.has (luogo.value) then
@@ -496,6 +510,30 @@ feature -- supporto inizializzazione
 			end
 		end
 
+	assegna_onexit_assign (p_azione: XML_ELEMENT; stato: STATO)
+		do
+			if not attached p_azione.attribute_by_name ("location") as luogo then
+				print ("ERRORE: l'azione <assign> specificata in <onexit> per lo stato >|" + stato.id + "|< non ha attributo 'location'!%N")
+			elseif not variabili_booleane.has (luogo.value) and not variabili_intere.has (luogo.value) then
+				print ("ERRORE: l'azione <assign> specificata in <onexit> per lo stato >|" + stato.id + "|< indica una 'location' di valore >|" + luogo.value + "|< che non esiste nel <datamodel> della SC!%N")
+			elseif not attached p_azione.attribute_by_name ("expr") as valore then
+				print ("ERRORE: l'azione <assign> specificata in <onexit> per lo stato >|" + stato.id + "|< non ha attributo 'expr'!%N")
+			elseif not valore_ammissibile(valore.value) then
+				print ("ERRORE: l'azione <assign> specificata in <onexit> per lo stato >|" + stato.id + "|< assegna alla <location> di nome >|" + luogo.value + "|< come <expr> il valore >|" + valore.value + "|< non intero e diverso sia da 'true' che da 'false' che da 'inc' che da 'dec'!%N")
+			else
+				stato.set_onexit (create {ASSEGNAZIONE}.crea_assegnazione (luogo.value, valore.value))
+--				if valore_booleano(valore.value) then
+--					stato.set_onexit (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, valore.value.as_lower ~ "true"))
+--				elseif valore_intero(valore.value) then
+--					stato.set_onexit (create {ASSEGNAZIONE}.make_with_data_and_value (luogo.value, valore.value.to_integer))
+--				elseif valore.value ~ "inc" then
+--					stato.set_onexit (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "inc"))
+--				elseif valore.value ~ "dec" then
+--					stato.set_onexit (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "dec"))
+--				end
+			end
+		end
+
 	assegna_onentry_log (p_azione: XML_ELEMENT; stato: STATO)
 		do
 			if attached p_azione.attribute_by_name ("name") as name then
@@ -505,35 +543,44 @@ feature -- supporto inizializzazione
 			end
 		end
 
-	istanzia_onexit (stato: STATO; elements: LIST [XML_ELEMENT])
+	assegna_onexit_log (p_azione: XML_ELEMENT; stato: STATO)
 		do
-			across elements as e
-			loop
-				if e.item.name ~ "assign" then
-					if attached e.item.attribute_by_name ("location") as luogo and attached e.item.attribute_by_name ("expr") as expr then
-						if expr.value ~ "false" then
-							stato.set_onexit (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, False))
-						elseif expr.value ~ "true" then
-							stato.set_onexit (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, True))
-						elseif expr.value ~ "inc" then
-							stato.set_onexit (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "inc"))
-						elseif expr.value ~ "dec" then
-							stato.set_onexit (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "dec"))
-						elseif expr.value.is_integer then
-							stato.set_onexit (create {ASSEGNAZIONE}.make_with_data_and_value (luogo.value, expr.value.to_integer))
-						end
-					end
-				elseif e.item.name ~ "log" then
-					if attached e.item.attribute_by_name ("name") as name then
-						stato.set_onexit (create {STAMPA}.make_with_text (name.value))
-					else
-						print("ERRORE: l'azione <log> specificata in <onexit> per lo stato >|" + stato.id + "|< non ha attributo 'name'!%N")
-					end
-				else
-					print ("ERRORE: l'azione >|" + e.item.name + "|< specificata in <onexit> per lo stato >|" + stato.id + "|< non e' ammissibile!%N")
-				end
+			if attached p_azione.attribute_by_name ("name") as name then
+				stato.set_onexit (create {STAMPA}.make_with_text (name.value))
+			else
+				print("ERRORE: l'azione <log> specificata in <onexit> per lo stato >|" + stato.id + "|< non ha attributo 'name'!%N")
 			end
 		end
+
+--	istanzia_onexit (stato: STATO; elements: LIST [XML_ELEMENT])
+--		do
+--			across elements as e
+--			loop
+--				if e.item.name ~ "assign" then
+--					if attached e.item.attribute_by_name ("location") as luogo and attached e.item.attribute_by_name ("expr") as expr then
+--						if expr.value ~ "false" then
+--							stato.set_onexit (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, False))
+--						elseif expr.value ~ "true" then
+--							stato.set_onexit (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, True))
+--						elseif expr.value ~ "inc" then
+--							stato.set_onexit (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "inc"))
+--						elseif expr.value ~ "dec" then
+--							stato.set_onexit (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "dec"))
+--						elseif expr.value.is_integer then
+--							stato.set_onexit (create {ASSEGNAZIONE}.make_with_data_and_value (luogo.value, expr.value.to_integer))
+--						end
+--					end
+--				elseif e.item.name ~ "log" then
+--					if attached e.item.attribute_by_name ("name") as name then
+--						stato.set_onexit (create {STAMPA}.make_with_text (name.value))
+--					else
+--						print("ERRORE: l'azione <log> specificata in <onexit> per lo stato >|" + stato.id + "|< non ha attributo 'name'!%N")
+--					end
+--				else
+--					print ("ERRORE: l'azione >|" + e.item.name + "|< specificata in <onexit> per lo stato >|" + stato.id + "|< non e' ammissibile!%N")
+--				end
+--			end
+--		end
 
 feature -- supporto generale
 
