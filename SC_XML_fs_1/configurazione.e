@@ -533,29 +533,52 @@ feature -- inizializzazione azioni
 			end
 		end
 
+	assegna_azione_assign (p_azione: XML_ELEMENT; transizione: TRANSIZIONE)
+		local
+			testo: STRING
+		do
+			if assign_ammissibile (p_azione).esito ~ "OK" then
+				transizione.azioni.force (create {ASSEGNAZIONE}.crea_assegnazione (assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore), transizione.azioni.count + 1)
+			else
+				testo := "nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|<"
+				stampa_assign_errata (p_azione, testo, assign_ammissibile (p_azione).esito, assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore)
+			end
+		end
+
+	assign_ammissibile (p_azione: XML_ELEMENT): attached TUPLE [esito: STRING; variabile: STRING; valore: STRING]
+		do
+			if not attached p_azione.attribute_by_name ("location") as luogo then
+				Result := ["senza_luogo", "", ""]
+			elseif not variabili_booleane.has (luogo.value) and not variabili_intere.has (luogo.value) then
+				Result := ["luogo_assente", luogo.value.as_string_8, ""]
+			elseif not attached p_azione.attribute_by_name ("expr") as valore then
+				Result := ["senza_valore", luogo.value.as_string_8, ""]
+			elseif not valore_ammissibile (valore.value) then
+				Result := ["valore_errato", luogo.value.as_string_8, valore.value.as_string_8]
+			else
+				Result := ["OK", luogo.value.as_string_8, valore.value.as_string_8]
+			end
+		end
+
+	stampa_assign_errata (p_azione: XML_ELEMENT; testo, esito, variabile, valore: STRING)
+		do
+			if esito ~ "senza_luogo" then
+				print ("ERRORE: l'azione <assign> " + testo + " non ha attributo 'location'!%N")
+			elseif esito ~ "luogo_assente" then
+				print ("ERRORE: l'azione <assign> " + testo + " specifica la 'location' >|" + variabile + "|< che non esiste nel <datamodel> della SC!%N")
+			elseif esito ~ "senza_valore" then
+				print ("ERRORE: l'azione <assign> " + testo + " non ha attributo 'expr'!%N")
+			elseif esito ~ "valore_errato" then
+				print ("ERRORE: l'azione <assign> " + testo + " assegna alla <location> >|" + variabile + "|< come <expr> il valore >|" + valore + "|< non ammissibile!%N")
+			end
+		end
+
 	nome_evento (transizione: TRANSIZIONE): STRING
 		do
 			if attached transizione.evento as te then
 				Result := te
 			else
 				Result := "NULL"
-			end
-		end
-
-	assegna_azione_assign (p_azione: XML_ELEMENT; transizione: TRANSIZIONE)
-		local
-			evento: STRING
-		do
-			if not attached p_azione.attribute_by_name ("location") as luogo then
-				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'location'!%N")
-			elseif not variabili_booleane.has (luogo.value) and not variabili_intere.has (luogo.value) then
-				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< indica una 'location' di valore >|" + luogo.value + "|< che non esiste nel <datamodel> della SC!%N")
-			elseif not attached p_azione.attribute_by_name ("expr") as valore then
-				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'expr'!%N")
-			elseif not valore_ammissibile (valore.value) then
-				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< assegna alla <location> di nome >|" + luogo.value + "|< come <expr> il valore >|" + valore.value + "|< non intero e diverso sia da 'true' che da 'false' che da 'inc' che da 'dec'!%N")
-			else
-				transizione.azioni.force (create {ASSEGNAZIONE}.crea_assegnazione (luogo.value, valore.value), transizione.azioni.count + 1)
 			end
 		end
 
@@ -603,32 +626,26 @@ feature -- inizializzazione onentry/onexit
 		end
 
 	assegna_onentry_assign (p_azione: XML_ELEMENT; stato: STATO)
+		local
+			testo: STRING
 		do
-			if not attached p_azione.attribute_by_name ("location") as luogo then
-				print ("ERRORE: l'azione <assign> specificata in <onentry> per lo stato >|" + stato.id + "|< non ha attributo 'location'!%N")
-			elseif not variabili_booleane.has (luogo.value) and not variabili_intere.has (luogo.value) then
-				print ("ERRORE: l'azione <assign> specificata in <onentry> per lo stato >|" + stato.id + "|< indica una 'location' di valore >|" + luogo.value + "|< che non esiste nel <datamodel> della SC!%N")
-			elseif not attached p_azione.attribute_by_name ("expr") as valore then
-				print ("ERRORE: l'azione <assign> specificata in <onentry> per lo stato >|" + stato.id + "|< non ha attributo 'expr'!%N")
-			elseif not valore_ammissibile (valore.value) then
-				print ("ERRORE: l'azione <assign> specificata in <onentry> per lo stato >|" + stato.id + "|< assegna alla <location> di nome >|" + luogo.value + "|< come <expr> il valore >|" + valore.value + "|< non intero e diverso sia da 'true' che da 'false' che da 'inc' che da 'dec'!%N")
+			if assign_ammissibile (p_azione).esito ~ "OK" then
+				stato.set_onentry (create {ASSEGNAZIONE}.crea_assegnazione (assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore))
 			else
-				stato.set_onentry (create {ASSEGNAZIONE}.crea_assegnazione (luogo.value, valore.value))
+				testo := "specificata in <onentry> per lo stato >|" + stato.id + "|<"
+				stampa_assign_errata (p_azione, testo, assign_ammissibile (p_azione).esito, assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore)
 			end
 		end
 
 	assegna_onexit_assign (p_azione: XML_ELEMENT; stato: STATO)
+		local
+			testo: STRING
 		do
-			if not attached p_azione.attribute_by_name ("location") as luogo then
-				print ("ERRORE: l'azione <assign> specificata in <onexit> per lo stato >|" + stato.id + "|< non ha attributo 'location'!%N")
-			elseif not variabili_booleane.has (luogo.value) and not variabili_intere.has (luogo.value) then
-				print ("ERRORE: l'azione <assign> specificata in <onexit> per lo stato >|" + stato.id + "|< indica una 'location' di valore >|" + luogo.value + "|< che non esiste nel <datamodel> della SC!%N")
-			elseif not attached p_azione.attribute_by_name ("expr") as valore then
-				print ("ERRORE: l'azione <assign> specificata in <onexit> per lo stato >|" + stato.id + "|< non ha attributo 'expr'!%N")
-			elseif not valore_ammissibile (valore.value) then
-				print ("ERRORE: l'azione <assign> specificata in <onexit> per lo stato >|" + stato.id + "|< assegna alla <location> di nome >|" + luogo.value + "|< come <expr> il valore >|" + valore.value + "|< non intero e diverso sia da 'true' che da 'false' che da 'inc' che da 'dec'!%N")
+			if assign_ammissibile (p_azione).esito ~ "OK" then
+				stato.set_onexit (create {ASSEGNAZIONE}.crea_assegnazione (assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore))
 			else
-				stato.set_onexit (create {ASSEGNAZIONE}.crea_assegnazione (luogo.value, valore.value))
+				testo := "specificata in <onexit> per lo stato >|" + stato.id + "|<"
+				stampa_assign_errata (p_azione, testo, assign_ammissibile (p_azione).esito, assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore)
 			end
 		end
 
