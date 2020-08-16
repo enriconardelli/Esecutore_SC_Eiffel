@@ -552,36 +552,6 @@ feature -- supporto inizializzazione
 			end
 		end
 
---	istanzia_onexit (stato: STATO; elements: LIST [XML_ELEMENT])
---		do
---			across elements as e
---			loop
---				if e.item.name ~ "assign" then
---					if attached e.item.attribute_by_name ("location") as luogo and attached e.item.attribute_by_name ("expr") as expr then
---						if expr.value ~ "false" then
---							stato.set_onexit (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, False))
---						elseif expr.value ~ "true" then
---							stato.set_onexit (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, True))
---						elseif expr.value ~ "inc" then
---							stato.set_onexit (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "inc"))
---						elseif expr.value ~ "dec" then
---							stato.set_onexit (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "dec"))
---						elseif expr.value.is_integer then
---							stato.set_onexit (create {ASSEGNAZIONE}.make_with_data_and_value (luogo.value, expr.value.to_integer))
---						end
---					end
---				elseif e.item.name ~ "log" then
---					if attached e.item.attribute_by_name ("name") as name then
---						stato.set_onexit (create {STAMPA}.make_with_text (name.value))
---					else
---						print("ERRORE: l'azione <log> specificata in <onexit> per lo stato >|" + stato.id + "|< non ha attributo 'name'!%N")
---					end
---				else
---					print ("ERRORE: l'azione >|" + e.item.name + "|< specificata in <onexit> per lo stato >|" + stato.id + "|< non e' ammissibile!%N")
---				end
---			end
---		end
-
 feature -- supporto generale
 
 	first_sub_state (element: XML_ELEMENT): STATO
