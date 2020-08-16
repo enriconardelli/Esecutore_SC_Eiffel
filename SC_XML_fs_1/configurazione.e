@@ -429,15 +429,7 @@ feature -- supporto inizializzazione
 			elseif not valore_ammissibile(valore.value) then
 				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< assegna alla <location> di nome >|" + luogo.value + "|< come <expr> il valore >|" + valore.value + "|< non intero e diverso sia da 'true' che da 'false' che da 'inc' che da 'dec'!%N")
 			else
-				if valore_booleano(valore.value) then
-					transizione.azioni.force (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, valore.value.as_lower ~ "true"), transizione.azioni.count+1)
-				elseif valore_intero(valore.value) then
-					transizione.azioni.force (create {ASSEGNAZIONE}.make_with_data_and_value (luogo.value, valore.value.to_integer), transizione.azioni.count+1)
-				elseif valore.value ~ "inc" then
-					transizione.azioni.force (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "inc"), transizione.azioni.count+1)
-				elseif valore.value ~ "dec" then
-					transizione.azioni.force (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "dec"), transizione.azioni.count+1)
-				end
+				transizione.azioni.force (create {ASSEGNAZIONE}.crea_assegnazione (luogo.value, valore.value), transizione.azioni.count+1)
 			end
 		end
 
