@@ -20,8 +20,10 @@ feature -- creazione
 			evento := Void
 			internal := False
 			condizione := "condizione_vuota"
+			-- AGGIUNTE FORK
 			fork:=False
 			create multi_target.make
+			-- FINE AGGIUNTE
 		end
 
 feature -- attributi
@@ -38,9 +40,13 @@ feature -- attributi
 
 	internal: BOOLEAN
 
+	--AGGIUNTE PER FORK
+
 	fork:BOOLEAN
 
 	multi_target: detachable LINKED_LIST [STATO]
+
+	--FINE AGGIUNTE
 
 feature -- setter
 
@@ -77,6 +83,8 @@ feature -- setter
 			internal := TRUE
 		end
 
+	-- AGGIUNTE PER FORK	
+
 	set_fork
 		do
 			fork := TRUE
@@ -88,6 +96,8 @@ feature -- setter
 			if attached multi_target as mt then mt.force(uno_stato) end
 			end
 		end
+
+	--FINE AGGIUNTE	
 
 
 feature -- check
