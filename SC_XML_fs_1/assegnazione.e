@@ -64,16 +64,6 @@ feature -- creazione parametrica
 		elseif valore_operazione (espressione) then
 			tipo_di_aggiornamento := espressione
 		end
---		Result := create {ASSEGNAZIONE}
---		if valore_booleano(espressione) then
---			Result := create {ASSEGNAZIONE}.make_with_cond_and_value (variabile, espressione.as_lower ~ "true")
---		elseif valore_intero(espressione) then
---			Result := create {ASSEGNAZIONE}.make_with_data_and_value (variabile, espressione.to_integer)
---		elseif espressione ~ "inc" then
---			Result := create {ASSEGNAZIONE}.make_with_data_and_type (variabile, "inc")
---		elseif espressione ~ "dec" then
---			Result := create {ASSEGNAZIONE}.make_with_data_and_type (variabile, "dec")
---		end
 	end
 
 feature -- modifica per booleani
