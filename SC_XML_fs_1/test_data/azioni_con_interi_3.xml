@@ -32,15 +32,15 @@
 				</state>
 				<state id="B2B"> 
 					<transition event="z" target="C" cond="L=10">
-						<assign expr="incr" location="M"/>
+						<assign expr="inc" location="M"/>
 					</transition>
 				</state>
 			</state>				
 		</parallel>
 		<state id="C" >
 			<onentry>
-				<assign expr="truse" location="K"/>
-				<assign expr="incr" location="M"/>
+				<assign expr="true" location="K"/>
+				<assign expr="inc" location="M"/>
 			</onentry>
 		</state>
 	</state>
