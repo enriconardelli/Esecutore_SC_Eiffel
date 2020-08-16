@@ -31,8 +31,8 @@ feature -- Test
 		do
 			nomi_files_prova [2] := nomi_files_prova [2] + "xor_eventi_1.txt"
 			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato nello stato corretto (A1b)", esecutore.conf_base_corrente.count = 1 and esecutore.conf_base_corrente[1].id.is_equal ("A1b"))
-			if attached esecutore.conf_base_corrente[1].genitore as sp then
+			assert ("ERRORE il sistema non ha terminato nello stato corretto (A1b)", esecutore.state_chart.conf_base.count = 1 and esecutore.state_chart.conf_base[1].id.is_equal ("A1b"))
+			if attached esecutore.state_chart.conf_base[1].genitore as sp then
 				assert ("ERRORE il sistema non ha istanziato correttamente gli stati (A-A1)", sp.id.is_equal ("A1"))
 			end
 		end
@@ -99,7 +99,7 @@ feature -- Test
 		do
 			nomi_files_prova [2] := nomi_files_prova [2] + "xor_eventi_2.txt"
 			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato nello stato corretto (B1)", esecutore.conf_base_corrente.count = 1 and esecutore.conf_base_corrente[1].id.is_equal ("B1"))
+			assert ("ERRORE il sistema non ha terminato nello stato corretto (B1)", esecutore.state_chart.conf_base.count = 1 and esecutore.state_chart.conf_base[1].id.is_equal ("B1"))
 		end
 
 	t_xor_giro_base_completo
@@ -108,7 +108,7 @@ feature -- Test
 		do
 			nomi_files_prova [2] := nomi_files_prova [2] + "xor_eventi_3.txt"
 			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato nello stato corretto (B2)", esecutore.conf_base_corrente.count = 1 and esecutore.conf_base_corrente[1].id.is_equal ("B2"))
+			assert ("ERRORE il sistema non ha terminato nello stato corretto (B2)", esecutore.state_chart.conf_base.count = 1 and esecutore.state_chart.conf_base[1].id.is_equal ("B2"))
 		end
 
 end

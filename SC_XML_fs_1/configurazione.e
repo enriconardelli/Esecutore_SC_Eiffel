@@ -12,8 +12,8 @@ create
 
 feature -- attributi
 
-	conf_base_iniziale: ARRAY [STATO]
-		-- l'insieme degli stati base da cui parte la statechart
+	conf_base: ARRAY [STATO]
+		-- l'insieme degli stati base nella configurazione della statechart
 
 	stati: HASH_TABLE [STATO, STRING]
 		-- rappresenta gli stati della statechart
@@ -35,7 +35,7 @@ feature -- creazione
 		do
 --			create stato_iniziale.make_with_id (create {STRING}.make_empty)
 --			stato_iniziale.set_final
-			create conf_base_iniziale.make_empty
+			create conf_base.make_empty
 			crea_albero (nome_SC)
 			create stati.make (1)
 			create variabili_booleane.make (1)
@@ -290,7 +290,7 @@ feature -- inizializzazione SC
 		end
 
 	assegna_conf_base_iniziale_radice (radice: XML_ELEMENT)
-		-- inizializza `conf_base_iniziale' in base a stato top iniziale e poi invoca inizializzazione ricorsiva con esso
+		-- inizializza `conf_base' in base a stato top iniziale e poi invoca inizializzazione ricorsiva con esso
 		-- NB: gli stati "top" della SC non hanno genitore
 		local
 			iniziale_SC: STATO
@@ -317,13 +317,13 @@ feature -- inizializzazione SC
 		end
 
 	assegna_conf_base_iniziale (stato: STATO)
-		-- assegna ricorsivamente gli stati a `conf_base_iniziale' a partire dallo stato gerarchico iniziale della SC
+		-- assegna ricorsivamente gli stati a `conf_base' a partire dallo stato gerarchico iniziale della SC
 		-- NB: ogni stato gerarchico della SC ha il campo `initial' non vuoto
 		do
 			stato.set_attivo
 			if stato.initial.is_empty then
 				-- `stato' è uno stato atomico
-				conf_base_iniziale.force (stato, conf_base_iniziale.count + 1)
+				conf_base.force (stato, conf_base.count + 1)
 			else -- `stato' è uno stato gerarchico e si scende in ricorsione
 				across
 					stato.initial as figli

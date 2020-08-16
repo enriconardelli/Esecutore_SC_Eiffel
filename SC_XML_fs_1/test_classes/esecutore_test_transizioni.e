@@ -30,24 +30,27 @@ feature {NONE} -- supporto
 
 feature -- Test routines
 
-	esecutore: detachable ESECUTORE
-
 	t_transizioni_legali_1
+		local
+			esecutore: ESECUTORE
 		do
 			nomi_files_prova [2] := nomi_files_prova [2] + "transizioni_eventi_1.txt"
 			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non termina negli stati corretti ( A1a A2b B1 )", esecutoresecutore.state_chart.conf_base.count = 3 and conf_has_state(esecutoresecutore.state_chart.conf_base,"A1a") and conf_has_state(esecutoresecutore.state_chart.conf_base,"A2b") and conf_has_state(esecutoresecutore.state_chart.conf_base,"B1") )
+			assert ("ERRORE il sistema non termina negli stati corretti ( A1a A2b B1 )", esecutore.state_chart.conf_base.count = 3 and conf_has_state(esecutore.state_chart.conf_base,"A1a") and conf_has_state(esecutore.state_chart.conf_base,"A2b") and conf_has_state(esecutore.state_chart.conf_base,"B1") )
 		end
 
 	t_transizioni_legali_2
+		local
+			esecutore: ESECUTORE
 		do
 			nomi_files_prova [2] := nomi_files_prova [2] + "transizioni_eventi_2.txt"
 			create esecutore.make (nomi_files_prova)
 			assert ("ERRORE il sistema non termina negli stati corretti ( A1a A2b B1 )", esecutore.state_chart.conf_base.count = 3 and conf_has_state(esecutore.state_chart.conf_base,"A1a") and conf_has_state(esecutore.state_chart.conf_base,"A2b") and conf_has_state(esecutore.state_chart.conf_base,"B1") )
-			end
 		end
 
 	t_transizioni_legali_3
+		local
+			esecutore: ESECUTORE
 		do
 			nomi_files_prova [2] := nomi_files_prova [2] + "transizioni_eventi_3.txt"
 			create esecutore.make (nomi_files_prova)
@@ -55,6 +58,8 @@ feature -- Test routines
 		end
 
 	t_transizioni_legali_4
+		local
+			esecutore: ESECUTORE
 		do
 			nomi_files_prova [2] := nomi_files_prova [2] + "transizioni_eventi_4.txt"
 			create esecutore.make (nomi_files_prova)
@@ -62,6 +67,8 @@ feature -- Test routines
 		end
 
 	t_transizioni_legali_5
+		local
+			esecutore: ESECUTORE
 		do
 			nomi_files_prova [2] := nomi_files_prova [2] + "transizioni_eventi_5.txt"
 			create esecutore.make (nomi_files_prova)
@@ -69,6 +76,8 @@ feature -- Test routines
 		end
 
 	t_transizioni_legali_6
+		local
+			esecutore: ESECUTORE
 		do
 			nomi_files_prova [2] := nomi_files_prova [2] + "transizioni_eventi_6.txt"
 			create esecutore.make (nomi_files_prova)
@@ -76,6 +85,8 @@ feature -- Test routines
 		end
 
 	t_transizioni_legali_7
+		local
+			esecutore: ESECUTORE
 		do
 			nomi_files_prova [2] := nomi_files_prova [2] + "transizioni_eventi_7.txt"
 			create esecutore.make (nomi_files_prova)
@@ -83,6 +94,8 @@ feature -- Test routines
 		end
 
 	t_transizioni_legali_8
+		local
+			esecutore: ESECUTORE
 		do
 			nomi_files_prova [2] := nomi_files_prova [2] + "transizioni_eventi_8.txt"
 			create esecutore.make (nomi_files_prova)
@@ -90,6 +103,8 @@ feature -- Test routines
 		end
 
 	t_transizioni_legali_9
+		local
+			esecutore: ESECUTORE
 		do
 			nomi_files_prova [2] := nomi_files_prova [2] + "transizioni_eventi_9.txt"
 			create esecutore.make (nomi_files_prova)
