@@ -21,6 +21,7 @@ feature -- creazione
 			internal := False
 			condizione := "condizione_vuota"
 			fork:=False
+			create multi_target.make
 		end
 
 feature -- attributi
@@ -38,6 +39,8 @@ feature -- attributi
 	internal: BOOLEAN
 
 	fork:BOOLEAN
+
+	multi_target: detachable LINKED_LIST [STATO]
 
 feature -- setter
 
@@ -78,6 +81,14 @@ feature -- setter
 		do
 			fork := TRUE
 		end
+
+	add_target(uno_stato: STATO)
+		do
+			if uno_stato/=target then
+			if attached multi_target as mt then mt.force(uno_stato) end
+			end
+		end
+
 
 feature -- check
 

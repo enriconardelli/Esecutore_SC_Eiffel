@@ -307,32 +307,35 @@ feature -- supporto inizializzazione
 				if e.item.name ~ "transition" then
 					debug ("SC_assegna_transizioni") stampa_elemento (e.item) end
 					if attached e.item.attribute_by_name ("target") as t then
-						across t.value.split(' ') as it
-						--scorro tutti i multitarget splittati e crea x transizioni
-						loop
-							if attached stati.item (it.item) as destinazione then
-								if not transizione_illegale (stato, destinazione) then
-									create transizione.make_with_target (destinazione, stato)
-									if attached e.item.attribute_by_name ("type") as type then
-										if type.value ~ "internal" and verifica_internal (transizione.sorgente, transizione.target) then
-											transizione.set_internal
-										end
+						-- AGGIUNTE PER COSTRUTTO FORK
+						if attached stati.item (t.value.split(' ').first) as destinazione then -- uso come primo target il primo che compare
+							if not transizione_illegale (stato, destinazione) then
+								create transizione.make_with_target (destinazione, stato)
+								if attached e.item.attribute_by_name ("type") as type then
+									if type.value ~ "internal" and verifica_internal (transizione.sorgente, transizione.target) then
+										transizione.set_internal
 									end
-									if  t.value.split(' ').count>1  --se c'è un multitarget la indico come transizione fork
-									then
-										transizione.set_fork
-									end
-									assegna_evento (e.item, transizione)
-									assegna_condizione (e.item, transizione)
-									assegna_azioni (e.item.elements, transizione)
-									stato.aggiungi_transizione (transizione)
-								else
-									print ("ERRORE: transizione non legale! ")
-									print ("da >|" + stato.id + "|< a >|" + destinazione.id + "|< %N")
 								end
+								if  t.value.split(' ').count>1  --se c'è un multitarget la indico come transizione fork
+								then
+									transizione.set_fork
+									across t.value.split(' ') as it  --scorro tutti i multitarget splittati e aggiungo i target						
+									loop
+									if attached stati.item(it.item) as s then transizione.add_target (s) end
+									end
+									
+								end
+						--FINE AGGIUNTE		
+								assegna_evento (e.item, transizione)
+								assegna_condizione (e.item, transizione)
+								assegna_azioni (e.item.elements, transizione)
+								stato.aggiungi_transizione (transizione)
 							else
-								print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value + "|< che non appartiene alla SC!%N")
+								print ("ERRORE: transizione non legale! ")
+								print ("da >|" + stato.id + "|< a >|" + destinazione.id + "|< %N")
 							end
+						else
+							print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value + "|< che non appartiene alla SC!%N")
 						end
 					else
 						print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")

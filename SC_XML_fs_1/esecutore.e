@@ -78,7 +78,15 @@ feature -- evoluzione della statechart
 						if attached transizione_corrente as tc and then transizioni_eseguibili.has(tc) then
 							esegui_azioni (tc, cbc.item)
 							trova_default (tc.target, prossima_conf_base)
-							aggiungi_paralleli (tc.target, prossima_conf_base)
+						-- MODIFICA PER CONSIDERARE I FORK
+						 if tc.fork and attached tc.multi_target as tcmt then
+						 	across tcmt as x loop
+						 		prossima_conf_base.force (x.item , prossima_conf_base.count + 1)
+						 		x.item.set_attivo
+						 	end
+						else aggiungi_paralleli (tc.target, prossima_conf_base)
+						end
+						-- FINE MODIFICA	
 						else
 							prossima_conf_base.force (cbc.item, prossima_conf_base.count + 1)
 						end
