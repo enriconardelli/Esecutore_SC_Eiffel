@@ -498,15 +498,7 @@ feature -- supporto inizializzazione
 			elseif not valore_ammissibile(valore.value) then
 				print ("ERRORE: l'azione <assign> specificata in <onentry> per lo stato >|" + stato.id + "|< assegna alla <location> di nome >|" + luogo.value + "|< come <expr> il valore >|" + valore.value + "|< non intero e diverso sia da 'true' che da 'false' che da 'inc' che da 'dec'!%N")
 			else
-				if valore_booleano(valore.value) then
-					stato.set_onentry (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, valore.value.as_lower ~ "true"))
-				elseif valore_intero(valore.value) then
-					stato.set_onentry (create {ASSEGNAZIONE}.make_with_data_and_value (luogo.value, valore.value.to_integer))
-				elseif valore.value ~ "inc" then
-					stato.set_onentry (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "inc"))
-				elseif valore.value ~ "dec" then
-					stato.set_onentry (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "dec"))
-				end
+				stato.set_onentry (create {ASSEGNAZIONE}.crea_assegnazione (luogo.value, valore.value))
 			end
 		end
 
@@ -522,15 +514,6 @@ feature -- supporto inizializzazione
 				print ("ERRORE: l'azione <assign> specificata in <onexit> per lo stato >|" + stato.id + "|< assegna alla <location> di nome >|" + luogo.value + "|< come <expr> il valore >|" + valore.value + "|< non intero e diverso sia da 'true' che da 'false' che da 'inc' che da 'dec'!%N")
 			else
 				stato.set_onexit (create {ASSEGNAZIONE}.crea_assegnazione (luogo.value, valore.value))
---				if valore_booleano(valore.value) then
---					stato.set_onexit (create {ASSEGNAZIONE}.make_with_cond_and_value (luogo.value, valore.value.as_lower ~ "true"))
---				elseif valore_intero(valore.value) then
---					stato.set_onexit (create {ASSEGNAZIONE}.make_with_data_and_value (luogo.value, valore.value.to_integer))
---				elseif valore.value ~ "inc" then
---					stato.set_onexit (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "inc"))
---				elseif valore.value ~ "dec" then
---					stato.set_onexit (create {ASSEGNAZIONE}.make_with_data_and_type (luogo.value, "dec"))
---				end
 			end
 		end
 
