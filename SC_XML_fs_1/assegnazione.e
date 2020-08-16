@@ -12,7 +12,7 @@ inherit
 	AZIONE
 
 create
-	make_with_cond_and_value, make_with_data_and_value, make_with_data_and_type, crea_assegnazione
+	crea_assegnazione
 
 feature --attributi
 
@@ -27,30 +27,6 @@ feature --attributi
 
 	tipo_di_aggiornamento: detachable STRING
 		-- incremento o decremento ('inc' o 'dec')
-
-feature -- creazione per booleani
-
-	make_with_cond_and_value (una_condizione: STRING; un_valore: BOOLEAN)
-		do
-			elemento_da_modificare := una_condizione
-			valore_bool_da_assegnare := un_valore
-		end
-
-feature -- creazione per interi
-
-	make_with_data_and_value (un_data: STRING; un_valore: INTEGER)
-		do
-			elemento_da_modificare := un_data
-			valore_int_da_assegnare := un_valore
-		end
-
-	make_with_data_and_type (un_data: STRING; un_tipo: STRING)
-		require
-			un_tipo ~ "inc" or un_tipo ~ "dec"
-		do
-			elemento_da_modificare := un_data
-			tipo_di_aggiornamento := un_tipo
-		end
 
 feature -- creazione parametrica
 
