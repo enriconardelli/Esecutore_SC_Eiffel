@@ -12,7 +12,7 @@ inherit
 	AZIONE
 
 create
-	make_with_cond_and_value, make_with_data_and_value, make_with_data_and_type
+	make_with_cond_and_value, make_with_data_and_value, make_with_data_and_type, crea_assegnazione
 
 feature --attributi
 
@@ -36,19 +36,6 @@ feature -- creazione per booleani
 			valore_bool_da_assegnare := un_valore
 		end
 
-	modifica_condizioni (condizioni: HASH_TABLE [BOOLEAN, STRING])
-		do
-			condizioni.replace (valore_bool_da_assegnare, elemento_da_modificare)
-		end
-
-	azione_su_booleano (condizioni: HASH_TABLE [BOOLEAN, STRING])
-		do
-			if condizioni.has (elemento_da_modificare) then
-				print ("  ASSIGN: " + elemento_da_modificare + " = " + valore_bool_da_assegnare.out + "%N")
-				modifica_condizioni(condizioni)
-			end
-		end
-
 feature -- creazione per interi
 
 	make_with_data_and_value (un_data: STRING; un_valore: INTEGER)
@@ -64,6 +51,47 @@ feature -- creazione per interi
 			elemento_da_modificare := un_data
 			tipo_di_aggiornamento := un_tipo
 		end
+
+feature -- creazione parametrica
+
+	crea_assegnazione (variabile, espressione: STRING)
+	do
+		elemento_da_modificare := variabile
+		if valore_booleano (espressione) then
+			valore_bool_da_assegnare := espressione.as_lower ~ "true"
+		elseif valore_intero (espressione) then
+			valore_int_da_assegnare := espressione.to_integer
+		elseif valore_operazione (espressione) then
+			tipo_di_aggiornamento := espressione
+		end
+--		Result := create {ASSEGNAZIONE}
+--		if valore_booleano(espressione) then
+--			Result := create {ASSEGNAZIONE}.make_with_cond_and_value (variabile, espressione.as_lower ~ "true")
+--		elseif valore_intero(espressione) then
+--			Result := create {ASSEGNAZIONE}.make_with_data_and_value (variabile, espressione.to_integer)
+--		elseif espressione ~ "inc" then
+--			Result := create {ASSEGNAZIONE}.make_with_data_and_type (variabile, "inc")
+--		elseif espressione ~ "dec" then
+--			Result := create {ASSEGNAZIONE}.make_with_data_and_type (variabile, "dec")
+--		end
+	end
+
+feature -- modifica per booleani
+
+	modifica_condizioni (condizioni: HASH_TABLE [BOOLEAN, STRING])
+		do
+			condizioni.replace (valore_bool_da_assegnare, elemento_da_modificare)
+		end
+
+	azione_su_booleano (condizioni: HASH_TABLE [BOOLEAN, STRING])
+		do
+			if condizioni.has (elemento_da_modificare) then
+				print ("  ASSIGN: " + elemento_da_modificare + " = " + valore_bool_da_assegnare.out + "%N")
+				modifica_condizioni(condizioni)
+			end
+		end
+
+feature -- modifica per interi
 
 	modifica_valori (valori_data: HASH_TABLE [INTEGER, STRING])
 		do
@@ -104,6 +132,23 @@ feature
 		do
 			svolgi (agent azione_su_booleano (condizioni))
 			svolgi (agent azione_su_intero (valori_data))
+		end
+
+feature -- supporto
+
+	valore_booleano (valore: STRING): BOOLEAN
+		do
+			Result := valore.as_lower ~ "true" or valore.as_lower ~ "false"
+		end
+
+	valore_intero (valore: STRING): BOOLEAN
+		do
+			Result := valore.is_integer
+		end
+
+	valore_operazione (valore: STRING): BOOLEAN
+		do
+			Result := valore.as_lower ~ "inc" or valore.as_lower ~ "dec"
 		end
 
 end
