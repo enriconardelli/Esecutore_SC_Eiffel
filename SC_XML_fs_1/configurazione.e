@@ -406,10 +406,10 @@ feature -- supporto inizializzazione
 			if not attached p_azione.attribute_by_name ("location") as luogo then
 				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'location'!%N")
 			elseif not variabili_booleane.has (luogo.value) and not variabili_intere.has (luogo.value) then
-				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< indica una 'location' di valore >|" + luogo.value + "|< che non esiste nelle condizioni e nei data della SC!%N")
+				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< indica una 'location' di valore >|" + luogo.value + "|< che non esiste nel <datamodel> della SC!%N")
 			elseif not attached p_azione.attribute_by_name ("expr") as valore then
 				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'expr'!%N")
-			elseif not (valore.value ~ "false" or valore.value ~ "true" or valore.value ~ "inc" or valore.value ~ "dec") and not valore.value.is_integer then
+			elseif not valore_ammissibile(valore.value) then
 				print ("ERRORE: l'azione <assign> nella transizione con evento >|" + evento + "|> da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< assegna alla <location> di nome >|" + luogo.value + "|< come <expr> il valore >|" + valore.value + "|< non intero e diverso sia da 'true' che da 'false' che da 'inc' che da 'dec'!%N")
 			else
 				if valore.value.as_lower ~ "false" then
@@ -649,6 +649,21 @@ feature -- supporto generale
 	valore_booleano (valore: READABLE_STRING_32): BOOLEAN
 		do
 			Result := valore.as_lower ~ "true" or valore.as_lower ~ "false"
+		end
+
+	valore_intero (valore: READABLE_STRING_32): BOOLEAN
+		do
+			Result := valore.is_integer
+		end
+
+	operazione (valore: READABLE_STRING_32): BOOLEAN
+		do
+			Result := valore.as_lower ~ "inc" or valore.as_lower ~ "dec"
+		end
+
+	valore_ammissibile (valore: READABLE_STRING_32): BOOLEAN
+		do
+			Result := valore_booleano(valore) or valore_intero(valore) or operazione(valore)
 		end
 
 		-- Aggiungere 'feature' per tracciare quanto accade scrivendo su file model_out.txt:
