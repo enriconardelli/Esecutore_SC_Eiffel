@@ -110,15 +110,16 @@ feature -- inizializzazione SC
 					if nome.value ~ "" or nome.value.is_whitespace then
 						print ("ERRORE: elemento <data> con 'id' >|" + nome.value + "|< di valore stringa vuota o blank!%N")
 					elseif attached {XML_ATTRIBUTE} data.item.attribute_by_name ("expr") as valore then
-						if valore_booleano (valore.value) then
-							variabili_booleane.extend (valore.value.as_lower ~ "true", nome.value)
-							debug ("SC_inizializza_variabili") print("Booleano: " + nome.value + " = " + variabili_booleane[nome.value].out + "%N") end
-						elseif valore_intero (valore.value) then
-							variabili_intere.extend (valore.value.to_integer, nome.value)
-							debug ("SC_inizializza_variabili") print("Intero: " + nome.value + " = " + variabili_intere[nome.value].out + "%N") end
-						else
-							print ("ERRORE: elemento <data> con id >|" + nome.value + "|< assegna a 'expr' il valore >|" + valore.value + "|< non booleano e non intero!%N")
-						end
+						assegna_variabile (nome.value, valore.value)
+--						if valore_booleano (valore.value) then
+--							variabili_booleane.extend (valore.value.as_lower ~ "true", nome.value)
+--							debug ("SC_inizializza_variabili") print("Booleano: " + nome.value + " = " + variabili_booleane[nome.value].out + "%N") end
+--						elseif valore_intero (valore.value) then
+--							variabili_intere.extend (valore.value.to_integer, nome.value)
+--							debug ("SC_inizializza_variabili") print("Intero: " + nome.value + " = " + variabili_intere[nome.value].out + "%N") end
+--						else
+--							print ("ERRORE: elemento <data> con id >|" + nome.value + "|< assegna a 'expr' il valore >|" + valore.value + "|< non booleano e non intero!%N")
+--						end
 					else
 						print ("ERRORE: elemento <data> con id >|" + nome.value + "|< senza attributo 'expr'!%N")
 					end
@@ -129,6 +130,19 @@ feature -- inizializzazione SC
 			-- aggiunge condizione_vuota che è sempre true e si applica alle transizioni che hanno condizione void (cfr `completa_stati')
 			variabili_booleane.extend (True, "condizione_vuota")
 		end
+
+	assegna_variabile (variabile, espressione: STRING)
+	do
+		if valore_booleano (espressione) then
+			variabili_booleane.extend (espressione.as_lower ~ "true", variabile)
+			debug ("SC_inizializza_variabili") print("Booleano: " + variabile + " = " + variabili_booleane[variabile].out + "%N") end
+		elseif valore_intero (espressione) then
+			variabili_intere.extend (espressione.to_integer, variabile)
+			debug ("SC_inizializza_variabili") print("Intero: " + variabile + " = " + variabili_intere[variabile].out + "%N") end
+		else
+			print ("ERRORE: elemento <data> con id >|" + variabile + "|< assegna a 'expr' il valore >|" + espressione + "|< non booleano e non intero!%N")
+		end
+	end
 
 	istanzia_final (elements: LIST [XML_ELEMENT])
 			-- istanzia nella SC lo stato <final>
