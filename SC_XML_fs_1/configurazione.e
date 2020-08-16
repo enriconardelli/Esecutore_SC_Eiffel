@@ -128,6 +128,7 @@ feature -- inizializzazione SC
 
 	assegna_variabile (variabile, espressione: STRING)
 		do
+		-- assegna il valore alla singola variabile del <datamodel>
 			if valore_booleano (espressione) then
 				variabili_booleane.extend (espressione.as_lower ~ "true", variabile)
 				debug ("SC_inizializza_variabili")
@@ -407,6 +408,89 @@ feature -- inizializzazione transizioni
 			end
 		end
 
+	transizione_illegale (p_sorgente, p_destinazione: STATO): BOOLEAN
+			-- transizione è illegale se il minimo antenato comune (mac) è <parallel> e:
+			-- sorgente e destinazione sono uno antenato dell'altro e sono tutti <parallel> dal più alto al genitore del più basso
+			-- mac è diverso da entrambi (attraversamento frontiera)
+		local
+			stato_mac, altro_stato: STATO
+		do
+			debug ("sc_transizione_illegale")
+				print ("transizione da >|" + p_sorgente.id + "|< a >|" + p_destinazione.id + "|< ")
+			end
+			stato_mac := minimo_antenato_comune (p_sorgente, p_destinazione)
+			if attached {STATO_AND} stato_mac then
+				if transizione_verticale (p_sorgente, p_destinazione) then
+					if stato_mac = p_sorgente then
+						altro_stato := p_destinazione
+					else
+						altro_stato := p_sorgente
+					end
+					if catena_di_paralleli (altro_stato, stato_mac) then
+						Result := True
+						debug ("sc_transizione_illegale")
+							print (" illegale: transizione con MAC <parallel> in verticale e catena di <parallel> %N")
+						end
+					end
+				else -- stato_mac è diverso da entrambi
+					Result := True
+					debug ("sc_transizione_illegale")
+						print (" illegale: transizione con MAC <parallel> in orizzontale tra discendenti del MAC(attraversa la frontiera)%N")
+					end
+				end
+			end
+		end
+
+	transizione_verticale (p_sorgente, p_destinazione: STATO): BOOLEAN
+			-- ritorna vero se `p_sorgente' e `p_destinazione' sono uno antenato dell'altro
+		do
+			Result := p_sorgente.antenato_di (p_destinazione) or p_destinazione.antenato_di (p_sorgente)
+		end
+
+	minimo_antenato_comune (p_sorgente, p_destinazione: STATO): detachable STATO
+			-- torna il minimo antenato comune eventualmente coincidente con uno dei due
+		local
+			antenati: HASH_TABLE [STRING, STRING]
+			corrente: STATO
+		do
+			create antenati.make (0)
+				-- "marca" tutti gli antenati di p_sorgente lui compreso
+			from
+				corrente := p_sorgente
+			until
+				corrente = Void
+			loop
+				antenati.put (corrente.id, corrente.id)
+				corrente := corrente.genitore
+			end
+				-- trova il più basso antenato di p_destinazione in "antenati" a partire da lui stesso
+			from
+				corrente := p_destinazione
+			until
+				corrente = Void or else antenati.has (corrente.id)
+			loop
+				corrente := corrente.genitore
+			end
+			Result := corrente
+		end
+
+	catena_di_paralleli (basso, alto: STATO): BOOLEAN
+			-- ritorna vero se dal genitore di `basso' c'è una catena continua di <parallel> fino ad `alto' che è il "mac"
+		local
+			corrente: STATO
+		do
+			corrente := basso.genitore
+			if corrente = alto then
+				Result := True
+			elseif attached {STATO_XOR} corrente then
+				Result := False
+			else
+				if attached corrente as c then
+					Result := catena_di_paralleli (c, alto)
+				end
+			end
+		end
+
 	verifica_internal (transizione: TRANSIZIONE): BOOLEAN
 		do
 			if (attached {STATO_XOR} transizione.sorgente as ts and then ts.antenato_di (transizione.target)) or else (transizione.target.antenato_di (transizione.sorgente)) or else (transizione.target = transizione.sorgente) then
@@ -589,89 +673,6 @@ feature -- supporto generale
 			if attached place_holder.item.attribute_by_name ("id") as id_attr then
 				if attached stati.item (id_attr.value) as sub_state then
 					Result := sub_state
-				end
-			end
-		end
-
-	transizione_verticale (p_sorgente, p_destinazione: STATO): BOOLEAN
-			-- ritorna vero se `p_sorgente' e `p_destinazione' sono uno antenato dell'altro
-		do
-			Result := p_sorgente.antenato_di (p_destinazione) or p_destinazione.antenato_di (p_sorgente)
-		end
-
-	catena_di_paralleli (basso, alto: STATO): BOOLEAN
-			-- ritorna vero se dal genitore di `basso' c'è una catena continua di <parallel> fino ad `alto' che è il "mac"
-		local
-			corrente: STATO
-		do
-			corrente := basso.genitore
-			if corrente = alto then
-				Result := True
-			elseif attached {STATO_XOR} corrente then
-				Result := False
-			else
-				if attached corrente as c then
-					Result := catena_di_paralleli (c, alto)
-				end
-			end
-		end
-
-	minimo_antenato_comune (p_sorgente, p_destinazione: STATO): detachable STATO
-			-- torna il minimo antenato comune eventualmente coincidente con uno dei due
-		local
-			antenati: HASH_TABLE [STRING, STRING]
-			corrente: STATO
-		do
-			create antenati.make (0)
-				-- "marca" tutti gli antenati di p_sorgente lui compreso
-			from
-				corrente := p_sorgente
-			until
-				corrente = Void
-			loop
-				antenati.put (corrente.id, corrente.id)
-				corrente := corrente.genitore
-			end
-				-- trova il più basso antenato di p_destinazione in "antenati" a partire da lui stesso
-			from
-				corrente := p_destinazione
-			until
-				corrente = Void or else antenati.has (corrente.id)
-			loop
-				corrente := corrente.genitore
-			end
-			Result := corrente
-		end
-
-	transizione_illegale (p_sorgente, p_destinazione: STATO): BOOLEAN
-			-- transizione è illegale se il minimo antenato comune (mac) è <parallel> e:
-			-- sorgente e destinazione sono uno antenato dell'altro e sono tutti <parallel> dal più alto al genitore del più basso
-			-- mac è diverso da entrambi (attraversamento frontiera)
-		local
-			stato_mac, altro_stato: STATO
-		do
-			debug ("sc_transizione_illegale")
-				print ("transizione da >|" + p_sorgente.id + "|< a >|" + p_destinazione.id + "|< ")
-			end
-			stato_mac := minimo_antenato_comune (p_sorgente, p_destinazione)
-			if attached {STATO_AND} stato_mac then
-				if transizione_verticale (p_sorgente, p_destinazione) then
-					if stato_mac = p_sorgente then
-						altro_stato := p_destinazione
-					else
-						altro_stato := p_sorgente
-					end
-					if catena_di_paralleli (altro_stato, stato_mac) then
-						Result := True
-						debug ("sc_transizione_illegale")
-							print (" illegale: transizione con MAC <parallel> in verticale e catena di <parallel> %N")
-						end
-					end
-				else -- stato_mac è diverso da entrambi
-					Result := True
-					debug ("sc_transizione_illegale")
-						print (" illegale: transizione con MAC <parallel> in orizzontale tra discendenti del MAC(attraversa la frontiera)%N")
-					end
 				end
 			end
 		end
