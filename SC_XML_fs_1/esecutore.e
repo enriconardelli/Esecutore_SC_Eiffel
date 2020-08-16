@@ -79,13 +79,13 @@ feature -- evoluzione della statechart
 							esegui_azioni (tc, cbc.item)
 							trova_default (tc.target, prossima_conf_base)
 						-- MODIFICA PER CONSIDERARE I FORK
-						 if tc.fork and attached tc.multi_target as tcmt then
-						 	across tcmt as x loop
-						 		prossima_conf_base.force (x.item , prossima_conf_base.count + 1)
-						 		aggiungi_paralleli(x.item,prossima_conf_base)
-						 	end
-						else aggiungi_paralleli (tc.target, prossima_conf_base)
-						end
+							 if tc.fork and attached tc.multi_target as tcmt then
+							 	across tcmt as x loop
+							 		prossima_conf_base.force (x.item , prossima_conf_base.count + 1)
+							 		aggiungi_paralleli(x.item,prossima_conf_base)
+							 	end
+							else aggiungi_paralleli (tc.target, prossima_conf_base)
+							end
 						-- FINE MODIFICA	
 						else
 							prossima_conf_base.force (cbc.item, prossima_conf_base.count + 1)
