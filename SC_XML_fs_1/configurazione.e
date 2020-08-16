@@ -717,16 +717,19 @@ feature -- supporto generale
 		end
 
 	valore_booleano (valore: READABLE_STRING_32): BOOLEAN
+		-- TODO: feature duplicata in ASSEGNAZIONE, da risolvere
 		do
 			Result := valore.as_lower ~ "true" or valore.as_lower ~ "false"
 		end
 
 	valore_intero (valore: READABLE_STRING_32): BOOLEAN
+		-- TODO: feature duplicata in ASSEGNAZIONE, da risolvere
 		do
 			Result := valore.is_integer
 		end
 
 	valore_operazione (valore: READABLE_STRING_32): BOOLEAN
+		-- TODO: feature duplicata in ASSEGNAZIONE, da risolvere
 		do
 			Result := valore.as_lower ~ "inc" or valore.as_lower ~ "dec"
 		end

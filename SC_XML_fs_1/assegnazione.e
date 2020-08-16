@@ -6,6 +6,7 @@ note
 
 class
 	ASSEGNAZIONE
+	-- TODO: rendere la classe astratta e creare due sottoclassi per booleani e interi
 
 inherit
 
