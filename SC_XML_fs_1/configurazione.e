@@ -131,14 +131,10 @@ feature -- inizializzazione SC
 		-- assegna il valore alla singola variabile del <datamodel>
 			if valore_booleano (espressione) then
 				variabili_booleane.extend (espressione.as_lower ~ "true", variabile)
-				debug ("SC_inizializza_variabili")
-					print ("Booleano: " + variabile + " = " + variabili_booleane [variabile].out + "%N")
-				end
+				debug ("SC_inizializza_variabili") print ("Booleano: " + variabile + " = " + variabili_booleane [variabile].out + "%N") end
 			elseif valore_intero (espressione) then
 				variabili_intere.extend (espressione.to_integer, variabile)
-				debug ("SC_inizializza_variabili")
-					print ("Intero: " + variabile + " = " + variabili_intere [variabile].out + "%N")
-				end
+				debug ("SC_inizializza_variabili") print ("Intero: " + variabile + " = " + variabili_intere [variabile].out + "%N") end
 			else
 				print ("ERRORE: elemento <data> con id >|" + variabile + "|< assegna a 'expr' il valore >|" + espressione + "|< non booleano e non intero!%N")
 			end
@@ -415,9 +411,7 @@ feature -- inizializzazione transizioni
 		local
 			stato_mac, altro_stato: STATO
 		do
-			debug ("sc_transizione_illegale")
-				print ("transizione da >|" + p_sorgente.id + "|< a >|" + p_destinazione.id + "|< ")
-			end
+			debug ("sc_transizione_illegale") print ("transizione da >|" + p_sorgente.id + "|< a >|" + p_destinazione.id + "|< ") end
 			stato_mac := minimo_antenato_comune (p_sorgente, p_destinazione)
 			if attached {STATO_AND} stato_mac then
 				if transizione_verticale (p_sorgente, p_destinazione) then
@@ -428,15 +422,11 @@ feature -- inizializzazione transizioni
 					end
 					if catena_di_paralleli (altro_stato, stato_mac) then
 						Result := True
-						debug ("sc_transizione_illegale")
-							print (" illegale: transizione con MAC <parallel> in verticale e catena di <parallel> %N")
-						end
+						debug ("sc_transizione_illegale") print (" illegale: transizione con MAC <parallel> in verticale e catena di <parallel> %N") end
 					end
 				else -- stato_mac è diverso da entrambi
 					Result := True
-					debug ("sc_transizione_illegale")
-						print (" illegale: transizione con MAC <parallel> in orizzontale tra discendenti del MAC(attraversa la frontiera)%N")
-					end
+					debug ("sc_transizione_illegale") print (" illegale: transizione con MAC <parallel> in orizzontale tra discendenti del MAC(attraversa la frontiera)%N") end
 				end
 			end
 		end
