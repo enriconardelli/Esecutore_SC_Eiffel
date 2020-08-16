@@ -79,7 +79,7 @@ feature -- supporto alla creazione
 				istanzia_final (f.elements)
 				istanzia_stati (f.elements, Void)
 				assegna_initial (f.elements)
-				assegna_conf_base_iniziale_radice (f)
+				inizializza_conf_base_radice (f)
 				completa_stati (f.elements)
 			end
 		end
@@ -287,8 +287,8 @@ feature -- inizializzazione SC
 			end
 		end
 
-	assegna_conf_base_iniziale_radice (radice: XML_ELEMENT)
-		-- inizializza `conf_base' in base a stato top iniziale e poi invoca inizializzazione ricorsiva con esso
+	inizializza_conf_base_radice (radice: XML_ELEMENT)
+		-- inizializza la radice di `conf_base' in base a stato top iniziale e poi invoca inizializzazione ricorsiva con esso
 		-- NB: gli stati "top" della SC non hanno genitore
 		local
 			iniziale_SC: STATO
@@ -308,15 +308,15 @@ feature -- inizializzazione SC
 				iniziale_SC := first_sub_state (radice)
 			end
 			if attached iniziale_SC as isc then
-				assegna_conf_base_iniziale (isc)
+				inizializza_conf_base (isc)
 			else
 				print ("------- stato iniziale della SC erroneamente specificato%N")
 			end
 		end
 
-	assegna_conf_base_iniziale (stato: STATO)
+	inizializza_conf_base (stato: STATO)
 		-- assegna ricorsivamente gli stati a `conf_base' a partire dallo stato gerarchico iniziale della SC
-		-- NB: ogni stato gerarchico della SC ha il campo `initial' non vuoto
+		-- NB: ogni stato gerarchico della SC ha la feature `initial' non vuota
 		do
 			stato.set_attivo
 			if stato.initial.is_empty then
@@ -326,7 +326,7 @@ feature -- inizializzazione SC
 				across
 					stato.initial as figli
 				loop
-					assegna_conf_base_iniziale (figli.item)
+					inizializza_conf_base (figli.item)
 				end
 			end
 		end
