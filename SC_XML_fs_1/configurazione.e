@@ -533,7 +533,7 @@ feature -- inizializzazione azioni
 			end
 		end
 
-	assign_ammissibile (p_azione: XML_ELEMENT): attached TUPLE [esito: STRING; variabile: STRING; valore: STRING]
+	assign_ammissibile (p_azione: XML_ELEMENT): TUPLE [esito: STRING; variabile: STRING; valore: STRING]
 		do
 			if not attached p_azione.attribute_by_name ("location") as luogo then
 				Result := ["senza_luogo", "", ""]
