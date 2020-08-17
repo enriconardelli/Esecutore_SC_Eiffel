@@ -45,45 +45,46 @@ feature -- creazione parametrica
 
 feature -- modifica per booleani
 
-	modifica_condizioni (condizioni: HASH_TABLE [BOOLEAN, STRING])
+	modifica_booleano (variabili_booleane: HASH_TABLE [BOOLEAN, STRING])
 		do
-			condizioni.replace (booleano_da_assegnare, elemento_da_modificare)
+			variabili_booleane.replace (booleano_da_assegnare, elemento_da_modificare)
+			debug("sc_modifica_variabili") print("  -> Booleano: " + elemento_da_modificare + " = " + variabili_booleane[elemento_da_modificare].out + "%N") end
 		end
 
-	azione_su_booleano (condizioni: HASH_TABLE [BOOLEAN, STRING])
+	azione_su_booleano (variabili_booleane: HASH_TABLE [BOOLEAN, STRING])
 		do
-			if condizioni.has (elemento_da_modificare) then
-				print ("  ASSIGN: " + elemento_da_modificare + " = " + booleano_da_assegnare.out + "%N")
-				modifica_condizioni(condizioni)
+			if variabili_booleane.has (elemento_da_modificare) then
+				modifica_booleano (variabili_booleane)
+				debug("sc_modifica_variabili") print ("  ASSIGN: " + elemento_da_modificare + " = " + booleano_da_assegnare.out + "%N") end
 			end
 		end
 
 feature -- modifica per interi
 
-	modifica_valori (valori_data: HASH_TABLE [INTEGER, STRING])
+	modifica_intero (variabili_intere: HASH_TABLE [INTEGER, STRING])
 		do
 			if attached tipo_di_aggiornamento as type then
 				if type ~ "inc" then
-					valori_data.replace (valori_data[elemento_da_modificare]+1, elemento_da_modificare)
-					print("  -> data " + elemento_da_modificare + " = " + valori_data[elemento_da_modificare].out + "%N")
+					variabili_intere.replace (variabili_intere[elemento_da_modificare]+1, elemento_da_modificare)
+					debug("sc_modifica_variabili") print("  -> Intero: " + elemento_da_modificare + " = " + variabili_intere[elemento_da_modificare].out + "%N") end
 				elseif type ~ "dec" then
-					valori_data.replace (valori_data[elemento_da_modificare]-1, elemento_da_modificare)
-					print("  -> data " + elemento_da_modificare + " = " + valori_data[elemento_da_modificare].out + "%N")
+					variabili_intere.replace (variabili_intere[elemento_da_modificare]-1, elemento_da_modificare)
+					debug("sc_modifica_variabili") print("  -> Intero: " + elemento_da_modificare + " = " + variabili_intere[elemento_da_modificare].out + "%N") end
 				end
 			else
-				valori_data.replace (intero_da_assegnare, elemento_da_modificare)
-				print("  -> data " + elemento_da_modificare + " = " + valori_data[elemento_da_modificare].out + "%N")
+				variabili_intere.replace (intero_da_assegnare, elemento_da_modificare)
+				debug("sc_modifica_variabili") print("  -> Intero: " + elemento_da_modificare + " = " + variabili_intere[elemento_da_modificare].out + "%N") end
 			end
 		end
 
-	azione_su_intero (valori_data: HASH_TABLE [INTEGER, STRING])
+	azione_su_intero (variabili_intere: HASH_TABLE [INTEGER, STRING])
 		do
-			if attached tipo_di_aggiornamento as type and valori_data.has (elemento_da_modificare) then
-				print ("  ASSIGN: " + type + " " + elemento_da_modificare + "%N")
-				modifica_valori(valori_data)
-			elseif valori_data.has (elemento_da_modificare) then
-				print ("  ASSIGN: " + elemento_da_modificare + " = " + intero_da_assegnare.out + "%N")
-				modifica_valori(valori_data)
+			if attached tipo_di_aggiornamento as type and variabili_intere.has (elemento_da_modificare) then
+				modifica_intero (variabili_intere)
+				debug("sc_modifica_variabili") print ("  ASSIGN: " + type + " " + elemento_da_modificare + "%N") end
+			elseif variabili_intere.has (elemento_da_modificare) then
+				modifica_intero (variabili_intere)
+				debug("sc_modifica_variabili") print ("  ASSIGN: " + elemento_da_modificare + " = " + intero_da_assegnare.out + "%N") end
 			end
 		end
 
@@ -95,10 +96,10 @@ feature
 --			action_with_integer (valori_data)
 --		end
 
-	esegui (condizioni: HASH_TABLE [BOOLEAN, STRING]; valori_data: HASH_TABLE [INTEGER, STRING])
+	esegui (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]; variabili_intere: HASH_TABLE [INTEGER, STRING])
 		do
-			svolgi (agent azione_su_booleano (condizioni))
-			svolgi (agent azione_su_intero (valori_data))
+			svolgi (agent azione_su_booleano (variabili_booleane))
+			svolgi (agent azione_su_intero (variabili_intere))
 		end
 
 feature -- supporto

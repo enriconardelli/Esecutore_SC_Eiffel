@@ -1,7 +1,7 @@
 note
-	description: "Summary description for {AZIONE}."
-	author: "Gabriele Cacchioni & Davide Canalis & Daniele Fakhoury & Eloisa Scarsella"
-	date: "9-04-2015"
+	description: "La classe generica per il contenuto eseguibile"
+	author: "EN + studenti corsi PSI"
+	date: "$Date$"
 	revision: "0"
 
 deferred class
@@ -13,7 +13,7 @@ feature -- generica
 --		deferred
 --		end
 
-	esegui (condizioni: HASH_TABLE [BOOLEAN, STRING]; valori_data: HASH_TABLE [INTEGER, STRING])
+	esegui (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]; variabili_intere: HASH_TABLE [INTEGER, STRING])
 		deferred
 		end
 
