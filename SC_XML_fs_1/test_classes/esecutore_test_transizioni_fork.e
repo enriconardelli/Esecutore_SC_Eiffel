@@ -89,6 +89,17 @@ feature --test
 			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A,B2,C )", esecutore.conf_base_corrente.count = 3 and conf_has_state(esecutore.conf_base_corrente,"A") and conf_has_state(esecutore.conf_base_corrente,"B2") and conf_has_state(esecutore.conf_base_corrente,"C") )
 		end
 
+	t_costrutto_fork_5
+	 --Filippo & Iezzi
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "costrutto_fork_5.xml"
+			nomi_files_prova [2] := test_data_dir + "costrutto_fork_eventi_con_fork.txt"
+			create esecutore.make (nomi_files_prova)
+			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A2,B11,B22 )", esecutore.conf_base_corrente.count = 3 and conf_has_state(esecutore.conf_base_corrente,"A2") and conf_has_state(esecutore.conf_base_corrente,"B11") and conf_has_state(esecutore.conf_base_corrente,"B22") )
+		end
+
 
 
 end
