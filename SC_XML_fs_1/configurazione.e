@@ -19,7 +19,7 @@ feature -- attributi
 		-- rappresenta gli stati della statechart
 
 	variabili: DATAMODEL
-		-- TODO: VARIAZIONE DA SPERIMENTARE rappresenta le variabili del datamodel associato alla statechart
+		-- rappresenta le variabili del datamodel associato alla statechart
 
 	creatore_di_assegna: ASSEGNA_CREATORE
 		-- creatore parametrico delle istanze di ASSEGNA
