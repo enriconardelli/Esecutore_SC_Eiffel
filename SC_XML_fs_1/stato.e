@@ -5,8 +5,8 @@
 	revision: ""
 
 -- TODO: classe da ristrutturare trasformandola in deferred con due sotto-classi per stati atomici e gerarchici,
--- STATO_ATOMICO è effective, mentre STATO_GERARCHIO è anch'essa deferred
--- ed ha come sotto-classi STATO_XOR e STATO_AND
+-- STATO_ATOMICO è effective, mentre STATO_GERARCHICO è anch'essa deferred
+-- ed ha come sotto-classi effective STATO_XOR e STATO_AND
 -- spostare feature figli, add_Figlio, make_with_parent in STATO_GERARCHICO
 
 class
@@ -257,6 +257,7 @@ feature -- routines forse inutili
 		-- ritorna lo stato a cui porta la transizione di indice minimo attivabile nella configurazione corrente con `evento_corrente'
 		-- Giulia Iezzi, Alessando Filippo 12/apr/2020; EN 21/apr/2020
 		-- non viene mai chiamata
+		-- TODO: da rimuovere quando si ristruttura la classe
 		do
 			across transizioni as t
 			loop
@@ -272,6 +273,7 @@ feature -- routines forse inutili
 	get_transition (evento_corrente: STRING): TRANSIZIONE
 		-- ritorna la transizione abilitata con `evento_corrente'
 		-- non viene mai invocata
+		-- TODO: da rimuovere quando si ristruttura la classe
 		local
 			index_count: INTEGER
 			index: INTEGER
