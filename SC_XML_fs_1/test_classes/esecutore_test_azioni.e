@@ -174,20 +174,4 @@ feature -- Test
 			assert("Errore D: non viene eseguita l' onexit di D", esecutore.state_chart.condizioni.item("on_exitD"))
 			assert("Errore T: non viene eseguita l' onexit di T", esecutore.state_chart.condizioni.item("on_exitT"))
 		end
-
-	t_storia_azioni_onentry
-	-- Arianna & Riccardo 05/07/2020
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "storia_con_parallelo.xml"
-  			nomi_files_prova [2] := test_data_dir + "storia_con_parallelo_eventi_1.txt"
-			create esecutore.make (nomi_files_prova)
-			assert("ERRORE_P: non viene eseguita l' onentry di P", esecutore.state_chart.condizioni.item ("on_entryP"))
-			assert("ERRORE_P2: non viene eseguita l' onentry di P2", esecutore.state_chart.condizioni.item ("on_entryP2"))
-			assert("ERRORE_A: non viene eseguita l' onentry di A", esecutore.state_chart.condizioni.item ("on_entryA"))
-			assert("ERRORE_B: non viene eseguita l' onentry di B", esecutore.state_chart.condizioni.item ("on_entryB"))
-			assert("ERRORE_A2: non viene eseguita l' onentry di A2", esecutore.state_chart.condizioni.item ("on_entryA2"))
-			assert("ERRORE_B2: non viene eseguita l' onentry di B2", esecutore.state_chart.condizioni.item ("on_entryB2"))
-		end
 end
