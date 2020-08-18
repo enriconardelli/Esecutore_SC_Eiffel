@@ -176,7 +176,7 @@ feature -- situazione
 			loop
 				transizione_corrente := transizioni [index_count]
 				evento_abilitato := transizione_corrente.check_evento (eventi_correnti)
-				condizione_abilitata := transizione_corrente.check_condizioni (variabili)
+				condizione_abilitata := transizione_corrente.check_condizione (variabili)
 				if evento_abilitato and condizione_abilitata then
 					Result := transizioni [index_count]
 				end
@@ -261,7 +261,7 @@ feature -- routines forse inutili
 			across transizioni as t
 			loop
 	        	if attivabile(t.item, evento_corrente, hash_delle_condizioni) then
-		        	Result := t.item.target
+		        	Result := t.item.destinazione
 		        end
 			end
 			if Result = Void then

@@ -32,7 +32,7 @@ feature -- attributi
 
     sorgente: STATO
 
-	target: STATO
+	destinazione: STATO
 
 	internal: BOOLEAN
 
@@ -56,7 +56,7 @@ feature -- setter
 		require
 			not_void: uno_stato /= Void
 		do
-			target := uno_stato
+			destinazione := uno_stato
 		end
 
 	set_sorgente (uno_stato: STATO)
@@ -68,7 +68,7 @@ feature -- setter
 
 	set_internal
 		do
-			internal := TRUE
+			internal := True
 		end
 
 feature -- check
@@ -77,38 +77,39 @@ feature -- check
 		do
 			if attached evento as e then
 				if istante.has (e) then
-					result:= TRUE
+					result:= True
 				end
 			else
-				result:= TRUE
+				result:= True
 			end
 		end
 
-	check_condizioni (variabili: DATAMODEL): BOOLEAN
+	check_condizione (variabili: DATAMODEL): BOOLEAN
 	do
-		result := check_condizione_booleano (variabili.booleane) and check_condizione_intero (variabili.intere)
+		result := check_condizione_booleana (variabili.booleane) and check_condizione_intera (variabili.intere)
 	end
 
-	check_condizione_booleano (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
-	-- Controlla se la condizione dell'evento è verificata.
+	check_condizione_booleana (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
+	-- Controlla se la condizione sulle variabili booleane è verificata.
 	do
 		if condizione ~ "condizione_vuota" then
-			result:= true
+			result:= True
 		else
 			if variabili_booleane.has (condizione) then
 				result:= variabili_booleane.item (condizione)
 			else
-				result:= true
+				result:= True
 			end
 		end
 	end
 
-	check_condizione_intero(variabili_intere: HASH_TABLE [INTEGER, STRING]): BOOLEAN
+	check_condizione_intera (variabili_intere: HASH_TABLE [INTEGER, STRING]): BOOLEAN
+	-- Controlla se la condizione sulle variabili intere è verificata.
 	local
 		loc: STRING
 		cond_num: INTEGER
 	do
-		Result := true
+		Result := True
 		if condizione.has ('<') then
 			loc := condizione.substring (1,   condizione.index_of ('<', 1) - 1)
 			if condizione.has_substring ("<=") then

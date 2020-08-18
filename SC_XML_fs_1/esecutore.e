@@ -71,8 +71,8 @@ feature -- evoluzione della statechart
 					loop
 						salva_storie(genitore_piu_grande(te.item))
 						esegui_azioni (te.item)
-						trova_default (te.item.target, prossima_conf_base)
-						aggiungi_paralleli (te.item.target, prossima_conf_base)
+						trova_default (te.item.destinazione, prossima_conf_base)
+						aggiungi_paralleli (te.item.destinazione, prossima_conf_base)
 					end
 					aggiungi_stati_attivi(prossima_conf_base)
 					prossima_conf_base := riordina_conf_base(prossima_conf_base)
@@ -214,7 +214,7 @@ feature -- evoluzione della statechart
 		do
 			Result := transizione.sorgente
 			if transizione.internal then
-				if transizione.sorgente.antenato_di (transizione.target) then
+				if transizione.sorgente.antenato_di (transizione.destinazione) then
 					across
 						transizione.sorgente.figli as figli
 					loop
@@ -224,7 +224,7 @@ feature -- evoluzione della statechart
 					end
 				else
 					across
-						transizione.target.figli as figli
+						transizione.destinazione.figli as figli
 					loop
 						if figli.item.attivo then
 							Result:=figli.item
@@ -232,7 +232,7 @@ feature -- evoluzione della statechart
 					end
 				end
 			else
-				contesto := trova_contesto (transizione.sorgente, transizione.target)
+				contesto := trova_contesto (transizione.sorgente, transizione.destinazione)
 				from
 					stato_temp := transizione.sorgente
 				until
@@ -351,17 +351,17 @@ feature -- esecuzione azioni
 			contesto: detachable STATO
 		do
 			if transizione.internal then
-				if transizione.sorgente.antenato_di (transizione.target) then
+				if transizione.sorgente.antenato_di (transizione.destinazione) then
 					contesto := transizione.sorgente
 				else
-					contesto := transizione.target
+					contesto := transizione.destinazione
 				end
 			else
-				contesto := trova_contesto (transizione.sorgente, transizione.target)
+				contesto := trova_contesto (transizione.sorgente, transizione.destinazione)
 			end
 			esegui_azioni_onexit (genitore_piu_grande(transizione))
 			esegui_azioni_transizione (transizione.azioni)
-			esegui_azioni_onentry (contesto, transizione.target)
+			esegui_azioni_onentry (contesto, transizione.destinazione)
 		end
 
 	esegui_onexit (p_stato_corrente: STATO)

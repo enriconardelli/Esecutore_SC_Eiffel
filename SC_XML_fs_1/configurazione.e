@@ -492,7 +492,7 @@ feature -- inizializzazione transizioni
 
 	verifica_internal (transizione: TRANSIZIONE): BOOLEAN
 		do
-			if (attached {STATO_XOR} transizione.sorgente as ts and then ts.antenato_di (transizione.target)) or else (transizione.target.antenato_di (transizione.sorgente)) or else (transizione.target = transizione.sorgente) then
+			if (attached {STATO_XOR} transizione.sorgente as ts and then ts.antenato_di (transizione.destinazione)) or else (transizione.destinazione.antenato_di (transizione.sorgente)) or else (transizione.destinazione = transizione.sorgente) then
 				Result := true
 			end
 		end
@@ -527,7 +527,7 @@ feature -- inizializzazione azioni
 				elseif al.item.name ~ "log" then
 					assegna_azione_log (al.item, transizione)
 				else
-					print ("AVVISO: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< specifica un'azione >|" + al.item.name + "|< sconosciuta!%N")
+					print ("AVVISO: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|< specifica un'azione >|" + al.item.name + "|< sconosciuta!%N")
 				end
 			end
 		end
@@ -545,7 +545,7 @@ feature -- inizializzazione azioni
 			if esito ~ "OK" then
 				transizione.azioni.force (creatore_di_assegna.crea_istanza (variabile, espressione), transizione.azioni.count + 1)
 			else
-				testo := "nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|<"
+				testo := "nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|<"
 				creatore_di_assegna.stampa_errata (testo, esito, variabile, espressione)
 			end
 		end
@@ -564,7 +564,7 @@ feature -- inizializzazione azioni
 			if attached p_azione.attribute_by_name ("name") as name then
 				transizione.azioni.force (create {STAMPA}.make_with_text (name.value), transizione.azioni.count + 1)
 			else
-				print ("ERRORE: l'azione <log> nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|< non ha attributo 'name'!%N")
+				print ("ERRORE: l'azione <log> nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|< non ha attributo 'name'!%N")
 			end
 		end
 
