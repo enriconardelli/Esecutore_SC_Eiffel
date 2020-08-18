@@ -109,8 +109,8 @@ feature -- inizializzazione SC
 				data_elements as data
 			loop
 				if attached {XML_ATTRIBUTE} data.item.attribute_by_name ("id") as nome then
-					if nome.value ~ "" or nome.value.is_whitespace then
-						print ("ERRORE: elemento <data> con 'id' >|" + nome.value + "|< di valore stringa vuota o blank!%N")
+					if id_illegittimo (nome.value) then
+						print ("ERRORE: elemento <data> con 'id' >|" + nome.value + "|< di valore stringa vuota o blank o 'NULL' !%N")
 					elseif attached {XML_ATTRIBUTE} data.item.attribute_by_name ("expr") as valore then
 						assegna_variabile (nome.value, valore.value)
 					else
@@ -120,8 +120,8 @@ feature -- inizializzazione SC
 					print ("ERRORE: elemento <data> senza attributo 'id'!%N")
 				end
 			end
-			-- aggiunge condizione_vuota che è sempre true e si applica alle transizioni che hanno condizione void (cfr `completa_stati')
-			variabili.booleane.extend (True, "condizione_vuota")
+			-- aggiunge variabile "NULL" che è sempre True e si applica alle transizioni che non specificano una condizione nel file del modello
+			variabili.booleane.extend (True, "NULL")
 		end
 
 	assegna_variabile (variabile, espressione: STRING)
@@ -486,7 +486,7 @@ feature -- inizializzazione transizioni
 
 	assegna_evento (transition: XML_ELEMENT; transizione: TRANSIZIONE)
 		do
-			-- TODO: capire se gestire l'assenza dell'evento con evento convenzionale "NULL" come si fa per condizione_vuota
+			-- TODO: capire se gestire l'assenza dell'evento con evento convenzionale "NULL" come si fa per le condizioni
 			if attached transition.attribute_by_name ("event") as event then
 				transizione.set_evento (event.value)
 			end
@@ -495,9 +495,13 @@ feature -- inizializzazione transizioni
 	assegna_condizione (transition: XML_ELEMENT; transizione: TRANSIZIONE)
 		do
 			if attached transition.attribute_by_name ("cond") as cond then
-				transizione.set_condizione (cond.value)
+				if id_illegittimo (cond.value) then
+					print ("ERRORE: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|< specifica una condizione di valore >|" + cond.value + "|< stringa vuota o blank o 'NULL' !%N")
+				else
+					transizione.set_condizione (cond.value)
+				end
 			else
-				transizione.set_condizione ("condizione_vuota")
+				transizione.set_condizione ("NULL")
 			end
 		end
 
@@ -635,6 +639,15 @@ feature -- inizializzazione onentry/onexit
 		end
 
 feature -- supporto generale
+
+	id_illegittimo (stringa: STRING): BOOLEAN
+		do
+			if stringa ~ "" or stringa.is_whitespace or stringa.as_lower ~ "null"  then
+				Result := True
+			else
+				Result := False
+			end
+		end
 
 	first_sub_state (element: XML_ELEMENT): STATO
 		local

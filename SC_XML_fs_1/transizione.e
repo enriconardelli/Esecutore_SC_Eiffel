@@ -19,7 +19,7 @@ feature -- creazione
             create azioni.make_empty
 			evento := Void
 			internal := False
-			condizione := "condizione_vuota"
+			condizione := "NULL"
 		end
 
 feature -- attributi
@@ -92,7 +92,7 @@ feature -- check
 	check_condizione_booleana (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
 	-- Controlla se la condizione sulle variabili booleane è verificata.
 	do
-		if condizione ~ "condizione_vuota" then
+		if condizione ~ "NULL" then
 			result:= True
 		else
 			if variabili_booleane.has (condizione) then
