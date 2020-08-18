@@ -45,7 +45,7 @@ feature -- azione
 	esegui (variabili: DATAMODEL)
 --	esegui (condizioni: HASH_TABLE [BOOLEAN, STRING]; valori_data: HASH_TABLE [INTEGER, STRING])
 		do
-			svolgi (agent stampa)
+			stampa
 		end
 
 end
