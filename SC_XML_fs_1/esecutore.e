@@ -200,7 +200,9 @@ feature -- evoluzione della statechart
 					i = sgt.initial.upper + 1
 				loop
 					if not sgt.initial [i].is_equal(target) then
-						trova_default (sgt.initial [i], prossima_conf_base)
+						--MODIFICHE FORK
+								trova_default (sgt.initial [i], prossima_conf_base)
+						--FINE MODIFICHE
 					end
 					i := i + 1
 				end
