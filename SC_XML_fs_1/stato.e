@@ -42,8 +42,6 @@ feature -- attributi
 	onExit: ARRAY [AZIONE]
 		-- le azioni eseguite all'uscita dallo stato (reazioni statiche exiting [xs] di Harel)
 
-	storia: detachable STORIA
-
 feature --creazione
 
 	make_with_id (un_id: STRING)
@@ -148,13 +146,6 @@ feature -- modifica
 			uno_stato_esistente: uno_stato /= Void
 		do
 			figli.force (uno_stato, figli.count + 1)
-		end
-
-	add_storia (una_storia: STORIA)
-		require
-			una_storia_esistente: una_storia /= Void
-		do
-			storia := una_storia
 		end
 
 feature -- situazione
