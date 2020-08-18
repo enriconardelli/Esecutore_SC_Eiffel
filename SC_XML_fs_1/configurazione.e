@@ -539,42 +539,6 @@ feature -- inizializzazione azioni
 				testo := "nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|<"
 				creatore_di_assegna.stampa_errata (testo, esito, variabile, espressione)
 			end
---			if assign_ammissibile (p_azione).esito ~ "OK" then
---				transizione.azioni.force (create {ASSEGNAZIONE}.make (assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore), transizione.azioni.count + 1)
---			else
---				testo := "nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|<"
---				stampa_assign_errata (p_azione, testo, assign_ammissibile (p_azione).esito, assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore)
---			end
-		end
-
-	assign_ammissibile (p_azione: XML_ELEMENT): TUPLE [esito: STRING; variabile: STRING; valore: STRING]
-		-- 	DA-RIMUOVERE
-		do
-			if not attached p_azione.attribute_by_name ("location") as luogo then
-				Result := ["senza_luogo", "", ""]
-			elseif not variabili_booleane.has (luogo.value) and not variabili_intere.has (luogo.value) then
-				Result := ["luogo_assente", luogo.value.as_string_8, ""]
-			elseif not attached p_azione.attribute_by_name ("expr") as valore then
-				Result := ["senza_valore", luogo.value.as_string_8, ""]
-			elseif not valore_ammissibile (valore.value) then
-				Result := ["valore_errato", luogo.value.as_string_8, valore.value.as_string_8]
-			else
-				Result := ["OK", luogo.value.as_string_8, valore.value.as_string_8]
-			end
-		end
-
-	stampa_assign_errata (p_azione: XML_ELEMENT; testo, esito, variabile, valore: STRING)
-		-- 	DA-RIMUOVERE
-		do
-			if esito ~ "senza_luogo" then
-				print ("ERRORE: l'azione <assign> " + testo + " non ha attributo 'location'!%N")
-			elseif esito ~ "luogo_assente" then
-				print ("ERRORE: l'azione <assign> " + testo + " specifica la 'location' >|" + variabile + "|< che non esiste nel <datamodel> della SC!%N")
-			elseif esito ~ "senza_valore" then
-				print ("ERRORE: l'azione <assign> " + testo + " non ha attributo 'expr'!%N")
-			elseif esito ~ "valore_errato" then
-				print ("ERRORE: l'azione <assign> " + testo + " assegna alla <location> >|" + variabile + "|< come <expr> il valore >|" + valore + "|< non ammissibile!%N")
-			end
 		end
 
 	nome_evento (transizione: TRANSIZIONE): STRING
@@ -642,12 +606,6 @@ feature -- inizializzazione onentry/onexit
 				testo := "specificata in <onentry> per lo stato >|" + stato.id + "|<"
 				creatore_di_assegna.stampa_errata (testo, esito, variabile, espressione)
 			end
---			if assign_ammissibile (p_azione).esito ~ "OK" then
---				stato.set_onentry (create {ASSEGNAZIONE}.make (assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore))
---			else
---				testo := "specificata in <onentry> per lo stato >|" + stato.id + "|<"
---				stampa_assign_errata (p_azione, testo, assign_ammissibile (p_azione).esito, assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore)
---			end
 		end
 
 	assegna_onexit_assign (p_azione: XML_ELEMENT; stato: STATO)
@@ -663,12 +621,6 @@ feature -- inizializzazione onentry/onexit
 				testo := "specificata in <onexit> per lo stato >|" + stato.id + "|<"
 				creatore_di_assegna.stampa_errata (testo, esito, variabile, espressione)
 			end
---			if assign_ammissibile (p_azione).esito ~ "OK" then
---				stato.set_onexit (create {ASSEGNAZIONE}.make (assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore))
---			else
---				testo := "specificata in <onexit> per lo stato >|" + stato.id + "|<"
---				stampa_assign_errata (p_azione, testo, assign_ammissibile (p_azione).esito, assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore)
---			end
 		end
 
 	assegna_onentry_log (p_azione: XML_ELEMENT; stato: STATO)
@@ -741,7 +693,6 @@ feature -- supporto generale
 		end
 
 	valore_attributo (element: XML_ELEMENT; attribute_name: STRING): STRING
-		-- 	DA-RIMUOVERE
 		do
 			create Result.make_empty
 			if attached element.attribute_by_name (attribute_name) as attr then
@@ -750,36 +701,19 @@ feature -- supporto generale
 		end
 
 	valore_booleano (valore: READABLE_STRING_32): BOOLEAN
-		-- 	DA-RIMUOVERE
-		-- TODO: feature duplicata in ASSEGNAZIONE, da risolvere
+		-- TODO: feature duplicata in ASSEGNA, da risolvere
 		do
 			Result := valore.as_lower ~ "true" or valore.as_lower ~ "false"
 		end
 
 	valore_intero (valore: READABLE_STRING_32): BOOLEAN
-		-- 	DA-RIMUOVERE
-		-- TODO: feature duplicata in ASSEGNAZIONE, da risolvere
+		-- TODO: feature duplicata in ASSEGNA, da risolvere
 		do
 			Result := valore.is_integer
 		end
 
-	valore_operazione (valore: READABLE_STRING_32): BOOLEAN
-		-- 	DA-RIMUOVERE
-		-- TODO: feature duplicata in ASSEGNAZIONE, da risolvere
-		do
-			Result := valore.as_lower ~ "inc" or valore.as_lower ~ "dec"
-		end
-
-	valore_ammissibile (valore: READABLE_STRING_32): BOOLEAN
-		-- 	DA-RIMUOVERE
-		do
-			Result := valore_booleano (valore) or valore_intero (valore) or valore_operazione (valore)
-		end
-
 		-- Aggiungere 'feature' per tracciare quanto accade scrivendo su file model_out.txt:
-		--la SC costruita dal programma (cioè il file model.xml letto)
-		--la configurazione iniziale in termini di stato e nomi-valori delle condizioni
-		--l'evoluzione della SC in termini di sequenza di quintuple:
-		--stato, evento, condizione, azione, target
+		--  l'evoluzione della SC in termini di sequenza di quintuple:
+		--  n_passo: configurazione_base, eventi, variabili (nomi e valori iniziali), azioni da eseguire
 
 end
