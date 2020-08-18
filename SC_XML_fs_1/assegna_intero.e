@@ -37,23 +37,39 @@ feature -- creazione parametrica
 
 feature -- modifica per interi
 
-	modifica_valore (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]; variabili_intere: HASH_TABLE [INTEGER, STRING])
+	modifica_valore (variabili: DATAMODEL)
+--	modifica_valore (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]; variabili_intere: HASH_TABLE [INTEGER, STRING])
 		do
-			if variabili_intere.has (elemento_da_modificare) then
+			if variabili.intere.has (elemento_da_modificare) then
 				if attached tipo_di_aggiornamento as type then
 					debug("sc_modifica_variabili") print("  ASSIGN: " + type + " " + elemento_da_modificare + "%N") end
 					if type ~ "inc" then
-						variabili_intere.replace (variabili_intere[elemento_da_modificare]+1, elemento_da_modificare)
+						variabili.intere.replace (variabili.intere[elemento_da_modificare]+1, elemento_da_modificare)
 					elseif type ~ "dec" then
-						variabili_intere.replace (variabili_intere[elemento_da_modificare]-1, elemento_da_modificare)
+						variabili.intere.replace (variabili.intere[elemento_da_modificare]-1, elemento_da_modificare)
 					end
-					debug("sc_modifica_variabili") print("  -> Intero: " + elemento_da_modificare + " = " + variabili_intere[elemento_da_modificare].out + "%N") end
+					debug("sc_modifica_variabili") print("  -> Intero: " + elemento_da_modificare + " = " + variabili.intere[elemento_da_modificare].out + "%N") end
 				else
 					debug("sc_modifica_variabili") print("  ASSIGN: " + intero_da_assegnare.out + " --> " + elemento_da_modificare + "%N") end
-					variabili_intere.replace (intero_da_assegnare, elemento_da_modificare)
-					debug("sc_modifica_variabili") print("  -> Intero: " + elemento_da_modificare + " = " + variabili_intere[elemento_da_modificare].out + "%N") end
+					variabili.intere.replace (intero_da_assegnare, elemento_da_modificare)
+					debug("sc_modifica_variabili") print("  -> Intero: " + elemento_da_modificare + " = " + variabili.intere[elemento_da_modificare].out + "%N") end
 				end
 			end
+--			if variabili_intere.has (elemento_da_modificare) then
+--				if attached tipo_di_aggiornamento as type then
+--					debug("sc_modifica_variabili") print("  ASSIGN: " + type + " " + elemento_da_modificare + "%N") end
+--					if type ~ "inc" then
+--						variabili_intere.replace (variabili_intere[elemento_da_modificare]+1, elemento_da_modificare)
+--					elseif type ~ "dec" then
+--						variabili_intere.replace (variabili_intere[elemento_da_modificare]-1, elemento_da_modificare)
+--					end
+--					debug("sc_modifica_variabili") print("  -> Intero: " + elemento_da_modificare + " = " + variabili_intere[elemento_da_modificare].out + "%N") end
+--				else
+--					debug("sc_modifica_variabili") print("  ASSIGN: " + intero_da_assegnare.out + " --> " + elemento_da_modificare + "%N") end
+--					variabili_intere.replace (intero_da_assegnare, elemento_da_modificare)
+--					debug("sc_modifica_variabili") print("  -> Intero: " + elemento_da_modificare + " = " + variabili_intere[elemento_da_modificare].out + "%N") end
+--				end
+--			end
 		end
 
 end

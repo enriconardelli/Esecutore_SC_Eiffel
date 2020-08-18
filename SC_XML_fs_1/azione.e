@@ -13,7 +13,8 @@ feature -- generica
 --		deferred
 --		end
 
-	esegui (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]; variabili_intere: HASH_TABLE [INTEGER, STRING])
+	esegui (variabili: DATAMODEL)
+--	esegui (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]; variabili_intere: HASH_TABLE [INTEGER, STRING])
 		deferred
 		end
 

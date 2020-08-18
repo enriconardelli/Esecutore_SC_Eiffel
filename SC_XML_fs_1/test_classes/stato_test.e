@@ -29,9 +29,11 @@ feature {NONE} -- Supporto
 
 	transizione_prova_senza_evento_1, transizione_prova_senza_evento_2, transizione_prova_senza_evento_3: TRANSIZIONE
 
-	cond_prova, cond_prova_senza_evento: HASH_TABLE [BOOLEAN, STRING]
+	cond_prova_senza_evento: HASH_TABLE [BOOLEAN, STRING]
 
-	data_prova: HASH_TABLE [INTEGER, STRING]
+--	cond_prova: HASH_TABLE [BOOLEAN, STRING]
+--	data_prova: HASH_TABLE [INTEGER, STRING]
+	variabili_prova: DATAMODEL
 
 	eventi_prova: LINKED_SET [STRING]
 
@@ -39,6 +41,7 @@ feature {NONE} -- Events
 
 	on_prepare
 		do
+			create variabili_prova.make
 			-- creo stato di prova con evento
 			-- ha 3 transizioni che portano su 3 target distinti
 			-- la transizione con evento1 e cond1 porta a target_1
@@ -64,12 +67,12 @@ feature {NONE} -- Events
 			transizione_prova_3.set_condizione ("cond3")
 			stato_prova.aggiungi_transizione (transizione_prova_3)
 
-			create cond_prova.make (3)
-			cond_prova.put (False, "cond1")
-			cond_prova.put (False, "cond2")
-			cond_prova.put (False, "cond3")
+--			create cond_prova.make (3)
+			variabili_prova.booleane.put (False, "cond1")
+			variabili_prova.booleane.put (False, "cond2")
+			variabili_prova.booleane.put (False, "cond3")
 
-			create data_prova.make (1)
+--			create data_prova.make (1)
 
 			--creo stato di prova senza evento
 			-- ha 3 transizioni che portano su 3 target distinti
@@ -108,9 +111,9 @@ feature -- Test routines
 
 	set_cond_prova (b1, b2, b3: BOOLEAN)
 		do
-			cond_prova.replace (b1, "cond1")
-			cond_prova.replace (b2, "cond2")
-			cond_prova.replace (b3, "cond3")
+			variabili_prova.booleane.replace (b1, "cond1")
+			variabili_prova.booleane.replace (b2, "cond2")
+			variabili_prova.booleane.replace (b3, "cond3")
 		end
 
 	set_cond_prova_senza_evento (b1, b2: BOOLEAN)
@@ -167,44 +170,44 @@ feature -- Test routines
 	local t:TRANSIZIONE
 		do
 			set_eventi_prova ("non", "non", "non")
-			t:=stato_prova.transizione_abilitata (eventi_prova, cond_prova, data_prova)
-			assert ("ERRORE: transizione abilitata con evento non_esistente", stato_prova.transizione_abilitata (eventi_prova, cond_prova, data_prova) = Void)
+			t:=stato_prova.transizione_abilitata (eventi_prova, variabili_prova)
+			assert ("ERRORE: transizione abilitata con evento non_esistente", stato_prova.transizione_abilitata (eventi_prova, variabili_prova) = Void)
 		end
 
 	t_abilitata_con_evento_unica
 		do
 			set_cond_prova (TRUE, TRUE, TRUE)
 			set_eventi_prova ("non", "evento2", "non")
-			assert ("ERRORE: transizione abilitata con evento unica non rilevata", stato_prova.transizione_abilitata (eventi_prova, cond_prova, data_prova) = transizione_prova_2)
+			assert ("ERRORE: transizione abilitata con evento unica non rilevata", stato_prova.transizione_abilitata (eventi_prova, variabili_prova) = transizione_prova_2)
 		end
 
 	t_abilitata_con_evento_molteplici
 		do
 			set_cond_prova (TRUE, FALSE, TRUE)
 			set_eventi_prova ("evento1", "evento2", "evento3")
-			assert ("ERRORE: transizione abilitata con evento molteplici non rivela quella corretta", stato_prova.transizione_abilitata (eventi_prova, cond_prova, data_prova) = transizione_prova_1)
+			assert ("ERRORE: transizione abilitata con evento molteplici non rivela quella corretta", stato_prova.transizione_abilitata (eventi_prova, variabili_prova) = transizione_prova_1)
 		end
 
 	t_attivabile_con_evento
 		do
 			set_cond_prova (TRUE, FALSE, FALSE)
-			assert ("la prima transizione attivabile non e' rilevata", stato_prova.attivabile (transizione_prova_1, "evento1", cond_prova))
+			assert ("la prima transizione attivabile non e' rilevata", stato_prova.attivabile (transizione_prova_1, "evento1", variabili_prova.booleane))
 			set_cond_prova (TRUE, TRUE, FALSE)
-			assert ("la seconda transizione attivabile non e' rilevata", stato_prova.attivabile (transizione_prova_2, "evento2", cond_prova))
+			assert ("la seconda transizione attivabile non e' rilevata", stato_prova.attivabile (transizione_prova_2, "evento2", variabili_prova.booleane))
 			set_cond_prova (FALSE, FALSE, TRUE)
-			assert ("la terza transizione attivabile non e' rilevata", stato_prova.attivabile (transizione_prova_3, "evento1", cond_prova))
+			assert ("la terza transizione attivabile non e' rilevata", stato_prova.attivabile (transizione_prova_3, "evento1", variabili_prova.booleane))
 		end
 
 	t_numero_transizioni_abilitate_con_evento_non_determinismo
 		do
 			set_cond_prova (TRUE, TRUE, TRUE)
-			assert ("ci sono due transizioni abilitate non rilevate", stato_prova.numero_transizioni_abilitate ("evento1", cond_prova) = 2)
+			assert ("ci sono due transizioni abilitate non rilevate", stato_prova.numero_transizioni_abilitate ("evento1", variabili_prova.booleane) = 2)
 		end
 
 	t_numero_transizioni_abilitate_con_evento_determinismo
 		do
 			set_cond_prova (TRUE, TRUE, FALSE)
-			assert ("unica transizione abilitata non rilevata", stato_prova.numero_transizioni_abilitate ("evento1", cond_prova) = 1)
+			assert ("unica transizione abilitata non rilevata", stato_prova.numero_transizioni_abilitate ("evento1", variabili_prova.booleane) = 1)
 		end
 
 end

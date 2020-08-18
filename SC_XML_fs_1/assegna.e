@@ -17,15 +17,18 @@ feature -- attributi
 
 feature -- modifica
 
-	modifica_valore (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]; variabili_intere: HASH_TABLE [INTEGER, STRING])
+	modifica_valore (variabili: DATAMODEL)
+--	modifica_valore (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]; variabili_intere: HASH_TABLE [INTEGER, STRING])
 		deferred
 		end
 
 feature -- esecuzione
 
-	esegui (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]; variabili_intere: HASH_TABLE [INTEGER, STRING])
+	esegui (variabili: DATAMODEL)
+--	esegui (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]; variabili_intere: HASH_TABLE [INTEGER, STRING])
 		do
-			modifica_valore (variabili_booleane, variabili_intere)
+			modifica_valore (variabili)
+--			modifica_valore (variabili_booleane, variabili_intere)
 		end
 
 end

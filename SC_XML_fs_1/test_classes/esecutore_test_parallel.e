@@ -30,7 +30,7 @@ feature -- Test
 			nomi_files_prova [2] := test_data_dir + "parallelo_condizioni_eventi.txt"
 			create esecutore.make (nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato negli stati corretti ( C )", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"C") )
-	 		assert ("ERRORE il sistema non impostato correttamente le condizioni", esecutore.state_chart.variabili_booleane.item ("alfa"))
+	 		assert ("ERRORE il sistema non impostato correttamente le condizioni", esecutore.state_chart.variabili.booleane.item ("alfa"))
 		end
 
 	t_entrata

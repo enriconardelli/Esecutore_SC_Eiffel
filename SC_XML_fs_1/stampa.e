@@ -42,7 +42,8 @@ feature -- azione
 --			print ("  LOG:   " + testo + "%N")
 --		end
 
-	esegui (condizioni: HASH_TABLE [BOOLEAN, STRING]; valori_data: HASH_TABLE [INTEGER, STRING])
+	esegui (variabili: DATAMODEL)
+--	esegui (condizioni: HASH_TABLE [BOOLEAN, STRING]; valori_data: HASH_TABLE [INTEGER, STRING])
 		do
 			svolgi (agent stampa)
 		end

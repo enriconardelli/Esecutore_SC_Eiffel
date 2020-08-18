@@ -159,7 +159,7 @@ feature -- modifica
 
 feature -- situazione
 
-	transizione_abilitata (eventi_correnti: LINKED_SET [STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]; data: HASH_TABLE [INTEGER, STRING]): detachable TRANSIZIONE
+	transizione_abilitata (eventi_correnti: LINKED_SET [STRING]; variabili: DATAMODEL): detachable TRANSIZIONE
 		local
 			index_count: INTEGER
 			transizione_corrente: detachable TRANSIZIONE
@@ -176,7 +176,7 @@ feature -- situazione
 			loop
 				transizione_corrente := transizioni [index_count]
 				evento_abilitato := transizione_corrente.check_evento (eventi_correnti)
-				condizione_abilitata := transizione_corrente.check_condizioni (condizioni, data)
+				condizione_abilitata := transizione_corrente.check_condizioni (variabili)
 				if evento_abilitato and condizione_abilitata then
 					Result := transizioni [index_count]
 				end
@@ -184,7 +184,7 @@ feature -- situazione
 			end
 			if Result = Void then
 				if attached genitore as sg then
-					Result := sg.transizione_abilitata (eventi_correnti, condizioni, data)
+					Result := sg.transizione_abilitata (eventi_correnti, variabili)
 				end
 			end
 		end

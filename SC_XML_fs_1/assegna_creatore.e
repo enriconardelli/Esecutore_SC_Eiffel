@@ -50,11 +50,11 @@ feature -- ammissibilità
 			Result := valore_booleano (espressione) or valore_intero (espressione) or valore_operazione (espressione)
 		end
 
-	ammissibile (p_azione: XML_ELEMENT; variabili_booleane: HASH_TABLE [BOOLEAN, STRING]; variabili_intere: HASH_TABLE [INTEGER, STRING]): TUPLE [esito: STRING; variabile: STRING; espressione: STRING]
+	ammissibile (p_azione: XML_ELEMENT; variabili: DATAMODEL): TUPLE [esito: STRING; variabile: STRING; espressione: STRING]
 		do
 			if not attached p_azione.attribute_by_name ("location") as luogo then
 				Result := ["senza_luogo", "", ""]
-			elseif not variabili_booleane.has (luogo.value) and not variabili_intere.has (luogo.value) then
+			elseif not variabili.booleane.has (luogo.value) and not variabili.intere.has (luogo.value) then
 				Result := ["luogo_assente", luogo.value.as_string_8, ""]
 			elseif not attached p_azione.attribute_by_name ("expr") as espressione then
 				Result := ["senza_valore", luogo.value.as_string_8, ""]

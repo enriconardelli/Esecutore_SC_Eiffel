@@ -84,26 +84,26 @@ feature -- check
 			end
 		end
 
-	check_condizioni (condizioni: HASH_TABLE [BOOLEAN, STRING]; data: HASH_TABLE [INTEGER, STRING]): BOOLEAN
+	check_condizioni (variabili: DATAMODEL): BOOLEAN
 	do
-		result := check_condizione_booleano (condizioni) and check_condizione_intero (data)
+		result := check_condizione_booleano (variabili.booleane) and check_condizione_intero (variabili.intere)
 	end
 
-	check_condizione_booleano (condizioni: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
+	check_condizione_booleano (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
 	-- Controlla se la condizione dell'evento è verificata.
 	do
 		if condizione ~ "condizione_vuota" then
 			result:= true
 		else
-			if condizioni.has (condizione) then
-				result:= condizioni.item (condizione)
+			if variabili_booleane.has (condizione) then
+				result:= variabili_booleane.item (condizione)
 			else
 				result:= true
 			end
 		end
 	end
 
-	check_condizione_intero(data: HASH_TABLE [INTEGER, STRING]): BOOLEAN
+	check_condizione_intero(variabili_intere: HASH_TABLE [INTEGER, STRING]): BOOLEAN
 	local
 		loc: STRING
 		cond_num: INTEGER
@@ -113,29 +113,29 @@ feature -- check
 			loc := condizione.substring (1,   condizione.index_of ('<', 1) - 1)
 			if condizione.has_substring ("<=") then
 				cond_num := condizione.substring (condizione.index_of ('<', 1) + 2, condizione.count).to_integer
-				Result := data.item (loc) <= cond_num
+				Result := variabili_intere.item (loc) <= cond_num
 			else
 				cond_num := condizione.substring ( condizione.index_of ('<', 1) + 1, condizione.count).to_integer
-				Result := data.item (loc) < cond_num
+				Result := variabili_intere.item (loc) < cond_num
 			end
 		elseif condizione.has ('>') then
 			loc := condizione.substring (1,  condizione.index_of ('>', 1) - 1)
 			if condizione.has_substring (">=") then
 				cond_num := condizione.substring (condizione.index_of ('>', 1) + 2, condizione.count).to_integer
-				Result := data.item (loc) >= cond_num
+				Result := variabili_intere.item (loc) >= cond_num
 			else
 				cond_num := condizione.substring ( condizione.index_of ('>', 1) + 1, condizione.count).to_integer
-				Result := data.item (loc) > cond_num
+				Result := variabili_intere.item (loc) > cond_num
 			end
 		elseif condizione.has ('=') then
 			if condizione.has_substring ("/=") then
 				loc := condizione.substring (1,   condizione.index_of ('/', 1) - 1)
 				cond_num := condizione.substring (condizione.index_of ('/', 1) + 2, condizione.count).to_integer
-				Result := data.item (loc) /= cond_num
+				Result := variabili_intere.item (loc) /= cond_num
 			else
 				loc := condizione.substring (1,  condizione.index_of ('=', 1) - 1)
 				cond_num := condizione.substring ( condizione.index_of ('=', 1) + 1, condizione.count).to_integer
-				Result := data.item (loc) = cond_num
+				Result := variabili_intere.item (loc) = cond_num
 			end
 		end
 	end
