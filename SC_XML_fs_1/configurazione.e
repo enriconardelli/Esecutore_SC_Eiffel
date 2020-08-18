@@ -24,12 +24,6 @@ feature -- attributi
 	creatore_di_assegna: ASSEGNA_CREATORE
 		-- creatore parametrico delle istanze di ASSEGNA
 
---	variabili_booleane: HASH_TABLE [BOOLEAN, STRING]
---		-- rappresenta le variabili (cioè i <data> del <datamodel>) di tipo booleano e il loro valore
-
---	variabili_intere: HASH_TABLE [INTEGER, STRING]
---		-- rappresenta le variabili (cioè i <data> del <datamodel>) di tipo intero e il loro valore
-
 	albero: XML_CALLBACKS_NULL_FILTER_DOCUMENT
 		-- rappresenta sotto forma di un albero XML la SC letta dal file
 
@@ -44,8 +38,6 @@ feature -- creazione
 			crea_albero (nome_SC)
 			create stati.make (1)
 			create variabili.make
---			create variabili_booleane.make (1)
---			create variabili_intere.make (1)
 			crea_stati_e_condizioni
 		end
 
@@ -130,7 +122,6 @@ feature -- inizializzazione SC
 			end
 			-- aggiunge condizione_vuota che è sempre true e si applica alle transizioni che hanno condizione void (cfr `completa_stati')
 			variabili.booleane.extend (True, "condizione_vuota")
---			variabili_booleane.extend (True, "condizione_vuota")
 		end
 
 	assegna_variabile (variabile, espressione: STRING)
@@ -139,13 +130,9 @@ feature -- inizializzazione SC
 			if valore_booleano (espressione) then
 				variabili.booleane.extend (espressione.as_lower ~ "true", variabile)
 				debug ("SC_inizializza_variabili") print ("Booleano: " + variabile + " = " + variabili.booleane [variabile].out + "%N") end
---				variabili_booleane.extend (espressione.as_lower ~ "true", variabile)
---				debug ("SC_inizializza_variabili") print ("Booleano: " + variabile + " = " + variabili_booleane [variabile].out + "%N") end
 			elseif valore_intero (espressione) then
 				variabili.intere.extend (espressione.to_integer, variabile)
 				debug ("SC_inizializza_variabili") print ("Intero: " + variabile + " = " + variabili.intere [variabile].out + "%N") end
---				variabili_intere.extend (espressione.to_integer, variabile)
---				debug ("SC_inizializza_variabili") print ("Intero: " + variabile + " = " + variabili_intere [variabile].out + "%N") end
 			else
 				print ("ERRORE: elemento <data> con id >|" + variabile + "|< assegna a 'expr' il valore >|" + espressione + "|< non booleano e non intero!%N")
 			end
@@ -539,9 +526,6 @@ feature -- inizializzazione azioni
 			esito := creatore_di_assegna.ammissibile (p_azione, variabili).esito
 			variabile := creatore_di_assegna.ammissibile (p_azione, variabili).variabile
 			espressione := creatore_di_assegna.ammissibile (p_azione, variabili).espressione
---			esito := creatore_di_assegna.ammissibile (p_azione, variabili_booleane, variabili_intere).esito
---			variabile := creatore_di_assegna.ammissibile (p_azione, variabili_booleane, variabili_intere).variabile
---			espressione := creatore_di_assegna.ammissibile (p_azione, variabili_booleane, variabili_intere).espressione
 			if esito ~ "OK" then
 				transizione.azioni.force (creatore_di_assegna.crea_istanza (variabile, espressione), transizione.azioni.count + 1)
 			else
@@ -609,9 +593,6 @@ feature -- inizializzazione onentry/onexit
 			esito := creatore_di_assegna.ammissibile (p_azione, variabili).esito
 			variabile := creatore_di_assegna.ammissibile (p_azione, variabili).variabile
 			espressione := creatore_di_assegna.ammissibile (p_azione, variabili).espressione
---			esito := creatore_di_assegna.ammissibile (p_azione, variabili_booleane, variabili_intere).esito
---			variabile := creatore_di_assegna.ammissibile (p_azione, variabili_booleane, variabili_intere).variabile
---			espressione := creatore_di_assegna.ammissibile (p_azione, variabili_booleane, variabili_intere).espressione
 			if esito ~ "OK" then
 				stato.set_onentry (creatore_di_assegna.crea_istanza (variabile, espressione))
 			else
@@ -627,9 +608,6 @@ feature -- inizializzazione onentry/onexit
 			esito := creatore_di_assegna.ammissibile (p_azione, variabili).esito
 			variabile := creatore_di_assegna.ammissibile (p_azione, variabili).variabile
 			espressione := creatore_di_assegna.ammissibile (p_azione, variabili).espressione
---			esito := creatore_di_assegna.ammissibile (p_azione, variabili_booleane, variabili_intere).esito
---			variabile := creatore_di_assegna.ammissibile (p_azione, variabili_booleane, variabili_intere).variabile
---			espressione := creatore_di_assegna.ammissibile (p_azione, variabili_booleane, variabili_intere).espressione
 			if esito ~ "OK" then
 				stato.set_onexit (creatore_di_assegna.crea_istanza (variabile, espressione))
 			else

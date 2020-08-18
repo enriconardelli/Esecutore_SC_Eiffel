@@ -31,8 +31,6 @@ feature {NONE} -- Supporto
 
 	cond_prova_senza_evento: HASH_TABLE [BOOLEAN, STRING]
 
---	cond_prova: HASH_TABLE [BOOLEAN, STRING]
---	data_prova: HASH_TABLE [INTEGER, STRING]
 	variabili_prova: DATAMODEL
 
 	eventi_prova: LINKED_SET [STRING]
@@ -42,6 +40,7 @@ feature {NONE} -- Events
 	on_prepare
 		do
 			create variabili_prova.make
+
 			-- creo stato di prova con evento
 			-- ha 3 transizioni che portano su 3 target distinti
 			-- la transizione con evento1 e cond1 porta a target_1
@@ -67,12 +66,9 @@ feature {NONE} -- Events
 			transizione_prova_3.set_condizione ("cond3")
 			stato_prova.aggiungi_transizione (transizione_prova_3)
 
---			create cond_prova.make (3)
 			variabili_prova.booleane.put (False, "cond1")
 			variabili_prova.booleane.put (False, "cond2")
 			variabili_prova.booleane.put (False, "cond3")
-
---			create data_prova.make (1)
 
 			--creo stato di prova senza evento
 			-- ha 3 transizioni che portano su 3 target distinti

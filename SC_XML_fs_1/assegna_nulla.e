@@ -21,7 +21,6 @@ feature
 		end
 
 	modifica_valore (variabili: DATAMODEL)
---	modifica_valore (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]; variabili_intere: HASH_TABLE [INTEGER, STRING])
 		do
 			-- la classe esiste affinché la feature crea_istanza di ASSEGNA possa restituire un valore attached
 		end

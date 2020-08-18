@@ -66,7 +66,6 @@ feature -- evoluzione della statechart
 					stampa_conf_corrente (istante)
 					create prossima_conf_base.make_empty
 					transizioni_eseguibili:= trova_transizioni_eseguibili(eventi_correnti, state_chart.variabili)
---					transizioni_eseguibili:= trova_transizioni_eseguibili(eventi_correnti, state_chart.variabili_booleane, state_chart.variabili_intere)
 					across transizioni_eseguibili as te
 					loop
 						salva_storie(genitore_piu_grande(te.item))
@@ -158,7 +157,6 @@ feature -- evoluzione della statechart
 		end
 
 	trova_transizioni_eseguibili(evento: LINKED_SET[STRING]; variabili: DATAMODEL): ARRAY[TRANSIZIONE]
---	trova_transizioni_eseguibili(evento: LINKED_SET[STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]; data: HASH_TABLE [INTEGER, STRING]): ARRAY[TRANSIZIONE]
 		-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
 		-- restituisce l'array di transizioni che possono essere eseguite nello stato attuale del sistema
 		-- rispettando le specifiche SCXML dell'ordine degli stati nel file .xml e della gerarchia (modello object-oriented)
@@ -170,7 +168,6 @@ feature -- evoluzione della statechart
 		do
 			create transizioni.make_empty
 			sorgenti := sorgenti_ordinate(evento, variabili)
---			sorgenti := sorgenti_ordinate(evento, variabili.booleane, variabili.intere)
 			from
 				i:=sorgenti.lower
 			until
@@ -179,7 +176,6 @@ feature -- evoluzione della statechart
 				if i = sorgenti.upper or else not sorgenti[i].antenato_di(sorgenti[i+1]) then
 					-- una sorgente che contiene la successiva non deve essere eseguita
 					if attached sorgenti[i].transizione_abilitata (evento, variabili) as ta then
---					if attached sorgenti[i].transizione_abilitata (evento, variabili.booleane, variabili.intere) as ta then
 						if attached uscita_precedente implies genitore_piu_grande(ta).incomparabile_con(uscita_precedente) then
 							-- impedendo di uscire dal parallelo se con lo stesso evento non sono precedentemente uscito
 							transizioni.force (ta,transizioni.count+1)
@@ -371,7 +367,6 @@ feature -- esecuzione azioni
 					p_stato_corrente.onexit as ox
 				loop
 					ox.item.esegui (state_chart.variabili)
---					ox.item.esegui (state_chart.variabili_booleane, state_chart.variabili_intere)
 				end
 			end
 		end
@@ -383,7 +378,6 @@ feature -- esecuzione azioni
 					p_stato_corrente.onentry as oe
 				loop
 					oe.item.esegui (state_chart.variabili)
---					oe.item.esegui (state_chart.variabili_booleane, state_chart.variabili_intere)
 				end
 			end
 		end
@@ -414,7 +408,6 @@ feature -- esecuzione azioni
 				i = p_azioni.upper + 1
 			loop
 				p_azioni [i].esegui (state_chart.variabili)
---				p_azioni [i].esegui (state_chart.variabili_booleane, state_chart.variabili_intere)
 				i := i + 1
 			end
 		end
