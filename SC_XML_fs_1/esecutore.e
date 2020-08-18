@@ -209,6 +209,7 @@ feature -- evoluzione della statechart
 				aggiungi_paralleli (sgt, prossima_conf_base)
 			end
 		end
+		--prova
 
 	trova_default (stato: STATO; prossima_conf_base: ARRAY [STATO])
 		local
