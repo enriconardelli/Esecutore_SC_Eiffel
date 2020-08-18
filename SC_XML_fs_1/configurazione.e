@@ -100,10 +100,10 @@ feature -- inizializzazione SC
 									if valore_booleano(valore.value) then
 										condizioni.extend (valore.value.as_lower ~ "true", nome.value)
 									else
-										print ("ERRORE: elemento <data> con id >|" + nome.value + "<| assegna a 'expr' il valore >|" + valore.value + "<| non booleano!%N")
+										print ("ERRORE: elemento <data> con id >|" + nome.value + "|< assegna a 'expr' il valore >|" + valore.value + "|< non booleano!%N")
 									end
 								else
-									print ("ERRORE: elemento <data> con id >|" + nome.value + "<| senza attributo 'expr'!%N")
+									print ("ERRORE: elemento <data> con id >|" + nome.value + "|< senza attributo 'expr'!%N")
 								end
 							else
 								print ("ERRORE: elemento <data> senza attributo 'id'!%N")
@@ -132,6 +132,7 @@ feature -- inizializzazione SC
 		-- crea gli stati assegnando loro l'eventuale genitore e gli eventuali figli
 		local
 			stato_temp: STATO
+			storia_temp: STORIA
 		do
 			across elements as e
 			loop
@@ -158,6 +159,25 @@ feature -- inizializzazione SC
 										stato_temp := create {STATO_XOR}.make_with_id (id_attr.value)
 									end
 									stati.extend (stato_temp, id_attr.value)
+
+									if attached{STATO_XOR} stato_temp as st_xor and then e.item.has_element_by_name ("history") and then attached e.item.element_by_name ("history") as his then
+										-- se uno stato composto ha più di una storia viene salvata solo la prima
+										if attached his.attribute_by_name ("id") as his_id then
+											if attached his.attribute_by_name ("type") as tp and then tp.value ~ "deep" then
+												storia_temp := create {STORIA_DEEP}.make_history_with_id (his_id.value, st_xor)
+											else
+												storia_temp := create {STORIA_SHALLOW}.make_history_with_id (his_id.value, st_xor)
+											end
+										else -- non è necessario che la storia abbia un id
+											if attached his.attribute_by_name ("type") as tp and then tp.value ~ "deep" then
+												storia_temp := create {STORIA_DEEP}.make_history (st_xor)
+											else
+												storia_temp := create {STORIA_SHALLOW}.make_history (st_xor)
+											end
+										end
+										stato_temp.add_storia (storia_temp)
+									end
+
 									-- ricorsione sui figli con sé stesso come genitore
 									istanzia_stati (e.item.elements, stati.item (id_attr.value))
 								else -- elemento corrente <state> non ha figli
@@ -184,6 +204,9 @@ feature -- inizializzazione SC
 									stati.extend (stato_temp, id_attr.value)
 									-- ricorsione sui figli con sé stesso come genitore
 									istanzia_stati (e.item.elements, stati.item (id_attr.value))
+									if attached{STATO_AND} stato_temp as st_and and then e.item.has_element_by_name ("history") then
+										print ("AVVISO: " + st_and.id + " è uno stato parallelo, pertanto la sua storia non verrà considerata!%N")
+									end
 								else -- elemento corrente <parallel> non ha figli
 									print ("ERRORE: lo stato <parallel> >|" + id_attr.value + "|< non ha figli !%N")
 								end
@@ -312,7 +335,7 @@ feature -- supporto inizializzazione
 							if not transizione_illegale (stato, destinazione) then
 								create transizione.make_with_target (destinazione, stato)
 								if attached e.item.attribute_by_name ("type") as type then
-									if type.value ~ "internal" and verifica_internal (transizione.sorgente, transizione.target) then
+									if type.value ~ "internal" and verifica_internal(transizione) then
 										transizione.set_internal
 									end
 								end
@@ -347,6 +370,15 @@ feature -- supporto inizializzazione
 				if e.item.name ~ "onexit" then
 					istanzia_onexit (stato, e.item.elements)
 				end
+			end
+		end
+
+	verifica_internal(transizione: TRANSIZIONE): BOOLEAN
+		do
+			if (attached{STATO_XOR} transizione.sorgente as ts and then ts.antenato_di(transizione.target)) or else
+			   (transizione.target.antenato_di (transizione.sorgente)) or else
+			   (transizione.target = transizione.sorgente) then
+			   	Result := true
 			end
 		end
 
@@ -421,20 +453,6 @@ feature -- supporto inizializzazione
 				transizione.set_condizione (cond.value)
 			else
 				transizione.set_condizione ("condizione_vuota")
-			end
-		end
-
-	verifica_internal (sorgente, target: STATO): BOOLEAN
-		do
-			if attached{STATO_XOR} sorgente then
-				-- secondo la specifica XML `internal' può essere eseguita solo con sorgente XOR
-				if attached target.genitore as tr_gn then
-					if tr_gn = sorgente then
-						Result := TRUE
-					else
-						Result := verifica_internal (sorgente, tr_gn)
-					end
-				end
 			end
 		end
 
