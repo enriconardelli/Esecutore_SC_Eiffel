@@ -18,6 +18,7 @@ feature -- generica
 		end
 
 	svolgi (una_azione: PROCEDURE[])
+	-- TODO: da rimuovere perché si implementa semplicemente esegui nelle sottoclassi
 		do
 			una_azione.call
 		end

@@ -18,6 +18,12 @@ feature -- attributi
 	stati: HASH_TABLE [STATO, STRING]
 		-- rappresenta gli stati della statechart
 
+--	variabili: DATAMODEL
+		-- TODO: VARIAZIONE DA SPERIMENTARE rappresenta le variabili del datamodel associato alla statechart
+
+	creatore_di_assegna: ASSEGNA_CREATORE
+		-- creatore parametrico delle istanze di ASSEGNA
+
 	variabili_booleane: HASH_TABLE [BOOLEAN, STRING]
 		-- rappresenta le variabili (cioè i <data> del <datamodel>) di tipo booleano e il loro valore
 
@@ -34,6 +40,7 @@ feature -- creazione
 	make (nome_SC: STRING)
 		do
 			create conf_base.make_empty
+			create creatore_di_assegna
 			crea_albero (nome_SC)
 			create stati.make (1)
 			create variabili_booleane.make (1)
@@ -350,8 +357,6 @@ feature -- inizializzazione SC
 
 	assegna_figli (stato: STATO; element: XML_ELEMENT)
 		-- completa lo `stato' con i suoi figli che non sono <state> o <parallel>: transizioni e azioni onentry e onexit
-		local
-			transizione: TRANSIZIONE
 		do
 			across
 				element.elements as e
@@ -523,17 +528,27 @@ feature -- inizializzazione azioni
 
 	assegna_azione_assign (p_azione: XML_ELEMENT; transizione: TRANSIZIONE)
 		local
-			testo: STRING
+			testo, esito, variabile, espressione: STRING
 		do
-			if assign_ammissibile (p_azione).esito ~ "OK" then
-				transizione.azioni.force (create {ASSEGNAZIONE}.make (assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore), transizione.azioni.count + 1)
+			esito := creatore_di_assegna.ammissibile (p_azione, variabili_booleane, variabili_intere).esito
+			variabile := creatore_di_assegna.ammissibile (p_azione, variabili_booleane, variabili_intere).variabile
+			espressione := creatore_di_assegna.ammissibile (p_azione, variabili_booleane, variabili_intere).espressione
+			if esito ~ "OK" then
+				transizione.azioni.force (creatore_di_assegna.crea_istanza (variabile, espressione), transizione.azioni.count + 1)
 			else
 				testo := "nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|<"
-				stampa_assign_errata (p_azione, testo, assign_ammissibile (p_azione).esito, assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore)
+				creatore_di_assegna.stampa_errata (testo, esito, variabile, espressione)
 			end
+--			if assign_ammissibile (p_azione).esito ~ "OK" then
+--				transizione.azioni.force (create {ASSEGNAZIONE}.make (assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore), transizione.azioni.count + 1)
+--			else
+--				testo := "nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.target.id + "|<"
+--				stampa_assign_errata (p_azione, testo, assign_ammissibile (p_azione).esito, assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore)
+--			end
 		end
 
 	assign_ammissibile (p_azione: XML_ELEMENT): TUPLE [esito: STRING; variabile: STRING; valore: STRING]
+		-- 	DA-RIMUOVERE
 		do
 			if not attached p_azione.attribute_by_name ("location") as luogo then
 				Result := ["senza_luogo", "", ""]
@@ -549,6 +564,7 @@ feature -- inizializzazione azioni
 		end
 
 	stampa_assign_errata (p_azione: XML_ELEMENT; testo, esito, variabile, valore: STRING)
+		-- 	DA-RIMUOVERE
 		do
 			if esito ~ "senza_luogo" then
 				print ("ERRORE: l'azione <assign> " + testo + " non ha attributo 'location'!%N")
@@ -615,26 +631,44 @@ feature -- inizializzazione onentry/onexit
 
 	assegna_onentry_assign (p_azione: XML_ELEMENT; stato: STATO)
 		local
-			testo: STRING
+			testo, esito, variabile, espressione: STRING
 		do
-			if assign_ammissibile (p_azione).esito ~ "OK" then
-				stato.set_onentry (create {ASSEGNAZIONE}.make (assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore))
+			esito := creatore_di_assegna.ammissibile (p_azione, variabili_booleane, variabili_intere).esito
+			variabile := creatore_di_assegna.ammissibile (p_azione, variabili_booleane, variabili_intere).variabile
+			espressione := creatore_di_assegna.ammissibile (p_azione, variabili_booleane, variabili_intere).espressione
+			if esito ~ "OK" then
+				stato.set_onentry (creatore_di_assegna.crea_istanza (variabile, espressione))
 			else
 				testo := "specificata in <onentry> per lo stato >|" + stato.id + "|<"
-				stampa_assign_errata (p_azione, testo, assign_ammissibile (p_azione).esito, assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore)
+				creatore_di_assegna.stampa_errata (testo, esito, variabile, espressione)
 			end
+--			if assign_ammissibile (p_azione).esito ~ "OK" then
+--				stato.set_onentry (create {ASSEGNAZIONE}.make (assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore))
+--			else
+--				testo := "specificata in <onentry> per lo stato >|" + stato.id + "|<"
+--				stampa_assign_errata (p_azione, testo, assign_ammissibile (p_azione).esito, assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore)
+--			end
 		end
 
 	assegna_onexit_assign (p_azione: XML_ELEMENT; stato: STATO)
 		local
-			testo: STRING
+			testo, esito, variabile, espressione: STRING
 		do
-			if assign_ammissibile (p_azione).esito ~ "OK" then
-				stato.set_onexit (create {ASSEGNAZIONE}.make (assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore))
+			esito := creatore_di_assegna.ammissibile (p_azione, variabili_booleane, variabili_intere).esito
+			variabile := creatore_di_assegna.ammissibile (p_azione, variabili_booleane, variabili_intere).variabile
+			espressione := creatore_di_assegna.ammissibile (p_azione, variabili_booleane, variabili_intere).espressione
+			if esito ~ "OK" then
+				stato.set_onexit (creatore_di_assegna.crea_istanza (variabile, espressione))
 			else
 				testo := "specificata in <onexit> per lo stato >|" + stato.id + "|<"
-				stampa_assign_errata (p_azione, testo, assign_ammissibile (p_azione).esito, assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore)
+				creatore_di_assegna.stampa_errata (testo, esito, variabile, espressione)
 			end
+--			if assign_ammissibile (p_azione).esito ~ "OK" then
+--				stato.set_onexit (create {ASSEGNAZIONE}.make (assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore))
+--			else
+--				testo := "specificata in <onexit> per lo stato >|" + stato.id + "|<"
+--				stampa_assign_errata (p_azione, testo, assign_ammissibile (p_azione).esito, assign_ammissibile (p_azione).variabile, assign_ammissibile (p_azione).valore)
+--			end
 		end
 
 	assegna_onentry_log (p_azione: XML_ELEMENT; stato: STATO)
@@ -707,6 +741,7 @@ feature -- supporto generale
 		end
 
 	valore_attributo (element: XML_ELEMENT; attribute_name: STRING): STRING
+		-- 	DA-RIMUOVERE
 		do
 			create Result.make_empty
 			if attached element.attribute_by_name (attribute_name) as attr then
@@ -715,24 +750,28 @@ feature -- supporto generale
 		end
 
 	valore_booleano (valore: READABLE_STRING_32): BOOLEAN
+		-- 	DA-RIMUOVERE
 		-- TODO: feature duplicata in ASSEGNAZIONE, da risolvere
 		do
 			Result := valore.as_lower ~ "true" or valore.as_lower ~ "false"
 		end
 
 	valore_intero (valore: READABLE_STRING_32): BOOLEAN
+		-- 	DA-RIMUOVERE
 		-- TODO: feature duplicata in ASSEGNAZIONE, da risolvere
 		do
 			Result := valore.is_integer
 		end
 
 	valore_operazione (valore: READABLE_STRING_32): BOOLEAN
+		-- 	DA-RIMUOVERE
 		-- TODO: feature duplicata in ASSEGNAZIONE, da risolvere
 		do
 			Result := valore.as_lower ~ "inc" or valore.as_lower ~ "dec"
 		end
 
 	valore_ammissibile (valore: READABLE_STRING_32): BOOLEAN
+		-- 	DA-RIMUOVERE
 		do
 			Result := valore_booleano (valore) or valore_intero (valore) or valore_operazione (valore)
 		end

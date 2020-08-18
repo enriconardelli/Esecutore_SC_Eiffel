@@ -7,6 +7,14 @@ note
 class
 	ASSEGNAZIONE
 	-- TODO: rendere la classe astratta e creare due sottoclassi per booleani e interi
+	-- TODO: per esempio ASSEGNA_BOOLEANO e ASSEGNA_INTERO
+	-- TODO: problema: come gestisco poi in modo parametrico la creazione
+	-- TODO: in funzione dei valori passati nella 'make' in 'variabile' e 'espressione'?
+	-- TODO: attualmente la gestione viene fatta qua e NON in CONFIGURAZIONE
+	-- TODO: ma se qui separo le due sottoclassi dove decido cosa creare?
+	-- TODO: devo avere in CONFIGURAZIONE un'istanza della classe ASSEGNAZIONE_CREATORE
+	-- TODO: che mi crea e restituisce (attraverso una feature come il make di qua)
+	-- TODO: la istanza della sottoclasse di ASSEGNAZIONE corretta
 
 inherit
 
@@ -15,7 +23,7 @@ inherit
 create
 	make
 
-feature --attributi
+feature -- attributi
 
 	elemento_da_modificare: STRING
 		-- id del <data> di tipo booleano o intero
@@ -35,10 +43,13 @@ feature -- creazione parametrica
 	do
 		elemento_da_modificare := variabile
 		if valore_booleano (espressione) then
+			-- Result := create {ASSEGNA_BOOLEANO}.make_value (variabile, espressione)
 			booleano_da_assegnare := espressione.as_lower ~ "true"
 		elseif valore_intero (espressione) then
+			-- Result := create {ASSEGNA_INTERO}.make_value (variabile, espressione)
 			intero_da_assegnare := espressione.to_integer
 		elseif valore_operazione (espressione) then
+			-- Result := create {ASSEGNA_INTERO}.make_oper (variabile, espressione)
 			tipo_di_aggiornamento := espressione
 		end
 	end
@@ -47,15 +58,10 @@ feature -- modifica per booleani
 
 	modifica_booleano (variabili_booleane: HASH_TABLE [BOOLEAN, STRING])
 		do
-			variabili_booleane.replace (booleano_da_assegnare, elemento_da_modificare)
-			debug("sc_modifica_variabili") print("  -> Booleano: " + elemento_da_modificare + " = " + variabili_booleane[elemento_da_modificare].out + "%N") end
-		end
-
-	azione_su_booleano (variabili_booleane: HASH_TABLE [BOOLEAN, STRING])
-		do
 			if variabili_booleane.has (elemento_da_modificare) then
-				modifica_booleano (variabili_booleane)
-				debug("sc_modifica_variabili") print ("  ASSIGN: " + elemento_da_modificare + " = " + booleano_da_assegnare.out + "%N") end
+				debug("sc_modifica_variabili") print("  ASSIGN: " + booleano_da_assegnare.out + " --> " + elemento_da_modificare + "%N") end
+				variabili_booleane.replace (booleano_da_assegnare, elemento_da_modificare)
+				debug("sc_modifica_variabili") print("  -> Booleano: " + elemento_da_modificare + " = " + variabili_booleane[elemento_da_modificare].out + "%N") end
 			end
 		end
 
@@ -63,43 +69,35 @@ feature -- modifica per interi
 
 	modifica_intero (variabili_intere: HASH_TABLE [INTEGER, STRING])
 		do
-			if attached tipo_di_aggiornamento as type then
-				if type ~ "inc" then
-					variabili_intere.replace (variabili_intere[elemento_da_modificare]+1, elemento_da_modificare)
+			if variabili_intere.has (elemento_da_modificare) then
+				if attached tipo_di_aggiornamento as type then
+					debug("sc_modifica_variabili") print("  ASSIGN: " + type + " " + elemento_da_modificare + "%N") end
+					if type ~ "inc" then
+						variabili_intere.replace (variabili_intere[elemento_da_modificare]+1, elemento_da_modificare)
+					elseif type ~ "dec" then
+						variabili_intere.replace (variabili_intere[elemento_da_modificare]-1, elemento_da_modificare)
+					end
 					debug("sc_modifica_variabili") print("  -> Intero: " + elemento_da_modificare + " = " + variabili_intere[elemento_da_modificare].out + "%N") end
-				elseif type ~ "dec" then
-					variabili_intere.replace (variabili_intere[elemento_da_modificare]-1, elemento_da_modificare)
+				else
+					debug("sc_modifica_variabili") print("  ASSIGN: " + intero_da_assegnare.out + " --> " + elemento_da_modificare + "%N") end
+					variabili_intere.replace (intero_da_assegnare, elemento_da_modificare)
 					debug("sc_modifica_variabili") print("  -> Intero: " + elemento_da_modificare + " = " + variabili_intere[elemento_da_modificare].out + "%N") end
 				end
-			else
-				variabili_intere.replace (intero_da_assegnare, elemento_da_modificare)
-				debug("sc_modifica_variabili") print("  -> Intero: " + elemento_da_modificare + " = " + variabili_intere[elemento_da_modificare].out + "%N") end
 			end
 		end
 
-	azione_su_intero (variabili_intere: HASH_TABLE [INTEGER, STRING])
-		do
-			if attached tipo_di_aggiornamento as type and variabili_intere.has (elemento_da_modificare) then
-				modifica_intero (variabili_intere)
-				debug("sc_modifica_variabili") print ("  ASSIGN: " + type + " " + elemento_da_modificare + "%N") end
-			elseif variabili_intere.has (elemento_da_modificare) then
-				modifica_intero (variabili_intere)
-				debug("sc_modifica_variabili") print ("  ASSIGN: " + elemento_da_modificare + " = " + intero_da_assegnare.out + "%N") end
-			end
-		end
+feature -- esecuzione
 
-feature
-
---	action (condizioni: HASH_TABLE [BOOLEAN, STRING]; valori_data: HASH_TABLE [INTEGER, STRING])
+--	esegui (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]; variabili_intere: HASH_TABLE [INTEGER, STRING])
 --		do
---			action_with_boolean (condizioni)
---			action_with_integer (valori_data)
+--			svolgi (agent modifica_booleano (variabili_booleane))
+--			svolgi (agent modifica_intero (variabili_intere))
 --		end
 
 	esegui (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]; variabili_intere: HASH_TABLE [INTEGER, STRING])
 		do
-			svolgi (agent azione_su_booleano (variabili_booleane))
-			svolgi (agent azione_su_intero (variabili_intere))
+			modifica_booleano (variabili_booleane)
+			modifica_intero (variabili_intere)
 		end
 
 feature -- supporto
