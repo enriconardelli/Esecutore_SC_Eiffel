@@ -82,7 +82,7 @@ feature -- evoluzione della statechart
 							 if tc.fork and attached tc.multi_target as tcmt then
 							 	across tcmt as x loop
 							 		trova_default (x.item, prossima_conf_base)
-							 		aggiungi_paralleli(x.item,prossima_conf_base)
+							 	--	aggiungi_paralleli(x.item,prossima_conf_base)
 							 	end
 							else aggiungi_paralleli (tc.target, prossima_conf_base)
 							end
