@@ -1,61 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="A">
-    <datamodel>
-        <data expr=-1 id="M" />
-	<data expr=-2 id="N" />
+	<datamodel>
+		<data expr=-1 id="M" />
+		<data expr=-2 id="N" />
 	</datamodel>
 
 	<state id="A" initial="P">
-	    <onentry>
-	    	<assign expr="7" location="M"/>
-		<assign expr="-1" location="N"/>
-    	</onentry>
-		
+		<onentry>
+			<assign expr="7" location="M"/>
+			<assign expr="-1" location="N"/>
+		</onentry>
 		<transition event="i" target="B" type="internal" cond="N=0">
-		
-        <assign expr="5" location="M"/>		
-	    </transition>
-	   <transition event="e" target="A" cond="M=0"/>	
-    
+			<assign expr="5" location="M"/>		
+		</transition>
+		<transition event="e" target="A" cond="M=0"/>	
 		<parallel id="P" >
-		<transition event="y" target="B" cond="N=0"/>
-		<transition event="z" target="B" />
+			<transition event="y" target="B" cond="N=0"/>
+			<transition event="z" target="B" />
 			<state id="P1" initial = "P1A">
-			  	<state id="P1A">
-				<transition event="x" target="P1B">
-				<assign expr="inc" location="M"/>
-				</transition>
+				<state id="P1A">
+					<transition event="x" target="P1B">
+						<assign expr="inc" location="M"/>
+					</transition>
 				</state>
 				<state id="P1B">
-				    <onexit>
-					<assign expr="inc" location="N"/>
-				    </onexit>
+					<onexit>
+						<assign expr="inc" location="N"/>
+					</onexit>
 				</state>   
 			</state>
 			<state id="P2" initial = "P2A">
 				<state id="P2A">
-				    <onexit>
-				    	<assign expr="inc" location="N"/>
-			    	</onexit>
-				<transition event="x" target="P2B" cond="M=0"/>
-<transition event="z" target="P2B"/>
+					<onexit>
+						<assign expr="inc" location="N"/>
+					</onexit>
+					<transition event="x" target="P2B" cond="M=0"/>
+					<transition event="z" target="P2B"/>
 				</state>
 				<state id="P2B"/> 
 			</state>				
 		</parallel>
 		<state id="B" >
-		    <onexit>
-		    	<assign expr="inc" location="N"/>
-		    	<assign expr="inc" location="M"/>
-	    	</onexit>
-	    	<transition event="y" target="C" cond="N>0"/>
-	    	<transition event="y" target="D" cond="M>6"/>
+			<onexit>
+				<assign expr="inc" location="N"/>
+				<assign expr="inc" location="M"/>
+			</onexit>
+			<transition event="y" target="C" cond="N>0"/>
+			<transition event="y" target="D" cond="M>=7"/>
 		</state>
 	</state>
-	
+
 	<state id="C" >
 	</state>
-		
+
 	<state id="D" >
 	</state>
 </scxml>
