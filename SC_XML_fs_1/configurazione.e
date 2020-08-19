@@ -493,6 +493,7 @@ feature -- inizializzazione transizioni
 		end
 
 	assegna_condizione (transition: XML_ELEMENT; transizione: TRANSIZIONE)
+	-- TODO: fare controllo (però quando si legge dal file .xml) della correttezza sintattica della condizione per interi
 		do
 			if attached transition.attribute_by_name ("cond") as cond then
 				if id_illegittimo (cond.value) then
