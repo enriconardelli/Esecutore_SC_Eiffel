@@ -153,10 +153,9 @@ feature -- inizializzazione SC
 
 	istanzia_stati (elements: LIST [XML_ELEMENT]; p_genitore: detachable STATO)
 		-- crea gli stati assegnando loro l'eventuale genitore e gli eventuali figli
-		-- TODO: feature troppo complessa, va semplificata
+		-- TODO: feature complessa, è possibile semplificarla?
 		local
 			stato_temp: STATO
---			storia_temp: STORIA
 		do
 			across
 				elements as e
@@ -184,25 +183,6 @@ feature -- inizializzazione SC
 										stato_temp := create {STATO_XOR}.make_with_id (id_attr.value)
 									end
 									stati.extend (stato_temp, id_attr.value)
-							-- TODO: inizio sezione aggiunta per gestione storia
---									if attached {STATO_XOR} stato_temp as st_xor and then e.item.has_element_by_name ("history") and then attached e.item.element_by_name ("history") as his then
---										-- se uno stato composto ha più di una storia viene salvata solo la prima
---										if attached his.attribute_by_name ("id") as his_id then
---											if attached his.attribute_by_name ("type") as tp and then tp.value ~ "deep" then
---												storia_temp := create {STORIA_DEEP}.make_history_with_id (his_id.value, st_xor)
---											else
---												storia_temp := create {STORIA_SHALLOW}.make_history_with_id (his_id.value, st_xor)
---											end
---										else -- non è necessario che la storia abbia un id
---											if attached his.attribute_by_name ("type") as tp and then tp.value ~ "deep" then
---												storia_temp := create {STORIA_DEEP}.make_history (st_xor)
---											else
---												storia_temp := create {STORIA_SHALLOW}.make_history (st_xor)
---											end
---										end
---										stato_temp.add_storia (storia_temp)
---									end
-							-- TODO: fine sezione aggiunta per gestione storia
 									-- ricorsione sui figli con sé stesso come genitore
 									istanzia_stati (e.item.elements, stati.item (id_attr.value))
 								else -- elemento corrente <state> non ha figli, quindi è atomico
@@ -229,11 +209,6 @@ feature -- inizializzazione SC
 									stati.extend (stato_temp, id_attr.value)
 										-- ricorsione sui figli con sé stesso come genitore
 									istanzia_stati (e.item.elements, stati.item (id_attr.value))
-							-- TODO: inizio sezione aggiunta per gestione storia
---									if attached {STATO_AND} stato_temp as st_and and then e.item.has_element_by_name ("history") then
---										print ("AVVISO: " + st_and.id + " è uno stato parallelo, pertanto la sua storia non verrà considerata!%N")
---									end
-							-- TODO: fine sezione aggiunta per gestione storia
 								else -- elemento corrente <parallel> non ha figli
 									print ("ERRORE: lo stato <parallel> >|" + id_attr.value + "|< non ha figli !%N")
 								end
@@ -246,17 +221,12 @@ feature -- inizializzazione SC
 
 	assegna_initial (elements: LIST [XML_ELEMENT])
 		-- assegna ricorsivamente agli stati i loro sotto-stati iniziali di default
-		-- NB: regolarità di 'id' viene controllata in `istanzia_stati'
-		-- TODO: feature complessa, da semplificare
+		-- NB: regolarità di 'id' è stata già controllata in `istanzia_stati'
 		do
 			across
 				elements as e
 			loop
-				debug ("SC_assegna_initial")
-					if e.item.name ~ "state" or e.item.name ~ "parallel" then
-						stampa_elemento (e.item)
-					end
-				end
+				debug ("SC_assegna_initial") if e.item.name ~ "state" or e.item.name ~ "parallel" then stampa_elemento (e.item) end
 				-- NB: gli stati atomici non sono né {STATO_XOR} né {STATO_AND}
 				if e.item.name ~ "state" and attached e.item.attribute_by_name ("id") as id_attr then
 					if attached {STATO_XOR} stati.item (id_attr.value) as stato then
