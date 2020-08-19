@@ -39,7 +39,7 @@
 			<state id="B2" initial = "B2A">
 				<state id="B2A">
 				<onexit>
-		    		<assign expr="false" location="B"/>	
+		    		<assign expr="false" location="K" />	
 		    	</onexit>
 				<transition event="x" target="B2B" cond="K"/>
 				</state>
