@@ -156,26 +156,26 @@ feature -- inizializzazione SC
 		-- TODO: feature troppo complessa, va semplificata
 		local
 			stato_temp: STATO
-			storia_temp: STORIA
+--			storia_temp: STORIA
 		do
 			across
 				elements as e
 			loop
 				if (e.item.name ~ "state" or e.item.name ~ "parallel") then
 					if not attached e.item.attribute_by_name ("id") then
-						print ("ERRORE: il seguente elemento non ha 'id':%N")
+						print ("ERRORE: il seguente elemento <state> o <parallel> non ha 'id':%N")
 						stampa_elemento (e.item)
 					elseif attached e.item.attribute_by_name ("id") as id_attr then
 						if id_attr.value ~ "" or id_attr.value.is_whitespace then
-							print ("ERRORE: il seguente elemento ha un 'id' di valore stringa vuota o blank!%N")
+							print ("ERRORE: il seguente elemento <state> o <parallel> ha un 'id' di valore stringa vuota o blank!%N")
 							stampa_elemento (e.item)
 						elseif stati.has (id_attr.value) then
-							print ("ERRORE: il seguente elemento ha un 'id' duplicato!%N")
+							print ("ERRORE: il seguente elemento <state> o <parallel> ha un 'id' duplicato!%N")
 							stampa_elemento (e.item)
 						else
 							if e.item.name ~ "state" then
 								if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
-									-- elemento corrente <state> ha figli
+									-- elemento corrente <state> ha figli, quindi è gerarchico
 									if attached p_genitore as pg then
 										-- istanzio elemento corrente con genitore e glielo assegno come figlio
 										stato_temp := create {STATO_XOR}.make_with_id_and_parent (id_attr.value, pg)
@@ -184,27 +184,28 @@ feature -- inizializzazione SC
 										stato_temp := create {STATO_XOR}.make_with_id (id_attr.value)
 									end
 									stati.extend (stato_temp, id_attr.value)
-									if attached {STATO_XOR} stato_temp as st_xor and then e.item.has_element_by_name ("history") and then attached e.item.element_by_name ("history") as his then
-										-- se uno stato composto ha più di una storia viene salvata solo la prima
-										if attached his.attribute_by_name ("id") as his_id then
-											if attached his.attribute_by_name ("type") as tp and then tp.value ~ "deep" then
-												storia_temp := create {STORIA_DEEP}.make_history_with_id (his_id.value, st_xor)
-											else
-												storia_temp := create {STORIA_SHALLOW}.make_history_with_id (his_id.value, st_xor)
-											end
-										else -- non è necessario che la storia abbia un id
-											if attached his.attribute_by_name ("type") as tp and then tp.value ~ "deep" then
-												storia_temp := create {STORIA_DEEP}.make_history (st_xor)
-											else
-												storia_temp := create {STORIA_SHALLOW}.make_history (st_xor)
-											end
-										end
-										stato_temp.add_storia (storia_temp)
-									end
-
+							-- TODO: inizio sezione aggiunta per gestione storia
+--									if attached {STATO_XOR} stato_temp as st_xor and then e.item.has_element_by_name ("history") and then attached e.item.element_by_name ("history") as his then
+--										-- se uno stato composto ha più di una storia viene salvata solo la prima
+--										if attached his.attribute_by_name ("id") as his_id then
+--											if attached his.attribute_by_name ("type") as tp and then tp.value ~ "deep" then
+--												storia_temp := create {STORIA_DEEP}.make_history_with_id (his_id.value, st_xor)
+--											else
+--												storia_temp := create {STORIA_SHALLOW}.make_history_with_id (his_id.value, st_xor)
+--											end
+--										else -- non è necessario che la storia abbia un id
+--											if attached his.attribute_by_name ("type") as tp and then tp.value ~ "deep" then
+--												storia_temp := create {STORIA_DEEP}.make_history (st_xor)
+--											else
+--												storia_temp := create {STORIA_SHALLOW}.make_history (st_xor)
+--											end
+--										end
+--										stato_temp.add_storia (storia_temp)
+--									end
+							-- TODO: fine sezione aggiunta per gestione storia
 									-- ricorsione sui figli con sé stesso come genitore
 									istanzia_stati (e.item.elements, stati.item (id_attr.value))
-								else -- elemento corrente <state> non ha figli
+								else -- elemento corrente <state> non ha figli, quindi è atomico
 									if attached p_genitore as pg then
 										-- istanzio elemento corrente con genitore e glielo assegno come figlio
 										stato_temp := create {STATO}.make_with_id_and_parent (id_attr.value, pg)
@@ -228,9 +229,11 @@ feature -- inizializzazione SC
 									stati.extend (stato_temp, id_attr.value)
 										-- ricorsione sui figli con sé stesso come genitore
 									istanzia_stati (e.item.elements, stati.item (id_attr.value))
-									if attached {STATO_AND} stato_temp as st_and and then e.item.has_element_by_name ("history") then
-										print ("AVVISO: " + st_and.id + " è uno stato parallelo, pertanto la sua storia non verrà considerata!%N")
-									end
+							-- TODO: inizio sezione aggiunta per gestione storia
+--									if attached {STATO_AND} stato_temp as st_and and then e.item.has_element_by_name ("history") then
+--										print ("AVVISO: " + st_and.id + " è uno stato parallelo, pertanto la sua storia non verrà considerata!%N")
+--									end
+							-- TODO: fine sezione aggiunta per gestione storia
 								else -- elemento corrente <parallel> non ha figli
 									print ("ERRORE: lo stato <parallel> >|" + id_attr.value + "|< non ha figli !%N")
 								end
@@ -349,7 +352,7 @@ feature -- inizializzazione SC
 		end
 
 	assegna_figli (stato: STATO; element: XML_ELEMENT)
-		-- completa lo `stato' con i suoi figli che non sono <state> o <parallel>: transizioni e azioni onentry e onexit
+		-- completa lo `stato' con i suoi figli che non sono <state> o <parallel>: transizioni, azioni onentry/onexit, history
 		do
 			across
 				element.elements as e
@@ -360,12 +363,46 @@ feature -- inizializzazione SC
 					assegna_onentry (e.item.elements, stato)
 				elseif e.item.name ~ "onexit" then
 					assegna_onexit (e.item.elements, stato)
+				elseif e.item.name ~ "history" then
+					assegna_storia (e.item, stato)
 				elseif not (e.item.name ~ "state" or e.item.name ~ "parallel") then
 					print ("ERRORE: lo stato >|" + stato.id + "|< specifica un figlio non ammissibile!")
 					stampa_elemento (e.item)
 				end
 			end
 		end
+
+feature -- inizializzazione storia
+
+	assegna_storia (history_element: XML_ELEMENT; stato: STATO)
+		-- assegna a `stato' la storia specificata in `history_element'
+		local
+			storia_temp: STORIA
+		do
+			if attached {STATO_XOR} stato as st_xor then
+			-- and then e.item.has_element_by_name ("history") and then attached e.item.element_by_name ("history") as hist
+				-- se uno stato composto ha più di una storia viene salvata solo la prima
+				if attached history_element.attribute_by_name ("id") as h_id then
+					if attached history_element.attribute_by_name ("type") as h_tp and then h_tp.value ~ "deep" then
+						storia_temp := create {STORIA_DEEP}.make_history_with_id (h_id.value, st_xor)
+					else
+						storia_temp := create {STORIA_SHALLOW}.make_history_with_id (h_id.value, st_xor)
+					end
+				else -- non è necessario che la storia abbia un id
+					if attached history_element.attribute_by_name ("type") as h_tp and then h_tp.value ~ "deep" then
+						storia_temp := create {STORIA_DEEP}.make_history (st_xor)
+					else
+						storia_temp := create {STORIA_SHALLOW}.make_history (st_xor)
+					end
+				end
+				stato.add_storia (storia_temp)
+			end
+			if attached {STATO_AND} stato as st_and then
+			-- and then e.item.has_element_by_name ("history") then
+				print ("AVVISO: " + st_and.id + " è uno stato parallelo, pertanto la sua storia non verrà considerata!%N")
+			end
+		end
+
 
 feature -- inizializzazione transizioni
 
