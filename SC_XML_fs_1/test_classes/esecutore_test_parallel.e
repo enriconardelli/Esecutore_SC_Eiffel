@@ -165,4 +165,25 @@ feature -- Test
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (P1A1,P1B1,P2)", esecutore.state_chart.conf_base.count = 3 and conf_has_state(esecutore.state_chart.conf_base,"P1A1") and conf_has_state(esecutore.state_chart.conf_base,"P1B1") and conf_has_state(esecutore.state_chart.conf_base,"P2"))
 		end
+
+	t_transizione_senza_evento_1
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "transizione_senza_evento_parallelo.xml"
+			nomi_files_prova [2] := test_data_dir + "transizione_senza_evento_parallelo_eventi.txt"
+			create esecutore.make (nomi_files_prova)
+			assert ("ERRORE il sistema non termina negli stati corretti ( S2 T2 )", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"S2") and conf_has_state(esecutore.state_chart.conf_base,"T2") )
+		end
+
+	t_transizione_senza_evento_2
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "transizione_senza_evento_parallelo_bis.xml"
+			nomi_files_prova [2] := test_data_dir + "transizione_senza_evento_parallelo_eventi.txt"
+			create esecutore.make (nomi_files_prova)
+			assert ("ERRORE il sistema non termina negli stati corretti ( S2 T2 )", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"S2") and conf_has_state(esecutore.state_chart.conf_base,"T2") )
+		end
+
 end
