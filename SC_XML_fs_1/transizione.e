@@ -19,7 +19,7 @@ feature -- creazione
             create azioni.make_empty
 			evento := Void
 			internal := False
-			condizione := "condizione_vuota"
+			condizione := "NULL"
 		end
 
 feature -- attributi
@@ -32,7 +32,7 @@ feature -- attributi
 
     sorgente: STATO
 
-	target: STATO
+	destinazione: STATO
 
 	internal: BOOLEAN
 
@@ -56,7 +56,7 @@ feature -- setter
 		require
 			not_void: uno_stato /= Void
 		do
-			target := uno_stato
+			destinazione := uno_stato
 		end
 
 	set_sorgente (uno_stato: STATO)
@@ -68,7 +68,7 @@ feature -- setter
 
 	set_internal
 		do
-			internal := TRUE
+			internal := True
 		end
 
 feature -- check
@@ -77,21 +77,67 @@ feature -- check
 		do
 			if attached evento as e then
 				if istante.has (e) then
-					result:= TRUE
+					result:= True
 				end
 			else
-				result:= TRUE
+				result:= True
 			end
 		end
 
-	check_condizione (hash_delle_condizioni: HASH_TABLE [BOOLEAN, STRING] ): BOOLEAN
-	-- Controlla se la condizione dell'evento è verificata.
+	check_condizione (variabili: DATAMODEL): BOOLEAN
 	do
-		if condizione ~ "condizione_vuota" then
-				result:= TRUE
+		result := check_condizione_booleana (variabili.booleane) and check_condizione_intera (variabili.intere)
+	end
+
+	check_condizione_booleana (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
+	-- Controlla se la condizione sulle variabili booleane è verificata.
+	do
+		if condizione ~ "NULL" then
+			result:= True
 		else
-			result:= hash_delle_condizioni.item (condizione)
+			if variabili_booleane.has (condizione) then
+				result:= variabili_booleane.item (condizione)
+			else
+				result:= True
+			end
 		end
 	end
 
+	check_condizione_intera (variabili_intere: HASH_TABLE [INTEGER, STRING]): BOOLEAN
+	-- Controlla se la condizione sulle variabili intere è verificata.
+	local
+		loc: STRING
+		cond_num: INTEGER
+	do
+		Result := True
+		if condizione.has ('<') then
+			loc := condizione.substring (1,   condizione.index_of ('<', 1) - 1)
+			if condizione.has_substring ("<=") then
+				cond_num := condizione.substring (condizione.index_of ('<', 1) + 2, condizione.count).to_integer
+				Result := variabili_intere.item (loc) <= cond_num
+			else
+				cond_num := condizione.substring ( condizione.index_of ('<', 1) + 1, condizione.count).to_integer
+				Result := variabili_intere.item (loc) < cond_num
+			end
+		elseif condizione.has ('>') then
+			loc := condizione.substring (1,  condizione.index_of ('>', 1) - 1)
+			if condizione.has_substring (">=") then
+				cond_num := condizione.substring (condizione.index_of ('>', 1) + 2, condizione.count).to_integer
+				Result := variabili_intere.item (loc) >= cond_num
+			else
+				cond_num := condizione.substring ( condizione.index_of ('>', 1) + 1, condizione.count).to_integer
+				Result := variabili_intere.item (loc) > cond_num
+			end
+		elseif condizione.has ('=') then
+			if condizione.has_substring ("/=") then
+				loc := condizione.substring (1,   condizione.index_of ('/', 1) - 1)
+				cond_num := condizione.substring (condizione.index_of ('/', 1) + 2, condizione.count).to_integer
+				Result := variabili_intere.item (loc) /= cond_num
+			else
+				loc := condizione.substring (1,  condizione.index_of ('=', 1) - 1)
+				cond_num := condizione.substring ( condizione.index_of ('=', 1) + 1, condizione.count).to_integer
+				Result := variabili_intere.item (loc) = cond_num
+			end
+		end
+	end
 end

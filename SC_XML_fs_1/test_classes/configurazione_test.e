@@ -60,9 +60,9 @@ feature -- Test
 
 	configurazione_ha_nomi_cond
 	do
-			assert("non ha alfa", configurazione_prova.condizioni.has ("alfa"))
-			assert("non ha beta", configurazione_prova.condizioni.has ("beta"))
-			assert("non ha gamma", configurazione_prova.condizioni.has ("gamma"))
+			assert("non ha alfa", configurazione_prova.variabili.booleane.has ("alfa"))
+			assert("non ha beta", configurazione_prova.variabili.booleane.has ("beta"))
+			assert("non ha gamma", configurazione_prova.variabili.booleane.has ("gamma"))
 	end
 
 	altra_configurazione_ha_4_stati
@@ -80,10 +80,10 @@ feature -- Test
 
 	altra_configurazione_ha_nomi_cond
 	do
-			assert("non ha running$value",  altra_configurazione_prova.condizioni.has ("running$value"))
-			assert("non ha paused$value", altra_configurazione_prova.condizioni.has ("paused$value"))
-			assert("non ha stopped$value", altra_configurazione_prova.condizioni.has ("stopped$value"))
-			assert("non ha reset$value", altra_configurazione_prova.condizioni.has ("reset$value"))
+			assert("non ha running$value",  altra_configurazione_prova.variabili.booleane.has ("running$value"))
+			assert("non ha paused$value", altra_configurazione_prova.variabili.booleane.has ("paused$value"))
+			assert("non ha stopped$value", altra_configurazione_prova.variabili.booleane.has ("stopped$value"))
+			assert("non ha reset$value", altra_configurazione_prova.variabili.booleane.has ("reset$value"))
 	end
 
 end

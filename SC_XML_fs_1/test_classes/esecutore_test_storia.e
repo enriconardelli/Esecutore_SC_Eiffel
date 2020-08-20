@@ -23,7 +23,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_su_parallelo.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_su_parallelo_eventi.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (A1,B1)", conf_has_state(esecutore.conf_base_corrente,"A1") and conf_has_state(esecutore.conf_base_corrente,"B1"))
+			assert("ERRORE: il sistema non termina in (A1,B1)", conf_has_state(esecutore.state_chart.conf_base,"A1") and conf_has_state(esecutore.state_chart.conf_base,"B1"))
 		end
 
 	t_storia_tra_xor_1
@@ -33,7 +33,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_tra_xor.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_tra_xor_eventi_1.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (P1)", conf_has_state(esecutore.conf_base_corrente,"P1"))
+			assert("ERRORE: il sistema non termina in (P1)", conf_has_state(esecutore.state_chart.conf_base,"P1"))
 		end
 
 	t_storia_tra_xor_2
@@ -43,7 +43,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_tra_xor.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_tra_xor_eventi_2.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (P3)", conf_has_state(esecutore.conf_base_corrente,"P3"))
+			assert("ERRORE: il sistema non termina in (P3)", conf_has_state(esecutore.state_chart.conf_base,"P3"))
 		end
 
 	t_storia_tra_xor_3
@@ -53,7 +53,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_tra_xor.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_tra_xor_eventi_3.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (R2B)", conf_has_state(esecutore.conf_base_corrente,"R2B"))
+			assert("ERRORE: il sistema non termina in (R2B)", conf_has_state(esecutore.state_chart.conf_base,"R2B"))
 		end
 
 	t_storia_tra_xor_4
@@ -63,7 +63,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_tra_xor.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_tra_xor_eventi_4.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (P3)", conf_has_state(esecutore.conf_base_corrente,"P3"))
+			assert("ERRORE: il sistema non termina in (P3)", conf_has_state(esecutore.state_chart.conf_base,"P3"))
 		end
 
 	t_storia_tra_xor_4_1
@@ -73,7 +73,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_tra_xor.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_tra_xor_eventi_4_1.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (P2)", conf_has_state(esecutore.conf_base_corrente,"P2"))
+			assert("ERRORE: il sistema non termina in (P2)", conf_has_state(esecutore.state_chart.conf_base,"P2"))
 		end
 
 	t_storia_tra_xor_4_2
@@ -83,7 +83,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_tra_xor.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_tra_xor_eventi_4_2.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (R2B)", conf_has_state(esecutore.conf_base_corrente,"R2B"))
+			assert("ERRORE: il sistema non termina in (R2B)", conf_has_state(esecutore.state_chart.conf_base,"R2B"))
 		end
 
 	t_storia_tra_xor_5
@@ -93,7 +93,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_tra_xor.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_tra_xor_eventi_5.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (R1)", conf_has_state(esecutore.conf_base_corrente,"R1"))
+			assert("ERRORE: il sistema non termina in (R1)", conf_has_state(esecutore.state_chart.conf_base,"R1"))
 		end
 
 	t_storia_complesso_1
@@ -103,7 +103,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_complesso.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_complesso_eventi_1.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (C)", conf_has_state(esecutore.conf_base_corrente,"C"))
+			assert("ERRORE: il sistema non termina in (C)", conf_has_state(esecutore.state_chart.conf_base,"C"))
 		end
 
 	t_storia_complesso_2
@@ -113,7 +113,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_complesso.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_complesso_eventi_2.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (R1B,R2A,S1B,S2,H1B,H2)", conf_has_state(esecutore.conf_base_corrente,"R1B") and conf_has_state(esecutore.conf_base_corrente,"R2A") and conf_has_state(esecutore.conf_base_corrente,"S1B") and conf_has_state(esecutore.conf_base_corrente,"S2") and conf_has_state(esecutore.conf_base_corrente,"H1B") and conf_has_state(esecutore.conf_base_corrente,"H2"))
+			assert("ERRORE: il sistema non termina in (R1B,R2A,S1B,S2,H1B,H2)", conf_has_state(esecutore.state_chart.conf_base,"R1B") and conf_has_state(esecutore.state_chart.conf_base,"R2A") and conf_has_state(esecutore.state_chart.conf_base,"S1B") and conf_has_state(esecutore.state_chart.conf_base,"S2") and conf_has_state(esecutore.state_chart.conf_base,"H1B") and conf_has_state(esecutore.state_chart.conf_base,"H2"))
 		end
 
 	t_storia_complesso_3
@@ -123,7 +123,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_complesso.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_complesso_eventi_3.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (R1B,R2A,P2A2,A2A1A)", conf_has_state(esecutore.conf_base_corrente,"R1B") and conf_has_state(esecutore.conf_base_corrente,"R2A") and conf_has_state(esecutore.conf_base_corrente,"P2A2") and conf_has_state(esecutore.conf_base_corrente,"A2A1A"))
+			assert("ERRORE: il sistema non termina in (R1B,R2A,P2A2,A2A1A)", conf_has_state(esecutore.state_chart.conf_base,"R1B") and conf_has_state(esecutore.state_chart.conf_base,"R2A") and conf_has_state(esecutore.state_chart.conf_base,"P2A2") and conf_has_state(esecutore.state_chart.conf_base,"A2A1A"))
 		end
 
 	t_storie_inscatolate_1
@@ -133,7 +133,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storie_inscatolate.xml"
   			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_eventi_1.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (R1A,R2A)", conf_has_state(esecutore.conf_base_corrente,"R1A") and conf_has_state(esecutore.conf_base_corrente,"R2A"))
+			assert("ERRORE: il sistema non termina in (R1A,R2A)", conf_has_state(esecutore.state_chart.conf_base,"R1A") and conf_has_state(esecutore.state_chart.conf_base,"R2A"))
 		end
 
 	t_storie_inscatolate_1_a
@@ -143,7 +143,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storie_inscatolate.xml"
   			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_eventi_1_a.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (R1A,R2A)", conf_has_state(esecutore.conf_base_corrente,"R1A") and conf_has_state(esecutore.conf_base_corrente,"R2A"))
+			assert("ERRORE: il sistema non termina in (R1A,R2A)", conf_has_state(esecutore.state_chart.conf_base,"R1A") and conf_has_state(esecutore.state_chart.conf_base,"R2A"))
 		end
 
 	t_storie_inscatolate_2
@@ -153,7 +153,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storie_inscatolate.xml"
   			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_eventi_2.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (R1B,R2A)", conf_has_state(esecutore.conf_base_corrente,"R1B") and conf_has_state(esecutore.conf_base_corrente,"R2A"))
+			assert("ERRORE: il sistema non termina in (R1B,R2A)", conf_has_state(esecutore.state_chart.conf_base,"R1B") and conf_has_state(esecutore.state_chart.conf_base,"R2A"))
 		end
 
 	t_storie_inscatolate_2_a
@@ -163,7 +163,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storie_inscatolate.xml"
   			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_eventi_2_a.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (R1A,R2B)", conf_has_state(esecutore.conf_base_corrente,"R1A") and conf_has_state(esecutore.conf_base_corrente,"R2B"))
+			assert("ERRORE: il sistema non termina in (R1A,R2B)", conf_has_state(esecutore.state_chart.conf_base,"R1A") and conf_has_state(esecutore.state_chart.conf_base,"R2B"))
 		end
 
 	t_storie_inscatolate_3
@@ -173,7 +173,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storie_inscatolate.xml"
   			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_eventi_3.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (R1A,R2B)", conf_has_state(esecutore.conf_base_corrente,"R1A") and conf_has_state(esecutore.conf_base_corrente,"R2B"))
+			assert("ERRORE: il sistema non termina in (R1A,R2B)", conf_has_state(esecutore.state_chart.conf_base,"R1A") and conf_has_state(esecutore.state_chart.conf_base,"R2B"))
 		end
 
 	t_storie_inscatolate_3_a
@@ -183,7 +183,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storie_inscatolate.xml"
   			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_eventi_3_a.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (R1B,R2A)", conf_has_state(esecutore.conf_base_corrente,"R1B") and conf_has_state(esecutore.conf_base_corrente,"R2A"))
+			assert("ERRORE: il sistema non termina in (R1B,R2A)", conf_has_state(esecutore.state_chart.conf_base,"R1B") and conf_has_state(esecutore.state_chart.conf_base,"R2A"))
 		end
 
 	t_storie_inscatolate_variazione_1
@@ -193,7 +193,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_variazione.xml"
   			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_variazione_eventi_1.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (R1B,R2A)", conf_has_state(esecutore.conf_base_corrente,"R1B") and conf_has_state(esecutore.conf_base_corrente,"R2A"))
+			assert("ERRORE: il sistema non termina in (R1B,R2A)", conf_has_state(esecutore.state_chart.conf_base,"R1B") and conf_has_state(esecutore.state_chart.conf_base,"R2A"))
 		end
 
 	t_storie_inscatolate_variazione_2
@@ -203,7 +203,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_variazione.xml"
   			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_variazione_eventi_2.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (R1B,R2A)", conf_has_state(esecutore.conf_base_corrente,"R1B") and conf_has_state(esecutore.conf_base_corrente,"R2A"))
+			assert("ERRORE: il sistema non termina in (R1B,R2A)", conf_has_state(esecutore.state_chart.conf_base,"R1B") and conf_has_state(esecutore.state_chart.conf_base,"R2A"))
 		end
 
 	t_storie_inscatolate_variazione_3
@@ -213,7 +213,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_variazione.xml"
   			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_variazione_eventi_3.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (R1A,R2B)", conf_has_state(esecutore.conf_base_corrente,"R1A") and conf_has_state(esecutore.conf_base_corrente,"R2B"))
+			assert("ERRORE: il sistema non termina in (R1A,R2B)", conf_has_state(esecutore.state_chart.conf_base,"R1A") and conf_has_state(esecutore.state_chart.conf_base,"R2B"))
 		end
 
 	t_storia_con_parallelo_1
@@ -223,7 +223,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_parallelo.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_parallelo_eventi_1.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (A2, B2)", conf_has_state(esecutore.conf_base_corrente,"A2") and conf_has_state(esecutore.conf_base_corrente,"B2"))
+			assert("ERRORE: il sistema non termina in (A2, B2)", conf_has_state(esecutore.state_chart.conf_base,"A2") and conf_has_state(esecutore.state_chart.conf_base,"B2"))
 		end
 
 	t_storia_con_parallelo_2
@@ -249,7 +249,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_parallelo.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_parallelo_eventi_3.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (A1, B1)", conf_has_state(esecutore.conf_base_corrente,"A1") and conf_has_state(esecutore.conf_base_corrente,"B1"))
+			assert("ERRORE: il sistema non termina in (A1, B1)", conf_has_state(esecutore.state_chart.conf_base,"A1") and conf_has_state(esecutore.state_chart.conf_base,"B1"))
 		end
 
 	t_storia_con_parallelo_variazione_3
@@ -259,7 +259,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_parallelo_variazione.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_parallelo_variazione_eventi_3.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (A2, B1)", conf_has_state(esecutore.conf_base_corrente,"A2") and conf_has_state(esecutore.conf_base_corrente,"B1"))
+			assert("ERRORE: il sistema non termina in (A2, B1)", conf_has_state(esecutore.state_chart.conf_base,"A2") and conf_has_state(esecutore.state_chart.conf_base,"B1"))
 		end
 
 	t_storia_con_internal_01
@@ -269,7 +269,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_01.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.conf_base_corrente,"S1"))
+			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.state_chart.conf_base,"S1"))
 		end
 
 	t_storia_con_internal_02
@@ -279,7 +279,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_02.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 		end
 
 	t_storia_con_internal_03
@@ -289,7 +289,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_03.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 		end
 
 	t_storia_con_internal_04
@@ -299,7 +299,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_04.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.conf_base_corrente,"S1"))
+			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.state_chart.conf_base,"S1"))
 		end
 
 	t_storia_con_internal_05
@@ -309,7 +309,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_05.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.conf_base_corrente,"S1"))
+			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.state_chart.conf_base,"S1"))
 		end
 
 	t_storia_con_internal_06
@@ -319,7 +319,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_06.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 		end
 
 	t_storia_con_internal_07
@@ -329,7 +329,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_07.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.conf_base_corrente,"S1"))
+			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.state_chart.conf_base,"S1"))
 		end
 
 	t_storia_con_internal_08
@@ -339,7 +339,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_08.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.conf_base_corrente,"S1"))
+			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.state_chart.conf_base,"S1"))
 		end
 
 	t_storia_con_internal_09
@@ -349,7 +349,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_09.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.conf_base_corrente,"S1"))
+			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.state_chart.conf_base,"S1"))
 		end
 
 	t_storia_con_internal_10
@@ -359,7 +359,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_10.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.conf_base_corrente,"S1"))
+			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.state_chart.conf_base,"S1"))
 		end
 
 	t_storia_con_internal_11
@@ -369,7 +369,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_11.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 		end
 
 	t_storia_con_internal_12
@@ -379,7 +379,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_12.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.conf_base_corrente,"S1"))
+			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.state_chart.conf_base,"S1"))
 		end
 
 	t_storia_con_internal__var_deep_01
@@ -389,7 +389,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_deep.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_01.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 		end
 
 	t_storia_con_internal__var_deep_02
@@ -399,7 +399,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_deep.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_02.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 		end
 
 	t_storia_con_internal__var_deep_03
@@ -409,7 +409,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_deep.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_03.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 		end
 
 	t_storia_con_internal__var_deep_04
@@ -419,7 +419,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_deep.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_04.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 		end
 
 	t_storia_con_internal__var_deep_05
@@ -429,7 +429,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_deep.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_05.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 		end
 
 	t_storia_con_internal__var_deep_06
@@ -439,7 +439,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_deep.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_06.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 		end
 
 	t_storia_con_internal__var_deep_07
@@ -449,7 +449,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_deep.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_07.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 		end
 
 	t_storia_con_internal__var_deep_08
@@ -459,7 +459,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_deep.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_08.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.conf_base_corrente,"S1"))
+			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.state_chart.conf_base,"S1"))
 		end
 
 	t_storia_con_internal__var_deep_09
@@ -469,7 +469,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_deep.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_09.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 		end
 
 	t_storia_con_internal__var_deep_10
@@ -479,7 +479,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_deep.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_10.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.conf_base_corrente,"S1"))
+			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.state_chart.conf_base,"S1"))
 		end
 
 	t_storia_con_internal__var_deep_11
@@ -489,7 +489,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_deep.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_11.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 		end
 
 	t_storia_con_internal__var_deep_12
@@ -499,7 +499,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_deep.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_12.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.conf_base_corrente,"S1"))
+			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.state_chart.conf_base,"S1"))
 		end
 
 	t_storia_con_internal__var_shallow_01
@@ -509,7 +509,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_shallow.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_01.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 		end
 
 	t_storia_con_internal__var_shallow_02
@@ -519,7 +519,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_shallow.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_02.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 		end
 
 	t_storia_con_internal__var_shallow_03
@@ -529,7 +529,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_shallow.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_03.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 		end
 
 	t_storia_con_internal__var_shallow_04
@@ -539,7 +539,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_shallow.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_04.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 		end
 
 	t_storia_con_internal__var_shallow_05
@@ -549,7 +549,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_shallow.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_05.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 		end
 
 	t_storia_con_internal__var_shallow_06
@@ -559,7 +559,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_shallow.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_06.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 		end
 
 	t_storia_con_internal__var_shallow_07
@@ -569,7 +569,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_shallow.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_07.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 		end
 
 	t_storia_con_internal__var_shallow_08
@@ -579,7 +579,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_shallow.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_08.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.conf_base_corrente,"S1"))
+			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.state_chart.conf_base,"S1"))
 		end
 
 
@@ -590,7 +590,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_shallow.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_09.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 		end
 
 	t_storia_con_internal__var_shallow_10
@@ -600,7 +600,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_shallow.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_10.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.conf_base_corrente,"S1"))
+			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.state_chart.conf_base,"S1"))
 		end
 
 	t_storia_con_internal__var_shallow_11
@@ -610,7 +610,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_shallow.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_11.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.conf_base_corrente,"S2"))
+			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 		end
 
 	t_storia_con_internal__var_shallow_12
@@ -620,7 +620,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_shallow.xml"
   			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_12.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.conf_base_corrente,"S1"))
+			assert("ERRORE: il sistema non termina in (S1)", conf_has_state(esecutore.state_chart.conf_base,"S1"))
 		end
 
 	t_parallelo_con_storie_multiple_01
@@ -630,7 +630,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "parallelo_con_storie_multiple.xml"
   			nomi_files_prova [2] := test_data_dir + "parallelo_con_storie_multiple_eventi_01.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (P1B, P2B2, P3B)", conf_has_state(esecutore.conf_base_corrente,"P1B") and conf_has_state(esecutore.conf_base_corrente,"P2B2") and conf_has_state(esecutore.conf_base_corrente,"P3B"))
+			assert("ERRORE: il sistema non termina in (P1B, P2B2, P3B)", conf_has_state(esecutore.state_chart.conf_base,"P1B") and conf_has_state(esecutore.state_chart.conf_base,"P2B2") and conf_has_state(esecutore.state_chart.conf_base,"P3B"))
 		end
 
 	t_parallelo_con_storie_multiple_02
@@ -640,7 +640,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "parallelo_con_storie_multiple.xml"
   			nomi_files_prova [2] := test_data_dir + "parallelo_con_storie_multiple_eventi_02.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (P1B, P2B2, P3B)", conf_has_state(esecutore.conf_base_corrente,"P1B") and conf_has_state(esecutore.conf_base_corrente,"P2B2") and conf_has_state(esecutore.conf_base_corrente,"P3B"))
+			assert("ERRORE: il sistema non termina in (P1B, P2B2, P3B)", conf_has_state(esecutore.state_chart.conf_base,"P1B") and conf_has_state(esecutore.state_chart.conf_base,"P2B2") and conf_has_state(esecutore.state_chart.conf_base,"P3B"))
 		end
 
 	t_parallelo_con_storie_multiple_03
@@ -650,7 +650,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "parallelo_con_storie_multiple.xml"
   			nomi_files_prova [2] := test_data_dir + "parallelo_con_storie_multiple_eventi_03.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (P1B, P2B2, P3A)", conf_has_state(esecutore.conf_base_corrente,"P1B") and conf_has_state(esecutore.conf_base_corrente,"P2B2") and conf_has_state(esecutore.conf_base_corrente,"P3A"))
+			assert("ERRORE: il sistema non termina in (P1B, P2B2, P3A)", conf_has_state(esecutore.state_chart.conf_base,"P1B") and conf_has_state(esecutore.state_chart.conf_base,"P2B2") and conf_has_state(esecutore.state_chart.conf_base,"P3A"))
 		end
 
 	t_parallelo_con_storie_multiple_04
@@ -660,7 +660,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "parallelo_con_storie_multiple.xml"
   			nomi_files_prova [2] := test_data_dir + "parallelo_con_storie_multiple_eventi_04.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (P1A, P2B1, P3B)", conf_has_state(esecutore.conf_base_corrente,"P1A") and conf_has_state(esecutore.conf_base_corrente,"P2B1") and conf_has_state(esecutore.conf_base_corrente,"P3B"))
+			assert("ERRORE: il sistema non termina in (P1A, P2B1, P3B)", conf_has_state(esecutore.state_chart.conf_base,"P1A") and conf_has_state(esecutore.state_chart.conf_base,"P2B1") and conf_has_state(esecutore.state_chart.conf_base,"P3B"))
 		end
 
 	t_storie_inscatolate_complesso_01
@@ -670,7 +670,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_complesso.xml"
   			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_complesso_eventi_01.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (Q)", conf_has_state(esecutore.conf_base_corrente,"Q"))
+			assert("ERRORE: il sistema non termina in (Q)", conf_has_state(esecutore.state_chart.conf_base,"Q"))
 		end
 
 	t_storie_inscatolate_complesso_02
@@ -680,7 +680,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_complesso.xml"
   			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_complesso_eventi_02.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (P1B,P2A)", conf_has_state(esecutore.conf_base_corrente,"P1B") and conf_has_state(esecutore.conf_base_corrente,"P2A"))
+			assert("ERRORE: il sistema non termina in (P1B,P2A)", conf_has_state(esecutore.state_chart.conf_base,"P1B") and conf_has_state(esecutore.state_chart.conf_base,"P2A"))
 		end
 
 	t_storie_inscatolate_complesso_03
@@ -690,7 +690,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_complesso.xml"
   			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_complesso_eventi_03.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (Q)", conf_has_state(esecutore.conf_base_corrente,"Q"))
+			assert("ERRORE: il sistema non termina in (Q)", conf_has_state(esecutore.state_chart.conf_base,"Q"))
 		end
 
 	t_storie_inscatolate_complesso_04
@@ -700,7 +700,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_complesso.xml"
   			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_complesso_eventi_04.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (I2)", conf_has_state(esecutore.conf_base_corrente,"I2"))
+			assert("ERRORE: il sistema non termina in (I2)", conf_has_state(esecutore.state_chart.conf_base,"I2"))
 		end
 
 	t_storie_inscatolate_complesso_05
@@ -710,7 +710,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_complesso.xml"
   			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_complesso_eventi_05.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (P1A,P2A)", conf_has_state(esecutore.conf_base_corrente,"P1A") and conf_has_state(esecutore.conf_base_corrente,"P2A"))
+			assert("ERRORE: il sistema non termina in (P1A,P2A)", conf_has_state(esecutore.state_chart.conf_base,"P1A") and conf_has_state(esecutore.state_chart.conf_base,"P2A"))
 		end
 
 	t_storie_inscatolate_complesso_06
@@ -720,7 +720,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_complesso.xml"
   			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_complesso_eventi_06.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (S)", conf_has_state(esecutore.conf_base_corrente,"S"))
+			assert("ERRORE: il sistema non termina in (S)", conf_has_state(esecutore.state_chart.conf_base,"S"))
 		end
 
 	t_storie_inscatolate_complesso_06_a
@@ -770,7 +770,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_complesso.xml"
   			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_complesso_eventi_07.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (R2)", conf_has_state(esecutore.conf_base_corrente,"R2"))
+			assert("ERRORE: il sistema non termina in (R2)", conf_has_state(esecutore.state_chart.conf_base,"R2"))
 		end
 
 	t_storie_inscatolate_complesso_08
@@ -780,7 +780,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_complesso.xml"
   			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_complesso_eventi_08.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (P1B,P2A)", conf_has_state(esecutore.conf_base_corrente,"P1B") and conf_has_state(esecutore.conf_base_corrente,"P2A"))
+			assert("ERRORE: il sistema non termina in (P1B,P2A)", conf_has_state(esecutore.state_chart.conf_base,"P1B") and conf_has_state(esecutore.state_chart.conf_base,"P2A"))
 		end
 
 	t_storie_inscatolate_complesso_09
@@ -790,7 +790,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_complesso.xml"
   			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_complesso_eventi_09.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (P1B,P2B)", conf_has_state(esecutore.conf_base_corrente,"P1B") and conf_has_state(esecutore.conf_base_corrente,"P2B"))
+			assert("ERRORE: il sistema non termina in (P1B,P2B)", conf_has_state(esecutore.state_chart.conf_base,"P1B") and conf_has_state(esecutore.state_chart.conf_base,"P2B"))
 		end
 
 	t_storie_inscatolate_complesso_10
@@ -800,7 +800,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_complesso.xml"
   			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_complesso_eventi_10.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (R2)", conf_has_state(esecutore.conf_base_corrente,"R2"))
+			assert("ERRORE: il sistema non termina in (R2)", conf_has_state(esecutore.state_chart.conf_base,"R2"))
 		end
 
 	t_storie_inscatolate_complesso_11
@@ -810,7 +810,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_complesso.xml"
   			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_complesso_eventi_11.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (Q)", conf_has_state(esecutore.conf_base_corrente,"Q"))
+			assert("ERRORE: il sistema non termina in (Q)", conf_has_state(esecutore.state_chart.conf_base,"Q"))
 		end
 
 	t_storie_inscatolate_complesso_11_a
@@ -840,7 +840,7 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_complesso.xml"
   			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_complesso_eventi_12.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (R1)", conf_has_state(esecutore.conf_base_corrente,"R1"))
+			assert("ERRORE: il sistema non termina in (R1)", conf_has_state(esecutore.state_chart.conf_base,"R1"))
 		end
 
 	t_storie_inscatolate_complesso_13

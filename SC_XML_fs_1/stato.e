@@ -5,8 +5,8 @@
 	revision: ""
 
 -- TODO: classe da ristrutturare trasformandola in deferred con due sotto-classi per stati atomici e gerarchici,
--- STATO_ATOMICO è effective, mentre STATO_GERARCHIO è anch'essa deferred
--- ed ha come sotto-classi STATO_XOR e STATO_AND
+-- STATO_ATOMICO è effective, mentre STATO_GERARCHICO è anch'essa deferred
+-- ed ha come sotto-classi effective STATO_XOR e STATO_AND
 -- spostare feature figli, add_Figlio, make_with_parent in STATO_GERARCHICO
 
 class
@@ -159,7 +159,7 @@ feature -- modifica
 
 feature -- situazione
 
-	transizione_abilitata (eventi_correnti: LINKED_SET [STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]): detachable TRANSIZIONE
+	transizione_abilitata (eventi_correnti: LINKED_SET [STRING]; variabili: DATAMODEL): detachable TRANSIZIONE
 		local
 			index_count: INTEGER
 			transizione_corrente: detachable TRANSIZIONE
@@ -176,7 +176,7 @@ feature -- situazione
 			loop
 				transizione_corrente := transizioni [index_count]
 				evento_abilitato := transizione_corrente.check_evento (eventi_correnti)
-				condizione_abilitata := transizione_corrente.check_condizione (condizioni)
+				condizione_abilitata := transizione_corrente.check_condizione (variabili)
 				if evento_abilitato and condizione_abilitata then
 					Result := transizioni [index_count]
 				end
@@ -184,7 +184,7 @@ feature -- situazione
 			end
 			if Result = Void then
 				if attached genitore as sg then
-					Result := sg.transizione_abilitata (eventi_correnti, condizioni)
+					Result := sg.transizione_abilitata (eventi_correnti, variabili)
 				end
 			end
 		end
@@ -257,11 +257,12 @@ feature -- routines forse inutili
 		-- ritorna lo stato a cui porta la transizione di indice minimo attivabile nella configurazione corrente con `evento_corrente'
 		-- Giulia Iezzi, Alessando Filippo 12/apr/2020; EN 21/apr/2020
 		-- non viene mai chiamata
+		-- TODO: da rimuovere quando si ristruttura la classe
 		do
 			across transizioni as t
 			loop
 	        	if attivabile(t.item, evento_corrente, hash_delle_condizioni) then
-		        	Result := t.item.target
+		        	Result := t.item.destinazione
 		        end
 			end
 			if Result = Void then
@@ -272,6 +273,7 @@ feature -- routines forse inutili
 	get_transition (evento_corrente: STRING): TRANSIZIONE
 		-- ritorna la transizione abilitata con `evento_corrente'
 		-- non viene mai invocata
+		-- TODO: da rimuovere quando si ristruttura la classe
 		local
 			index_count: INTEGER
 			index: INTEGER

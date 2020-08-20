@@ -29,8 +29,8 @@ feature -- Test routines
 		do
 			nomi_files_prova[2] := nomi_files_prova[2] + "tre_stati_atomici_eventi_1.txt"
 			create esecutore.make(nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato nello stato corretto (three)", esecutore.conf_base_corrente.count = 1 and esecutore.conf_base_corrente[1].id.is_equal ("three") )
-			assert ("ERRORE il sistema non ha aggiornato correttamente le condizioni", esecutore.state_chart.condizioni.item ("alfa") and esecutore.state_chart.condizioni.item ("beta") and not esecutore.state_chart.condizioni.item ("gamma") )
+			assert ("ERRORE il sistema non ha terminato nello stato corretto (three)", esecutore.state_chart.conf_base.count = 1 and esecutore.state_chart.conf_base[1].id.is_equal ("three") )
+			assert ("ERRORE il sistema non ha aggiornato correttamente le condizioni", esecutore.state_chart.variabili.booleane.item ("alfa") and esecutore.state_chart.variabili.booleane.item ("beta") and not esecutore.state_chart.variabili.booleane.item ("gamma") )
 		end
 
 	t_esempio_2
@@ -40,8 +40,8 @@ feature -- Test routines
 		do
 			nomi_files_prova[2] := nomi_files_prova[2] + "tre_stati_atomici_eventi_2.txt"
 			create esecutore.make(nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato nello stato corretto (one)", esecutore.conf_base_corrente.count = 1 and esecutore.conf_base_corrente[1].id.is_equal ("one") )
-			assert ("ERRORE il sistema non ha aggiornato correttamente le condizioni", esecutore.state_chart.condizioni.item ("alfa") and esecutore.state_chart.condizioni.item ("beta") and not esecutore.state_chart.condizioni.item ("gamma") )
+			assert ("ERRORE il sistema non ha terminato nello stato corretto (one)", esecutore.state_chart.conf_base.count = 1 and esecutore.state_chart.conf_base[1].id.is_equal ("one") )
+			assert ("ERRORE il sistema non ha aggiornato correttamente le condizioni", esecutore.state_chart.variabili.booleane.item ("alfa") and esecutore.state_chart.variabili.booleane.item ("beta") and not esecutore.state_chart.variabili.booleane.item ("gamma") )
 		end
 
 	t_esempio_3
@@ -51,8 +51,8 @@ feature -- Test routines
 		do
 			nomi_files_prova[2] := nomi_files_prova[2] + "tre_stati_atomici_eventi_3.txt"
 			create esecutore.make(nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato nello stato corretto (one)", esecutore.conf_base_corrente.count = 1 and esecutore.conf_base_corrente[1].id.is_equal ("one") )
-			assert ("ERRORE il sistema non ha aggiornato correttamente le condizioni", not esecutore.state_chart.condizioni.item ("alfa") and esecutore.state_chart.condizioni.item ("beta") and not esecutore.state_chart.condizioni.item ("gamma") )
+			assert ("ERRORE il sistema non ha terminato nello stato corretto (one)", esecutore.state_chart.conf_base.count = 1 and esecutore.state_chart.conf_base[1].id.is_equal ("one") )
+			assert ("ERRORE il sistema non ha aggiornato correttamente le condizioni", not esecutore.state_chart.variabili.booleane.item ("alfa") and esecutore.state_chart.variabili.booleane.item ("beta") and not esecutore.state_chart.variabili.booleane.item ("gamma") )
 		end
 
 	t_esempio_4
@@ -62,10 +62,10 @@ feature -- Test routines
 		do
 			nomi_files_prova[2] := nomi_files_prova[2] + "tre_stati_atomici_eventi_4.txt"
 			create esecutore.make(nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato nello stato corretto (one)", esecutore.conf_base_corrente.count = 1 and esecutore.conf_base_corrente[1].id.is_equal ("one") )
-			assert ("ERRORE il sistema non ha aggiornato alfa", not esecutore.state_chart.condizioni.item ("alfa") )
-			assert ("ERRORE il sistema non ha aggiornato beta", esecutore.state_chart.condizioni.item ("beta") )
-			assert ("ERRORE il sistema non ha aggiornato gamma", not esecutore.state_chart.condizioni.item ("gamma") )
+			assert ("ERRORE il sistema non ha terminato nello stato corretto (one)", esecutore.state_chart.conf_base.count = 1 and esecutore.state_chart.conf_base[1].id.is_equal ("one") )
+			assert ("ERRORE il sistema non ha aggiornato alfa", not esecutore.state_chart.variabili.booleane.item ("alfa") )
+			assert ("ERRORE il sistema non ha aggiornato beta", esecutore.state_chart.variabili.booleane.item ("beta") )
+			assert ("ERRORE il sistema non ha aggiornato gamma", not esecutore.state_chart.variabili.booleane.item ("gamma") )
 		end
 
 	t_esempio_5
@@ -76,10 +76,10 @@ feature -- Test routines
 		do
 			nomi_files_prova[2] := nomi_files_prova[2] + "tre_stati_atomici_eventi_5.txt"
 			create esecutore.make(nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato nello stato corretto (one)", esecutore.conf_base_corrente.count = 1 and esecutore.conf_base_corrente[1].id.is_equal ("one") )
-			assert ("ERRORE il sistema non ha aggiornato alfa", not esecutore.state_chart.condizioni.item ("alfa") )
-			assert ("ERRORE il sistema non ha aggiornato beta", not esecutore.state_chart.condizioni.item ("beta") )
-			assert ("ERRORE il sistema non ha aggiornato gamma", not esecutore.state_chart.condizioni.item ("gamma") )
+			assert ("ERRORE il sistema non ha terminato nello stato corretto (one)", esecutore.state_chart.conf_base.count = 1 and esecutore.state_chart.conf_base[1].id.is_equal ("one") )
+			assert ("ERRORE il sistema non ha aggiornato alfa", not esecutore.state_chart.variabili.booleane.item ("alfa") )
+			assert ("ERRORE il sistema non ha aggiornato beta", not esecutore.state_chart.variabili.booleane.item ("beta") )
+			assert ("ERRORE il sistema non ha aggiornato gamma", not esecutore.state_chart.variabili.booleane.item ("gamma") )
 		end
 
 	t_esempio_6
@@ -90,10 +90,10 @@ feature -- Test routines
 		do
 			nomi_files_prova[2] := nomi_files_prova[2] + "tre_stati_atomici_eventi_6.txt"
 			create esecutore.make(nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato nello stato corretto (one)", esecutore.conf_base_corrente.count = 1 and esecutore.conf_base_corrente[1].id.is_equal ("one") )
-			assert ("ERRORE il sistema non ha aggiornato alfa", not esecutore.state_chart.condizioni.item ("alfa") )
-			assert ("ERRORE il sistema non ha aggiornato beta", not esecutore.state_chart.condizioni.item ("beta") )
-			assert ("ERRORE il sistema non ha aggiornato gamma", not esecutore.state_chart.condizioni.item ("gamma") )
+			assert ("ERRORE il sistema non ha terminato nello stato corretto (one)", esecutore.state_chart.conf_base.count = 1 and esecutore.state_chart.conf_base[1].id.is_equal ("one") )
+			assert ("ERRORE il sistema non ha aggiornato alfa", not esecutore.state_chart.variabili.booleane.item ("alfa") )
+			assert ("ERRORE il sistema non ha aggiornato beta", not esecutore.state_chart.variabili.booleane.item ("beta") )
+			assert ("ERRORE il sistema non ha aggiornato gamma", not esecutore.state_chart.variabili.booleane.item ("gamma") )
 		end
 
 end

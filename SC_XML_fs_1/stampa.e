@@ -30,11 +30,16 @@ feature -- creazione
 			testo_non_void: testo /= Void
 		end
 
-feature -- azione
-
-	action (condizioni: HASH_TABLE [BOOLEAN, STRING])
+	stampa
 		do
 			print ("  LOG:   " + testo + "%N")
+		end
+
+feature -- azione
+
+	esegui (variabili: DATAMODEL)
+		do
+			stampa
 		end
 
 end

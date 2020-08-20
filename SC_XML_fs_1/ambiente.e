@@ -1,6 +1,6 @@
 note
 	description: "La classe che rappresenta gli eventi esterni cui la StateChar reagisce"
-	author: ""
+	author: "EN + studenti corsi PSI"
 	date: "21/apr/2020"
 	revision: "1.1"
 
@@ -29,7 +29,6 @@ feature
 
 	acquisisci_eventi (nome_file_eventi: STRING)
 			-- Legge gli eventi dal file passato come argomento e li inserisce in `eventi_esterni'
-
 		local
 			file: PLAIN_TEXT_FILE
 			i: INTEGER
@@ -75,7 +74,6 @@ feature
 				loop
 					if attached t.item.evento as e then
 						eventi_nella_SC.put (True, e)
---						print("inserito in eventi_nella_SC evento: " + e + "%N")
 					end
 				end
 			end
@@ -86,7 +84,7 @@ feature
 				across ee.item as ei
 				loop
 					if not eventi_nella_SC.has (ei.item) then
-						print ("ATTENZIONE: l'evento " + ei.item + " non viene utilizzato!%N")
+						print ("AVVISO: l'evento " + ei.item + " non viene utilizzato dalla statechart letta!%N")
 						Result := false
 					end
 				end

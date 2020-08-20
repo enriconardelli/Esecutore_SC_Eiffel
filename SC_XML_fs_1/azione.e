@@ -1,15 +1,15 @@
 note
-	description: "Summary description for {AZIONE}."
-	author: "Gabriele Cacchioni & Davide Canalis & Daniele Fakhoury & Eloisa Scarsella"
-	date: "9-04-2015"
+	description: "La classe generica per il contenuto eseguibile"
+	author: "EN + studenti corsi PSI"
+	date: "$Date$"
 	revision: "0"
 
 deferred class
 	AZIONE
 
-feature --generica
+feature -- generica
 
-	action (condizioni: HASH_TABLE [BOOLEAN, STRING])
+	esegui (variabili: DATAMODEL)
 		deferred
 		end
 
