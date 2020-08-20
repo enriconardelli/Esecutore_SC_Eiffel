@@ -1,8 +1,8 @@
 note
 	description: "La classe che rappresenta la statechart"
-	author: "Daniele Fakhoury & Eloisa Scarsella & Luca Biondo & Simone Longhi"
-	date: "20 aprile 2018"
-	revision: "2"
+	author: "EN + studenti corsi PSI"
+	date: "Agosto 2020"
+	revision: "$Revision$"
 
 class
 	CONFIGURAZIONE
@@ -226,7 +226,7 @@ feature -- inizializzazione SC
 			across
 				elements as e
 			loop
-				debug ("SC_assegna_initial") if e.item.name ~ "state" or e.item.name ~ "parallel" then stampa_elemento (e.item) end
+				debug ("SC_assegna_initial") if e.item.name ~ "state" or e.item.name ~ "parallel" then stampa_elemento (e.item) end end
 				-- NB: gli stati atomici non sono né {STATO_XOR} né {STATO_AND}
 				if e.item.name ~ "state" and attached e.item.attribute_by_name ("id") as id_attr then
 					if attached {STATO_XOR} stati.item (id_attr.value) as stato then
