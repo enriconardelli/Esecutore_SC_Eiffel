@@ -288,11 +288,6 @@ feature -- inizializzazione SC
 				print ("AVVISO: la SC non specifica attributo 'initial', si sceglie il primo figlio che sia <state> o <parallel>.%N")
 				iniziale_SC := first_sub_state (radice)
 			end
---			if attached iniziale_SC as isc then
---				inizializza_conf_base (isc)
---			else
---				print ("ERRORE: stato iniziale della SC erroneamente specificato%N")
---			end
 			if attached iniziale_SC as isc then
 				inizializza_conf_base (isc)
 			else
