@@ -34,11 +34,13 @@ feature -- creazione
 	make (nome_SC: STRING)
 		do
 			create conf_base.make_empty
-			create creatore_di_assegna
-			crea_albero (nome_SC)
 			create stati.make (1)
 			create variabili.make
-			crea_stati_e_condizioni
+			create creatore_di_assegna
+			crea_albero (nome_SC)
+			if not ha_problemi_con_il_file_della_sc then
+				crea_stati_e_condizioni
+			end
 		end
 
 feature -- supporto alla creazione
@@ -63,10 +65,10 @@ feature -- supporto alla creazione
 				print (" - ")
 				print (parser.last_error_description)
 				print ("%N ")
-				ha_problemi_con_il_file_della_sc := TRUE
+				ha_problemi_con_il_file_della_sc := True
 			else
 				print ("Parsing OK. %N")
-				ha_problemi_con_il_file_della_sc := FALSE
+				ha_problemi_con_il_file_della_sc := False
 			end
 		end
 
