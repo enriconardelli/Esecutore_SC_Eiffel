@@ -10,6 +10,10 @@ class
 create
 	make_with_target
 
+feature -- costante
+
+	Valore_Nullo : STRING = "NULL"
+
 feature -- creazione
 
 	make_with_target(stato_destinazione, stato_sorgente: STATO)
@@ -19,7 +23,7 @@ feature -- creazione
             create azioni.make_empty
 			evento := Void
 			internal := False
-			condizione := "NULL"
+			condizione := valore_nullo
 		end
 
 feature -- attributi
@@ -77,67 +81,73 @@ feature -- check
 		do
 			if attached evento as e then
 				if istante.has (e) then
-					result:= True
+					Result:= True
 				end
 			else
-				result:= True
+				Result:= True
 			end
 		end
 
 	check_condizione (variabili: DATAMODEL): BOOLEAN
 	do
-		result := check_condizione_booleana (variabili.booleane) and check_condizione_intera (variabili.intere)
+		Result := check_condizione_booleana (variabili.booleane) or check_condizione_intera (variabili.intere)
 	end
 
 	check_condizione_booleana (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
 	-- Controlla se la condizione sulle variabili booleane è verificata.
 	do
-		if condizione ~ "NULL" then
-			result:= True
+		if condizione ~ valore_nullo then
+			Result:= True
 		else
 			if variabili_booleane.has (condizione) then
-				result:= variabili_booleane.item (condizione)
+				Result:= variabili_booleane.item (condizione)
 			else
-				result:= True
+				Result:= False
 			end
 		end
 	end
 
 	check_condizione_intera (variabili_intere: HASH_TABLE [INTEGER, STRING]): BOOLEAN
 	-- Controlla se la condizione sulle variabili intere è verificata.
+	-- assunzioni che NON vengono controllate:
+	--		ciò che c'è prima di '<' o '>' o '=' o '/=' è il nome della variabile
+	--		se c'è '=' dopo '<' o '>' allora li segue immediatamente
+	--		se c'é '/' allora '=' lo segue immediatamente
+	--		tutto ciò che c'è dopo espressione di confronto è trasformabile in numero
 	local
-		loc: STRING
-		cond_num: INTEGER
+		var: STRING
+		valore: INTEGER
 	do
-		Result := True
 		if condizione.has ('<') then
-			loc := condizione.substring (1,   condizione.index_of ('<', 1) - 1)
+			var := condizione.substring (1,   condizione.index_of ('<', 1) - 1)
 			if condizione.has_substring ("<=") then
-				cond_num := condizione.substring (condizione.index_of ('<', 1) + 2, condizione.count).to_integer
-				Result := variabili_intere.item (loc) <= cond_num
+				valore := condizione.substring (condizione.index_of ('<', 1) + 2, condizione.count).to_integer
+				Result := variabili_intere.item (var) <= valore
 			else
-				cond_num := condizione.substring ( condizione.index_of ('<', 1) + 1, condizione.count).to_integer
-				Result := variabili_intere.item (loc) < cond_num
+				valore := condizione.substring ( condizione.index_of ('<', 1) + 1, condizione.count).to_integer
+				Result := variabili_intere.item (var) < valore
 			end
 		elseif condizione.has ('>') then
-			loc := condizione.substring (1,  condizione.index_of ('>', 1) - 1)
+			var := condizione.substring (1,  condizione.index_of ('>', 1) - 1)
 			if condizione.has_substring (">=") then
-				cond_num := condizione.substring (condizione.index_of ('>', 1) + 2, condizione.count).to_integer
-				Result := variabili_intere.item (loc) >= cond_num
+				valore := condizione.substring (condizione.index_of ('>', 1) + 2, condizione.count).to_integer
+				Result := variabili_intere.item (var) >= valore
 			else
-				cond_num := condizione.substring ( condizione.index_of ('>', 1) + 1, condizione.count).to_integer
-				Result := variabili_intere.item (loc) > cond_num
+				valore := condizione.substring ( condizione.index_of ('>', 1) + 1, condizione.count).to_integer
+				Result := variabili_intere.item (var) > valore
 			end
 		elseif condizione.has ('=') then
 			if condizione.has_substring ("/=") then
-				loc := condizione.substring (1,   condizione.index_of ('/', 1) - 1)
-				cond_num := condizione.substring (condizione.index_of ('/', 1) + 2, condizione.count).to_integer
-				Result := variabili_intere.item (loc) /= cond_num
+				var := condizione.substring (1,   condizione.index_of ('/', 1) - 1)
+				valore := condizione.substring (condizione.index_of ('/', 1) + 2, condizione.count).to_integer
+				Result := variabili_intere.item (var) /= valore
 			else
-				loc := condizione.substring (1,  condizione.index_of ('=', 1) - 1)
-				cond_num := condizione.substring ( condizione.index_of ('=', 1) + 1, condizione.count).to_integer
-				Result := variabili_intere.item (loc) = cond_num
+				var := condizione.substring (1,  condizione.index_of ('=', 1) - 1)
+				valore := condizione.substring ( condizione.index_of ('=', 1) + 1, condizione.count).to_integer
+				Result := variabili_intere.item (var) = valore
 			end
+		else
+			Result := False
 		end
 	end
 end
