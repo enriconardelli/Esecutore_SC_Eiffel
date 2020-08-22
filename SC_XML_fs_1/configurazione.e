@@ -244,12 +244,18 @@ feature -- inizializzazione SC
 							else
 								print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come sotto-stato iniziale di default dello stato >|" + stato.id + "|< non esiste!%N")
 							end
-						else -- `e.item' non ha attributo 'initial'
+						else -- `e.item' non ha attributo 'initial' ma certamente first_sub_state ritorna figlio <state> o <parallel>
 							print ("AVVISO: lo <state> >|" + stato.id + "|< non specifica attributo 'initial', si sceglie il primo figlio che sia <state> o <parallel>.%N")
-							stato.set_initial (first_sub_state (e.item))
+							if attached first_sub_state (e.item) as fss then
+								stato.set_initial (fss)
+							end
 						end
 						-- ricorsione sui figli
 						assegna_initial (e.item.elements)
+					else -- si tratta di uno stato atomico, non deve avere attributo initial
+						if attached e.item.attribute_by_name ("initial") and attached stati.item (id_attr.value) as stato then
+							print ("AVVISO: lo <state> >|" + stato.id + "|< specifica attributo 'initial' senza avere figli.%N")
+						end
 					end
 				end
 				if e.item.name ~ "parallel" and attached e.item.attribute_by_name ("id") as id_attr then
@@ -266,7 +272,7 @@ feature -- inizializzazione SC
 		-- inizializza la radice di `conf_base' in base a stato top iniziale e poi invoca inizializzazione ricorsiva con esso
 		-- NB: gli stati "top" della SC non hanno genitore
 		local
-			iniziale_SC: STATO
+			iniziale_SC: detachable STATO
 		do
 			if attached radice.attribute_by_name ("initial") as initial_attr then
 				if attached stati.item (initial_attr.value) as r then
@@ -282,11 +288,17 @@ feature -- inizializzazione SC
 				print ("AVVISO: la SC non specifica attributo 'initial', si sceglie il primo figlio che sia <state> o <parallel>.%N")
 				iniziale_SC := first_sub_state (radice)
 			end
+--			if attached iniziale_SC as isc then
+--				inizializza_conf_base (isc)
+--			else
+--				print ("ERRORE: stato iniziale della SC erroneamente specificato%N")
+--			end
 			if attached iniziale_SC as isc then
 				inizializza_conf_base (isc)
 			else
-				print ("------- stato iniziale della SC erroneamente specificato%N")
+				print ("ERRORE: la SC non specifica attributo 'initial' ma non ha figli <state> o <parallel>!%N")
 			end
+
 		end
 
 	inizializza_conf_base (stato: STATO)
@@ -713,11 +725,13 @@ feature -- supporto generale
 			end
 		end
 
-	first_sub_state (element: XML_ELEMENT): STATO
+	first_sub_state (element: XML_ELEMENT): detachable STATO
+	-- torna il primo elemento <state> o <parallel> figlio di `element', se esiste
 		local
 			place_holder: INDEXABLE_ITERATION_CURSOR [XML_ELEMENT]
 		do
-			create Result.make_with_id ("null_state")
+			debug ("SC_first_sub_state") print ("elemento passato: %N"); stampa_elemento (element) end
+--			create Result.make_with_id ({TRANSIZIONE}.Valore_Nullo)
 			across
 				element.elements as e
 			from
@@ -727,15 +741,18 @@ feature -- supporto generale
 			loop
 				place_holder := e
 			end
-			debug ("SC_first_sub_state")
-				print ("AVVISO: trovato primo figlio <state> o <parallel>%N")
-				stampa_elemento (place_holder.item)
-			end
-			if attached place_holder.item.attribute_by_name ("id") as id_attr then
-				if attached stati.item (id_attr.value) as sub_state then
-					Result := sub_state
+			if place_holder.after then
+				print ("ERRORE: non esistono <state> o <parallel> nel modello!%N")
+			else
+				debug ("SC_first_sub_state") print ("AVVISO: trovato primo figlio <state> o <parallel>%N"); stampa_elemento (place_holder.item) end
+				-- NB: regolarità di 'id' è stata già controllata in `istanzia_stati'
+				if attached place_holder.item.attribute_by_name ("id") as id_attr then
+					if attached stati.item (id_attr.value) as sub_state then
+						Result := sub_state
+					end
 				end
 			end
+
 		end
 
 	stampa_elemento (element: XML_ELEMENT)
