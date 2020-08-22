@@ -112,7 +112,7 @@ feature -- inizializzazione SC
 					if id_illegittimo (nome.value) then
 						print ("ERRORE: elemento <data> con 'id' >|" + nome.value + "|< di valore stringa vuota o blank o 'NULL' !%N")
 					elseif attached {XML_ATTRIBUTE} data.item.attribute_by_name ("expr") as valore then
-						assegna_variabile (nome.value, valore.value)
+						assegna_variabile (pulisci_stringa (nome.value), pulisci_stringa (valore.value))
 					else
 						print ("ERRORE: elemento <data> con id >|" + nome.value + "|< senza attributo 'expr'!%N")
 					end
@@ -120,8 +120,8 @@ feature -- inizializzazione SC
 					print ("ERRORE: elemento <data> senza attributo 'id'!%N")
 				end
 			end
-			-- aggiunge variabile "NULL" che è sempre True e si applica alle transizioni che non specificano una condizione nel file del modello
-			variabili.booleane.extend (True, "NULL")
+			-- aggiunge variabile booleana '{TRANSIZIONE}.Valore_Nullo' che è sempre True e si usa per le transizioni che non specificano una condizione nel file del modello
+			variabili.booleane.extend (True, {TRANSIZIONE}.Valore_Nullo)
 		end
 
 	assegna_variabile (variabile, espressione: STRING)
@@ -500,16 +500,57 @@ feature -- inizializzazione transizioni
 		end
 
 	assegna_condizione (transition: XML_ELEMENT; transizione: TRANSIZIONE)
-	-- TODO: fare qui controllo della correttezza sintattica della condizione per interi
+	-- TODO: migliorare il controllo della correttezza sintattica delle condizione per interi
 		do
 			if attached transition.attribute_by_name ("cond") as cond then
 				if id_illegittimo (cond.value) then
-					print ("ERRORE: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|< specifica una condizione di valore >|" + cond.value + "|< stringa vuota o blank o 'NULL' !%N")
+					print ("ERRORE: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|< specifica una condizione di valore >|" + cond.value + "|< stringa vuota o blank o Valore_Nullo !%N")
 				else
-					transizione.set_condizione (cond.value)
+					if booleana_legittima (cond.value) or intera_legittima (cond.value) then
+						transizione.set_condizione (pulisci_stringa (cond.value))
+					else
+						print ("ERRORE: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|< specifica una condizione di valore (non pulito) >|" + cond.value + "|< illegittimo !%N")
+					end
 				end
 			else
-				transizione.set_condizione ("NULL")
+				transizione.set_condizione ({TRANSIZIONE}.Valore_Nullo)
+			end
+		end
+
+	booleana_legittima (stringa: STRING): BOOLEAN
+	-- verifica che `stringa' sia una condizione booleana legittima
+		do
+			if variabili.booleane.has (pulisci_stringa (stringa)) then
+				Result := True
+			else
+				Result := False
+			end
+		end
+
+	intera_legittima (stringa: STRING): BOOLEAN
+	-- verifica che `stringa' sia una condizione intera legittima
+	-- TODO: si ripetono alcuni controlli fatti in TRANSIZIONI.check_condizione_intera per la verifica della condizione
+	-- TODO: usare libreria di Eiffel 'parse' per analisi di correttezza della stringa delle condizioni (va aggiunta al progetto)
+		local
+			var: STRING
+		do
+			if stringa.has ('<') then
+				var := stringa.substring (1, stringa.index_of ('<', 1) - 1)
+			elseif stringa.has ('>') then
+				var := stringa.substring (1, stringa.index_of ('>', 1) - 1)
+			elseif stringa.has ('/') then
+				var := stringa.substring (1, stringa.index_of ('/', 1) - 1)
+			elseif stringa.has ('=') then
+				var := stringa.substring (1, stringa.index_of ('=', 1) - 1)
+			else
+				Result := False
+			end
+			if attached var as v then
+				if variabili.intere.has (pulisci_stringa (v)) then
+					Result := True
+				else
+					Result := False
+				end
 			end
 		end
 
@@ -648,9 +689,22 @@ feature -- inizializzazione onentry/onexit
 
 feature -- supporto generale
 
-	id_illegittimo (stringa: STRING): BOOLEAN
+	pulisci_stringa (stringa: STRING): STRING
+	-- elimina eventuali blank iniziali o finali
 		do
-			if stringa ~ "" or stringa.is_whitespace or stringa.as_lower ~ "null"  then
+			stringa.prune_all_leading (' ')
+			stringa.prune_all_trailing (' ')
+			Result := stringa
+		end
+
+	id_illegittimo (stringa: STRING): BOOLEAN
+		local
+			-- {TRANSIZIONE}.Valore_Nullo è una costante e non posso convertirla 'as_lower'
+			valore_nullo: STRING
+		do
+			valore_nullo := {TRANSIZIONE}.Valore_Nullo
+			if stringa ~ "" or stringa.is_whitespace or stringa.as_lower ~ valore_nullo.as_lower  then
+				-- il Valore_Nullo non può essere specificato nel model ma solo assegnato nella costruzione della SC
 				Result := True
 			else
 				Result := False
