@@ -242,30 +242,26 @@ feature -- evoluzione della statechart
 			end
 		end
 
-	aggiungi_paralleli (target: STATO; prossima_conf_base: ARRAY [STATO])
+	aggiungi_paralleli (destinazione: STATO; prossima_conf_base: ARRAY [STATO])
 		local
 			i: INTEGER
 		do
-			target.set_attivo
-			if attached {STATO_AND} target.genitore  as sgt and then not sgt.attivo then
-				from
-					i := sgt.initial.lower
-				until
-					i = sgt.initial.upper + 1
+			destinazione.set_attivo
+			if attached {STATO_AND} destinazione.genitore as dg and then not dg.attivo then
+				across dg.initial as dgi
 				loop
-					if not sgt.initial [i].is_equal(target) then
-						trova_default (sgt.initial [i], prossima_conf_base)
+					if not dgi.item.is_equal(destinazione) then
+						trova_default (dgi.item, prossima_conf_base)
 					end
-					i := i + 1
 				end
 			end
-			if attached target.genitore as sgt then
-				aggiungi_paralleli (sgt, prossima_conf_base)
+			if attached destinazione.genitore as dg then
+				aggiungi_paralleli (dg, prossima_conf_base)
 			end
 		end
 
 	trova_default (stato: STATO; prossima_conf_base: ARRAY [STATO])
-	-- segue le transizioni di default e aggiunge lo stato atomico alla 'prossima_conf_base'
+	-- segue le transizioni di default e aggiunge lo stato atomico a `prossima_conf_base'
 	-- se è presente una storia (non vuota) allora viene seguita al posto delle transizioni di default
 		local
 			i: INTEGER
@@ -276,13 +272,9 @@ feature -- evoluzione della statechart
 				stato.set_attivo
 				esegui_onentry(stato)
 				if not stato.initial.is_empty then
-					from
-						i := stato.initial.lower
-					until
-						i = stato.initial.upper + 1
+					across stato.initial as  si
 					loop
-						trova_default (stato.initial [i], prossima_conf_base)
-						i := i + 1
+						trova_default (si.item, prossima_conf_base)
 					end
 				else
 					-- `stato' è uno stato atomico
@@ -402,21 +394,17 @@ feature -- esecuzione azioni
 		local
 			i: INTEGER
 		do
-			from
-				i := p_azioni.lower
-			until
-				i = p_azioni.upper + 1
+			across p_azioni as  pa
 			loop
-				p_azioni [i].esegui (state_chart.variabili)
-				i := i + 1
+				pa.item.esegui (state_chart.variabili)
 			end
 		end
 
-	esegui_azioni_onentry (p_contesto: detachable STATO; p_target: STATO)
+	esegui_azioni_onentry (p_contesto: detachable STATO; p_destinazione: STATO)
 		do
-			if attached p_target.genitore as sg and then sg /= p_contesto then
-				esegui_azioni_onentry (p_contesto, sg)
-				esegui_onentry(sg)
+			if attached p_destinazione.genitore as dg and then dg /= p_contesto then
+				esegui_azioni_onentry (p_contesto, dg)
+				esegui_onentry(dg)
 			end
 		end
 
