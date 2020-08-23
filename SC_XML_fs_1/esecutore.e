@@ -74,7 +74,7 @@ feature -- evoluzione della statechart
 						aggiungi_paralleli (te.item.destinazione, prossima_conf_base)
 					end
 					aggiungi_stati_attivi(prossima_conf_base)
-					prossima_conf_base := riordina_conf_base(prossima_conf_base)
+					prossima_conf_base := riordina_stati(prossima_conf_base)
 					if not prossima_conf_base.is_empty then
 						state_chart.conf_base.copy (prossima_conf_base)
 					end
@@ -243,8 +243,6 @@ feature -- evoluzione della statechart
 		end
 
 	aggiungi_paralleli (destinazione: STATO; prossima_conf_base: ARRAY [STATO])
-		local
-			i: INTEGER
 		do
 			destinazione.set_attivo
 			if attached {STATO_AND} destinazione.genitore as dg and then not dg.attivo then
@@ -263,8 +261,6 @@ feature -- evoluzione della statechart
 	trova_default (stato: STATO; prossima_conf_base: ARRAY [STATO])
 	-- segue le transizioni di default e aggiunge lo stato atomico a `prossima_conf_base'
 	-- se è presente una storia (non vuota) allora viene seguita al posto delle transizioni di default
-		local
-			i: INTEGER
 		do
 			if attached stato.storia as storia and then not storia.storia_vuota then
 				segui_storia(stato, prossima_conf_base)
@@ -391,8 +387,6 @@ feature -- esecuzione azioni
 		end
 
 	esegui_azioni_transizione (p_azioni: ARRAY [AZIONE])
-		local
-			i: INTEGER
 		do
 			across p_azioni as  pa
 			loop
@@ -424,27 +418,26 @@ feature -- controllo
 
 feature -- utilita
 
-	riordina_conf_base (conf_base: ARRAY[STATO]): ARRAY[STATO]
+	riordina_stati (p_stati: ARRAY[STATO]): ARRAY[STATO]
 	-- Agulini Claudia & Fiorini Federico 11/05/2020
-	-- Viene usata per riordinare la configurazione rispettando l' ordine del file xml
+	-- Riordina `p_stati' in base all'ordine del file .xml, che è quello con cui sono stati creati gli stati
 	local
-		conf_ordinata: ARRAY[STATO]
+		stati_ordinati: ARRAY[STATO]
 	do
-		create conf_ordinata.make_empty
+		create stati_ordinati.make_empty
 		across
 			state_chart.stati as stati
 		loop
-			if conf_base.has (stati.item) then
-				conf_ordinata.force (stati.item, conf_ordinata.count + 1)
+			if p_stati.has (stati.item) then
+				stati_ordinati.force (stati.item, stati_ordinati.count + 1)
 			end
 		end
-		Result := conf_ordinata
+		Result := stati_ordinati
 	end
 
 	sorgenti_ordinate (evento: LINKED_SET[STRING]; variabili: DATAMODEL): ARRAY[STATO]
 	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
-	-- Dati eventi e variabili, restituisce l'array di sorgenti delle transizioni abilitate in `state_chart.conf_base'
-	-- ordinate secondo l'ordine del file .xml
+	-- Dati eventi e variabili, estrae da `state_chart.conf_base' gli stati sorgenti delle transizioni abilitate e lo riordina
 		do
 			create Result.make_empty
 			across
@@ -454,7 +447,7 @@ feature -- utilita
 					Result.force (ta.sorgente, Result.count + 1)
 				end
 			end
-			Result := riordina_conf_base(Result)
+			Result := riordina_stati (Result)
 		end
 
 	stampa_conf_corrente (indice: INTEGER)
