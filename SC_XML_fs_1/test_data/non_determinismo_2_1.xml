@@ -2,30 +2,24 @@
 <scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="T">
 <state id="T" initial="P">
 	<parallel id="P">
-
 		<state id="P2" initial="P2A">
-			<state id="P2B">
-			</state>
-			<state id="P2A">
-			</state>
+			<state id="P2B" />
+			<state id="P2A" />
 		</state>	
 		<state id="P1" initial="P1A">	
 			<state id="P1A">	
 				<transition event="x" target="P1B">
-				<log name="x: da P1A a P1B" />
+					<log name="x: da P1A a P1B" />
 				</transition>
 			</state>
-			<state id="P1B">
-			</state>
+			<state id="P1B" />
 		</state>
-	
-    	</parallel>
+	</parallel>
 
-	<state id="C"></state>
+	<state id="C" />
 
 	<transition event="x" target="C" type="internal">
-	<log name="x: da T a C" />
+		<log name="x: da T a C" />
 	</transition>
-
 </state>
 </scxml>
