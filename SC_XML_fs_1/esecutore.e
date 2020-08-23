@@ -65,10 +65,10 @@ feature -- evoluzione della statechart
 				if attached eventi [istante] as eventi_correnti then
 					stampa_conf_corrente (istante)
 					create prossima_conf_base.make_empty
-					transizioni_eseguibili:= trova_transizioni_eseguibili(eventi_correnti, state_chart.variabili)
+					transizioni_eseguibili := trova_transizioni_eseguibili (eventi_correnti, state_chart.variabili)
 					across transizioni_eseguibili as te
 					loop
-						salva_storie(genitore_piu_grande(te.item))
+						salva_storie (antenato_massimo_uscita (te.item))
 						esegui_azioni (te.item)
 						trova_default (te.item.destinazione, prossima_conf_base)
 						aggiungi_paralleli (te.item.destinazione, prossima_conf_base)
@@ -156,10 +156,10 @@ feature -- evoluzione della statechart
 			end
 		end
 
-	trova_transizioni_eseguibili(evento: LINKED_SET[STRING]; variabili: DATAMODEL): ARRAY[TRANSIZIONE]
+	trova_transizioni_eseguibili(eventi: LINKED_SET[STRING]; variabili: DATAMODEL): ARRAY[TRANSIZIONE]
 		-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
 		-- restituisce l'array di transizioni che possono essere eseguite nello stato attuale del sistema
-		-- rispettando le specifiche SCXML dell'ordine degli stati nel file .xml e della gerarchia (modello object-oriented)
+		-- rispettando le specifiche SCXML dell'ordine degli stati nel file .xml e della gerarchia (priorità strutturale object-oriented)
 		local
 			transizioni: ARRAY[TRANSIZIONE]
 			i: INTEGER
@@ -167,42 +167,58 @@ feature -- evoluzione della statechart
 			sorgenti: ARRAY[STATO]
 		do
 			create transizioni.make_empty
-			sorgenti := sorgenti_ordinate(evento, variabili)
+			sorgenti := stati_eseguibili (eventi, variabili)
+			print("=============================%N")
+			print (" stati sorgenti delle transizioni eseguibili in questo istante%N");
+			stampa_stati(sorgenti)
+			print("=============================%N")
 			from
-				i:=sorgenti.lower
+				i := sorgenti.lower
 			until
-				i=sorgenti.upper+1
+				i = sorgenti.upper + 1
 			loop
 				if i = sorgenti.upper or else not sorgenti[i].antenato_di(sorgenti[i+1]) then
-					-- una sorgente che contiene la successiva non deve essere eseguita
-					if attached sorgenti[i].transizione_abilitata (evento, variabili) as ta then
-						if attached uscita_precedente implies genitore_piu_grande(ta).incomparabile_con(uscita_precedente) then
-							-- impedendo di uscire dal parallelo se con lo stesso evento non sono precedentemente uscito
-							transizioni.force (ta,transizioni.count+1)
-							uscita_precedente:=genitore_piu_grande(ta)
+					-- uno stato in sorgenti che è antenato dello stato immediatamente successivo non deve essere considerato (priorità strutturale object-oriented)
+					--		e se non è antenato di questo non è antenato di alcun altro dopo di esso, dal momento che il non essere
+					--		antenato di quello immediatamente successivo implica che nessuno dei suoi discendenti possiede transizioni eseguibili
+					if attached sorgenti[i].transizione_abilitata (eventi, variabili) as ta then
+						print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id)
+						if attached uscita_precedente implies antenato_massimo_uscita(ta).incomparabile_con(uscita_precedente) then
+							-- questa transizione mi fa uscire da uno stato incomparabile con quello della precedente transizione
+							print(" viene mantenuto per la transizione%N")
+							transizioni.force (ta, transizioni.count + 1)
+							uscita_precedente := antenato_massimo_uscita (ta)
+						else
+							-- uno stato parallelo di quello della precedente transizione mi farebbe uscire con questa transizione
+							-- da un loro comune antenato parallelo da cui quello della precedente transizione non mi faceva uscire
+							print(" viene scartato perche' fa uscire da comune antenato parallelo'.%N")
 						end
+					end
+				else
+					if attached sorgenti[i].transizione_abilitata (eventi, variabili) as ta then
+						print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id)
+						print(" e' antenato di sorgente successiva " + (i+1).out + ": " + sorgenti[i+1].id + " e viene scartato.%N")
 					end
 				end
 				i:=i+1
 			end
-
 			Result:=transizioni
 		end
 
-	aggiungi_stati_attivi(conf_da_modificare: ARRAY[STATO])
+	aggiungi_stati_attivi (conf_da_modificare: ARRAY[STATO])
 	-- Arianna & Riccardo 05/07/2020
 	-- aggiunge stati attivi alla configurazione
 		do
 			across
-				state_chart.conf_base as cbc
+				state_chart.conf_base as sc_cb
 			loop
-				if cbc.item.attivo then
-					conf_da_modificare.force(cbc.item,conf_da_modificare.count + 1)
+				if sc_cb.item.attivo then
+					conf_da_modificare.force (sc_cb.item, conf_da_modificare.count + 1)
 				end
 			end
 		end
 
-	genitore_piu_grande(transizione: TRANSIZIONE): STATO
+	antenato_massimo_uscita (transizione: TRANSIZIONE): STATO
 	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
 	-- restituisce l'antenato più grande dal quale si esce con 'transizione'
 		local
@@ -215,7 +231,7 @@ feature -- evoluzione della statechart
 						transizione.sorgente.figli as figli
 					loop
 						if figli.item.attivo then
-							Result:=figli.item
+							Result := figli.item
 						end
 					end
 				else
@@ -223,7 +239,7 @@ feature -- evoluzione della statechart
 						transizione.destinazione.figli as figli
 					loop
 						if figli.item.attivo then
-							Result:=figli.item
+							Result := figli.item
 						end
 					end
 				end
@@ -343,7 +359,7 @@ feature -- esecuzione azioni
 			else
 				contesto := trova_contesto (transizione.sorgente, transizione.destinazione)
 			end
-			esegui_azioni_onexit (genitore_piu_grande(transizione))
+			esegui_azioni_onexit (antenato_massimo_uscita (transizione))
 			esegui_azioni_transizione (transizione.azioni)
 			esegui_azioni_onentry (contesto, transizione.destinazione)
 		end
@@ -398,7 +414,7 @@ feature -- esecuzione azioni
 		do
 			if attached p_destinazione.genitore as dg and then dg /= p_contesto then
 				esegui_azioni_onentry (p_contesto, dg)
-				esegui_onentry(dg)
+				esegui_onentry (dg)
 			end
 		end
 
@@ -435,15 +451,19 @@ feature -- utilita
 		Result := stati_ordinati
 	end
 
-	sorgenti_ordinate (evento: LINKED_SET[STRING]; variabili: DATAMODEL): ARRAY[STATO]
+	stati_eseguibili (eventi: LINKED_SET[STRING]; variabili: DATAMODEL): ARRAY[STATO]
 	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
-	-- Dati eventi e variabili, estrae da `state_chart.conf_base' gli stati sorgenti delle transizioni abilitate e lo riordina
+	-- A partire dalla configurazione di base ritorna gli stati che hanno transizioni abilitate in base a `eventi' e `variabili'
+	-- N.B. gli stati tornati possono non essere stati atomici, ma stati gerarchici le cui transizioni sono comunque abilitate
+	--		negli stati atomici loro discendenti
 		do
 			create Result.make_empty
 			across
 				state_chart.conf_base as sc_cb
 			loop
-				if attached sc_cb.item.transizione_abilitata (evento, variabili) as ta then
+				print ("  stato corrente di conf_base: " + sc_cb.item.id + "%N")
+				if attached sc_cb.item.transizione_abilitata (eventi, variabili) as ta then
+					print ("    con transizione abilitata da " + ta.sorgente.id + " a " + ta.destinazione.id + "%N")
 					Result.force (ta.sorgente, Result.count + 1)
 				end
 			end
@@ -452,14 +472,14 @@ feature -- utilita
 
 	stampa_conf_corrente (indice: INTEGER)
 		do
-			print ("Istante corrente = ")
+			print ("%NIstante corrente = ")
 			print (indice)
 			print ("%N")
 			print ("  configurazione BASE corrente: ")
 			across
-				state_chart.conf_base as cbc
+				state_chart.conf_base as sc_cb
 			loop
-				print (cbc.item.id + " ")
+				print (sc_cb.item.id + " ")
 			end
 			print (" %N")
 			if indice <= ambiente_corrente.eventi_esterni.count then
@@ -469,6 +489,14 @@ feature -- utilita
 					print (eventi_correnti.item + " ")
 				end
 				print (" %N")
+			end
+		end
+
+	stampa_stati (stati: ARRAY[STATO])
+		do
+			across stati as s
+			loop
+				s.item.stampa
 			end
 		end
 end
