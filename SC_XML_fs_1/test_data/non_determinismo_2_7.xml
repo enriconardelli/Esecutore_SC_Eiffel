@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="T">
+  <parallel id="T">
+    <state id="T1" initial = "P">
+      <parallel id="P">
+        <state id="P1" initial="P1A">
+          <state id="P1A">
+            <transition event="x" target="P1B"></transition>
+          </state>
+          <state id="P1B">
+          </state>
+        </state>
+        <state id="P2" initial="P2A">
+          <state id="P2A">
+            <transition event="x" target="F"></transition>
+          </state>
+        </state>
+      </parallel>
+    </state>
+
+    <state id="T2" initial = "R">
+      <parallel id="R">
+        <state id="R1" initial="R1A">
+          <state id="R1A">
+            <transition event="x" target="H"></transition>
+            <transition event="x" target="R1B"></transition>
+          </state>
+          <state id="R1B">
+          </state>
+        </state>
+        <state id="R2" initial="R2A">
+          <state id="R2A">
+            <transition event="x" target="G"></transition>
+          </state>
+        </state>
+
+      </parallel>
+      <state id="G">
+      </state>
+    </state>
+
+  </parallel>
+  <state id="F">
+  </state>
+  <state id="H">
+  </state>
+</scxml>
