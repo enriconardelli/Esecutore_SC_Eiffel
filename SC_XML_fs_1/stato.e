@@ -161,9 +161,9 @@ feature -- situazione
 
 	transizione_abilitata (eventi: LINKED_SET [STRING]; variabili: DATAMODEL): detachable TRANSIZIONE
 	-- restituisce in base ai valori correnti di `eventi' e `variabili' la prima transizione abilitata in questo stato
-	-- sia direttamente o (se non ve ne sono) mediante ereditarietà da un antenato (priorità strutturale object oriented)
+	-- sia direttamente nello stato o (se non ve ne sono) mediante ereditarietà da un antenato (priorità strutturale object oriented)
 	-- TODO: nel caso di un evento (o più eventi presenti nello stesso istante) in grado di abilitare più transizioni viene data priorità
-	-- TODO: all'ultima transizione abilitata mentre invece dovrebbero essere considerati tutti allo stesso livello
+	-- TODO: alla prima transizione abilitata mentre invece dovrebbero essere considerate tutti allo stesso livello
 	-- TODO: se è uno stesso evento si può rilevare durante l'analisi della SC (e poi vanno introdotte e gestite le priorità)
 	-- TODO: se sono eventi diversi va rilevato dinamicamente in questa feature
 		local
@@ -298,5 +298,28 @@ feature -- routines forse inutili
 			end
 			Result := transizioni [index]
 		end
+
+feature -- utilita
+
+	stampa
+	do
+		print("--------------------%N")
+		print("stato con id = " + id + "%N")
+		if attached genitore as g then print("  genitore: " + g.id + "%N") end
+		if not initial.is_empty then
+			print("  initial: ")
+			across initial as i
+			loop print(i.item.id + ", ")
+			end
+			print("%N")
+		end
+		if not figli.is_empty then
+			print("  figli: ")
+			across figli as f
+			loop print (f.item.id + ", ")
+			end
+			print("%N")
+		end
+	end
 
 end
