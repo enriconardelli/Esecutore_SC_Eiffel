@@ -159,7 +159,13 @@ feature -- modifica
 
 feature -- situazione
 
-	transizione_abilitata (eventi_correnti: LINKED_SET [STRING]; variabili: DATAMODEL): detachable TRANSIZIONE
+	transizione_abilitata (eventi: LINKED_SET [STRING]; variabili: DATAMODEL): detachable TRANSIZIONE
+	-- restituisce in base ai valori correnti di `eventi' e `variabili' la prima transizione abilitata in questo stato
+	-- sia direttamente o (se non ve ne sono) mediante ereditarietà da un antenato (priorità strutturale object oriented)
+	-- TODO: nel caso di un evento (o più eventi presenti nello stesso istante) in grado di abilitare più transizioni viene data priorità
+	-- TODO: all'ultima transizione abilitata mentre invece dovrebbero essere considerati tutti allo stesso livello
+	-- TODO: se è uno stesso evento si può rilevare durante l'analisi della SC (e poi vanno introdotte e gestite le priorità)
+	-- TODO: se sono eventi diversi va rilevato dinamicamente in questa feature
 		local
 			index_count: INTEGER
 			transizione_corrente: detachable TRANSIZIONE
@@ -175,7 +181,7 @@ feature -- situazione
 				index_count = transizioni.upper + 1 or Result /= Void
 			loop
 				transizione_corrente := transizioni [index_count]
-				evento_abilitato := transizione_corrente.check_evento (eventi_correnti)
+				evento_abilitato := transizione_corrente.check_evento (eventi)
 				condizione_abilitata := transizione_corrente.check_condizione (variabili)
 				if evento_abilitato and condizione_abilitata then
 					Result := transizioni [index_count]
@@ -184,7 +190,7 @@ feature -- situazione
 			end
 			if Result = Void then
 				if attached genitore as sg then
-					Result := sg.transizione_abilitata (eventi_correnti, variabili)
+					Result := sg.transizione_abilitata (eventi, variabili)
 				end
 			end
 		end
