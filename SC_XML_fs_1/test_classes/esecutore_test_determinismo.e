@@ -126,8 +126,6 @@ feature -- Test routines
 
 	t_non_determinismo_2_1
 	-- Arianna Calzuola & Riccardo Malandruccolo 08/05/2020
-	-- TODO: fallisce perché in P2A (che viene prima nel file xml) non trova transizioni con evento 'x',
-	-- quindi risale fino a quando non trova la transizioni interna di T
 	local
 		esecutore: ESECUTORE
 	do
@@ -200,7 +198,7 @@ feature -- Test routines
 		nomi_files_prova [1] := test_data_dir + "non_determinismo_2_6.xml"
  		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_6_eventi.txt"
 		create esecutore.make (nomi_files_prova)
-		assert("ERRORE: il sistema non termina in (P1A1B, P1A2, P1A3B, P2A2, P2B, P2C1A, P2C1B, A2, B1, P3B)", esecutore.state_chart.conf_base.count = 10 and conf_has_state(esecutore.state_chart.conf_base,"P1A1B") and conf_has_state(esecutore.state_chart.conf_base,"P1A2")  and conf_has_state(esecutore.state_chart.conf_base,"P1A3B") and conf_has_state(esecutore.state_chart.conf_base,"P2A2")  and conf_has_state(esecutore.state_chart.conf_base,"P2B") and conf_has_state(esecutore.state_chart.conf_base,"P2C1A")  and conf_has_state(esecutore.state_chart.conf_base,"P2C1B") and conf_has_state(esecutore.state_chart.conf_base,"A2")  and conf_has_state(esecutore.state_chart.conf_base,"B1") and conf_has_state(esecutore.state_chart.conf_base,"P3B"))
+		assert("ERRORE: il sistema non termina in (P1A1B, P1A2, P1A3B, P2A2, P2B, P2C1A, P2C1B, A2, B1, P3B1)", esecutore.state_chart.conf_base.count = 10 and conf_has_state(esecutore.state_chart.conf_base,"P1A1B") and conf_has_state(esecutore.state_chart.conf_base,"P1A2")  and conf_has_state(esecutore.state_chart.conf_base,"P1A3B") and conf_has_state(esecutore.state_chart.conf_base,"P2A2")  and conf_has_state(esecutore.state_chart.conf_base,"P2B") and conf_has_state(esecutore.state_chart.conf_base,"P2C1A")  and conf_has_state(esecutore.state_chart.conf_base,"P2C1B") and conf_has_state(esecutore.state_chart.conf_base,"A2")  and conf_has_state(esecutore.state_chart.conf_base,"B1") and conf_has_state(esecutore.state_chart.conf_base,"P3B1"))
 	end
 
 	t_non_determinismo_2_7_1
