@@ -428,17 +428,14 @@ feature -- utilita
 	-- Agulini Claudia & Fiorini Federico 11/05/2020
 	-- Viene usata per riordinare la configurazione rispettando l' ordine del file xml
 	local
-		j: INTEGER
 		conf_ordinata: ARRAY[STATO]
 	do
 		create conf_ordinata.make_empty
-		j := conf_ordinata.lower
 		across
 			state_chart.stati as stati
 		loop
 			if conf_base.has (stati.item) then
-				conf_ordinata.force(stati.item, j)
-				j := j + 1
+				conf_ordinata.force (stati.item, conf_ordinata.count + 1)
 			end
 		end
 		Result := conf_ordinata
@@ -451,9 +448,9 @@ feature -- utilita
 		do
 			create Result.make_empty
 			across
-				state_chart.conf_base as cbc
+				state_chart.conf_base as sc_cb
 			loop
-				if attached cbc.item.transizione_abilitata (evento, variabili) as ta then
+				if attached sc_cb.item.transizione_abilitata (evento, variabili) as ta then
 					Result.force (ta.sorgente, Result.count + 1)
 				end
 			end
