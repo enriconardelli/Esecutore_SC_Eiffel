@@ -72,9 +72,11 @@
 					</state>
 				</parallel>
 			</state>
-			<state id="P3B" initial="P3B1"/>
+			<state id="P3B" initial="P3B1">
+				<state id="P3B1" />
+			</state>
 		</parallel>
-	<transition event="x" target="PB3"/>	
+	<transition event="x" target="P3B1"/>	
     </parallel>
 	<state id="G"/>
 </scxml>
