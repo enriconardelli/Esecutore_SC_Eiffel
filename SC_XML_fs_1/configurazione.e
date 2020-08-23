@@ -405,8 +405,7 @@ feature -- inizializzazione transizioni
 						assegna_azioni (transition_element.elements, transizione)
 						stato.aggiungi_transizione (transizione)
 					else
-						print ("ERRORE: transizione non legale! ")
-						print ("da >|" + stato.id + "|< a >|" + destinazione.id + "|< %N")
+						print ("ERRORE: transizione non legale da >|" + stato.id + "|< a >|" + destinazione.id + "|< !%N")
 					end
 				else
 					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value + "|< che non appartiene alla SC!%N")
@@ -438,7 +437,7 @@ feature -- inizializzazione transizioni
 					end
 				else -- stato_mac è diverso da entrambi
 					Result := True
-					debug ("sc_transizione_illegale") print (" illegale: transizione con MAC <parallel> in orizzontale tra discendenti del MAC(attraversa la frontiera)%N") end
+					debug ("sc_transizione_illegale") print (" illegale: transizione con MAC <parallel> in orizzontale tra discendenti del MAC (attraversa la frontiera)%N") end
 				end
 			end
 		end
