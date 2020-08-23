@@ -13,19 +13,19 @@ create
 feature -- attributi
 
 	conf_base: ARRAY [STATO]
-		-- l'insieme degli stati base nella configurazione della statechart
+		-- gli stati atomici nella configurazione di base della statechart
 
 	stati: HASH_TABLE [STATO, STRING]
-		-- rappresenta gli stati della statechart
+		-- gli stati della statechart
 
 	variabili: DATAMODEL
-		-- rappresenta le variabili del datamodel associato alla statechart
+		-- le variabili del datamodel associato alla statechart
 
 	creatore_di_assegna: ASSEGNA_CREATORE
 		-- creatore parametrico delle istanze di ASSEGNA
 
 	albero: XML_CALLBACKS_NULL_FILTER_DOCUMENT
-		-- rappresenta sotto forma di un albero XML la SC letta dal file
+		-- albero XML con la SC letta dal file
 
 	ha_problemi_con_il_file_della_sc: BOOLEAN
 
@@ -538,6 +538,7 @@ feature -- inizializzazione transizioni
 	intera_legittima (stringa: STRING): BOOLEAN
 	-- verifica che `stringa' sia una condizione intera legittima
 	-- TODO: si ripetono alcuni controlli fatti in TRANSIZIONI.check_condizione_intera per la verifica della condizione
+	-- TODO: verificare/definire quale deve essere la forma sintatticamente corretta delle condizioni (qualcosa è in TRANSIZIONI)
 	-- TODO: usare libreria di Eiffel 'parse' per analisi di correttezza della stringa delle condizioni (va aggiunta al progetto)
 		local
 			var: STRING
