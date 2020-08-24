@@ -168,10 +168,12 @@ feature -- evoluzione della statechart
 		do
 			create transizioni.make_empty
 			sorgenti := stati_eseguibili (eventi, variabili)
-			print("=============================%N")
-			print (" stati sorgenti delle transizioni eseguibili in questo istante%N");
-			stampa_stati(sorgenti)
-			print("=============================%N")
+			debug ("SC_transizioni_eseguibili")
+				print("=============================%N")
+				print (" stati sorgenti delle transizioni eseguibili in questo istante%N");
+				stampa_stati(sorgenti)
+				print("=============================%N")
+			end
 			from
 				i := sorgenti.lower
 			until
@@ -180,24 +182,27 @@ feature -- evoluzione della statechart
 				if i = sorgenti.upper or else not sorgenti[i].antenato_di(sorgenti[i+1]) then
 					-- uno stato in sorgenti che è antenato dello stato immediatamente successivo non deve essere considerato (priorità strutturale object-oriented)
 					--		e se non è antenato di questo non è antenato di alcun altro dopo di esso, dal momento che il non essere
-					--		antenato di quello immediatamente successivo implica che nessuno dei suoi discendenti possiede transizioni eseguibili
+					--		antenato di quello immediatamente successivo implica - a causa del riordinamento degli stati in sorgenti in base
+					--		all'ordine di specifica nel file .xml - che nessuno dei suoi discendenti possiede transizioni eseguibili
 					if attached sorgenti[i].transizione_abilitata (eventi, variabili) as ta then
-						print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id)
+						debug ("SC_transizioni_eseguibili") print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id) end
 						if attached uscita_precedente implies antenato_massimo_uscita(ta).incomparabile_con(uscita_precedente) then
 							-- questa transizione mi fa uscire da uno stato incomparabile con quello della precedente transizione
-							print(" viene mantenuto per la transizione%N")
+							debug ("SC_transizioni_eseguibili") print(" viene mantenuto per la transizione%N") end
 							transizioni.force (ta, transizioni.count + 1)
 							uscita_precedente := antenato_massimo_uscita (ta)
 						else
 							-- uno stato parallelo di quello della precedente transizione mi farebbe uscire con questa transizione
 							-- da un loro comune antenato parallelo da cui quello della precedente transizione non mi faceva uscire
-							print(" viene scartato perche' fa uscire da comune antenato parallelo'.%N")
+							debug ("SC_transizioni_eseguibili") print(" viene scartato perche' fa uscire da comune antenato parallelo'.%N") end
 						end
 					end
 				else
-					if attached sorgenti[i].transizione_abilitata (eventi, variabili) as ta then
-						print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id)
-						print(" e' antenato di sorgente successiva " + (i+1).out + ": " + sorgenti[i+1].id + " e viene scartato.%N")
+					debug ("SC_transizioni_eseguibili")
+						if attached sorgenti[i].transizione_abilitata (eventi, variabili) as ta then
+							print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id)
+							print(" e' antenato di sorgente successiva " + (i+1).out + ": " + sorgenti[i+1].id + " e viene scartato.%N")
+						end
 					end
 				end
 				i:=i+1
@@ -461,9 +466,9 @@ feature -- utilita
 			across
 				state_chart.conf_base as sc_cb
 			loop
-				print ("  stato corrente di conf_base: " + sc_cb.item.id + "%N")
+				debug ("SC_transizioni_eseguibili") print ("  stato corrente di conf_base: " + sc_cb.item.id + "%N") end
 				if attached sc_cb.item.transizione_abilitata (eventi, variabili) as ta then
-					print ("    con transizione abilitata da " + ta.sorgente.id + " a " + ta.destinazione.id + "%N")
+					debug ("SC_transizioni_eseguibili") print ("    con transizione abilitata da " + ta.sorgente.id + " a " + ta.destinazione.id + "%N") end
 					Result.force (ta.sorgente, Result.count + 1)
 				end
 			end
