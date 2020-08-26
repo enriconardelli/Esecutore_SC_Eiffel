@@ -5,13 +5,13 @@
 		</state>
 			
 		<state id="A2">
-			<transition event="y" target="B21" >
-			<log name="execute y" />
+			<transition event="x" target="B21" >
+			<log name="x: da A2 a B21" />
 			</transition>
-		</state>	
-		
+		</state>
+			
 		<transition event="x" target="B1" >
-			<log name="execute x" />
+			<log name="x: da A a B1" />
 		</transition>	
 
     	</parallel>
