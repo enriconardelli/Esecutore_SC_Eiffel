@@ -180,21 +180,28 @@ feature -- evoluzione della statechart
 				i = sorgenti.upper + 1
 			loop
 				if i = sorgenti.upper or else not sorgenti[i].antenato_di(sorgenti[i+1]) then
-					-- uno stato in sorgenti che è antenato dello stato immediatamente successivo non deve essere considerato (priorità strutturale object-oriented)
-					--		e se non è antenato di questo non è antenato di alcun altro dopo di esso, dal momento che il non essere
+					-- gli stati in sorgenti non sono tutti stati atomici, perché sono gli stati da cui fisicamente partono le transizioni eseguibili,
+					--		e quindi uno stato in sorgenti che è antenato dello stato immediatamente successivo non deve essere considerato, perché
+					--		la priorità strutturale object-oriented dà la priorità al secondo. (vedi t_non_determinismo_1_7_3 e 1_7_4)
+					-- se non è antenato di questo secondo non è antenato di alcun altro dopo di esso, dal momento che il non essere
 					--		antenato di quello immediatamente successivo implica - a causa del riordinamento degli stati in sorgenti in base
 					--		all'ordine di specifica nel file .xml - che nessuno dei suoi discendenti possiede transizioni eseguibili
 					if attached sorgenti[i].transizione_abilitata (eventi, variabili) as ta then
 						debug ("SC_transizioni_eseguibili") print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id) end
 						if attached uscita_precedente implies antenato_massimo_uscita(ta).incomparabile_con(uscita_precedente) then
 							-- questa transizione mi fa uscire da uno stato incomparabile con quello della precedente transizione
-							debug ("SC_transizioni_eseguibili") print(" viene mantenuto per la transizione%N") end
+							debug ("SC_transizioni_eseguibili") print(" viene mantenuto per la transizione.%N") end
 							transizioni.force (ta, transizioni.count + 1)
 							uscita_precedente := antenato_massimo_uscita (ta)
 						else
-							-- uno stato parallelo di quello della precedente transizione mi farebbe uscire con questa transizione
-							-- da un loro comune antenato parallelo da cui quello della precedente transizione non mi faceva uscire
-							debug ("SC_transizioni_eseguibili") print(" viene scartato perche' fa uscire da comune antenato parallelo'.%N") end
+							-- questa transizione esce da uno stato atomico parallelo di quello della precedente transizione scelta e
+							-- gli AMU (antenato_massimo_uscita) di questi due stati atomici in parallelo tra loro sono uno antenato dell'altro.
+							-- poiché le transizioni sono sempre associate agli stati atomici questa transizione mi farebbe uscire da
+							-- da un antenato parallelo comune a entrambi gli stati atomici.
+							-- la precedente transizione mi può aver già fatto uscire da tale comune antenato (vedi test t_non_determinismo_2_8_1)
+							-- e quindi questa transizione o è superflua o incompatibile (e la precedente ha la priorità)
+							-- oppure no (t_non_determinismo_2_8_2) e allora questa transizione è incompatibile (e la precedente ha la priorità)
+							debug ("SC_transizioni_eseguibili") print(" viene scartato perche' AMU e' antenato o discendente di precedente AMU o coincide.'.%N") end
 						end
 					end
 				else
@@ -459,8 +466,8 @@ feature -- utilita
 	stati_eseguibili (eventi: LINKED_SET[STRING]; variabili: DATAMODEL): ARRAY[STATO]
 	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
 	-- A partire dalla configurazione di base ritorna gli stati che hanno transizioni abilitate in base a `eventi' e `variabili'
-	-- N.B. gli stati tornati possono non essere stati atomici, ma stati gerarchici le cui transizioni sono comunque abilitate
-	--		negli stati atomici loro discendenti
+	-- N.B. gli stati tornati possono non essere stati atomici, ma stati gerarchici le cui transizioni sono eseguibili dagli stati atomici
+	--		loro discendenti, che sono rilevate da `transizione_abilitata' in assenza di transizioni direttamente abilitate nello stato atomico
 		do
 			create Result.make_empty
 			across
