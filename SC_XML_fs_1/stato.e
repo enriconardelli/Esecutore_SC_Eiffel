@@ -161,11 +161,11 @@ feature -- situazione
 
 	transizione_abilitata (eventi: LINKED_SET [STRING]; variabili: DATAMODEL): detachable TRANSIZIONE
 	-- restituisce in base ai valori correnti di `eventi' e `variabili' la prima transizione abilitata in questo stato
-	-- sia direttamente nello stato o (se non ve ne sono) mediante ereditarietà da un antenato (priorità strutturale object oriented)
-	-- TODO: nel caso di un evento (o più eventi presenti nello stesso istante) in grado di abilitare più transizioni viene data priorità
-	-- TODO: alla prima transizione abilitata mentre invece dovrebbero essere considerate tutti allo stesso livello
-	-- TODO: se è uno stesso evento si può rilevare durante l'analisi della SC (e poi vanno introdotte e gestite le priorità)
-	-- TODO: se sono eventi diversi va rilevato dinamicamente in questa feature
+	-- sia direttamente nello stato (priorità SCXML dell'ordine di scrittura nel file .xml) o (se non ve ne sono)
+	-- mediante ereditarietà da un antenato (priorità strutturale object oriented)
+	-- TODO: nel caso di un evento (o più eventi presenti nello stesso istante) in grado di abilitare più transizioni
+	-- TODO: 	se è uno stesso evento si può rilevare durante l'analisi della SC (e poi vanno introdotte e gestite qui le priorità)
+	-- TODO: 	se sono eventi diversi va rilevato dinamicamente in questa feature
 		local
 			index_count: INTEGER
 			transizione_corrente: detachable TRANSIZIONE
