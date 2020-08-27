@@ -336,4 +336,17 @@ feature -- Test
      		assert("ERRORE: L è diverso da 3", esecutore.state_chart.variabili.intere.item ("L") = 3)
      		assert("ERRORE: K è diverso da true", esecutore.state_chart.variabili.booleane.item ("K"))
 		end
+
+	t_azioni_con_interi_3_variazione_4_alt
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_3_variazione_alt.xml"
+  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_3_variazione_eventi_4.txt"
+			create esecutore.make (nomi_files_prova)
+			assert("ERRORE: il sistema non termina in (B1B, B2A)", conf_has_state(esecutore.state_chart.conf_base,"B1B") and conf_has_state(esecutore.state_chart.conf_base,"B2A"))
+			assert("ERRORE: M è diverso da 3",  esecutore.state_chart.variabili.intere.item ("M") = 3)
+     		assert("ERRORE: L è diverso da 3", esecutore.state_chart.variabili.intere.item ("L") = 3)
+     		assert("ERRORE: K è diverso da true", esecutore.state_chart.variabili.booleane.item ("K"))
+		end
 end
