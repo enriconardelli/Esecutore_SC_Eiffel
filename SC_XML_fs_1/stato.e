@@ -203,6 +203,21 @@ feature -- situazione
 			end
 		end
 
+	-- MODIFICHE FORK
+
+	ha_figli_attivi:BOOLEAN
+	do
+		Result:= False
+		across figli as f
+		loop
+		 if f.item.attivo then
+		 	Result:=True
+		 end
+		end
+	end
+
+	--FINE MODIFICHE
+
 feature -- routines forse inutili
 
 	numero_transizioni_abilitate (evento_corrente: STRING; hash_delle_condizioni: HASH_TABLE [BOOLEAN, STRING]): INTEGER

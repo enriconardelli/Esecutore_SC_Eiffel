@@ -82,7 +82,9 @@ feature -- evoluzione della statechart
 							 if tc.fork and attached tc.multi_target as tcmt then
 							 	across tcmt as x loop
 							 		trova_default (x.item, prossima_conf_base)
-							 	--	aggiungi_paralleli(x.item,prossima_conf_base)
+							 		if x.item.is_equal(tcmt.last)  then
+							 		aggiungi_paralleli(x.item,prossima_conf_base)
+							 		end
 							 	end
 							else aggiungi_paralleli (tc.target, prossima_conf_base)
 							end
@@ -200,9 +202,13 @@ feature -- evoluzione della statechart
 					i = sgt.initial.upper + 1
 				loop
 					if not sgt.initial [i].is_equal(target) then
-						--MODIFICHE FORK
-								trova_default (sgt.initial [i], prossima_conf_base)
-						--FINE MODIFICHE
+					--MODIFICHE FORK
+						if not sgt.initial [i].ha_figli_attivi then
+						trova_default (sgt.initial [i], prossima_conf_base)
+						else
+						sgt.initial [i].set_attivo
+						end
+					--FINE MODIFICHE
 					end
 					i := i + 1
 				end
@@ -211,7 +217,6 @@ feature -- evoluzione della statechart
 				aggiungi_paralleli (sgt, prossima_conf_base)
 			end
 		end
-		--prova
 
 	trova_default (stato: STATO; prossima_conf_base: ARRAY [STATO])
 		local
