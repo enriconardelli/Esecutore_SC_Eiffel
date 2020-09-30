@@ -206,6 +206,7 @@ feature -- situazione
 	-- MODIFICHE FORK
 
 	ha_figli_attivi:BOOLEAN
+		--Filippo & Iezzi 30/09/2020
 	do
 		Result:= False
 		across figli as f
