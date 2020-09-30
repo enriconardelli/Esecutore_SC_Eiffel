@@ -82,7 +82,7 @@ feature -- evoluzione della statechart
 							 if tc.fork and attached tc.multi_target as tcmt then
 							 	across tcmt as x loop
 							 		trova_default (x.item, prossima_conf_base)
-							 		if x.item.is_equal(tcmt.last)  then
+							 		if x.item.is_equal(tcmt.last)  then --aggiungi parall solo alla fine per avere conf corrente "piena"
 							 		aggiungi_paralleli(x.item,prossima_conf_base)
 							 		end
 							 	end
@@ -203,7 +203,7 @@ feature -- evoluzione della statechart
 				loop
 					if not sgt.initial [i].is_equal(target) then
 					--MODIFICHE FORK
-						if not sgt.initial [i].ha_figli_attivi then
+						if not sgt.initial [i].ha_figli_attivi then --se ha figli attivi non ha senso cercare il default
 						trova_default (sgt.initial [i], prossima_conf_base)
 						end
 					--FINE MODIFICHE
