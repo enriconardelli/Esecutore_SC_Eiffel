@@ -205,6 +205,8 @@ feature -- evoluzione della statechart
 					--MODIFICHE FORK
 						if not sgt.initial [i].ha_figli_attivi then --se ha figli attivi non ha senso cercare il default
 						trova_default (sgt.initial [i], prossima_conf_base)
+						else
+						sgt.initial [i].set_attivo
 						end
 					--FINE MODIFICHE
 					end
