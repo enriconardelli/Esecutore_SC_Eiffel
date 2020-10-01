@@ -205,15 +205,19 @@ feature -- situazione
 
 	-- MODIFICHE FORK
 
-	ha_figli_attivi:BOOLEAN
+	ha_sottostati_attivi:BOOLEAN
 		--Filippo & Iezzi 30/09/2020
 	do
 		Result:= False
 		across figli as f
 		loop
-		 if f.item.attivo then
-		 	Result:=True
-		 end
+			 if f.item.attivo then
+		 		Result:=True
+			 else
+		 		if f.item.figli.count>0 and Result=False then
+		 		Result:=f.item.ha_sottostati_attivi
+		 		end
+			 end
 		end
 	end
 

@@ -82,12 +82,9 @@ feature -- evoluzione della statechart
 							 if tc.fork and attached tc.multi_target as tcmt then
 							 	across tcmt as x loop
 							 		trova_default (x.item, prossima_conf_base)
-							 		if x.item.is_equal(tcmt.last)  then --aggiungi parall solo alla fine per avere conf corrente "piena"
-							 		aggiungi_paralleli(x.item,prossima_conf_base)
 							 		end
-							 	end
-							else aggiungi_paralleli (tc.target, prossima_conf_base)
-							end
+							 end
+ 							aggiungi_paralleli(tc.target, prossima_conf_base)
 						-- FINE MODIFICA	
 						else
 							prossima_conf_base.force (cbc.item, prossima_conf_base.count + 1)
@@ -203,10 +200,10 @@ feature -- evoluzione della statechart
 				loop
 					if not sgt.initial [i].is_equal(target) then
 					--MODIFICHE FORK
-						if not sgt.initial [i].ha_figli_attivi then --se ha figli attivi non ha senso cercare il default
+						if not sgt.initial [i].ha_sottostati_attivi then --se ha figli attivi non ha senso cercare il default
 						trova_default (sgt.initial [i], prossima_conf_base)
 						else
-						sgt.initial [i].set_attivo
+						attiva_sottostati(sgt.initial [i])
 						end
 					--FINE MODIFICHE
 					end
@@ -238,6 +235,24 @@ feature -- evoluzione della statechart
 				prossima_conf_base.force (stato, prossima_conf_base.count + 1)
 			end
 		end
+
+--MODIFICHE FORK
+
+	 attiva_sottostati (stato: STATO)
+		--attiva lo stato target se contiene uno già attivo e ricorsivamente i suoi sottostati
+		do
+			if stato.ha_sottostati_attivi then
+				stato.set_attivo
+				across stato.figli as fs loop
+					if fs.item.ha_sottostati_attivi then
+						attiva_sottostati(fs.item)
+					end
+				end
+			end
+
+		end
+
+--FINE MODIFICHE		
 
 	trova_contesto (p_sorgente, p_destinazione: STATO): detachable STATO
 			-- trova il contesto in base alla specifica SCXML secondo cui il contesto
