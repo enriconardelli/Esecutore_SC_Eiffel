@@ -82,12 +82,12 @@ feature -- evoluzione della statechart
 								-- MODIFICA PER CONSIDERARE I FORK
 							if tc.fork and attached tc.multi_target as tcmt then
 								across
-									tcmt as x
+									tcmt as mt_corrente
 								loop
-									trova_default (x.item, prossima_conf_base)
+									trova_default (mt_corrente.item, prossima_conf_base)
 								end
 							end
-							aggiungi_paralleli (tc.target, prossima_conf_base)
+							aggiungi_paralleli (tc.target, prossima_conf_base) --modificata per considerare i fork
 								-- FINE MODIFICA
 						else
 							prossima_conf_base.force (cbc.item, prossima_conf_base.count + 1)
@@ -188,39 +188,40 @@ feature -- evoluzione della statechart
 		end
 
 	aggiungi_paralleli (target: STATO; prossima_conf_base: ARRAY [STATO])
+	--inserisce in conf corrente i default degli stati in parallelo rispetto al target
+	--qual'ora vi siano stati già attivi non da luogo a configurazioni non corrette
 		local
 			i: INTEGER
 		do
 			target.set_attivo
-			if attached {STATO_AND} target.genitore as sgt and then not sgt.attivo then
+			if attached {STATO_AND} target.genitore as sgt and then not sgt.attivo then --se lo stato genitore è un AND scorro i suoi figli
 				from
 					i := sgt.initial.lower
 				until
 					i = sgt.initial.upper + 1
 				loop
-					if not sgt.initial [i].is_equal (target) then
+					if not sgt.initial [i].is_equal (target) then -- ho già aggiunto il target alla conf corrente
 							--MODIFICHE FORK
-						if not sgt.initial [i].ha_sottostati_attivi then --se ha figli attivi non ha senso cercare il default
+						if not sgt.initial [i].ha_sottostati_attivi then --se non ha sott. attivi trovo il default se la tc non è fork salta sempre
 							trova_default (sgt.initial [i], prossima_conf_base)
 						else
-							if attached {STATO_AND} sgt.initial [i] as b then
+							if attached {STATO_AND} sgt.initial [i] as sgti then --se ha sottostati attivi ed è un AND
 								across
-									b.figli as s
+									sgti.figli as figlio_sgti
 								loop
-									if s.item.ha_sottostati_attivi then
-										aggiungi_paralleli (s.item, prossima_conf_base)
+									if figlio_sgti.item.ha_sottostati_attivi then
+										aggiungi_paralleli (figlio_sgti.item, prossima_conf_base) --ripeto aggiungi_paralleli sui figli con sott. attivi
 									end
 								end
-
 							end
-							attiva_sottostati (sgt.initial [i])
+							aggiungi_sottostati (sgt.initial [i])
 						end
 							--FINE MODIFICHE
 					end
 					i := i + 1
 				end
 			end
-			if attached target.genitore as sgt then
+			if attached target.genitore as sgt then --se ha un genitore ripeto aggiungi paralleli su di lui
 				aggiungi_paralleli (sgt, prossima_conf_base)
 			end
 		end
@@ -248,16 +249,18 @@ feature -- evoluzione della statechart
 
 		--MODIFICHE FORK
 
-	attiva_sottostati (stato: STATO)
-			--attiva lo stato target se contiene uno già attivo e ricorsivamente i suoi sottostati
+	aggiungi_sottostati (stato: STATO)
+			--entra nello stato target se contiene uno già attivo e
+			--ricorsivamente nei suoi sottostati che contengono un sottostato attivo a loro volta
 		do
 			if stato.ha_sottostati_attivi then
 				stato.set_attivo
+				esegui_onentry (stato)
 				across
 					stato.figli as fs
 				loop
 					if fs.item.ha_sottostati_attivi then
-						attiva_sottostati (fs.item)
+						aggiungi_sottostati (fs.item)
 					end
 				end
 			end
