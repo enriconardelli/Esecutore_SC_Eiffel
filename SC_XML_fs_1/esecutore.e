@@ -202,20 +202,7 @@ feature -- evoluzione della statechart
 				loop
 					if not sgt.initial [i].is_equal (target) then -- ho già aggiunto il target alla conf corrente
 							--MODIFICHE FORK
-						if not sgt.initial [i].ha_sottostati_attivi then --se non ha sott. attivi trovo il default se la tc non è fork salta sempre
-							trova_default (sgt.initial [i], prossima_conf_base)
-						else
-							if attached {STATO_AND} sgt.initial [i] as sgti then --se ha sottostati attivi ed è un AND
-								across
-									sgti.figli as figlio_sgti
-								loop
-									if figlio_sgti.item.ha_sottostati_attivi then
-										aggiungi_paralleli (figlio_sgti.item, prossima_conf_base) --ripeto aggiungi_paralleli sui figli con sott. attivi
-									end
-								end
-							end
-							aggiungi_sottostati (sgt.initial [i])
-						end
+						aggiungi_sottostati (sgt.initial [i], prossima_conf_base)
 							--FINE MODIFICHE
 					end
 					i := i + 1
@@ -249,20 +236,33 @@ feature -- evoluzione della statechart
 
 		--MODIFICHE FORK
 
-	aggiungi_sottostati (stato: STATO)
-			--entra nello stato target se contiene uno già attivo e
-			--ricorsivamente nei suoi sottostati che contengono un sottostato attivo a loro volta
+	aggiungi_sottostati (stato: STATO; prossima_conf_base: ARRAY [STATO])
+			--se il target NON contiene un sottostato attivo si comporta come trova_default
+			--altrimenti entra nello stat target e entra ricorsivamente nei suoi sottostati
+			-- che contengono un sottostato attivo
+			--se incontra uno stato AND con un figlio attivo allora mette attivi tutti i suoi figli
 		do
-			if stato.ha_sottostati_attivi then
+			if stato.ha_sottostati_attivi then --prima discriminante: ha sottostati attivi?
 				stato.set_attivo
 				esegui_onentry (stato)
-				across
-					stato.figli as fs
-				loop
-					if fs.item.ha_sottostati_attivi then
-						aggiungi_sottostati (fs.item)
+				if attached {STATO_AND} stato as s_and then --se lo stato è un AND
+					across
+						s_and.figli as fsa
+					loop
+						aggiungi_sottostati (fsa.item,prossima_conf_base) --itero su tutti i figli
 					end
+				else --itero solo sui figli con un sottostato attivo
+					across
+						stato.figli as fs
+					loop
+						if fs.item.ha_sottostati_attivi then
+							aggiungi_sottostati (fs.item,prossima_conf_base)
+						end
+					end
+
 				end
+			else
+				trova_default(stato,prossima_conf_base) --non ha sottostati attivi e faccio trova default
 			end
 		end
 
