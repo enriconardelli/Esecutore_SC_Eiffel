@@ -242,7 +242,7 @@ feature -- evoluzione della statechart
 			-- che contengono un sottostato attivo
 			--se incontra uno stato AND con un figlio attivo allora mette attivi tutti i suoi figli
 		do
-			if stato.ha_sottostati_attivi then --prima discriminante: ha sottostati attivi?
+			if stato.ha_sottostati_attivi then --prima discriminante: ha sottostati attivi? Se SI
 				stato.set_attivo
 				esegui_onentry (stato)
 				if attached {STATO_AND} stato as s_and then --se lo stato è un AND
@@ -259,10 +259,9 @@ feature -- evoluzione della statechart
 							aggiungi_sottostati (fs.item,prossima_conf_base)
 						end
 					end
-
 				end
-			else
-				trova_default(stato,prossima_conf_base) --non ha sottostati attivi e faccio trova default
+			else  --se NO faccio trova default
+				trova_default(stato,prossima_conf_base)
 			end
 		end
 
