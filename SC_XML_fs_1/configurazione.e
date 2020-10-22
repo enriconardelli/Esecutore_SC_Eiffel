@@ -309,7 +309,7 @@ feature -- supporto inizializzazione
 					if attached e.item.attribute_by_name ("target") as t then
 						-- AGGIUNTE PER COSTRUTTO FORK
 						if attached stati.item (t.value.split(' ').first) as destinazione then -- uso come primo target il primo che compare
-							if not transizione_illegale (stato, destinazione) then
+							if not transizione_illegale (stato, destinazione) and transizione_multitarget_ammissibile(t.value.split(' ')) then --INSERIRE QUI MODIFICHE--
 								create transizione.make_with_target (destinazione, stato)
 								if attached e.item.attribute_by_name ("type") as type then
 									if type.value ~ "internal" and verifica_internal (transizione.sorgente, transizione.target) then
@@ -323,7 +323,6 @@ feature -- supporto inizializzazione
 									loop
 									if attached stati.item(it.item) as s then transizione.add_target (s) end
 									end
-									
 								end
 						--FINE AGGIUNTE		
 								assegna_evento (e.item, transizione)
@@ -580,6 +579,32 @@ feature -- supporto generale
 				end
 			end
 		end
+
+	--MODIFICHE FORK
+
+	transizione_multitarget_ammissibile(lista_stati: LIST[READABLE_STRING_32]):BOOLEAN
+		--prende in imput una  lista di stati e ritorna True se sono ammissibili come multitarget
+		--di una transizione fork: a due a due devono avere un antenato di tipo AND in comune
+		--e non devono essere l'uno discendente dell'altro.
+	do
+		Result:=True
+		across lista_stati as stato loop
+			across lista_stati as altro_stato loop
+				if attached stati.item(stato.item) as sc then
+					if attached stati.item(altro_stato.item) as asc then
+						if not sc.is_equal (asc) then
+							if transizione_verticale(sc,asc) or not attached {STATO_AND} minimo_antenato_comune(sc,asc) then
+								Result:=False
+							end	
+						end
+					end
+				end
+			end
+		end
+	end
+
+	--FINE MODIFICHE FORK
+
 
 	stampa_elemento (element: XML_ELEMENT)
 		do
