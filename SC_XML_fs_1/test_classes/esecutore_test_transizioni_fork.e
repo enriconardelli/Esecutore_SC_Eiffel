@@ -211,5 +211,16 @@ feature --test
 			assert ("ERRORE il sistema non ha terminato negli stati corretti (S)", esecutore.conf_base_corrente.count = 1 and conf_has_state(esecutore.conf_base_corrente,"S"))
 		end
 
+	t_costrutto_fork_non_ammissibile_3
+	 --Filippo & Iezzi
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "costrutto_fork_non_ammissibile_3.xml"
+			nomi_files_prova [2] := test_data_dir + "costrutto_fork_eventi_con_fork.txt"
+			create esecutore.make (nomi_files_prova)
+			assert ("ERRORE il sistema non ha terminato negli stati corretti (S)", esecutore.conf_base_corrente.count = 1 and conf_has_state(esecutore.conf_base_corrente,"S"))
+		end
+
 
 end
