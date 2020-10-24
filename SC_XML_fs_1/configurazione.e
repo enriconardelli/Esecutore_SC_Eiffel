@@ -331,7 +331,12 @@ feature -- supporto inizializzazione
 								stato.aggiungi_transizione (transizione)
 							else
 								print ("ERRORE: transizione non legale! ")
-								print ("da >|" + stato.id + "|< a >|" + destinazione.id + "|< %N")
+								if not transizione_multitarget_ammissibile(t.value.split(' ')) then
+									print ("(multitarget non ammissibile) %N")
+								else
+									print ("da >|" + stato.id + "|< a >|" + destinazione.id + "|< %N")
+								end
+
 							end
 						else
 							print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value + "|< che non appartiene alla SC!%N")
@@ -595,7 +600,7 @@ feature -- supporto generale
 						if not sc.is_equal (asc) then
 							if transizione_verticale(sc,asc) or not attached {STATO_AND} minimo_antenato_comune(sc,asc) then
 								Result:=False
-							end	
+							end
 						end
 					end
 				end
