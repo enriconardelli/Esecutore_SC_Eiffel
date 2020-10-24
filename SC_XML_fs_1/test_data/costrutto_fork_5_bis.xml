@@ -18,8 +18,12 @@
 				</state>			
 			</state>
 			<state id="B2" initial="B22">
-				<state id="B21" initial="B211">
+				<state id="B21" initial="B212">
                                         <state id="B211">
+                                        </state>
+                                        <state id="B212">
+                                        </state>
+                                        <state id="B213">
                                         </state>
 				</state>			
 				<state id="B22">
