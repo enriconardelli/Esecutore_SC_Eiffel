@@ -4,17 +4,28 @@
 		<state id="S1">
 		</state>	
 		<state id="S2">	
-		<transition event="e" target="A B C">
-		</transition>	
+			<transition event="e" target="A B2 C">
+			</transition>	
 		</state>
+		
 	</parallel>
 	
 	<parallel id="X">	
 		<state id="A">
 		</state>
-		<state id="B">
+		<state id="B" initial="B1">
+			<state id="B1" initial='B1a'>
+				<state id="B1a">
+				</state>	
+			</state>
+			<state id="B2">
+			</state>						
 		</state>
-		<state id="C">
+		<state id="C" initial="C2">
+			<state id="C1">
+			</state>
+			<state id="C2">
+			</state>	
 		</state>							
 	</parallel>
 
