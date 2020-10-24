@@ -186,7 +186,7 @@ feature --test
 			nomi_files_prova [1] := test_data_dir + "costrutto_fork_10.xml"
 			nomi_files_prova [2] := test_data_dir + "costrutto_fork_eventi_con_fork.txt"
 			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti (A111,A12,B1,B21,B22,B31,C11,C211)", esecutore.conf_base_corrente.count = 8 and conf_has_state(esecutore.conf_base_corrente,"A111") and conf_has_state(esecutore.conf_base_corrente,"A12") and conf_has_state(esecutore.conf_base_corrente,"B1") and conf_has_state(esecutore.conf_base_corrente,"B21") and conf_has_state(esecutore.conf_base_corrente,"B22") and conf_has_state(esecutore.conf_base_corrente,"B31") and conf_has_state(esecutore.conf_base_corrente,"C11") and conf_has_state(esecutore.conf_base_corrente,"C211"))
+			assert ("ERRORE il sistema non ha terminato negli stati corretti (A111,A12,B1a,B21,B22,B31,C11,C31,C32)", esecutore.conf_base_corrente.count = 9 and conf_has_state(esecutore.conf_base_corrente,"A111") and conf_has_state(esecutore.conf_base_corrente,"A12") and conf_has_state(esecutore.conf_base_corrente,"B1a") and conf_has_state(esecutore.conf_base_corrente,"B21") and conf_has_state(esecutore.conf_base_corrente,"B22") and conf_has_state(esecutore.conf_base_corrente,"B31") and conf_has_state(esecutore.conf_base_corrente,"C31") and conf_has_state(esecutore.conf_base_corrente,"C32") and conf_has_state(esecutore.conf_base_corrente,"C11"))
 		end
 
 	t_costrutto_fork_non_ammissibile
