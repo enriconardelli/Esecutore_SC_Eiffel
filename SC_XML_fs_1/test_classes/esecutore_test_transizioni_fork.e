@@ -164,7 +164,7 @@ feature --test
 			nomi_files_prova [1] := test_data_dir + "costrutto_fork_8.xml"
 			nomi_files_prova [2] := test_data_dir + "costrutto_fork_eventi_con_fork.txt"
 			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A11,A2,B11 )", esecutore.conf_base_corrente.count = 3 and conf_has_state(esecutore.conf_base_corrente,"A11") and conf_has_state(esecutore.conf_base_corrente,"A2") and conf_has_state(esecutore.conf_base_corrente,"B11") )
+			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A11,A2,B122 )", esecutore.conf_base_corrente.count = 3 and conf_has_state(esecutore.conf_base_corrente,"A11") and conf_has_state(esecutore.conf_base_corrente,"A2") and conf_has_state(esecutore.conf_base_corrente,"B122") )
 		end
 
 	t_costrutto_fork_9

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="S">
 	<state id="S">
-		<transition event="e" target="A11 B11">
+		<transition event="e" target="A11 B12">
 		</transition>
 	</state>
 	
@@ -18,7 +18,13 @@
 		<state id="B" initial="B1">
 			<state id="B1" initial="B11">
 				<state id="B11">			
-				</state>			
+				</state>
+                                <state id="B12" initial="B122">
+					<state id="B121">
+					</state>
+					<state id="B122">
+					</state>
+                                </state>			
 			</state>
 		</state>								
 	</parallel>
