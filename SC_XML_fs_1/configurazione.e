@@ -100,7 +100,7 @@ feature -- inizializzazione SC
 									if valore_booleano(valore.value) then
 										condizioni.extend (valore.value.as_lower ~ "true", nome.value)
 									else
-										print ("ERRORE: elemento <data> con id >|" + nome.value + "<| assegna a 'expr' il valore >|" + valore.value + "<| non booleano!%N")
+										print ("ERRORE: elemento <data> con id >|" + nome.value + "|< assegna a 'expr' il valore >|" + valore.value + "|< non booleano!%N")
 									end
 								else
 									print ("ERRORE: elemento <data> con id >|" + nome.value + "<| senza attributo 'expr'!%N")
@@ -287,7 +287,7 @@ feature -- inizializzazione SC
 					completa_stati (e.item.elements)
 					if attached stati.item (id_stato.value) as stato then
 						-- lo stato esiste perché viene creato in `stati' da `istanzia_stati'
-						assegna_transizioni (stato, e.item)
+						assegna_discendenti (stato, e.item)
 					end
 				end
 			end
@@ -295,55 +295,13 @@ feature -- inizializzazione SC
 
 feature -- supporto inizializzazione
 
-	assegna_transizioni (stato: STATO; element: XML_ELEMENT)
-		-- completa lo `stato' assegnandogli
-		-- le transizioni con relativi eventi ed azioni
-		-- gli altri discendenti come onentry e onexit
-		local
-			transizione: TRANSIZIONE
+	assegna_discendenti (stato: STATO; element: XML_ELEMENT)
+		-- completa lo `stato' assegnandogli i vari discendenti (transizioni, onentry, onexit)
 		do
 			across element.elements as e
 			loop
 				if e.item.name ~ "transition" then
-					debug ("SC_assegna_transizioni") stampa_elemento (e.item) end
-					if attached e.item.attribute_by_name ("target") as t then
-						-- AGGIUNTE PER COSTRUTTO FORK
-						if attached stati.item (t.value.split(' ').first) as destinazione then -- uso come primo target il primo che compare
-							if not transizione_illegale (stato, destinazione) and transizione_multitarget_ammissibile(t.value.split(' ')) then --INSERIRE QUI MODIFICHE--
-								create transizione.make_with_target (destinazione, stato)
-								if attached e.item.attribute_by_name ("type") as type then
-									if type.value ~ "internal" and verifica_internal (transizione.sorgente, transizione.target) then
-										transizione.set_internal
-									end
-								end
-								if  t.value.split(' ').count>1  --se c'è un multitarget la indico come transizione fork
-								then
-									transizione.set_fork
-									across t.value.split(' ') as it  --scorro tutti i multitarget splittati e aggiungo i target						
-									loop
-									if attached stati.item(it.item) as s then transizione.add_target (s) end
-									end
-								end
-						--FINE AGGIUNTE		
-								assegna_evento (e.item, transizione)
-								assegna_condizione (e.item, transizione)
-								assegna_azioni (e.item.elements, transizione)
-								stato.aggiungi_transizione (transizione)
-							else
-								print ("ERRORE: transizione non legale! ")
-								if not transizione_multitarget_ammissibile(t.value.split(' ')) then
-									print ("(multitarget non ammissibile) %N")
-								else
-									print ("da >|" + stato.id + "|< a >|" + destinazione.id + "|< %N")
-								end
-
-							end
-						else
-							print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value + "|< che non appartiene alla SC!%N")
-						end
-					else
-						print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")
-					end
+					assegna_transizioni(stato, e.item)
 				end
 				if e.item.name ~ "onentry" then
 					istanzia_onentry (stato, e.item.elements)
@@ -351,6 +309,52 @@ feature -- supporto inizializzazione
 				if e.item.name ~ "onexit" then
 					istanzia_onexit (stato, e.item.elements)
 				end
+			end
+		end
+
+	assegna_transizioni (stato: STATO; element: XML_ELEMENT)
+		-- completa lo `stato' assegnandogli le transizioni con relativi eventi ed azioni
+		local
+			transizione: TRANSIZIONE
+		do
+			debug ("SC_assegna_transizioni") stampa_elemento (element) end
+			if attached element.attribute_by_name ("target") as t then
+				-- AGGIUNTE PER COSTRUTTO FORK
+				if attached stati.item (t.value.split(' ').first) as destinazione then -- uso come primo target il primo che compare
+					if not transizione_illegale (stato, destinazione) and transizione_multitarget_ammissibile(t.value.split(' ')) then --INSERIRE QUI MODIFICHE--
+						create transizione.make_with_target (destinazione, stato)
+						if attached element.attribute_by_name ("type") as type then
+							if type.value ~ "internal" and verifica_internal (transizione.sorgente, transizione.target) then
+								transizione.set_internal
+							end
+						end
+						if  t.value.split(' ').count>1  --se c'è un multitarget la indico come transizione fork
+						then
+							transizione.set_fork
+							across t.value.split(' ') as it  --scorro tutti i multitarget splittati e aggiungo i target						
+							loop
+							if attached stati.item(it.item) as s then transizione.add_target (s) end
+							end
+						end
+				--FINE AGGIUNTE		
+						assegna_evento (element, transizione)
+						assegna_condizione (element, transizione)
+						assegna_azioni (element.elements, transizione)
+						stato.aggiungi_transizione (transizione)
+					else
+						print ("ERRORE: transizione non legale! ")
+						if not transizione_multitarget_ammissibile(t.value.split(' ')) then
+							print ("(multitarget non ammissibile) %N")
+						else
+							print ("da >|" + stato.id + "|< a >|" + destinazione.id + "|< %N")
+						end
+
+					end
+				else
+					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value.split(' ').first + "|< che non appartiene alla SC!%N")
+				end
+			else
+				print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")
 			end
 		end
 
