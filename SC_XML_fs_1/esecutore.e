@@ -54,7 +54,8 @@ feature -- evoluzione della statechart
 		local
 			istante: INTEGER
 			prossima_conf_base: ARRAY [STATO]
-			transizioni_eseguibili: ARRAY[TRANSIZIONE]
+			transizioni_eseguibili: ARRAY [TRANSIZIONE]
+			transizione_corrente: TRANSIZIONE
 		do
 			print ("%Nentrato in evolvi_SC:  %N %N")
 			from
@@ -65,16 +66,30 @@ feature -- evoluzione della statechart
 				if attached eventi [istante] as eventi_correnti then
 					stampa_conf_corrente (istante)
 					create prossima_conf_base.make_empty
-					transizioni_eseguibili := trova_transizioni_eseguibili (eventi_correnti, state_chart.variabili)
-					across transizioni_eseguibili as te
+					transizioni_eseguibili := trova_transizioni_eseguibili (eventi_correnti, state_chart.condizioni)
+					across
+						conf_base_corrente as cbc
 					loop
-						salva_storie (antenato_massimo_uscita (te.item))
-						esegui_azioni (te.item)
-						trova_default (te.item.destinazione, prossima_conf_base)
-						aggiungi_paralleli (te.item.destinazione, prossima_conf_base)
+						transizione_corrente := cbc.item.transizione_abilitata (eventi_correnti, state_chart.condizioni)
+						if attached transizione_corrente as tc and then transizioni_eseguibili.has (tc) then
+							esegui_azioni (tc, cbc.item)
+							trova_default (tc.target, prossima_conf_base)
+								-- MODIFICA PER CONSIDERARE I FORK
+							if tc.fork and attached tc.multi_target as tcmt then
+								across
+									tcmt as mt_corrente
+								loop
+									trova_default (mt_corrente.item, prossima_conf_base)
+								end
+							end
+							aggiungi_paralleli (tc.target, prossima_conf_base) --modificata per considerare i fork
+								-- FINE MODIFICA
+						else
+							prossima_conf_base.force (cbc.item, prossima_conf_base.count + 1)
+						end
 					end
-					aggiungi_stati_attivi(prossima_conf_base)
-					prossima_conf_base := riordina_stati(prossima_conf_base)
+					prossima_conf_base := elimina_stati_inattivi (prossima_conf_base)
+					prossima_conf_base := riordina_conf_base (prossima_conf_base)
 					if not prossima_conf_base.is_empty then
 						state_chart.conf_base.copy (prossima_conf_base)
 					end
@@ -85,174 +100,71 @@ feature -- evoluzione della statechart
 			stampa_conf_corrente (istante)
 		end
 
-	salva_storie(stato_uscente: STATO)
-	-- Arianna & Riccardo 05/07/2020
-	-- aggiorna le storie nei discendenti dello 'stato_uscente'
-		do
-			pulisci_storie(stato_uscente)
-			across
-				state_chart.conf_base as cbc
-			loop
-				if stato_uscente.antenato_di (cbc.item)	then
-					salva_percorso(cbc.item, stato_uscente)
-				end
-			end
-		end
-
-	pulisci_storie(stato_uscita: STATO)
-	-- Arianna & Riccardo 26/07/2020
-	-- elimina gli stati salvati in tutte le storie che si incontrano nel percorso dagli stati di state_chart.conf_base allo 'stato_uscita'
+	trova_transizioni_eseguibili (evento: LINKED_SET [STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]): ARRAY [TRANSIZIONE]
+			-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
+			-- restituisce l'array di transizioni che possono essere eseguite nello stato attuale del sistema
+			-- rispettando le specifiche SCXML dell'ordine degli stati nel file .xml e della gerarchia (modello object-oriented)
 		local
-			stato_temp: STATO
-		do
-			across
-				state_chart.conf_base as cbc
-			loop
-				if stato_uscita.antenato_di (cbc.item)	then
-					from
-						stato_temp := cbc.item
-					until
-						stato_temp = stato_uscita
-					loop
-						if attached stato_temp.storia as storia then
-							storia.svuota_memoria
-						end
-						if attached stato_temp.genitore as gen then
-							stato_temp := gen
-						end
-					end
-				end
-			end
-		end
-
-	salva_percorso(stato_conf_base, stato_uscente: STATO)
-	-- Arianna & Riccardo 05/07/2020
-	-- memorizza i percorsi di uscita partendo da 'stato_conf_base' e arrivando fino a 'stato_uscente'
-		local
-			stato_temp: STATO
-			percorso_uscita: LINKED_LIST[STATO]
-		do
-			if stato_uscente /= stato_conf_base then
-				-- se esco da uno stato atomico non ho storia
-				create percorso_uscita.make
-				from
-					stato_temp := stato_conf_base
-				until
-					stato_temp = stato_uscente
-				loop
-					percorso_uscita.put_front (stato_temp)
-					if attached stato_temp.genitore as gen then
-						stato_temp := gen
-					end
-
-					if attached{STORIA_DEEP} stato_temp.storia as storia then
-						-- se la storia è "deep" salvo tutto l'array del percorso
-						storia.aggiungi_stati (percorso_uscita)
-					elseif attached{STORIA_SHALLOW} stato_temp.storia as storia then
-						-- se la storia è "shallow" salvo solo lo stato uscente allo stesso livello della storia
-						storia.memorizza_stato (percorso_uscita.first)
-					end
-				end
-			end
-		end
-
-	trova_transizioni_eseguibili(eventi: LINKED_SET[STRING]; variabili: DATAMODEL): ARRAY[TRANSIZIONE]
-		-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
-		-- restituisce l'array di transizioni che possono essere eseguite nello stato attuale del sistema
-		-- rispettando le specifiche SCXML dell'ordine degli stati nel file .xml e della gerarchia (priorità strutturale object-oriented)
-		local
-			transizioni: ARRAY[TRANSIZIONE]
+			transizioni: ARRAY [TRANSIZIONE]
 			i: INTEGER
 			uscita_precedente: detachable STATO
-			sorgenti: ARRAY[STATO]
+			sorgenti: ARRAY [STATO]
 		do
 			create transizioni.make_empty
-			sorgenti := stati_eseguibili (eventi, variabili)
-			debug ("SC_transizioni_eseguibili")
-				print("=============================%N")
-				print (" stati sorgenti delle transizioni eseguibili in questo istante%N");
-				stampa_stati(sorgenti)
-				print("=============================%N")
-			end
+			sorgenti := sorgenti_ordinate (evento, condizioni)
 			from
 				i := sorgenti.lower
 			until
 				i = sorgenti.upper + 1
 			loop
-				if i = sorgenti.upper or else not sorgenti[i].antenato_di(sorgenti[i+1]) then
-					-- gli stati in sorgenti non sono tutti stati atomici, perché sono gli stati da cui fisicamente partono le transizioni eseguibili,
-					--		e quindi uno stato in sorgenti che è antenato dello stato immediatamente successivo non deve essere considerato, perché
-					--		la priorità strutturale object-oriented dà la priorità al secondo. (vedi t_non_determinismo_1_7_3 e 1_7_4)
-					-- se non è antenato di questo secondo non è antenato di alcun altro dopo di esso, dal momento che il non essere
-					--		antenato di quello immediatamente successivo implica - a causa del riordinamento degli stati in sorgenti in base
-					--		all'ordine di specifica nel file .xml - che nessuno dei suoi discendenti possiede transizioni eseguibili
-					if attached sorgenti[i].transizione_abilitata (eventi, variabili) as ta then
-						debug ("SC_transizioni_eseguibili") print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id) end
-						if attached uscita_precedente implies antenato_massimo_uscita(ta).incomparabile_con(uscita_precedente) then
-							-- questa transizione mi fa uscire da uno stato incomparabile con quello della precedente transizione
-							debug ("SC_transizioni_eseguibili") print(" viene mantenuto per la transizione.%N") end
+				if i = sorgenti.upper or else not sorgenti [i].antenato_di (sorgenti [i + 1]) then
+						-- una sorgente che contiene la successiva non deve essere eseguita
+					if attached sorgenti [i].transizione_abilitata (evento, condizioni) as ta then
+						if attached uscita_precedente implies genitore_piu_grande (ta).incomparabile_con (uscita_precedente) then
+								-- impedendo di uscire dal parallelo se con lo stesso evento non sono precedentemente uscito
 							transizioni.force (ta, transizioni.count + 1)
-							uscita_precedente := antenato_massimo_uscita (ta)
-						else
-							-- questa transizione esce da uno stato atomico parallelo di quello della precedente transizione scelta e
-							-- gli AMU (antenato_massimo_uscita) di questi due stati atomici in parallelo tra loro sono uno antenato dell'altro.
-							-- poiché le transizioni sono sempre associate agli stati atomici questa transizione mi farebbe uscire da
-							-- da un antenato parallelo comune a entrambi gli stati atomici.
-							-- la precedente transizione mi può aver già fatto uscire da tale comune antenato (vedi test t_non_determinismo_2_8_1)
-							-- e quindi questa transizione o è superflua o incompatibile (e la precedente ha la priorità)
-							-- oppure no (t_non_determinismo_2_8_2) e allora questa transizione è incompatibile (e la precedente ha la priorità)
-							debug ("SC_transizioni_eseguibili") print(" viene scartato perche' AMU e' antenato o discendente di precedente AMU o coincide.'.%N") end
-						end
-					end
-				else
-					debug ("SC_transizioni_eseguibili")
-						if attached sorgenti[i].transizione_abilitata (eventi, variabili) as ta then
-							print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id)
-							print(" e' antenato di sorgente successiva " + (i+1).out + ": " + sorgenti[i+1].id + " e viene scartato.%N")
+							uscita_precedente := genitore_piu_grande (ta)
 						end
 					end
 				end
-				i:=i+1
+				i := i + 1
 			end
-			Result:=transizioni
+			Result := transizioni
 		end
 
-	aggiungi_stati_attivi (conf_da_modificare: ARRAY[STATO])
-	-- Arianna & Riccardo 05/07/2020
-	-- aggiunge stati attivi alla configurazione
+	elimina_stati_inattivi (conf_da_modificare: ARRAY [STATO]): ARRAY [STATO]
+			-- Arianna & Riccardo 26/04/2020
+			-- elimina stati inattivi dalla configurazione
+		local
+			i: INTEGER
 		do
-			across
-				state_chart.conf_base as sc_cb
+			create Result.make_empty
+			from
+				i := conf_da_modificare.lower
+			until
+				i = conf_da_modificare.upper + 1
 			loop
-				if sc_cb.item.attivo then
-					conf_da_modificare.force (sc_cb.item, conf_da_modificare.count + 1)
+				if conf_da_modificare [i].attivo then
+					Result.force (conf_da_modificare [i], Result.count + 1)
 				end
+				i := i + 1
 			end
 		end
 
-	antenato_massimo_uscita (transizione: TRANSIZIONE): STATO
-	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
-	-- restituisce l'antenato più grande dal quale si esce con 'transizione'
+	genitore_piu_grande (transizione: TRANSIZIONE): STATO
+			-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
+			-- restituisce l'antenato piï¿½ grande che contiene stato_corrente ed ï¿½ contenuto nel contesto
 		local
 			contesto, stato_temp: detachable STATO
 		do
 			Result := transizione.sorgente
 			if transizione.internal then
-				if transizione.sorgente.antenato_di (transizione.destinazione) then
-					across
-						transizione.sorgente.figli as figli
-					loop
-						if figli.item.attivo then
-							Result := figli.item
-						end
-					end
-				else
-					across
-						transizione.destinazione.figli as figli
-					loop
-						if figli.item.attivo then
-							Result := figli.item
-						end
+				contesto := transizione.sorgente
+				across
+					transizione.sorgente.figli as figli
+				loop
+					if figli.item.attivo then
+						Result := figli.item
 					end
 				end
 			else
@@ -260,7 +172,7 @@ feature -- evoluzione della statechart
 				from
 					stato_temp := transizione.sorgente
 				until
-				 	stato_temp = contesto
+					stato_temp = contesto
 				loop
 					if attached stato_temp then
 						Result := stato_temp
@@ -270,67 +182,88 @@ feature -- evoluzione della statechart
 			end
 		end
 
-	aggiungi_paralleli (destinazione: STATO; prossima_conf_base: ARRAY [STATO])
+	aggiungi_paralleli (target: STATO; prossima_conf_base: ARRAY [STATO])
+	--inserisce in conf corrente i default degli stati in parallelo rispetto al target
+	--qual'ora vi siano stati giï¿½ attivi non da luogo a configurazioni non corrette
+		local
+			i: INTEGER
 		do
-			destinazione.set_attivo
-			if attached {STATO_AND} destinazione.genitore as dg and then not dg.attivo then
-				across dg.initial as dgi
+			target.set_attivo
+			if attached {STATO_AND} target.genitore as sgt and then not sgt.attivo then --se lo stato genitore ï¿½ un AND scorro i suoi figli
+				from
+					i := sgt.initial.lower
+				until
+					i = sgt.initial.upper + 1
 				loop
-					if not dgi.item.is_equal(destinazione) then
-						trova_default (dgi.item, prossima_conf_base)
+					if not sgt.initial [i].is_equal (target) then -- ho giï¿½ aggiunto il target alla conf corrente
+							--MODIFICHE FORK
+						aggiungi_sottostati (sgt.initial [i], prossima_conf_base)
+							--FINE MODIFICHE
 					end
 				end
 			end
-			if attached destinazione.genitore as dg then
-				aggiungi_paralleli (dg, prossima_conf_base)
+			if attached target.genitore as sgt then --se ha un genitore ripeto aggiungi paralleli su di lui
+				aggiungi_paralleli (sgt, prossima_conf_base)
 			end
 		end
 
 	trova_default (stato: STATO; prossima_conf_base: ARRAY [STATO])
-	-- segue le transizioni di default e aggiunge lo stato atomico a `prossima_conf_base'
-	-- se è presente una storia (non vuota) allora viene seguita al posto delle transizioni di default
+		local
+			i: INTEGER
 		do
-			if attached stato.storia as storia and then not storia.storia_vuota then
-				segui_storia(stato, prossima_conf_base)
-			else
-				stato.set_attivo
-				esegui_onentry(stato)
-				if not stato.initial.is_empty then
-					across stato.initial as  si
-					loop
-						trova_default (si.item, prossima_conf_base)
-					end
-				else
-					-- `stato' è uno stato atomico
-					prossima_conf_base.force (stato, prossima_conf_base.count + 1)
+			stato.set_attivo
+			esegui_onentry (stato)
+			if not stato.initial.is_empty then
+				from
+					i := stato.initial.lower
+				until
+					i = stato.initial.upper + 1
+				loop
+					trova_default (stato.initial [i], prossima_conf_base)
+					i := i + 1
 				end
+			else
+					-- `stato' ï¿½ uno stato atomico
+				prossima_conf_base.force (stato, prossima_conf_base.count + 1)
 			end
 		end
 
-	segui_storia (stato: STATO; prossima_conf_base: ARRAY [STATO])
-	-- Arianna & Riccardo 05/07/2020
-	-- segue il percorso indicato dalla storia
+		--MODIFICHE FORK
+
+	aggiungi_sottostati (stato: STATO; prossima_conf_base: ARRAY [STATO])
+			--se il target NON contiene un sottostato attivo si comporta come trova_default
+			--altrimenti entra nello stat target e entra ricorsivamente nei suoi sottostati
+			-- che contengono un sottostato attivo
+			--se incontra uno stato AND con un figlio attivo allora mette attivi tutti i suoi figli
 		do
-			stato.set_attivo
-			esegui_onentry(stato)
-			if attached{STORIA_DEEP} stato.storia as st then
-				across
-					st.stati_memorizzati as sm
-				loop
-					sm.item.set_attivo
-					esegui_onentry(sm.item)
-					if sm.item.stato_atomico then
-						prossima_conf_base.force (sm.item, prossima_conf_base.count + 1)
+			if stato.ha_sottostati_attivi then --prima discriminante: ha sottostati attivi? Se SI
+				stato.set_attivo
+				esegui_onentry (stato)
+				if attached {STATO_AND} stato as s_and then --se lo stato ï¿½ un AND
+					across
+						s_and.figli as fsa
+					loop
+						aggiungi_sottostati (fsa.item,prossima_conf_base) --itero su tutti i figli
+					end
+				else --itero solo sui figli con un sottostato attivo
+					across
+						stato.figli as fs
+					loop
+						if fs.item.ha_sottostati_attivi then
+							aggiungi_sottostati (fs.item,prossima_conf_base)
+						end
 					end
 				end
-			elseif attached{STORIA_SHALLOW} stato.storia as st and then attached st.stato_memorizzato as sm then
-				trova_default (sm, prossima_conf_base)
+			else  --se NO faccio trova default
+				trova_default(stato,prossima_conf_base)
 			end
 		end
+
+		--FINE MODIFICHE
 
 	trova_contesto (p_sorgente, p_destinazione: STATO): detachable STATO
 			-- trova il contesto in base alla specifica SCXML secondo cui il contesto
-			-- è il minimo antenato comune PROPRIO a p_sorgente e p_destinazione
+			-- ï¿½ il minimo antenato comune PROPRIO a p_sorgente e p_destinazione
 		local
 			antenati: HASH_TABLE [STRING, STRING]
 			corrente: STATO
@@ -358,27 +291,23 @@ feature -- evoluzione della statechart
 
 feature -- esecuzione azioni
 
-	esegui_azioni (transizione: TRANSIZIONE)
+	esegui_azioni (transizione: TRANSIZIONE; stato: STATO)
 		local
 			contesto: detachable STATO
 		do
 			if transizione.internal then
-				if transizione.sorgente.antenato_di (transizione.destinazione) then
-					contesto := transizione.sorgente
-				else
-					contesto := transizione.destinazione
-				end
+				contesto := transizione.sorgente
 			else
 				contesto := trova_contesto (transizione.sorgente, transizione.destinazione)
 			end
-			esegui_azioni_onexit (antenato_massimo_uscita (transizione))
+			esegui_azioni_onexit (genitore_piu_grande (transizione))
 			esegui_azioni_transizione (transizione.azioni)
 			esegui_azioni_onentry (contesto, transizione.destinazione)
 		end
 
 	esegui_onexit (p_stato_corrente: STATO)
 		do
-			if p_stato_corrente.onexit.count>0 then
+			if p_stato_corrente.onexit.count > 0 then
 				across
 					p_stato_corrente.onexit as ox
 				loop
@@ -389,7 +318,7 @@ feature -- esecuzione azioni
 
 	esegui_onentry (p_stato_corrente: STATO)
 		do
-			if p_stato_corrente.onentry .count>0 then
+			if p_stato_corrente.onentry.count > 0 then
 				across
 					p_stato_corrente.onentry as oe
 				loop
@@ -399,7 +328,7 @@ feature -- esecuzione azioni
 		end
 
 	esegui_azioni_onexit (stato_uscita: STATO)
-	-- Arianna & Riccardo 13/05/2020
+			-- Arianna & Riccardo 13/05/2020
 		do
 			if not stato_uscita.stato_atomico then
 				across
@@ -410,7 +339,7 @@ feature -- esecuzione azioni
 					end
 				end
 			end
-			esegui_onexit(stato_uscita)
+			esegui_onexit (stato_uscita)
 			stato_uscita.set_inattivo
 		end
 
@@ -424,9 +353,9 @@ feature -- esecuzione azioni
 
 	esegui_azioni_onentry (p_contesto: detachable STATO; p_destinazione: STATO)
 		do
-			if attached p_destinazione.genitore as dg and then dg /= p_contesto then
-				esegui_azioni_onentry (p_contesto, dg)
-				esegui_onentry (dg)
+			if attached p_target.genitore as sg and then sg /= p_contesto then
+				esegui_azioni_onentry (p_contesto, sg)
+				esegui_onentry (sg)
 			end
 		end
 
@@ -446,28 +375,30 @@ feature -- controllo
 
 feature -- utilita
 
-	riordina_stati (p_stati: ARRAY[STATO]): ARRAY[STATO]
-	-- Agulini Claudia & Fiorini Federico 11/05/2020
-	-- Riordina `p_stati' in base all'ordine del file .xml, che è quello con cui sono stati creati gli stati
-	local
-		stati_ordinati: ARRAY[STATO]
-	do
-		create stati_ordinati.make_empty
-		across
-			state_chart.stati as stati
-		loop
-			if p_stati.has (stati.item) then
-				stati_ordinati.force (stati.item, stati_ordinati.count + 1)
+	riordina_conf_base (conf_base: ARRAY [STATO]): ARRAY [STATO]
+			-- Agulini Claudia & Fiorini Federico 11/05/2020
+			-- Viene usata per riordinare la configurazione rispettando l' ordine del file xml
+		local
+			j: INTEGER
+			conf_ordinata: ARRAY [STATO]
+		do
+			create conf_ordinata.make_empty
+			j := conf_ordinata.lower
+			across
+				state_chart.stati as stati
+			loop
+				if conf_base.has (stati.item) then
+					conf_ordinata.force (stati.item, j)
+					j := j + 1
+				end
 			end
+			Result := conf_ordinata
 		end
-		Result := stati_ordinati
-	end
 
-	stati_eseguibili (eventi: LINKED_SET[STRING]; variabili: DATAMODEL): ARRAY[STATO]
-	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
-	-- A partire dalla configurazione di base ritorna gli stati che hanno transizioni abilitate in base a `eventi' e `variabili'
-	-- N.B. gli stati tornati possono non essere stati atomici, ma stati gerarchici le cui transizioni sono eseguibili dagli stati atomici
-	--		loro discendenti, che sono rilevate da `transizione_abilitata' in assenza di transizioni direttamente abilitate nello stato atomico
+	sorgenti_ordinate (evento: LINKED_SET [STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]): ARRAY [STATO]
+			-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
+			-- Dati eventi e condizioni, restituisce l'array di sorgenti delle transizioni abilitate nella `conf_base_corrente'
+			-- ordinate secondo l'ordine del file .xml
 		do
 			create Result.make_empty
 			across
@@ -479,7 +410,7 @@ feature -- utilita
 					Result.force (ta.sorgente, Result.count + 1)
 				end
 			end
-			Result := riordina_stati (Result)
+			Result := riordina_conf_base (Result)
 		end
 
 	stampa_conf_corrente (indice: INTEGER)
@@ -489,14 +420,15 @@ feature -- utilita
 			print ("%N")
 			print ("  configurazione BASE corrente: ")
 			across
-				state_chart.conf_base as sc_cb
+				conf_base_corrente as cbc
 			loop
 				print (sc_cb.item.id + " ")
 			end
 			print (" %N")
 			if indice <= ambiente_corrente.eventi_esterni.count then
 				print ("  eventi correnti : ")
-				across ambiente_corrente.eventi_esterni[indice] as eventi_correnti
+				across
+					ambiente_corrente.eventi_esterni [indice] as eventi_correnti
 				loop
 					print (eventi_correnti.item + " ")
 				end
@@ -504,11 +436,4 @@ feature -- utilita
 			end
 		end
 
-	stampa_stati (stati: ARRAY[STATO])
-		do
-			across stati as s
-			loop
-				s.item.stampa
-			end
-		end
 end

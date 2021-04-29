@@ -150,7 +150,7 @@ feature -- Test
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova [1] := test_data_dir + "internal_da_parallelo.xml"
-  			nomi_files_prova [2] := test_data_dir + "internal_da_parallelo_eventi.txt"
+  		nomi_files_prova [2] := test_data_dir + "internal_da_parallelo_eventi.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (P1,P2B)", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"P1") and conf_has_state(esecutore.state_chart.conf_base,"P2B"))
 		end
@@ -161,7 +161,7 @@ feature -- Test
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova [1] := test_data_dir + "transizione_figlio_genitore.xml"
-  			nomi_files_prova [2] := test_data_dir + "transizione_figlio_genitore_eventi.txt"
+  		nomi_files_prova [2] := test_data_dir + "transizione_figlio_genitore_eventi.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (P1A1,P1B1,P2)", esecutore.state_chart.conf_base.count = 3 and conf_has_state(esecutore.state_chart.conf_base,"P1A1") and conf_has_state(esecutore.state_chart.conf_base,"P1B1") and conf_has_state(esecutore.state_chart.conf_base,"P2"))
 		end

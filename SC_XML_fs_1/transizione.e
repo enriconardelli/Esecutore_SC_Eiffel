@@ -23,7 +23,11 @@ feature -- creazione
             create azioni.make_empty
 			evento := Void
 			internal := False
-			condizione := valore_nullo
+			condizione := "condizione_vuota"
+			-- AGGIUNTE FORK
+			fork:=False
+			create multi_target.make
+			-- FINE AGGIUNTE
 		end
 
 feature -- attributi
@@ -39,6 +43,14 @@ feature -- attributi
 	destinazione: STATO
 
 	internal: BOOLEAN
+
+	--AGGIUNTE PER FORK
+
+	fork:BOOLEAN
+
+	multi_target: detachable LINKED_LIST [STATO]
+
+	--FINE AGGIUNTE
 
 feature -- setter
 
@@ -75,6 +87,23 @@ feature -- setter
 			internal := True
 		end
 
+	-- AGGIUNTE PER FORK	
+
+	set_fork
+		do
+			fork := TRUE
+		end
+
+	add_target(uno_stato: STATO)
+		do
+			if uno_stato/=target then
+			if attached multi_target as mt then mt.force(uno_stato) end
+			end
+		end
+
+	--FINE AGGIUNTE	
+
+
 feature -- check
 
 	check_evento (istante: LINKED_SET [STRING] ): BOOLEAN
@@ -94,7 +123,7 @@ feature -- check
 	end
 
 	check_condizione_booleana (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
-	-- Controlla se la condizione sulle variabili booleane è verificata.
+	-- Controlla se la condizione sulle variabili booleane ï¿½ verificata.
 	do
 		if condizione ~ valore_nullo then
 			Result:= True
@@ -108,12 +137,12 @@ feature -- check
 	end
 
 	check_condizione_intera (variabili_intere: HASH_TABLE [INTEGER, STRING]): BOOLEAN
-	-- Controlla se la condizione sulle variabili intere è verificata.
+	-- Controlla se la condizione sulle variabili intere ï¿½ verificata.
 	-- assunzioni che NON vengono controllate:
-	--		ciò che c'è prima di '<' o '>' o '=' o '/=' è il nome della variabile
-	--		se c'è '=' dopo '<' o '>' allora li segue immediatamente
-	--		se c'é '/' allora '=' lo segue immediatamente
-	--		tutto ciò che c'è dopo espressione di confronto è trasformabile in numero
+	--		ciï¿½ che c'ï¿½ prima di '<' o '>' o '=' o '/=' ï¿½ il nome della variabile
+	--		se c'ï¿½ '=' dopo '<' o '>' allora li segue immediatamente
+	--		se c'ï¿½ '/' allora '=' lo segue immediatamente
+	--		tutto ciï¿½ che c'ï¿½ dopo espressione di confronto ï¿½ trasformabile in numero
 	local
 		var: STRING
 		valore: INTEGER
