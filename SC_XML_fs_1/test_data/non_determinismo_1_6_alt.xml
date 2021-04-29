@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="A">
+	<parallel id="A">	
+		<state id="A1">							
+		</state>
+			
+		<state id="A2">
+			<transition event="x" target="B21" >
+			<log name="x: da A2 a B21" />
+			</transition>
+		</state>
+			
+		<transition event="x" target="B1" >
+			<log name="x: da A a B1" />
+		</transition>	
+
+    	</parallel>
+    	
+	<parallel id="B">	
+		<state id="B1">								
+		</state>
+			
+		<state id="B2" initial="B22">
+			<state id="B21">								
+			</state>
+			<state id="B22">								
+			</state>		
+		</state>	
+    	</parallel>
+    	
+    	   	
+</scxml>

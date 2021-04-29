@@ -35,8 +35,6 @@ feature -- Test routines
 
 	conf_has_state( conf: ARRAY [STATO]; stato: STRING ):BOOLEAN
 	-- Controlla se in `conf' è presente `stato'
-		local
-			count: INTEGER
 		do
 			across conf as c
 			loop

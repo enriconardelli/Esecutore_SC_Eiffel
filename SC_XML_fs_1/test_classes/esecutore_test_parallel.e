@@ -19,7 +19,7 @@ feature -- Test
 			nomi_files_prova [1] := test_data_dir + "base_parallelo.xml"
 			nomi_files_prova [2] := test_data_dir + "base_parallelo_eventi.txt"
 			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( C )", esecutore.conf_base_corrente.count = 1 and conf_has_state(esecutore.conf_base_corrente,"C") )
+			assert ("ERRORE il sistema non ha terminato negli stati corretti ( C )", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"C") )
 		end
 
 	t_condizioni_parallelo
@@ -29,8 +29,8 @@ feature -- Test
 			nomi_files_prova [1] := test_data_dir + "parallelo_condizioni.xml"
 			nomi_files_prova [2] := test_data_dir + "parallelo_condizioni_eventi.txt"
 			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( C )", esecutore.conf_base_corrente.count = 1 and conf_has_state(esecutore.conf_base_corrente,"C") )
-	 		assert ("ERRORE il sistema non impostato correttamente le condizioni", esecutore.state_chart.condizioni.item ("alfa"))
+			assert ("ERRORE il sistema non ha terminato negli stati corretti ( C )", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"C") )
+	 		assert ("ERRORE il sistema non impostato correttamente le condizioni", esecutore.state_chart.variabili.booleane.item ("alfa"))
 		end
 
 	t_entrata
@@ -41,7 +41,7 @@ feature -- Test
 			nomi_files_prova [1] := test_data_dir + "entrata_1.xml"
 			nomi_files_prova [2] := test_data_dir + "entrata_1_eventi.txt"
 			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A2A1 - A2B1 )", esecutore.conf_base_corrente.count = 2 and conf_has_state(esecutore.conf_base_corrente,"A2A1") and conf_has_state(esecutore.conf_base_corrente,"A2B1") )
+			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A2A1 - A2B1 )", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"A2A1") and conf_has_state(esecutore.state_chart.conf_base,"A2B1") )
 		end
 
 	t_entrata_2
@@ -52,7 +52,7 @@ feature -- Test
 			nomi_files_prova [1] := test_data_dir + "entrata_2.xml"
 			nomi_files_prova [2] := test_data_dir + "entrata_2_eventi.txt"
 			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A2A2 - A2B1 )", esecutore.conf_base_corrente.count = 2 and conf_has_state(esecutore.conf_base_corrente,"A2A2") and conf_has_state(esecutore.conf_base_corrente,"A2B1") )
+			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A2A2 - A2B1 )", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"A2A2") and conf_has_state(esecutore.state_chart.conf_base,"A2B1") )
 		end
 
 	t_uscita
@@ -63,7 +63,7 @@ feature -- Test
 			nomi_files_prova [1] := test_data_dir + "uscita.xml"
 			nomi_files_prova [2] := test_data_dir + "uscita_eventi.txt"
 			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A1 )", esecutore.conf_base_corrente.count = 1 and conf_has_state(esecutore.conf_base_corrente,"A1") )
+			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A1 )", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"A1") )
 		end
 
 	t_esempio_complesso
@@ -73,7 +73,7 @@ feature -- Test
 			nomi_files_prova [1] := test_data_dir + "complesso.xml"
 			nomi_files_prova [2] := test_data_dir + "complesso_eventi.txt"
 			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A11 )", esecutore.conf_base_corrente.count = 1 and conf_has_state(esecutore.conf_base_corrente,"A11") )
+			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A11 )", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"A11") )
 		end
 
 	t_transizione_parallelo_interna
@@ -84,7 +84,7 @@ feature -- Test
 			nomi_files_prova [1] := test_data_dir + "transizione_parallelo_interna.xml"
 			nomi_files_prova [2] := test_data_dir + "transizione_parallelo_interna_eventi.txt"
 			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A2A2 , A2B2 )", esecutore.conf_base_corrente.count = 2 and conf_has_state(esecutore.conf_base_corrente,"A2A2") and  conf_has_state(esecutore.conf_base_corrente,"A2B2"))
+			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A2A2 , A2B2 )", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"A2A2") and  conf_has_state(esecutore.state_chart.conf_base,"A2B2"))
 		end
 
 	t_parallelo_una_profondita
@@ -95,7 +95,7 @@ feature -- Test
 			nomi_files_prova [1] := test_data_dir + "parallelo_una_profondita.xml"
 			nomi_files_prova [2] := test_data_dir + "parallelo_una_profondita_eventi.txt"
 			create esecutore.make (nomi_files_prova)
-			 assert ("ERRORE lo stato corrente non è (A,UNO)", conf_has_state(esecutore.conf_base_corrente,"A") and conf_has_state(esecutore.conf_base_corrente,"UNO"))
+			 assert ("ERRORE lo stato corrente non è (A,UNO)", conf_has_state(esecutore.state_chart.conf_base,"A") and conf_has_state(esecutore.state_chart.conf_base,"UNO"))
 		end
 
 	t_parallelo_piu_profondo
@@ -105,7 +105,7 @@ feature -- Test
 			nomi_files_prova [1] := test_data_dir + "parallelo_piu_profondo.xml"
 			nomi_files_prova [2] := test_data_dir + "parallelo_piu_profondo_eventi.txt"
 			create esecutore.make (nomi_files_prova)
-			 assert ("ERRORE lo stato corrente non è (A2A1, P1, P2)", conf_has_state(esecutore.conf_base_corrente,"A2A1") and conf_has_state(esecutore.conf_base_corrente,"P1") and conf_has_state(esecutore.conf_base_corrente,"P2"))
+			 assert ("ERRORE lo stato corrente non è (A2A1, P1, P2)", conf_has_state(esecutore.state_chart.conf_base,"A2A1") and conf_has_state(esecutore.state_chart.conf_base,"P1") and conf_has_state(esecutore.state_chart.conf_base,"P2"))
 		end
 
 	t_misto_parallel_1
@@ -116,7 +116,7 @@ feature -- Test
 			nomi_files_prova [1] := test_data_dir + "multi_parallel_1.xml"
 			nomi_files_prova [2] := test_data_dir + "multi_parallel_1_eventi.txt"
 			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE lo configurazione base corrente non è (A,B2,B1)", conf_has_state(esecutore.conf_base_corrente,"A") and conf_has_state(esecutore.conf_base_corrente,"B1") and conf_has_state(esecutore.conf_base_corrente,"B2"))
+			assert ("ERRORE lo configurazione base corrente non è (A,B2,B1)", conf_has_state(esecutore.state_chart.conf_base,"A") and conf_has_state(esecutore.state_chart.conf_base,"B1") and conf_has_state(esecutore.state_chart.conf_base,"B2"))
 		end
 
 	t_transizioni_interne_parallel
@@ -129,7 +129,7 @@ feature -- Test
 			nomi_files_prova [1] := test_data_dir + "transizioni_interne_parallelo.xml"
 			nomi_files_prova [2] := test_data_dir + "transizioni_interne_parallelo_eventi.txt"
 			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE lo configurazione base corrente non è (A1A2,A1B,A1C,B1)", conf_has_state(esecutore.conf_base_corrente,"A1A2") and conf_has_state(esecutore.conf_base_corrente,"A1B") and conf_has_state(esecutore.conf_base_corrente,"A1C") and conf_has_state(esecutore.conf_base_corrente,"B1"))
+			assert ("ERRORE lo configurazione base corrente non è (A1A2,A1B,A1C,B1)", conf_has_state(esecutore.state_chart.conf_base,"A1A2") and conf_has_state(esecutore.state_chart.conf_base,"A1B") and conf_has_state(esecutore.state_chart.conf_base,"A1C") and conf_has_state(esecutore.state_chart.conf_base,"B1"))
 		end
 
 	t_transizione_non_ammissibile
@@ -140,7 +140,7 @@ feature -- Test
 		nomi_files_prova [1] := test_data_dir + "transizione_non_ammissibile.xml"
  		nomi_files_prova [2] := test_data_dir + "transizione_non_ammissibile_eventi.txt"
 		create esecutore.make (nomi_files_prova)
-		assert ("ERRORE lo stato corrente non è (P1, P2)", conf_has_state(esecutore.conf_base_corrente,"P1") and conf_has_state(esecutore.conf_base_corrente,"P2"))
+		assert ("ERRORE lo stato corrente non è (P1, P2)", conf_has_state(esecutore.state_chart.conf_base,"P1") and conf_has_state(esecutore.state_chart.conf_base,"P2"))
 	end
 
 	t_internal_con_sorgente_parallelo
@@ -152,7 +152,7 @@ feature -- Test
 			nomi_files_prova [1] := test_data_dir + "internal_da_parallelo.xml"
   		nomi_files_prova [2] := test_data_dir + "internal_da_parallelo_eventi.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (P1,P2B)", esecutore.conf_base_corrente.count = 2 and conf_has_state(esecutore.conf_base_corrente,"P1") and conf_has_state(esecutore.conf_base_corrente,"P2B"))
+			assert("ERRORE: il sistema non termina in (P1,P2B)", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"P1") and conf_has_state(esecutore.state_chart.conf_base,"P2B"))
 		end
 
 	t_figlio_genitore
@@ -163,6 +163,27 @@ feature -- Test
 			nomi_files_prova [1] := test_data_dir + "transizione_figlio_genitore.xml"
   		nomi_files_prova [2] := test_data_dir + "transizione_figlio_genitore_eventi.txt"
 			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (P1A1,P1B1,P2)", esecutore.conf_base_corrente.count = 3 and conf_has_state(esecutore.conf_base_corrente,"P1A1") and conf_has_state(esecutore.conf_base_corrente,"P1B1") and conf_has_state(esecutore.conf_base_corrente,"P2"))
+			assert("ERRORE: il sistema non termina in (P1A1,P1B1,P2)", esecutore.state_chart.conf_base.count = 3 and conf_has_state(esecutore.state_chart.conf_base,"P1A1") and conf_has_state(esecutore.state_chart.conf_base,"P1B1") and conf_has_state(esecutore.state_chart.conf_base,"P2"))
 		end
+
+	t_transizione_senza_evento_1
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "transizione_senza_evento_parallelo.xml"
+			nomi_files_prova [2] := test_data_dir + "transizione_senza_evento_parallelo_eventi.txt"
+			create esecutore.make (nomi_files_prova)
+			assert ("ERRORE il sistema non termina negli stati corretti ( S2 T2 )", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"S2") and conf_has_state(esecutore.state_chart.conf_base,"T2") )
+		end
+
+	t_transizione_senza_evento_2
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "transizione_senza_evento_parallelo_bis.xml"
+			nomi_files_prova [2] := test_data_dir + "transizione_senza_evento_parallelo_eventi.txt"
+			create esecutore.make (nomi_files_prova)
+			assert ("ERRORE il sistema non termina negli stati corretti ( S2 T2 )", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"S2") and conf_has_state(esecutore.state_chart.conf_base,"T2") )
+		end
+
 end

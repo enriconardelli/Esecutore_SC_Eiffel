@@ -6,11 +6,12 @@
 			
 		<state id="A2">
 			<transition event="y" target="B21" >
-			<log name="exectute y" />
+			<log name="execute y" />
 			</transition>
 		</state>	
+		
 		<transition event="x" target="B1" >
-		<log name="execute x" />
+			<log name="execute x" />
 		</transition>	
 
     	</parallel>

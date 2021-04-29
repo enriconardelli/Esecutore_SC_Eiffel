@@ -10,6 +10,10 @@ class
 create
 	make_with_target
 
+feature -- costante
+
+	Valore_Nullo : STRING = "NULL"
+
 feature -- creazione
 
 	make_with_target(stato_destinazione, stato_sorgente: STATO)
@@ -36,7 +40,7 @@ feature -- attributi
 
     sorgente: STATO
 
-	target: STATO
+	destinazione: STATO
 
 	internal: BOOLEAN
 
@@ -68,7 +72,7 @@ feature -- setter
 		require
 			not_void: uno_stato /= Void
 		do
-			target := uno_stato
+			destinazione := uno_stato
 		end
 
 	set_sorgente (uno_stato: STATO)
@@ -80,7 +84,7 @@ feature -- setter
 
 	set_internal
 		do
-			internal := TRUE
+			internal := True
 		end
 
 	-- AGGIUNTE PER FORK	
@@ -106,21 +110,73 @@ feature -- check
 		do
 			if attached evento as e then
 				if istante.has (e) then
-					result:= TRUE
+					Result:= True
 				end
 			else
-				result:= TRUE
+				Result:= True
 			end
 		end
 
-	check_condizione (hash_delle_condizioni: HASH_TABLE [BOOLEAN, STRING] ): BOOLEAN
-	-- Controlla se la condizione dell'evento è verificata.
+	check_condizione (variabili: DATAMODEL): BOOLEAN
 	do
-		if condizione ~ "condizione_vuota" then
-				result:= TRUE
+		Result := check_condizione_booleana (variabili.booleane) or check_condizione_intera (variabili.intere)
+	end
+
+	check_condizione_booleana (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
+	-- Controlla se la condizione sulle variabili booleane ï¿½ verificata.
+	do
+		if condizione ~ valore_nullo then
+			Result:= True
 		else
-			result:= hash_delle_condizioni.item (condizione)
+			if variabili_booleane.has (condizione) then
+				Result:= variabili_booleane.item (condizione)
+			else
+				Result:= False
+			end
 		end
 	end
 
+	check_condizione_intera (variabili_intere: HASH_TABLE [INTEGER, STRING]): BOOLEAN
+	-- Controlla se la condizione sulle variabili intere ï¿½ verificata.
+	-- assunzioni che NON vengono controllate:
+	--		ciï¿½ che c'ï¿½ prima di '<' o '>' o '=' o '/=' ï¿½ il nome della variabile
+	--		se c'ï¿½ '=' dopo '<' o '>' allora li segue immediatamente
+	--		se c'ï¿½ '/' allora '=' lo segue immediatamente
+	--		tutto ciï¿½ che c'ï¿½ dopo espressione di confronto ï¿½ trasformabile in numero
+	local
+		var: STRING
+		valore: INTEGER
+	do
+		if condizione.has ('<') then
+			var := condizione.substring (1,   condizione.index_of ('<', 1) - 1)
+			if condizione.has_substring ("<=") then
+				valore := condizione.substring (condizione.index_of ('<', 1) + 2, condizione.count).to_integer
+				Result := variabili_intere.item (var) <= valore
+			else
+				valore := condizione.substring ( condizione.index_of ('<', 1) + 1, condizione.count).to_integer
+				Result := variabili_intere.item (var) < valore
+			end
+		elseif condizione.has ('>') then
+			var := condizione.substring (1,  condizione.index_of ('>', 1) - 1)
+			if condizione.has_substring (">=") then
+				valore := condizione.substring (condizione.index_of ('>', 1) + 2, condizione.count).to_integer
+				Result := variabili_intere.item (var) >= valore
+			else
+				valore := condizione.substring ( condizione.index_of ('>', 1) + 1, condizione.count).to_integer
+				Result := variabili_intere.item (var) > valore
+			end
+		elseif condizione.has ('=') then
+			if condizione.has_substring ("/=") then
+				var := condizione.substring (1,   condizione.index_of ('/', 1) - 1)
+				valore := condizione.substring (condizione.index_of ('/', 1) + 2, condizione.count).to_integer
+				Result := variabili_intere.item (var) /= valore
+			else
+				var := condizione.substring (1,  condizione.index_of ('=', 1) - 1)
+				valore := condizione.substring ( condizione.index_of ('=', 1) + 1, condizione.count).to_integer
+				Result := variabili_intere.item (var) = valore
+			end
+		else
+			Result := False
+		end
+	end
 end

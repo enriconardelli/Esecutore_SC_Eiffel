@@ -5,8 +5,8 @@
 	revision: ""
 
 -- TODO: classe da ristrutturare trasformandola in deferred con due sotto-classi per stati atomici e gerarchici,
--- STATO_ATOMICO è effective, mentre STATO_GERARCHIO è anch'essa deferred
--- ed ha come sotto-classi STATO_XOR e STATO_AND
+-- STATO_ATOMICO è effective, mentre STATO_GERARCHICO è anch'essa deferred
+-- ed ha come sotto-classi effective STATO_XOR e STATO_AND
 -- spostare feature figli, add_Figlio, make_with_parent in STATO_GERARCHICO
 
 class
@@ -150,7 +150,13 @@ feature -- modifica
 
 feature -- situazione
 
-	transizione_abilitata (eventi_correnti: LINKED_SET [STRING]; condizioni: HASH_TABLE [BOOLEAN, STRING]): detachable TRANSIZIONE
+	transizione_abilitata (eventi: LINKED_SET [STRING]; variabili: DATAMODEL): detachable TRANSIZIONE
+	-- restituisce in base ai valori correnti di `eventi' e `variabili' la prima transizione abilitata in questo stato
+	-- sia direttamente nello stato (priorità SCXML dell'ordine di scrittura nel file .xml) o (se non ve ne sono)
+	-- mediante ereditarietà da un antenato (priorità strutturale object oriented)
+	-- TODO: nel caso di un evento (o più eventi presenti nello stesso istante) in grado di abilitare più transizioni
+	-- TODO: 	se è uno stesso evento si può rilevare durante l'analisi della SC (e poi vanno introdotte e gestite qui le priorità)
+	-- TODO: 	se sono eventi diversi va rilevato dinamicamente in questa feature
 		local
 			index_count: INTEGER
 			transizione_corrente: detachable TRANSIZIONE
@@ -166,8 +172,8 @@ feature -- situazione
 				index_count = transizioni.upper + 1 or Result /= Void
 			loop
 				transizione_corrente := transizioni [index_count]
-				evento_abilitato := transizione_corrente.check_evento (eventi_correnti)
-				condizione_abilitata := transizione_corrente.check_condizione (condizioni)
+				evento_abilitato := transizione_corrente.check_evento (eventi)
+				condizione_abilitata := transizione_corrente.check_condizione (variabili)
 				if evento_abilitato and condizione_abilitata then
 					Result := transizioni [index_count]
 				end
@@ -175,7 +181,7 @@ feature -- situazione
 			end
 			if Result = Void then
 				if attached genitore as sg then
-					Result := sg.transizione_abilitata (eventi_correnti, condizioni)
+					Result := sg.transizione_abilitata (eventi, variabili)
 				end
 			end
 		end
@@ -268,11 +274,12 @@ feature -- routines forse inutili
 		-- ritorna lo stato a cui porta la transizione di indice minimo attivabile nella configurazione corrente con `evento_corrente'
 		-- Giulia Iezzi, Alessando Filippo 12/apr/2020; EN 21/apr/2020
 		-- non viene mai chiamata
+		-- TODO: da rimuovere quando si ristruttura la classe
 		do
 			across transizioni as t
 			loop
 	        	if attivabile(t.item, evento_corrente, hash_delle_condizioni) then
-		        	Result := t.item.target
+		        	Result := t.item.destinazione
 		        end
 			end
 			if Result = Void then
@@ -283,6 +290,7 @@ feature -- routines forse inutili
 	get_transition (evento_corrente: STRING): TRANSIZIONE
 		-- ritorna la transizione abilitata con `evento_corrente'
 		-- non viene mai invocata
+		-- TODO: da rimuovere quando si ristruttura la classe
 		local
 			index_count: INTEGER
 			index: INTEGER
@@ -301,5 +309,28 @@ feature -- routines forse inutili
 			end
 			Result := transizioni [index]
 		end
+
+feature -- utilita
+
+	stampa
+	do
+		print("--------------------%N")
+		print("stato con id = " + id + "%N")
+		if attached genitore as g then print("  genitore: " + g.id + "%N") end
+		if not initial.is_empty then
+			print("  initial: ")
+			across initial as i
+			loop print(i.item.id + ", ")
+			end
+			print("%N")
+		end
+		if not figli.is_empty then
+			print("  figli: ")
+			across figli as f
+			loop print (f.item.id + ", ")
+			end
+			print("%N")
+		end
+	end
 
 end

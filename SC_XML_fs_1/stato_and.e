@@ -16,8 +16,6 @@ create
 feature -- setter
 
 	set_initial
-		local
-			i: INTEGER
 		do
 			across figli as f
 			loop

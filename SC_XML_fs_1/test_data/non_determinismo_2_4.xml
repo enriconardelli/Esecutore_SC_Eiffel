@@ -6,7 +6,7 @@
         <state id="P1A1">
           <transition event="x" target="P1A2"/>
         </state>
-        <state id="P1A2"></state>
+        <state id="P1A2" />
       </state>
       <state id="P1B" initial="P1B1">
         <state id="P1B1">
@@ -14,7 +14,7 @@
         </state>
       </state>
     </parallel>
-    <state id="P2"></state>
+    <state id="P2" />
   </parallel>
 
 </scxml>

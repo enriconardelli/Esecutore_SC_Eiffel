@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml initial="X" version="1.0" xmlns="http://www.w3.org/2005/07/scxml">
+	<datamodel>
+		<data id="A" expr="true" />
+	</datamodel>
+	<parallel id="X">
+		<state id="S" initial="S1">
+			<state id="S1">
+				<transition event="e" target="S2">
+					<log name="e: da S1 a S2"/>
+				</transition>
+				<onexit>
+					<assign location="A" expr="false" />
+				</onexit>
+			</state>
+			<state id="S2">
+				<transition event="e" target="S1">
+					<log name="f: da s2 a S1"/>
+				</transition>
+				<onexit>
+					<assign location="A" expr="true" />
+				</onexit>
+			</state>
+		</state>
+		<state id="T" initial="T1">
+			<state id="T1">
+				<transition event="e" cond="A" target="T2">
+					<log name="(A) da T1 a T2"/>
+				</transition>
+			</state>
+			<state id="T2">
+				<transition event="e" cond="A" target="T1">
+					<log name="(A) da T2 a T1"/>
+				</transition>
+			</state>
+		</state>
+	</parallel>
+</scxml>
