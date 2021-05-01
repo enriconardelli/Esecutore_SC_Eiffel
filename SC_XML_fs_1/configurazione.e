@@ -314,7 +314,7 @@ feature -- inizializzazione SC
 		end
 
 	completa_stati (elements: LIST [XML_ELEMENT])
-		-- assegna ricorsivamente agli stati le transizioni con eventi e azioni
+		-- assegna ricorsivamente agli stati le transizioni (con eventi e azioni), le onentry/onexit, le history
 		do
 			across
 				elements as e
