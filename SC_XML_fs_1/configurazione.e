@@ -89,7 +89,7 @@ feature -- supporto alla creazione
 feature -- inizializzazione SC
 
 	istanzia_datamodel (elements: LIST [XML_ELEMENT])
-		-- istanzia il <datamodel>, che puï¿½ essere anche suddiviso in piï¿½ nodi
+		-- istanzia il <datamodel>, che può essere anche suddiviso in più nodi
 		do
 			across
 				elements as e
@@ -98,30 +98,31 @@ feature -- inizializzazione SC
 					if e.item.elements.is_empty then
 						print ("AVVISO: il <datamodel> non contiene elementi <data>!%N")
 					else
-						across e.item.elements as data
-						loop
-							if attached {XML_ATTRIBUTE} data.item.attribute_by_name ("id") as nome then
-								if nome.value ~ "" then
-									print ("ERRORE: elemento <data> con 'id' di valore stringa vuota!%N")
-								elseif attached {XML_ATTRIBUTE} data.item.attribute_by_name ("expr") as valore then
-									if valore_booleano(valore.value) then
-										condizioni.extend (valore.value.as_lower ~ "true", nome.value)
-									else
-										print ("ERRORE: elemento <data> con id >|" + nome.value + "|< assegna a 'expr' il valore >|" + valore.value + "|< non booleano!%N")
-									end
-								else
-									print ("ERRORE: elemento <data> con id >|" + nome.value + "<| senza attributo 'expr'!%N")
-								end
-							else
-								print ("ERRORE: elemento <data> senza attributo 'id'!%N")
-							end
-						end
+						istanzia_variabili (e.item.elements)
+					end
+				end
+			end
+		end
+
+	istanzia_variabili (data_elements: LIST [XML_ELEMENT])
+		-- istanzia nella SC le variabili presenti in <datamodel>
+		do
+			across
+				data_elements as data
+			loop
+				if attached {XML_ATTRIBUTE} data.item.attribute_by_name ("id") as nome then
+					if id_illegittimo (nome.value) then
+						print ("ERRORE: elemento <data> con 'id' >|" + nome.value + "|< di valore stringa vuota o blank o 'NULL' !%N")
+					elseif attached {XML_ATTRIBUTE} data.item.attribute_by_name ("expr") as valore then
+						assegna_variabile (pulisci_stringa (nome.value), pulisci_stringa (valore.value))
+					else
+						print ("ERRORE: elemento <data> con id >|" + nome.value + "|< senza attributo 'expr'!%N")
 					end
 				else
 					print ("ERRORE: elemento <data> senza attributo 'id'!%N")
 				end
 			end
-			-- aggiunge variabile booleana '{TRANSIZIONE}.Valore_Nullo' che ï¿½ sempre True e si usa per le transizioni che non specificano una condizione nel file del modello
+			-- aggiunge variabile booleana '{TRANSIZIONE}.Valore_Nullo' che è sempre True e si usa per le transizioni che non specificano una condizione nel file del modello
 			variabili.booleane.extend (True, {TRANSIZIONE}.Valore_Nullo)
 		end
 
@@ -146,7 +147,7 @@ feature -- inizializzazione SC
 				elements as e
 			loop
 				if e.item.name ~ "final" and attached e.item.attribute_by_name ("id") as id then
-				-- TODO: avvisare se "id" ï¿½ assente
+				-- TODO: avvisare se "id" è assente
 					stati.extend (create {STATO}.make_final_with_id (id.value), id.value)
 				end
 			end
@@ -154,7 +155,7 @@ feature -- inizializzazione SC
 
 	istanzia_stati (elements: LIST [XML_ELEMENT]; p_genitore: detachable STATO)
 		-- crea gli stati assegnando loro l'eventuale genitore e gli eventuali figli
-		-- TODO: feature complessa, ï¿½ possibile semplificarla?
+		-- TODO: feature complessa, è possibile semplificarla?
 		local
 			stato_temp: STATO
 		do
@@ -175,7 +176,7 @@ feature -- inizializzazione SC
 						else
 							if e.item.name ~ "state" then
 								if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
-									-- elemento corrente <state> ha figli, quindi ï¿½ gerarchico
+									-- elemento corrente <state> ha figli, quindi è gerarchico
 									if attached p_genitore as pg then
 										-- istanzio elemento corrente con genitore e glielo assegno come figlio
 										stato_temp := create {STATO_XOR}.make_with_id_and_parent (id_attr.value, pg)
@@ -184,9 +185,9 @@ feature -- inizializzazione SC
 										stato_temp := create {STATO_XOR}.make_with_id (id_attr.value)
 									end
 									stati.extend (stato_temp, id_attr.value)
-									-- ricorsione sui figli con sï¿½ stesso come genitore
+									-- ricorsione sui figli con sé stesso come genitore
 									istanzia_stati (e.item.elements, stati.item (id_attr.value))
-								else -- elemento corrente <state> non ha figli, quindi ï¿½ atomico
+								else -- elemento corrente <state> non ha figli, quindi è atomico
 									if attached p_genitore as pg then
 										-- istanzio elemento corrente con genitore e glielo assegno come figlio
 										stato_temp := create {STATO}.make_with_id_and_parent (id_attr.value, pg)
@@ -208,7 +209,7 @@ feature -- inizializzazione SC
 										stato_temp := create {STATO_AND}.make_with_id (id_attr.value)
 									end
 									stati.extend (stato_temp, id_attr.value)
-										-- ricorsione sui figli con sï¿½ stesso come genitore
+										-- ricorsione sui figli con sé stesso come genitore
 									istanzia_stati (e.item.elements, stati.item (id_attr.value))
 								else -- elemento corrente <parallel> non ha figli
 									print ("ERRORE: lo stato <parallel> >|" + id_attr.value + "|< non ha figli !%N")
@@ -222,13 +223,13 @@ feature -- inizializzazione SC
 
 	assegna_initial (elements: LIST [XML_ELEMENT])
 		-- assegna ricorsivamente agli stati i loro sotto-stati iniziali di default
-		-- NB: regolaritï¿½ di 'id' ï¿½ stata giï¿½ controllata in `istanzia_stati'
+		-- NB: regolarità di 'id' è stata già controllata in `istanzia_stati'
 		do
 			across
 				elements as e
 			loop
 				debug ("SC_assegna_initial") if e.item.name ~ "state" or e.item.name ~ "parallel" then stampa_elemento (e.item) end end
-				-- NB: gli stati atomici non sono nï¿½ {STATO_XOR} nï¿½ {STATO_AND}
+				-- NB: gli stati atomici non sono né {STATO_XOR} né {STATO_AND}
 				if e.item.name ~ "state" and attached e.item.attribute_by_name ("id") as id_attr then
 					if attached {STATO_XOR} stati.item (id_attr.value) as stato then
 						-- istanza di stato {STATO_XOR} ha certamente figli
@@ -278,7 +279,7 @@ feature -- inizializzazione SC
 					if not attached r.genitore then
 						iniziale_SC := r
 					else
-						print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come stato iniziale della statechart non ï¿½ uno degli stati 'top'!%N")
+						print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come stato iniziale della statechart non è uno degli stati 'top'!%N")
 					end
 				else -- l'initial della radice non esiste
 					print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come stato iniziale della statechart non esiste!%N")
@@ -301,9 +302,9 @@ feature -- inizializzazione SC
 		do
 			stato.set_attivo
 			if stato.initial.is_empty then
-				-- `stato' ï¿½ uno stato atomico
+				-- `stato' è uno stato atomico
 				conf_base.force (stato, conf_base.count + 1)
-			else -- `stato' ï¿½ uno stato gerarchico e si scende in ricorsione
+			else -- `stato' è uno stato gerarchico e si scende in ricorsione
 				across
 					stato.initial as figli
 				loop
@@ -322,26 +323,92 @@ feature -- inizializzazione SC
 					-- assenza di 'id' viene controllata in `istanzia_stati'
 					completa_stati (e.item.elements)
 					if attached stati.item (id_stato.value) as stato then
-						-- lo stato esiste perchï¿½ viene creato in `stati' da `istanzia_stati'
-						assegna_discendenti (stato, e.item)
+						-- lo stato esiste perché viene creato in `stati' da `istanzia_stati'
+						assegna_figli (stato, e.item)
+					end
+				end
+			end
+		end
+
+	assegna_figli (stato: STATO; element: XML_ELEMENT)
+		-- completa lo `stato' con i suoi figli che non sono <state> o <parallel>: transizioni, azioni onentry/onexit, history
+		do
+			across
+				element.elements as e
+			loop
+				if e.item.name ~ "transition" then
+					assegna_transizione (e.item, stato)
+				elseif e.item.name ~ "onentry" then
+					assegna_onentry (e.item.elements, stato)
+				elseif e.item.name ~ "onexit" then
+					assegna_onexit (e.item.elements, stato)
+				elseif e.item.name ~ "history" then
+					assegna_storia (e.item, stato)
+				elseif not (e.item.name ~ "state" or e.item.name ~ "parallel") then
+					print ("ERRORE: lo stato >|" + stato.id + "|< specifica un figlio non ammissibile!")
+					stampa_elemento (e.item)
+				end
+			end
+		end
+
+feature -- inizializzazione storia
+
+	assegna_storia (history_element: XML_ELEMENT; stato: STATO)
+		-- assegna a `stato' la storia specificata in `history_element'
+		local
+			storia_temp: STORIA
+		do
+			if attached {STATO_XOR} stato as st_xor then
+			-- and then e.item.has_element_by_name ("history") and then attached e.item.element_by_name ("history") as hist
+				-- se uno stato composto ha più di una storia viene salvata solo la prima
+				if attached history_element.attribute_by_name ("id") as h_id then
+					if attached history_element.attribute_by_name ("type") as h_tp and then h_tp.value ~ "deep" then
+						storia_temp := create {STORIA_DEEP}.make_history_with_id (h_id.value, st_xor)
+					else
+						storia_temp := create {STORIA_SHALLOW}.make_history_with_id (h_id.value, st_xor)
+					end
+				else -- non è necessario che la storia abbia un id
+					if attached history_element.attribute_by_name ("type") as h_tp and then h_tp.value ~ "deep" then
+						storia_temp := create {STORIA_DEEP}.make_history (st_xor)
+					else
+						storia_temp := create {STORIA_SHALLOW}.make_history (st_xor)
 					end
 				end
 				stato.add_storia (storia_temp)
 			end
 			if attached {STATO_AND} stato as st_and then
 			-- and then e.item.has_element_by_name ("history") then
-				print ("AVVISO: " + st_and.id + " ï¿½ uno stato parallelo, pertanto la sua storia non verrï¿½ considerata!%N")
+				print ("AVVISO: " + st_and.id + " è uno stato parallelo, pertanto la sua storia non verrà considerata!%N")
 			end
 		end
 
 
-	assegna_discendenti (stato: STATO; element: XML_ELEMENT)
-		-- completa lo `stato' assegnandogli i vari discendenti (transizioni, onentry, onexit)
+feature -- inizializzazione transizioni
+
+	assegna_transizione (transition_element: XML_ELEMENT; stato: STATO)
+		-- assegna a `stato' la transizione specificata in `transition_element'
+		local
+			transizione: TRANSIZIONE
 		do
-			across element.elements as e
-			loop
-				if e.item.name ~ "transition" then
-					assegna_transizioni(stato, e.item)
+			debug ("SC_assegna_transizioni") stampa_elemento (transition_element) end
+			if attached transition_element.attribute_by_name ("target") as t then
+				if attached stati.item (t.value) as destinazione then
+					if not transizione_illegale (stato, destinazione) then
+						create transizione.make_with_target (destinazione, stato)
+						if attached transition_element.attribute_by_name ("type") as type then
+							if type.value ~ "internal" and verifica_internal (transizione) then
+								transizione.set_internal
+							end
+						end
+						assegna_evento (transition_element, transizione)
+						assegna_condizione (transition_element, transizione)
+						assegna_azioni (transition_element.elements, transizione)
+						stato.aggiungi_transizione (transizione)
+					else
+						print ("ERRORE: transizione non legale da >|" + stato.id + "|< a >|" + destinazione.id + "|< !%N")
+					end
+				else
+					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value + "|< che non appartiene alla SC!%N")
 				end
 			else
 				print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")
@@ -349,9 +416,9 @@ feature -- inizializzazione SC
 		end
 
 	transizione_illegale (p_sorgente, p_destinazione: STATO): BOOLEAN
-			-- transizione ï¿½ illegale se il minimo antenato comune (mac) ï¿½ <parallel> e:
-			-- sorgente e destinazione sono uno antenato dell'altro e sono tutti <parallel> dal piï¿½ alto al genitore del piï¿½ basso
-			-- mac ï¿½ diverso da entrambi (attraversamento frontiera)
+			-- transizione è illegale se il minimo antenato comune (mac) è <parallel> e:
+			-- sorgente e destinazione sono uno antenato dell'altro e sono tutti <parallel> dal più alto al genitore del più basso
+			-- mac è diverso da entrambi (attraversamento frontiera)
 		local
 			stato_mac, altro_stato: STATO
 		do
@@ -368,7 +435,7 @@ feature -- inizializzazione SC
 						Result := True
 						debug ("sc_transizione_illegale") print (" illegale: transizione con MAC <parallel> in verticale e catena di <parallel> %N") end
 					end
-				else -- stato_mac ï¿½ diverso da entrambi
+				else -- stato_mac è diverso da entrambi
 					Result := True
 					debug ("sc_transizione_illegale") print (" illegale: transizione con MAC <parallel> in orizzontale tra discendenti del MAC (attraversa la frontiera)%N") end
 				end
@@ -397,7 +464,7 @@ feature -- inizializzazione SC
 				antenati.put (corrente.id, corrente.id)
 				corrente := corrente.genitore
 			end
-				-- trova il piï¿½ basso antenato di p_destinazione in "antenati" a partire da lui stesso
+				-- trova il più basso antenato di p_destinazione in "antenati" a partire da lui stesso
 			from
 				corrente := p_destinazione
 			until
@@ -409,7 +476,7 @@ feature -- inizializzazione SC
 		end
 
 	catena_di_paralleli (basso, alto: STATO): BOOLEAN
-			-- ritorna vero se dal genitore di `basso' c'ï¿½ una catena continua di <parallel> fino ad `alto' che ï¿½ il "mac"
+			-- ritorna vero se dal genitore di `basso' c'è una catena continua di <parallel> fino ad `alto' che è il "mac"
 		local
 			corrente: STATO
 		do
@@ -425,49 +492,18 @@ feature -- inizializzazione SC
 			end
 		end
 
-	assegna_transizioni (stato: STATO; element: XML_ELEMENT)
-		-- completa lo `stato' assegnandogli le transizioni con relativi eventi ed azioni
-		local
-			transizione: TRANSIZIONE
+	verifica_internal (transizione: TRANSIZIONE): BOOLEAN
 		do
-			debug ("SC_assegna_transizioni") stampa_elemento (element) end
-			if attached element.attribute_by_name ("target") as t then
-				-- AGGIUNTE PER COSTRUTTO FORK
-				if attached stati.item (t.value.split(' ').first) as destinazione then -- uso come primo target il primo che compare
-					if not transizione_illegale (stato, destinazione) and transizione_multitarget_ammissibile(t.value.split(' ')) then --INSERIRE QUI MODIFICHE--
-						create transizione.make_with_target (destinazione, stato)
-						if attached element.attribute_by_name ("type") as type then
-							if type.value ~ "internal" and verifica_internal (transizione.sorgente, transizione.target) then
-								transizione.set_internal
-							end
-						end
-						if  t.value.split(' ').count>1  --se c'ï¿½ un multitarget la indico come transizione fork
-						then
-							transizione.set_fork
-							across t.value.split(' ') as it  --scorro tutti i multitarget splittati e aggiungo i target						
-							loop
-							if attached stati.item(it.item) as s then transizione.add_target (s) end
-							end
-						end
-				--FINE AGGIUNTE		
-						assegna_evento (element, transizione)
-						assegna_condizione (element, transizione)
-						assegna_azioni (element.elements, transizione)
-						stato.aggiungi_transizione (transizione)
-					else
-						print ("ERRORE: transizione non legale! ")
-						if not transizione_multitarget_ammissibile(t.value.split(' ')) then
-							print ("(multitarget non ammissibile) %N")
-						else
-							print ("da >|" + stato.id + "|< a >|" + destinazione.id + "|< %N")
-						end
+			if (attached {STATO_XOR} transizione.sorgente as ts and then ts.antenato_di (transizione.destinazione)) or else (transizione.destinazione.antenato_di (transizione.sorgente)) or else (transizione.destinazione = transizione.sorgente) then
+				Result := true
+			end
+		end
 
-					end
-				else
-					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value.split(' ').first + "|< che non appartiene alla SC!%N")
-				end
-			else
-				print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")
+	assegna_evento (transition: XML_ELEMENT; transizione: TRANSIZIONE)
+		do
+			-- TODO: capire se gestire l'assenza dell'evento con evento convenzionale "NULL" come si fa per le condizioni
+			if attached transition.attribute_by_name ("event") as event then
+				transizione.set_evento (event.value)
 			end
 		end
 
@@ -502,7 +538,7 @@ feature -- inizializzazione SC
 	intera_legittima (stringa: STRING): BOOLEAN
 	-- verifica che `stringa' sia una condizione intera legittima
 	-- TODO: si ripetono alcuni controlli fatti in TRANSIZIONI.check_condizione_intera per la verifica della condizione
-	-- TODO: verificare/definire quale deve essere la forma sintatticamente corretta delle condizioni (qualcosa ï¿½ in TRANSIZIONI)
+	-- TODO: verificare/definire quale deve essere la forma sintatticamente corretta delle condizioni (qualcosa è in TRANSIZIONI)
 	-- TODO: usare libreria di Eiffel 'parse' per analisi di correttezza della stringa delle condizioni (va aggiunta al progetto)
 		local
 			var: STRING
@@ -578,21 +614,10 @@ feature -- inizializzazione azioni
 			end
 		end
 
-	verifica_internal (sorgente, target: STATO): BOOLEAN
-		do
-			if attached{STATO_XOR} sorgente then
-				-- secondo la specifica XML `internal' puï¿½ essere eseguita solo con sorgente XOR
-				if attached target.genitore as tr_gn then
-					if tr_gn = sorgente then
-						Result := TRUE
-					else
-						Result := verifica_internal (sorgente, tr_gn)
-					end
-				end
-			end
-		end
+feature -- inizializzazione onentry/onexit
 
-	istanzia_onentry (stato: STATO; elements: LIST [XML_ELEMENT])
+	assegna_onentry (action_list: LIST [XML_ELEMENT]; stato: STATO)
+			-- assegna a 'stato' come onentry le azioni in `action_list'
 		do
 			across
 				action_list as al
@@ -683,12 +708,12 @@ feature -- supporto generale
 
 	id_illegittimo (stringa: STRING): BOOLEAN
 		local
-			-- {TRANSIZIONE}.Valore_Nullo ï¿½ una costante e non posso convertirla 'as_lower'
+			-- {TRANSIZIONE}.Valore_Nullo è una costante e non posso convertirla 'as_lower'
 			valore_nullo: STRING
 		do
 			valore_nullo := {TRANSIZIONE}.Valore_Nullo
 			if stringa ~ "" or stringa.is_whitespace or stringa.as_lower ~ valore_nullo.as_lower  then
-				-- il Valore_Nullo non puï¿½ essere specificato nel model ma solo assegnato nella costruzione della SC
+				-- il Valore_Nullo non può essere specificato nel model ma solo assegnato nella costruzione della SC
 				Result := True
 			else
 				Result := False
@@ -715,7 +740,7 @@ feature -- supporto generale
 				print ("ERRORE: non esistono <state> o <parallel> nel modello!%N")
 			else
 				debug ("SC_first_sub_state") print ("AVVISO: trovato primo figlio <state> o <parallel>%N"); stampa_elemento (place_holder.item) end
-				-- NB: regolaritï¿½ di 'id' ï¿½ stata giï¿½ controllata in `istanzia_stati'
+				-- NB: regolarità di 'id' è stata già controllata in `istanzia_stati'
 				if attached place_holder.item.attribute_by_name ("id") as id_attr then
 					if attached stati.item (id_attr.value) as sub_state then
 						Result := sub_state
@@ -724,32 +749,6 @@ feature -- supporto generale
 			end
 
 		end
-
-	--MODIFICHE FORK
-
-	transizione_multitarget_ammissibile(lista_stati: LIST[READABLE_STRING_32]):BOOLEAN
-		--prende in imput una  lista di stati e ritorna True se sono ammissibili come multitarget
-		--di una transizione fork: a due a due devono avere un antenato di tipo AND in comune
-		--e non devono essere l'uno discendente dell'altro.
-	do
-		Result:=True
-		across lista_stati as stato loop
-			across lista_stati as altro_stato loop
-				if attached stati.item(stato.item) as sc then
-					if attached stati.item(altro_stato.item) as asc then
-						if not sc.is_equal (asc) then
-							if transizione_verticale(sc,asc) or not attached {STATO_AND} minimo_antenato_comune(sc,asc) then
-								Result:=False
-							end
-						end
-					end
-				end
-			end
-		end
-	end
-
-	--FINE MODIFICHE FORK
-
 
 	stampa_elemento (element: XML_ELEMENT)
 		do

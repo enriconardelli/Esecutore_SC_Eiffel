@@ -231,8 +231,8 @@ feature -- Test
   			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_2_eventi_1.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (P1B, P2B)", conf_has_state(esecutore.state_chart.conf_base,"P1B") and conf_has_state(esecutore.state_chart.conf_base,"P2B"))
-			assert("ERRORE: M ï¿½ diverso da 3",  esecutore.state_chart.variabili.intere.item ("M") = 0)
-     		assert("ERRORE: N ï¿½ diverso da 0", esecutore.state_chart.variabili.intere.item ("N") = -1)
+			assert("ERRORE: M è diverso da 3",  esecutore.state_chart.variabili.intere.item ("M") = 0)
+     		assert("ERRORE: N è diverso da 0", esecutore.state_chart.variabili.intere.item ("N") = -1)
 		end
 
 	t_azioni_con_interi_2_2
@@ -243,8 +243,8 @@ feature -- Test
   			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_2_eventi_2.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (C)", conf_has_state(esecutore.state_chart.conf_base,"C"))
-			assert("ERRORE: M ï¿½ diverso da 6",  esecutore.state_chart.variabili.intere.item ("M") = 6)
-     		assert("ERRORE: N ï¿½ diverso da 2", esecutore.state_chart.variabili.intere.item ("N") = 2)
+			assert("ERRORE: M è diverso da 6",  esecutore.state_chart.variabili.intere.item ("M") = 6)
+     		assert("ERRORE: N è diverso da 2", esecutore.state_chart.variabili.intere.item ("N") = 2)
 		end
 
 	t_azioni_con_interi_2_3
@@ -255,8 +255,8 @@ feature -- Test
   			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_2_eventi_3.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (D)", conf_has_state(esecutore.state_chart.conf_base,"D"))
-			assert("ERRORE: M ï¿½ diverso da 8",  esecutore.state_chart.variabili.intere.item ("M") = 8)
-     		assert("ERRORE: N ï¿½ diverso da 1", esecutore.state_chart.variabili.intere.item ("N") = 1)
+			assert("ERRORE: M è diverso da 8",  esecutore.state_chart.variabili.intere.item ("M") = 8)
+     		assert("ERRORE: N è diverso da 1", esecutore.state_chart.variabili.intere.item ("N") = 1)
 		end
 
 	t_azioni_con_interi_3_1
@@ -267,9 +267,9 @@ feature -- Test
   			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_3_eventi_1.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (D)", conf_has_state(esecutore.state_chart.conf_base,"D"))
-			assert("ERRORE: M ï¿½ diverso da 3",  esecutore.state_chart.variabili.intere.item ("M") = 3)
-     		assert("ERRORE: L ï¿½ diverso da 10", esecutore.state_chart.variabili.intere.item ("L") = 10)
-     		assert("ERRORE: K ï¿½ diverso da true", esecutore.state_chart.variabili.booleane.item ("K"))
+			assert("ERRORE: M è diverso da 3",  esecutore.state_chart.variabili.intere.item ("M") = 3)
+     		assert("ERRORE: L è diverso da 10", esecutore.state_chart.variabili.intere.item ("L") = 10)
+     		assert("ERRORE: K è diverso da true", esecutore.state_chart.variabili.booleane.item ("K"))
 		end
 
 	t_azioni_con_interi_3_2
@@ -280,9 +280,9 @@ feature -- Test
   			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_3_eventi_2.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (B1B, B2A)", conf_has_state(esecutore.state_chart.conf_base,"B1B") and conf_has_state(esecutore.state_chart.conf_base,"B2A"))
-			assert("ERRORE: M ï¿½ diverso da 3",  esecutore.state_chart.variabili.intere.item ("M") = 3)
-     		assert("ERRORE: L ï¿½ diverso da 3", esecutore.state_chart.variabili.intere.item ("L") = 3)
-     		assert("ERRORE: K ï¿½ diverso da false", not esecutore.state_chart.variabili.booleane.item ("K"))
+			assert("ERRORE: M è diverso da 3",  esecutore.state_chart.variabili.intere.item ("M") = 3)
+     		assert("ERRORE: L è diverso da 3", esecutore.state_chart.variabili.intere.item ("L") = 3)
+     		assert("ERRORE: K è diverso da false", not esecutore.state_chart.variabili.booleane.item ("K"))
 		end
 
 	t_azioni_con_interi_3_variazione_1
@@ -293,9 +293,9 @@ feature -- Test
   			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_3_variazione_eventi_1.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (B1C, B2A)", conf_has_state(esecutore.state_chart.conf_base,"B1C") and conf_has_state(esecutore.state_chart.conf_base,"B2A"))
-			assert("ERRORE: M ï¿½ diverso da 3",  esecutore.state_chart.variabili.intere.item ("M") = 3)
-     		assert("ERRORE: L ï¿½ diverso da 10", esecutore.state_chart.variabili.intere.item ("L") = 10)
-     		assert("ERRORE: K ï¿½ diverso da true", esecutore.state_chart.variabili.booleane.item ("K"))
+			assert("ERRORE: M è diverso da 3",  esecutore.state_chart.variabili.intere.item ("M") = 3)
+     		assert("ERRORE: L è diverso da 10", esecutore.state_chart.variabili.intere.item ("L") = 10)
+     		assert("ERRORE: K è diverso da true", esecutore.state_chart.variabili.booleane.item ("K"))
 		end
 
 	t_azioni_con_interi_3_variazione_2
@@ -306,9 +306,9 @@ feature -- Test
   			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_3_variazione_eventi_2.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (C)", conf_has_state(esecutore.state_chart.conf_base,"C"))
-			assert("ERRORE: M ï¿½ diverso da 4",  esecutore.state_chart.variabili.intere.item ("M") = 4)
-     		assert("ERRORE: L ï¿½ diverso da 3", esecutore.state_chart.variabili.intere.item ("L") = 3)
-     		assert("ERRORE: K ï¿½ diverso da true",  esecutore.state_chart.variabili.booleane.item ("K"))
+			assert("ERRORE: M è diverso da 4",  esecutore.state_chart.variabili.intere.item ("M") = 4)
+     		assert("ERRORE: L è diverso da 3", esecutore.state_chart.variabili.intere.item ("L") = 3)
+     		assert("ERRORE: K è diverso da true",  esecutore.state_chart.variabili.booleane.item ("K"))
 		end
 
 	t_azioni_con_interi_3_variazione_3
@@ -319,9 +319,9 @@ feature -- Test
   			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_3_variazione_eventi_3.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (B1C, B2A)", conf_has_state(esecutore.state_chart.conf_base,"B1C") and conf_has_state(esecutore.state_chart.conf_base,"B2A"))
-			assert("ERRORE: M ï¿½ diverso da 3",  esecutore.state_chart.variabili.intere.item ("M") = 3)
-     		assert("ERRORE: L ï¿½ diverso da 10", esecutore.state_chart.variabili.intere.item ("L") = 10)
-     		assert("ERRORE: K ï¿½ diverso da true", esecutore.state_chart.variabili.booleane.item ("K"))
+			assert("ERRORE: M è diverso da 3",  esecutore.state_chart.variabili.intere.item ("M") = 3)
+     		assert("ERRORE: L è diverso da 10", esecutore.state_chart.variabili.intere.item ("L") = 10)
+     		assert("ERRORE: K è diverso da true", esecutore.state_chart.variabili.booleane.item ("K"))
 		end
 
 	t_azioni_con_interi_3_variazione_4
@@ -332,9 +332,9 @@ feature -- Test
   			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_3_variazione_eventi_4.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (B1A, B2A)", conf_has_state(esecutore.state_chart.conf_base,"B1A") and conf_has_state(esecutore.state_chart.conf_base,"B2A"))
-			assert("ERRORE: M ï¿½ diverso da 3",  esecutore.state_chart.variabili.intere.item ("M") = 3)
-     		assert("ERRORE: L ï¿½ diverso da 3", esecutore.state_chart.variabili.intere.item ("L") = 3)
-     		assert("ERRORE: K ï¿½ diverso da true", esecutore.state_chart.variabili.booleane.item ("K"))
+			assert("ERRORE: M è diverso da 3",  esecutore.state_chart.variabili.intere.item ("M") = 3)
+     		assert("ERRORE: L è diverso da 3", esecutore.state_chart.variabili.intere.item ("L") = 3)
+     		assert("ERRORE: K è diverso da true", esecutore.state_chart.variabili.booleane.item ("K"))
 		end
 
 	t_azioni_con_interi_3_variazione_4_alt
@@ -345,8 +345,8 @@ feature -- Test
   			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_3_variazione_eventi_4.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (B1B, B2A)", conf_has_state(esecutore.state_chart.conf_base,"B1B") and conf_has_state(esecutore.state_chart.conf_base,"B2A"))
-			assert("ERRORE: M ï¿½ diverso da 3",  esecutore.state_chart.variabili.intere.item ("M") = 3)
-     		assert("ERRORE: L ï¿½ diverso da 3", esecutore.state_chart.variabili.intere.item ("L") = 3)
-     		assert("ERRORE: K ï¿½ diverso da true", esecutore.state_chart.variabili.booleane.item ("K"))
+			assert("ERRORE: M è diverso da 3",  esecutore.state_chart.variabili.intere.item ("M") = 3)
+     		assert("ERRORE: L è diverso da 3", esecutore.state_chart.variabili.intere.item ("L") = 3)
+     		assert("ERRORE: K è diverso da true", esecutore.state_chart.variabili.booleane.item ("K"))
 		end
 end

@@ -42,6 +42,8 @@ feature -- attributi
 	onExit: ARRAY [AZIONE]
 		-- le azioni eseguite all'uscita dallo stato (reazioni statiche exiting [xs] di Harel)
 
+	storia: detachable STORIA
+
 feature --creazione
 
 	make_with_id (un_id: STRING)
@@ -148,6 +150,13 @@ feature -- modifica
 			figli.force (uno_stato, figli.count + 1)
 		end
 
+	add_storia (una_storia: STORIA)
+		require
+			una_storia_esistente: una_storia /= Void
+		do
+			storia := una_storia
+		end
+
 feature -- situazione
 
 	transizione_abilitata (eventi: LINKED_SET [STRING]; variabili: DATAMODEL): detachable TRANSIZIONE
@@ -208,26 +217,6 @@ feature -- situazione
 				Result := true
 			end
 		end
-
-	-- MODIFICHE FORK
-
-	ha_sottostati_attivi:BOOLEAN
-		--Filippo & Iezzi 30/09/2020
-	do
-		Result:= False
-		across figli as f
-		loop
-			 if f.item.attivo then
-		 		Result:=True
-			 else
-		 		if f.item.figli.count>0 and Result=False then
-		 		Result:=f.item.ha_sottostati_attivi
-		 		end
-			 end
-		end
-	end
-
-	--FINE MODIFICHE
 
 feature -- routines forse inutili
 
