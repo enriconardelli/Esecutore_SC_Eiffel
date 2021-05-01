@@ -1,8 +1,8 @@
 note
 	description: "La classe che rappresenta le transizioni"
-	author: "Gabriele Cacchioni & Davide Canalis"
-	date: "14-04-2015"
-	revision: "0.2"
+	author: "EN + studenti corsi PSI"
+	date: "Maggio 2021"
+	revision: "$Revision$"
 
 class
 	TRANSIZIONE
@@ -43,29 +43,21 @@ feature -- attributi
 feature -- setter
 
 	set_evento (a_string: STRING)
-		require
-			not_void: a_string /= Void
 		do
 			evento := a_string
 		end
 
 	set_condizione (a_string: STRING)
-		require
-			not_void: a_string /= Void
 		do
 			condizione := a_string
 		end
 
 	set_target (uno_stato: STATO)
-		require
-			not_void: uno_stato /= Void
 		do
 			destinazione := uno_stato
 		end
 
 	set_sorgente (uno_stato: STATO)
-		require
-			not_void: uno_stato /= Void
 		do
 			sorgente := uno_stato
 		end
