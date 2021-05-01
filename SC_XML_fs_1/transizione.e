@@ -25,7 +25,7 @@ feature -- creazione
 			internal := False
 			condizione := "condizione_vuota"
 			-- AGGIUNTE FORK
-			fork := False
+			fork:=False
 			create multi_target.make
 			-- FINE AGGIUNTE
 		end
@@ -46,7 +46,7 @@ feature -- attributi
 
 	--AGGIUNTE PER FORK
 
-	fork: BOOLEAN
+	fork:BOOLEAN
 
 	multi_target: detachable LINKED_LIST [STATO]
 
@@ -55,21 +55,29 @@ feature -- attributi
 feature -- setter
 
 	set_evento (a_string: STRING)
+		require
+			not_void: a_string /= Void
 		do
 			evento := a_string
 		end
 
 	set_condizione (a_string: STRING)
+		require
+			not_void: a_string /= Void
 		do
 			condizione := a_string
 		end
 
 	set_target (uno_stato: STATO)
+		require
+			not_void: uno_stato /= Void
 		do
 			destinazione := uno_stato
 		end
 
 	set_sorgente (uno_stato: STATO)
+		require
+			not_void: uno_stato /= Void
 		do
 			sorgente := uno_stato
 		end
@@ -83,13 +91,13 @@ feature -- setter
 
 	set_fork
 		do
-			fork := True
+			fork := TRUE
 		end
 
 	add_target(uno_stato: STATO)
 		do
-			if uno_stato /= target then
-				if attached multi_target as mt then mt.force(uno_stato) end
+			if uno_stato/=target then
+			if attached multi_target as mt then mt.force(uno_stato) end
 			end
 		end
 
@@ -115,7 +123,7 @@ feature -- check
 	end
 
 	check_condizione_booleana (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
-	-- Controlla se la condizione sulle variabili booleane è verificata.
+	-- Controlla se la condizione sulle variabili booleane ï¿½ verificata.
 	do
 		if condizione ~ valore_nullo then
 			Result:= True
@@ -129,7 +137,7 @@ feature -- check
 	end
 
 	check_condizione_intera (variabili_intere: HASH_TABLE [INTEGER, STRING]): BOOLEAN
-	-- Controlla se la condizione sulle variabili intere è verificata.
+	-- Controlla se la condizione sulle variabili intere ï¿½ verificata.
 	-- assunzioni che NON vengono controllate:
 	--		ciï¿½ che c'ï¿½ prima di '<' o '>' o '=' o '/=' ï¿½ il nome della variabile
 	--		se c'ï¿½ '=' dopo '<' o '>' allora li segue immediatamente
