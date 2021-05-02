@@ -103,8 +103,6 @@ feature -- setter
 		end
 
 	set_onEntry (una_azione: AZIONE)
-		require
-			e_una_azione: una_azione /= Void
 		do
 			onEntry.force(una_azione, onEntry.count+1)
 		ensure
@@ -112,8 +110,6 @@ feature -- setter
 		end
 
 	set_onExit (una_azione: AZIONE)
-		require
-			e_una_azione: una_azione /= Void
 		do
 			onExit.force (una_azione,onExit.count+1)
 		ensure
@@ -121,8 +117,6 @@ feature -- setter
 		end
 
 	set_genitore (un_genitore: STATO)
-		require
-			genitore_esistente: un_genitore /= Void
 		do
 			genitore := un_genitore
 		ensure
@@ -144,15 +138,11 @@ feature -- modifica
 		end
 
 	add_figlio (uno_stato: STATO)
-		require
-			uno_stato_esistente: uno_stato /= Void
 		do
 			figli.force (uno_stato, figli.count + 1)
 		end
 
 	add_storia (una_storia: STORIA)
-		require
-			una_storia_esistente: una_storia /= Void
 		do
 			storia := una_storia
 		end
