@@ -218,6 +218,26 @@ feature -- situazione
 			end
 		end
 
+	-- AGGIUNTE FORK
+
+	ha_sottostati_attivi:BOOLEAN
+		--Filippo & Iezzi 30/09/2020
+	do
+		Result:= False
+		across figli as f
+		loop
+			 if f.item.attivo then
+		 		Result:=True
+			 else
+		 		if f.item.figli.count>0 and Result=False then
+		 		Result:=f.item.ha_sottostati_attivi
+		 		end
+			 end
+		end
+	end
+
+	--FINE AGGIUNTE
+
 feature -- routines forse inutili
 
 	numero_transizioni_abilitate (evento_corrente: STRING; hash_delle_condizioni: HASH_TABLE [BOOLEAN, STRING]): INTEGER
