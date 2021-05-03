@@ -105,12 +105,18 @@ feature -- evoluzione della statechart
 					stampa_conf_corrente (istante)
 					create prossima_conf_base.make_empty
 					transizioni_eseguibili := trova_transizioni_eseguibili (eventi_correnti, state_chart.variabili)
--- versione del MASTER
---					across transizioni_eseguibili as te
-					across state_chart.conf_base as sc_cb
+
+-- PROVA CON iterazione sulle transizioni eseguibili
+ 					across transizioni_eseguibili as sc_cb
+--					across state_chart.conf_base as sc_cb
+
 --						conf_base_corrente as cbc -- l'attributo conf_base_corrente è stato rimpiazzato state_chart.conf_base
 					loop
-						transizione_corrente := sc_cb.item.transizione_abilitata (eventi_correnti, state_chart.variabili)
+
+-- PROVA CON iterazione sulle transizioni eseguibili
+						transizione_corrente := sc_cb.item
+--						transizione_corrente := sc_cb.item.transizione_abilitata (eventi_correnti, state_chart.variabili)
+
 						if attached transizione_corrente as tc and then transizioni_eseguibili.has (tc) then
 							salva_storie (antenato_massimo_uscita (tc)) -- dal MASTER
 							esegui_azioni (tc) -- , cbc.item)
@@ -126,7 +132,11 @@ feature -- evoluzione della statechart
 							aggiungi_paralleli (tc.destinazione, prossima_conf_base)
 								-- FINE MODIFICA
 						else
-							prossima_conf_base.force (sc_cb.item, prossima_conf_base.count + 1)
+
+-- PROVA CON iterazione sulle transizioni eseguibili
+							prossima_conf_base.force (sc_cb.item.sorgente, prossima_conf_base.count + 1)
+--							prossima_conf_base.force (sc_cb.item, prossima_conf_base.count + 1)
+
 						end
 					end
 					aggiungi_stati_attivi(prossima_conf_base) -- si mantiene versione MASTER
