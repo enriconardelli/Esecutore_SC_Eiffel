@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="S">
+	<state id="S">
+		<transition event="e" target="A1 B1">
+		</transition>
+		<transition event="f" target="A1">
+		</transition>
+	</state>
+	
+	<parallel id="X">	
+		<state id="A" initial="A1">
+			<state id="A1">
+				<transition event="e" target="m1" />
+			</state>
+			<state id="A2">
+				<transition merge_id="t2" event="e" target="S" />
+			</state>
+		</state>
+		<state id="B" initial="B2">
+			<state id="B1">
+				<transition event="e" target="m1" />
+			</state>
+			<state id="B2">
+				<transition merge_id="t2" event="e" target="S" />
+			</state>
+		</state>
+	</parallel>
+	
+	<merge id="m1" target="S" />
+
+</scxml>
