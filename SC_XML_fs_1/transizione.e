@@ -23,7 +23,11 @@ feature -- creazione
             create azioni.make_empty
 			evento := Void
 			internal := False
-			condizione := valore_nullo
+			condizione := Valore_Nullo
+			-- AGGIUNTE FORK
+			fork:=False
+			create multi_target.make
+			-- FINE AGGIUNTE
 		end
 
 feature -- attributi
@@ -39,6 +43,14 @@ feature -- attributi
 	destinazione: STATO
 
 	internal: BOOLEAN
+
+	--AGGIUNTE FORK
+
+	fork:BOOLEAN
+
+	multi_target: detachable LINKED_LIST [STATO]
+
+	--FINE AGGIUNTE
 
 feature -- setter
 
@@ -66,6 +78,23 @@ feature -- setter
 		do
 			internal := True
 		end
+
+	-- AGGIUNTE FORK	
+
+	set_fork
+		do
+			fork := True
+		end
+
+	add_target(uno_stato: STATO)
+		do
+			if uno_stato /= destinazione then
+				if attached multi_target as mt then mt.force(uno_stato) end
+			end
+		end
+
+	--FINE AGGIUNTE	
+
 
 feature -- check
 

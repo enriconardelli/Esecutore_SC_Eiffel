@@ -359,8 +359,8 @@ feature -- inizializzazione storia
 			storia_temp: STORIA
 		do
 			if attached {STATO_XOR} stato as st_xor then
-			-- and then e.item.has_element_by_name ("history") and then attached e.item.element_by_name ("history") as hist
 				-- se uno stato composto ha più di una storia viene salvata solo la prima
+				-- TODO: verificare che uno stato può avere solo un figlio "history"
 				if attached history_element.attribute_by_name ("id") as h_id then
 					if attached history_element.attribute_by_name ("type") as h_tp and then h_tp.value ~ "deep" then
 						storia_temp := create {STORIA_DEEP}.make_history_with_id (h_id.value, st_xor)
@@ -368,6 +368,7 @@ feature -- inizializzazione storia
 						storia_temp := create {STORIA_SHALLOW}.make_history_with_id (h_id.value, st_xor)
 					end
 				else -- non è necessario che la storia abbia un id
+				-- TODO: ma se la storia non deve avere un id non si possono unificare i due rami dell'IF?
 					if attached history_element.attribute_by_name ("type") as h_tp and then h_tp.value ~ "deep" then
 						storia_temp := create {STORIA_DEEP}.make_history (st_xor)
 					else
@@ -377,7 +378,6 @@ feature -- inizializzazione storia
 				stato.add_storia (storia_temp)
 			end
 			if attached {STATO_AND} stato as st_and then
-			-- and then e.item.has_element_by_name ("history") then
 				print ("AVVISO: " + st_and.id + " è uno stato parallelo, pertanto la sua storia non verrà considerata!%N")
 			end
 		end
@@ -385,6 +385,39 @@ feature -- inizializzazione storia
 
 feature -- inizializzazione transizioni
 
+-- VERSIONE ORIGINALE DEL MASTER
+-- TODO: COMPLETATI I TEST DI INTEGRAZIONE COL COSTRUTTO FORK SI PUÒ ELIMINARE
+--	assegna_transizione (transition_element: XML_ELEMENT; stato: STATO)
+--		-- assegna a `stato' la transizione specificata in `transition_element'
+--		local
+--			transizione: TRANSIZIONE
+--		do
+--			debug ("SC_assegna_transizioni") stampa_elemento (transition_element) end
+--			if attached transition_element.attribute_by_name ("target") as t then
+--				if attached stati.item (t.value) as destinazione then
+--					if not transizione_illegale (stato, destinazione) then
+--						create transizione.make_with_target (destinazione, stato)
+--						if attached transition_element.attribute_by_name ("type") as type then
+--							if type.value ~ "internal" and verifica_internal (transizione) then
+--								transizione.set_internal
+--							end
+--						end
+--						assegna_evento (transition_element, transizione)
+--						assegna_condizione (transition_element, transizione)
+--						assegna_azioni (transition_element.elements, transizione)
+--						stato.aggiungi_transizione (transizione)
+--					else
+--						print ("ERRORE: transizione non legale da >|" + stato.id + "|< a >|" + destinazione.id + "|< !%N")
+--					end
+--				else
+--					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value + "|< che non appartiene alla SC!%N")
+--				end
+--			else
+--				print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")
+--			end
+--		end
+
+-- VERSIONE DA COSTRUTTO FORK MODIFICATA PER COMPATIBILITÀ CON MASTER
 	assegna_transizione (transition_element: XML_ELEMENT; stato: STATO)
 		-- assegna a `stato' la transizione specificata in `transition_element'
 		local
@@ -392,28 +425,73 @@ feature -- inizializzazione transizioni
 		do
 			debug ("SC_assegna_transizioni") stampa_elemento (transition_element) end
 			if attached transition_element.attribute_by_name ("target") as t then
-				if attached stati.item (t.value) as destinazione then
-					if not transizione_illegale (stato, destinazione) then
+				-- AGGIUNTE PER COSTRUTTO FORK
+				if attached stati.item (t.value.split(' ').first) as destinazione then
+					-- uso come primo target il primo che compare
+					if not transizione_illegale (stato, destinazione) and transizione_multitarget_ammissibile(t.value.split(' ')) then
+					-- TODO: perché transizione_illegale si fa solo sulla prima delle destinazioni multiple?
 						create transizione.make_with_target (destinazione, stato)
 						if attached transition_element.attribute_by_name ("type") as type then
 							if type.value ~ "internal" and verifica_internal (transizione) then
 								transizione.set_internal
 							end
 						end
+						if  t.value.split(' ').count > 1 then
+							transizione.set_fork
+							-- separo le destinazioni e le scorro tutte aggiungendole alla transizione						
+							across
+								t.value.split(' ') as it
+							loop
+								if attached stati.item(it.item) as s then transizione.add_target (s) end
+							end
+						end
+				--FINE AGGIUNTE		
 						assegna_evento (transition_element, transizione)
 						assegna_condizione (transition_element, transizione)
 						assegna_azioni (transition_element.elements, transizione)
 						stato.aggiungi_transizione (transizione)
 					else
-						print ("ERRORE: transizione non legale da >|" + stato.id + "|< a >|" + destinazione.id + "|< !%N")
+						print ("ERRORE: transizione non legale! ")
+						if not transizione_multitarget_ammissibile(t.value.split(' ')) then
+							print (" - Le destinazioni multiple indicate non sono tra loro compatibili %N")
+						else
+							print (" - Da >|" + stato.id + "|< a >|" + destinazione.id + "|< %N")
+						end
+
 					end
 				else
-					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value + "|< che non appartiene alla SC!%N")
+					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value.split(' ').first + "|< che non appartiene alla SC!%N")
 				end
 			else
 				print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")
 			end
 		end
+
+	-- AGGIUNTE FORK
+
+	transizione_multitarget_ammissibile(lista_stati: LIST[READABLE_STRING_32]):BOOLEAN
+	-- TODO: rifattorizzare nome in destinazioni_multiple_compatibili
+		-- prende in imput una  lista di stati e ritorna True se sono ammissibili come multitarget
+		-- di una transizione fork: a due a due devono avere un antenato di tipo AND in comune
+		-- e non devono essere l'uno discendente dell'altro.
+	do
+		Result:=True
+		across lista_stati as stato loop
+			across lista_stati as altro_stato loop
+				if attached stati.item(stato.item) as sc then
+					if attached stati.item(altro_stato.item) as asc then
+						if not sc.is_equal (asc) then
+							if transizione_verticale(sc,asc) or not attached {STATO_AND} minimo_antenato_comune(sc,asc) then
+								Result:=False
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+
+	--FINE AGGIUNTE
 
 	transizione_illegale (p_sorgente, p_destinazione: STATO): BOOLEAN
 			-- transizione è illegale se il minimo antenato comune (mac) è <parallel> e:
@@ -721,7 +799,7 @@ feature -- supporto generale
 		end
 
 	first_sub_state (element: XML_ELEMENT): detachable STATO
-	-- torna il primo elemento <state> o <parallel> figlio di `element', se esiste
+	-- torna il primo elemento <state> o <parallel> figlio di `element' nella specifica XML letta, se esiste
 		local
 			place_holder: INDEXABLE_ITERATION_CURSOR [XML_ELEMENT]
 		do

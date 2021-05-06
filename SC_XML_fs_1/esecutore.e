@@ -50,11 +50,50 @@ feature -- Creazione sia per i test che per esecuzione interattiva
 
 feature -- evoluzione della statechart
 
+-- VERSIONE DA MASTER
+-- TODO: ELIMINARE UNA VOLTA COMPLETARI I TEST DI INTEGRAZIONE CON COSTRUTTO_FORK
+--	evolvi_SC (eventi: ARRAY [LINKED_SET [STRING]])
+--		local
+--			istante: INTEGER
+--			prossima_conf_base: ARRAY [STATO]
+--			transizioni_eseguibili: ARRAY [TRANSIZIONE]
+--		do
+--			print ("%Nentrato in evolvi_SC:  %N %N")
+--			from
+--				istante := 1
+--			until
+--				stato_final (state_chart.conf_base) or istante > eventi.count
+--			loop
+--				if attached eventi [istante] as eventi_correnti then
+--					stampa_conf_corrente (istante)
+--					create prossima_conf_base.make_empty
+--					transizioni_eseguibili := trova_transizioni_eseguibili (eventi_correnti, state_chart.variabili)
+--					across transizioni_eseguibili as te
+--					loop
+--						salva_storie (antenato_massimo_uscita (te.item))
+--						esegui_azioni (te.item)
+--						trova_default (te.item.destinazione, prossima_conf_base)
+--						aggiungi_paralleli (te.item.destinazione, prossima_conf_base)
+--					end
+--					aggiungi_stati_attivi(prossima_conf_base)
+--					prossima_conf_base := riordina_stati(prossima_conf_base)
+--					if not prossima_conf_base.is_empty then
+--						state_chart.conf_base.copy (prossima_conf_base)
+--					end
+--				end
+--				istante := istante + 1
+--			end
+--			print ("%NHo terminato l'elaborazione degli eventi%N")
+--			stampa_conf_corrente (istante)
+--		end
+
+-- VERSIONE DA COSTRUTTO FORK
 	evolvi_SC (eventi: ARRAY [LINKED_SET [STRING]])
 		local
 			istante: INTEGER
 			prossima_conf_base: ARRAY [STATO]
-			transizioni_eseguibili: ARRAY[TRANSIZIONE]
+			transizioni_eseguibili: ARRAY [TRANSIZIONE]
+			transizione_corrente: TRANSIZIONE
 		do
 			print ("%Nentrato in evolvi_SC:  %N %N")
 			from
@@ -66,15 +105,44 @@ feature -- evoluzione della statechart
 					stampa_conf_corrente (istante)
 					create prossima_conf_base.make_empty
 					transizioni_eseguibili := trova_transizioni_eseguibili (eventi_correnti, state_chart.variabili)
-					across transizioni_eseguibili as te
+
+-- PROVA CON iterazione sulle transizioni eseguibili
+ 					across transizioni_eseguibili as sc_cb
+--					across state_chart.conf_base as sc_cb
+
+--						conf_base_corrente as cbc -- l'attributo conf_base_corrente è stato rimpiazzato state_chart.conf_base
 					loop
-						salva_storie (antenato_massimo_uscita (te.item))
-						esegui_azioni (te.item)
-						trova_default (te.item.destinazione, prossima_conf_base)
-						aggiungi_paralleli (te.item.destinazione, prossima_conf_base)
+
+-- PROVA CON iterazione sulle transizioni eseguibili
+						transizione_corrente := sc_cb.item
+--						transizione_corrente := sc_cb.item.transizione_abilitata (eventi_correnti, state_chart.variabili)
+
+						if attached transizione_corrente as tc and then transizioni_eseguibili.has (tc) then
+							salva_storie (antenato_massimo_uscita (tc)) -- dal MASTER
+							esegui_azioni (tc) -- , cbc.item)
+							trova_default (tc.destinazione, prossima_conf_base)
+								-- MODIFICA PER CONSIDERARE I FORK
+							if tc.fork and attached tc.multi_target as tcmt then
+								across
+									tcmt as mt_corrente
+								loop
+									trova_default (mt_corrente.item, prossima_conf_base)
+								end
+							end
+							aggiungi_paralleli (tc.destinazione, prossima_conf_base)
+								-- FINE MODIFICA
+						else
+
+-- PROVA CON iterazione sulle transizioni eseguibili
+							prossima_conf_base.force (sc_cb.item.sorgente, prossima_conf_base.count + 1)
+--							prossima_conf_base.force (sc_cb.item, prossima_conf_base.count + 1)
+
+						end
 					end
-					aggiungi_stati_attivi(prossima_conf_base)
-					prossima_conf_base := riordina_stati(prossima_conf_base)
+					aggiungi_stati_attivi(prossima_conf_base) -- si mantiene versione MASTER
+--					prossima_conf_base := elimina_stati_inattivi (prossima_conf_base)  -- questa era quella di costrutto FORK
+					prossima_conf_base := riordina_stati (prossima_conf_base) -- si mantiene versione MASTER
+--					prossima_conf_base := riordina_conf_base (prossima_conf_base) -- questa era quella di costrutto FORK
 					if not prossima_conf_base.is_empty then
 						state_chart.conf_base.copy (prossima_conf_base)
 					end
@@ -161,10 +229,10 @@ feature -- evoluzione della statechart
 		-- restituisce l'array di transizioni che possono essere eseguite nello stato attuale del sistema
 		-- rispettando le specifiche SCXML dell'ordine degli stati nel file .xml e della gerarchia (priorità strutturale object-oriented)
 		local
-			transizioni: ARRAY[TRANSIZIONE]
+			transizioni: ARRAY [TRANSIZIONE]
 			i: INTEGER
 			uscita_precedente: detachable STATO
-			sorgenti: ARRAY[STATO]
+			sorgenti: ARRAY [STATO]
 		do
 			create transizioni.make_empty
 			sorgenti := stati_eseguibili (eventi, variabili)
@@ -271,20 +339,64 @@ feature -- evoluzione della statechart
 		end
 
 	aggiungi_paralleli (destinazione: STATO; prossima_conf_base: ARRAY [STATO])
+	-- inserisce in `prossima_conf_base' i default degli stati in parallelo rispetto al target
+	-- qualora vi siano stati già attivi non dà luogo a configurazioni non corrette
+	-- TODO: la riga precedente non capisco bene che vuol dire, esprimere meglio
 		do
 			destinazione.set_attivo
 			if attached {STATO_AND} destinazione.genitore as dg and then not dg.attivo then
+				-- se lo stato genitore è un AND scorro i suoi figli
 				across dg.initial as dgi
 				loop
 					if not dgi.item.is_equal(destinazione) then
-						trova_default (dgi.item, prossima_conf_base)
+						-- se dgi.item è la destinazione non devo aggiungerla perché l'ho già fatto
+-- VERSIONE DEL MASTER
+--						trova_default (dgi.item, prossima_conf_base)
+							--AGGIUNTE FORK
+						aggiungi_sottostati (dgi.item, prossima_conf_base)
+							--FINE AGGIUNTE
 					end
 				end
 			end
 			if attached destinazione.genitore as dg then
+				--se ha un genitore ripeto aggiungi paralleli su di lui
 				aggiungi_paralleli (dg, prossima_conf_base)
 			end
 		end
+
+	--AGGIUNTE FORK
+
+	aggiungi_sottostati (stato: STATO; prossima_conf_base: ARRAY [STATO])
+			-- se il target NON contiene un sottostato attivo si comporta come trova_default
+			-- altrimenti entra nello stato target e entra ricorsivamente nei suoi sottostati
+			-- che contengono un sottostato attivo
+			-- se incontra uno stato AND con un figlio attivo allora mette attivi tutti i suoi figli
+		do
+			if stato.ha_sottostati_attivi then
+				stato.set_attivo
+				esegui_onentry (stato)
+				if attached {STATO_AND} stato as s_and then
+					-- ripeto su tutti i figli dello stato AND
+					across
+						s_and.figli as fsa
+					loop
+						aggiungi_sottostati (fsa.item,prossima_conf_base)
+					end
+				else -- ripeto solo sui figli dello stato XOR che hanno un sottostato attivo
+					across
+						stato.figli as fs
+					loop
+						if fs.item.ha_sottostati_attivi then
+							aggiungi_sottostati (fs.item,prossima_conf_base)
+						end
+					end
+				end
+			else
+				trova_default(stato,prossima_conf_base)
+			end
+		end
+
+	--FINE AGGIUNTE
 
 	trova_default (stato: STATO; prossima_conf_base: ARRAY [STATO])
 	-- segue le transizioni di default e aggiunge lo stato atomico a `prossima_conf_base'
