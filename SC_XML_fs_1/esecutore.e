@@ -123,6 +123,8 @@ feature -- evoluzione della statechart
 							trova_default (tc.destinazione, prossima_conf_base)
 								-- MODIFICA PER CONSIDERARE I FORK
 							if tc.fork and attached tc.multi_target as tcmt then
+--							if tc.fork then
+--								across tc.destinazione as mt_corrente
 								across
 									tcmt as mt_corrente
 								loop
@@ -475,16 +477,20 @@ feature -- esecuzione azioni
 			contesto: detachable STATO
 		do
 			if transizione.internal then
+--				if transizione.sorgente.antenato_di (transizione.destinazione.first) then
 				if transizione.sorgente.antenato_di (transizione.destinazione) then
 					contesto := transizione.sorgente
 				else
+--					contesto := transizione.destinazione.first
 					contesto := transizione.destinazione
 				end
 			else
+--				contesto := trova_contesto (transizione.sorgente, transizione.destinazione.first)
 				contesto := trova_contesto (transizione.sorgente, transizione.destinazione)
 			end
 			esegui_azioni_onexit (antenato_massimo_uscita (transizione))
 			esegui_azioni_transizione (transizione.azioni)
+--			esegui_azioni_onentry (contesto, transizione.destinazione.first)
 			esegui_azioni_onentry (contesto, transizione.destinazione)
 		end
 
@@ -587,6 +593,7 @@ feature -- utilita
 			loop
 				debug ("SC_transizioni_eseguibili") print ("  stato corrente di conf_base: " + sc_cb.item.id + "%N") end
 				if attached sc_cb.item.transizione_abilitata (eventi, variabili) as ta then
+--					debug ("SC_transizioni_eseguibili") print ("    con transizione abilitata da " + ta.sorgente.id + " a " + ta.destinazione.first.id + "%N") end
 					debug ("SC_transizioni_eseguibili") print ("    con transizione abilitata da " + ta.sorgente.id + " a " + ta.destinazione.id + "%N") end
 					Result.force (ta.sorgente, Result.count + 1)
 				end
