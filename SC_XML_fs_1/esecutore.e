@@ -256,7 +256,9 @@ feature -- evoluzione della statechart
 					-- se non è antenato di questo secondo non è antenato di alcun altro dopo di esso, dal momento che il non essere
 					--		antenato di quello immediatamente successivo implica - a causa del riordinamento degli stati in sorgenti in base
 					--		all'ordine di specifica nel file .xml - che nessuno dei suoi discendenti possiede transizioni eseguibili
+
 					if attached sorgenti[i].transizione_abilitata (eventi, variabili) as ta then
+--						debug ("SC_transizioni_eseguibili") print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.first.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id) end
 						debug ("SC_transizioni_eseguibili") print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id) end
 						if attached uscita_precedente implies antenato_massimo_uscita(ta).incomparabile_con(uscita_precedente) then
 							-- questa transizione mi fa uscire da uno stato incomparabile con quello della precedente transizione
@@ -277,6 +279,7 @@ feature -- evoluzione della statechart
 				else
 					debug ("SC_transizioni_eseguibili")
 						if attached sorgenti[i].transizione_abilitata (eventi, variabili) as ta then
+--							print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id)
 							print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id)
 							print(" e' antenato di sorgente successiva " + (i+1).out + ": " + sorgenti[i+1].id + " e viene scartato.%N")
 						end
@@ -308,6 +311,7 @@ feature -- evoluzione della statechart
 		do
 			Result := transizione.sorgente
 			if transizione.internal then
+--				if transizione.sorgente.antenato_di (transizione.destinazione.first) then
 				if transizione.sorgente.antenato_di (transizione.destinazione) then
 					across
 						transizione.sorgente.figli as figli
@@ -318,6 +322,7 @@ feature -- evoluzione della statechart
 					end
 				else
 					across
+--						transizione.destinazione.first.figli as figli
 						transizione.destinazione.figli as figli
 					loop
 						if figli.item.attivo then
@@ -326,6 +331,7 @@ feature -- evoluzione della statechart
 					end
 				end
 			else
+--				contesto := trova_contesto (transizione.sorgente, transizione.destinazione.first)
 				contesto := trova_contesto (transizione.sorgente, transizione.destinazione)
 				from
 					stato_temp := transizione.sorgente
