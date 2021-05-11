@@ -120,18 +120,20 @@ feature -- evoluzione della statechart
 						if attached transizione_corrente as tc and then transizioni_eseguibili.has (tc) then
 							salva_storie (antenato_massimo_uscita (tc)) -- dal MASTER
 							esegui_azioni (tc) -- , cbc.item)
-							trova_default (tc.destinazione, prossima_conf_base)
+							trova_default (tc.destinazione.first, prossima_conf_base)
+-- OLD						trova_default (tc.destinazione, prossima_conf_base)
 								-- MODIFICA PER CONSIDERARE I FORK
-							if tc.fork and attached tc.multi_target as tcmt then
---							if tc.fork then
---								across tc.destinazione as mt_corrente
-								across
-									tcmt as mt_corrente
+							if tc.fork then
+								across tc.destinazione as mt_corrente
+-- OLD						if tc.fork and attached tc.multi_target as tcmt then
+-- OLD							across
+-- OLD								tcmt as mt_corrente
 								loop
 									trova_default (mt_corrente.item, prossima_conf_base)
 								end
 							end
-							aggiungi_paralleli (tc.destinazione, prossima_conf_base)
+							aggiungi_paralleli (tc.destinazione.first, prossima_conf_base)
+-- OLD							aggiungi_paralleli (tc.destinazione, prossima_conf_base)
 								-- FINE MODIFICA
 						else
 
@@ -258,8 +260,8 @@ feature -- evoluzione della statechart
 					--		all'ordine di specifica nel file .xml - che nessuno dei suoi discendenti possiede transizioni eseguibili
 
 					if attached sorgenti[i].transizione_abilitata (eventi, variabili) as ta then
---						debug ("SC_transizioni_eseguibili") print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.first.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id) end
-						debug ("SC_transizioni_eseguibili") print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id) end
+						debug ("SC_transizioni_eseguibili") print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.first.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id) end
+-- OLD						debug ("SC_transizioni_eseguibili") print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id) end
 						if attached uscita_precedente implies antenato_massimo_uscita(ta).incomparabile_con(uscita_precedente) then
 							-- questa transizione mi fa uscire da uno stato incomparabile con quello della precedente transizione
 							debug ("SC_transizioni_eseguibili") print(" viene mantenuto per la transizione.%N") end
@@ -279,8 +281,8 @@ feature -- evoluzione della statechart
 				else
 					debug ("SC_transizioni_eseguibili")
 						if attached sorgenti[i].transizione_abilitata (eventi, variabili) as ta then
---							print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id)
-							print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id)
+							print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.first.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id)
+-- OLD							print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id)
 							print(" e' antenato di sorgente successiva " + (i+1).out + ": " + sorgenti[i+1].id + " e viene scartato.%N")
 						end
 					end
@@ -311,8 +313,8 @@ feature -- evoluzione della statechart
 		do
 			Result := transizione.sorgente
 			if transizione.internal then
---				if transizione.sorgente.antenato_di (transizione.destinazione.first) then
-				if transizione.sorgente.antenato_di (transizione.destinazione) then
+				if transizione.sorgente.antenato_di (transizione.destinazione.first) then
+-- OLD				if transizione.sorgente.antenato_di (transizione.destinazione) then
 					across
 						transizione.sorgente.figli as figli
 					loop
@@ -322,8 +324,8 @@ feature -- evoluzione della statechart
 					end
 				else
 					across
---						transizione.destinazione.first.figli as figli
-						transizione.destinazione.figli as figli
+						transizione.destinazione.first.figli as figli
+-- OLD						transizione.destinazione.figli as figli
 					loop
 						if figli.item.attivo then
 							Result := figli.item
@@ -331,8 +333,8 @@ feature -- evoluzione della statechart
 					end
 				end
 			else
---				contesto := trova_contesto (transizione.sorgente, transizione.destinazione.first)
-				contesto := trova_contesto (transizione.sorgente, transizione.destinazione)
+				contesto := trova_contesto (transizione.sorgente, transizione.destinazione.first)
+-- OLD				contesto := trova_contesto (transizione.sorgente, transizione.destinazione)
 				from
 					stato_temp := transizione.sorgente
 				until
@@ -483,21 +485,21 @@ feature -- esecuzione azioni
 			contesto: detachable STATO
 		do
 			if transizione.internal then
---				if transizione.sorgente.antenato_di (transizione.destinazione.first) then
-				if transizione.sorgente.antenato_di (transizione.destinazione) then
+				if transizione.sorgente.antenato_di (transizione.destinazione.first) then
+--OLD				if transizione.sorgente.antenato_di (transizione.destinazione) then
 					contesto := transizione.sorgente
 				else
---					contesto := transizione.destinazione.first
-					contesto := transizione.destinazione
+					contesto := transizione.destinazione.first
+--OLD					contesto := transizione.destinazione
 				end
 			else
---				contesto := trova_contesto (transizione.sorgente, transizione.destinazione.first)
-				contesto := trova_contesto (transizione.sorgente, transizione.destinazione)
+				contesto := trova_contesto (transizione.sorgente, transizione.destinazione.first)
+-- OLD				contesto := trova_contesto (transizione.sorgente, transizione.destinazione)
 			end
 			esegui_azioni_onexit (antenato_massimo_uscita (transizione))
 			esegui_azioni_transizione (transizione.azioni)
---			esegui_azioni_onentry (contesto, transizione.destinazione.first)
-			esegui_azioni_onentry (contesto, transizione.destinazione)
+			esegui_azioni_onentry (contesto, transizione.destinazione.first)
+-- OLD			esegui_azioni_onentry (contesto, transizione.destinazione)
 		end
 
 	esegui_onexit (p_stato_corrente: STATO)
@@ -599,8 +601,8 @@ feature -- utilita
 			loop
 				debug ("SC_transizioni_eseguibili") print ("  stato corrente di conf_base: " + sc_cb.item.id + "%N") end
 				if attached sc_cb.item.transizione_abilitata (eventi, variabili) as ta then
---					debug ("SC_transizioni_eseguibili") print ("    con transizione abilitata da " + ta.sorgente.id + " a " + ta.destinazione.first.id + "%N") end
-					debug ("SC_transizioni_eseguibili") print ("    con transizione abilitata da " + ta.sorgente.id + " a " + ta.destinazione.id + "%N") end
+					debug ("SC_transizioni_eseguibili") print ("    con transizione abilitata da " + ta.sorgente.id + " a " + ta.destinazione.first.id + "%N") end
+-- OLD					debug ("SC_transizioni_eseguibili") print ("    con transizione abilitata da " + ta.sorgente.id + " a " + ta.destinazione.id + "%N") end
 					Result.force (ta.sorgente, Result.count + 1)
 				end
 			end
