@@ -346,17 +346,17 @@ feature -- evoluzione della statechart
 			end
 		end
 
-	aggiungi_paralleli (destinazione: STATO; prossima_conf_base: ARRAY [STATO])
+	aggiungi_paralleli (p_destinazione: STATO; prossima_conf_base: ARRAY [STATO])
 	-- inserisce in `prossima_conf_base' i default degli stati in parallelo rispetto al target
 	-- qualora vi siano stati già attivi non dà luogo a configurazioni non corrette
 	-- TODO: la riga precedente non capisco bene che vuol dire, esprimere meglio
 		do
-			destinazione.set_attivo
-			if attached {STATO_AND} destinazione.genitore as dg and then not dg.attivo then
+			p_destinazione.set_attivo
+			if attached {STATO_AND} p_destinazione.genitore as dg and then not dg.attivo then
 				-- se lo stato genitore è un AND scorro i suoi figli
 				across dg.initial as dgi
 				loop
-					if not dgi.item.is_equal(destinazione) then
+					if not dgi.item.is_equal(p_destinazione) then
 						-- se dgi.item è la destinazione non devo aggiungerla perché l'ho già fatto
 -- VERSIONE DEL MASTER
 --						trova_default (dgi.item, prossima_conf_base)
@@ -366,7 +366,7 @@ feature -- evoluzione della statechart
 					end
 				end
 			end
-			if attached destinazione.genitore as dg then
+			if attached p_destinazione.genitore as dg then
 				--se ha un genitore ripeto aggiungi paralleli su di lui
 				aggiungi_paralleli (dg, prossima_conf_base)
 			end
