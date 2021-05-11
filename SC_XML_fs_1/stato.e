@@ -278,7 +278,8 @@ feature -- routines forse inutili
 			across transizioni as t
 			loop
 	        	if attivabile(t.item, evento_corrente, hash_delle_condizioni) then
-		        	Result := t.item.destinazione
+		        	Result := t.item.destinazione.first
+-- OLD		        	Result := t.item.destinazione
 		        end
 			end
 			if Result = Void then
