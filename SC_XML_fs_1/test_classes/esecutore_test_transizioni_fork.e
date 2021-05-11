@@ -34,12 +34,45 @@ feature --test
 			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A1,B2 )", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"A1") and conf_has_state(esecutore.state_chart.conf_base,"B2") )
 		end
 
+	t_costrutto_fork_1_con_azioni
+	 --Filippo & Iezzi
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "costrutto_fork_1_con_azioni.xml"
+			nomi_files_prova [2] := test_data_dir + "costrutto_fork_eventi_con_fork.txt"
+			create esecutore.make (nomi_files_prova)
+			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A1,B1 )", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"A1") and conf_has_state(esecutore.state_chart.conf_base,"B1") )
+		end
+
+	t_costrutto_fork_1_1_con_azioni
+	 --Filippo & Iezzi
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "costrutto_fork_1_con_azioni.xml"
+			nomi_files_prova [2] := test_data_dir + "costrutto_fork_eventi_non_fork.txt"
+			create esecutore.make (nomi_files_prova)
+			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A1,B2 )", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"A1") and conf_has_state(esecutore.state_chart.conf_base,"B2") )
+		end
+
 	t_costrutto_fork_2
 	 --Filippo & Iezzi
 		local
 			esecutore: ESECUTORE
 		do
 			nomi_files_prova [1] := test_data_dir + "costrutto_fork_2.xml"
+			nomi_files_prova [2] := test_data_dir + "costrutto_fork_eventi_con_fork.txt"
+			create esecutore.make (nomi_files_prova)
+			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A,B2,C2 )", esecutore.state_chart.conf_base.count = 3 and conf_has_state(esecutore.state_chart.conf_base,"A") and conf_has_state(esecutore.state_chart.conf_base,"B2") and conf_has_state(esecutore.state_chart.conf_base,"C2") )
+		end
+
+	t_costrutto_fork_2_variante
+	 --Filippo & Iezzi
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "costrutto_fork_2_variante.xml"
 			nomi_files_prova [2] := test_data_dir + "costrutto_fork_eventi_con_fork.txt"
 			create esecutore.make (nomi_files_prova)
 			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A,B2,C2 )", esecutore.state_chart.conf_base.count = 3 and conf_has_state(esecutore.state_chart.conf_base,"A") and conf_has_state(esecutore.state_chart.conf_base,"B2") and conf_has_state(esecutore.state_chart.conf_base,"C2") )

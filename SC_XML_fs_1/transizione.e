@@ -16,8 +16,10 @@ feature -- costante
 
 feature -- creazione
 
+--	NOTA: non cambia perché in caso di destinazioni multiple viene invocata con la prima
 	make_with_target(stato_destinazione, stato_sorgente: STATO)
 		do
+			create destinazione.make
 			set_sorgente(stato_sorgente)
 			set_target(stato_destinazione)
             create azioni.make_empty
@@ -26,7 +28,8 @@ feature -- creazione
 			condizione := Valore_Nullo
 			-- AGGIUNTE FORK
 			fork := False
-			create multi_target.make
+--			la create successiva scompare
+--			create multi_target.make
 			-- FINE AGGIUNTE
 		end
 
@@ -41,16 +44,17 @@ feature -- attributi
     sorgente: STATO
 
 	-- TODO: eliminare multi_target e ridefinire `destinazione' come LINKED_LIST [STATO]
-	destinazione: STATO
+	-- OLD	destinazione: STATO
+	 destinazione: LINKED_LIST [STATO]
 
 	internal: BOOLEAN
 
 	--AGGIUNTE FORK
 
-	fork:BOOLEAN
+	fork: BOOLEAN
 
 	-- TODO: eliminare multi_target e ridefinire `destinazione' come LINKED_LIST [STATO]
-	multi_target: detachable LINKED_LIST [STATO]
+--	multi_target: detachable LINKED_LIST [STATO]
 
 	--FINE AGGIUNTE
 
@@ -68,7 +72,8 @@ feature -- setter
 
 	set_target (uno_stato: STATO)
 		do
-			destinazione := uno_stato
+			destinazione.force(uno_stato)
+-- OLD			destinazione := uno_stato
 		end
 
 	set_sorgente (uno_stato: STATO)
@@ -90,9 +95,12 @@ feature -- setter
 
 	add_target(uno_stato: STATO)
 		do
-			if uno_stato /= destinazione then
-				if attached multi_target as mt then mt.force(uno_stato) end
+			if not destinazione.has(uno_stato) then
+				destinazione.force(uno_stato)
 			end
+-- OLD				if uno_stato /= destinazione then
+--				if attached multi_target as mt then mt.force(uno_stato) end
+--			end
 		end
 
 	--FINE AGGIUNTE	

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="S">
+	<parallel id="S">
+		<state id="S1">
+		</state>	
+		<state id="S2">	
+			<transition event="e" target="A B2 C">
+			</transition>	
+		</state>
+		
+	</parallel>
+	
+	<parallel id="X">	
+		<state id="A">
+			<onentry>
+				<log name = "ingresso in A" />
+			</onentry>
+		</state>
+		<state id="B" initial="B1">
+			<state id="B1" initial='B1a'>
+				<state id="B1a">
+				</state>	
+			</state>
+			<state id="B2">
+				<onentry>
+					<log name = "ingresso in B2" />
+				</onentry>
+			</state>						
+		</state>
+		<state id="C" initial="C2">
+			<state id="C1">
+			</state>
+			<state id="C2">
+			</state>	
+			<onentry>
+				<log name = "ingresso in C" />
+			</onentry>
+		</state>							
+	</parallel>
+
+</scxml>
