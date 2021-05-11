@@ -19,6 +19,7 @@ feature -- creazione
 --	NOTA: non cambia perché in caso di destinazioni multiple viene invocata con la prima
 	make_with_target(stato_destinazione, stato_sorgente: STATO)
 		do
+			create destinazione.make
 			set_sorgente(stato_sorgente)
 			set_target(stato_destinazione)
             create azioni.make_empty
