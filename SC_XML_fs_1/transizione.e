@@ -29,7 +29,7 @@ feature -- creazione
 			-- AGGIUNTE FORK
 			fork := False
 --			la create successiva scompare
-			create multi_target.make
+--			create multi_target.make
 			-- FINE AGGIUNTE
 		end
 
@@ -54,7 +54,7 @@ feature -- attributi
 	fork: BOOLEAN
 
 	-- TODO: eliminare multi_target e ridefinire `destinazione' come LINKED_LIST [STATO]
-	multi_target: detachable LINKED_LIST [STATO]
+--	multi_target: detachable LINKED_LIST [STATO]
 
 	--FINE AGGIUNTE
 
