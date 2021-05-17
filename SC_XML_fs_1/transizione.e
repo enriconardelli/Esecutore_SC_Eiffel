@@ -28,6 +28,7 @@ feature -- creazione
 			condizione := Valore_Nullo
 			-- AGGIUNTE FORK
 			fork := False
+			merge:= False
 --			la create successiva scompare
 --			create multi_target.make
 			-- FINE AGGIUNTE
@@ -41,6 +42,7 @@ feature -- attributi
 
     azioni: ARRAY [AZIONE]
 
+	--sorgente: LINKED_LIST [STATO]
     sorgente: STATO
 
 	-- TODO: eliminare multi_target e ridefinire `destinazione' come LINKED_LIST [STATO]
@@ -49,9 +51,11 @@ feature -- attributi
 
 	internal: BOOLEAN
 
-	--AGGIUNTE FORK
+	--AGGIUNTE FORK e MERGE
 
 	fork: BOOLEAN
+
+	merge:BOOLEAN
 
 	-- TODO: eliminare multi_target e ridefinire `destinazione' come LINKED_LIST [STATO]
 --	multi_target: detachable LINKED_LIST [STATO]
@@ -78,6 +82,7 @@ feature -- setter
 
 	set_sorgente (uno_stato: STATO)
 		do
+			--sorgente.force(uno_stato)
 			sorgente := uno_stato
 		end
 
@@ -91,6 +96,11 @@ feature -- setter
 	set_fork
 		do
 			fork := True
+		end
+
+	set_merge
+		do
+			merge:=True
 		end
 
 	add_target(uno_stato: STATO)
@@ -181,4 +191,5 @@ feature -- check
 			Result := False
 		end
 	end
+
 end

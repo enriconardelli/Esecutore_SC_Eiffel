@@ -581,6 +581,13 @@ feature -- inizializzazione transizioni
 			end
 		end
 
+--		verifica_internal (transizione: TRANSIZIONE): BOOLEAN
+--			do
+--				if (attached {STATO_XOR} transizione.sorgente.first as ts and then ts.antenato_di (transizione.destinazione.first)) or else (transizione.destinazione.first.antenato_di (transizione.sorgente.first)) or else (transizione.destinazione.first = transizione.sorgente.first) then
+--					Result := true
+--				end
+--			end
+
 	assegna_evento (transition: XML_ELEMENT; transizione: TRANSIZIONE)
 		do
 			-- TODO: capire se gestire l'assenza dell'evento con evento convenzionale "NULL" come si fa per le condizioni
@@ -588,6 +595,42 @@ feature -- inizializzazione transizioni
 				transizione.set_evento (event.value)
 			end
 		end
+
+--	assegna_condizione (transition: XML_ELEMENT; transizione: TRANSIZIONE)
+--	-- TODO: migliorare il controllo della correttezza sintattica delle condizione per interi
+--		local
+--			i: INTEGER
+--		do
+--			if attached transition.attribute_by_name ("cond") as cond then
+--				if id_illegittimo (cond.value) then
+--					print ("ERRORE: la transizione da >|")
+--					from
+--						i:= transizione.sorgente.lower
+--					until
+--						i = transizione.sorgente.count + 1
+--					loop
+--						print(transizione.sorgente[i].id)
+--					end
+--					print("|< a >|" + transizione.destinazione.first.id + "|< specifica una condizione di valore >|" + cond.value + "|< stringa vuota o blank o Valore_Nullo !%N")
+--				else
+--					if booleana_legittima (cond.value) or intera_legittima (cond.value) then
+--						transizione.set_condizione (pulisci_stringa (cond.value))
+--					else
+--						print ("ERRORE: la transizione da >|")
+--						from
+--							i:= transizione.sorgente.lower
+--						until
+--							i = transizione.sorgente.count + 1
+--						loop
+--							print(transizione.sorgente[i].id)
+--						end
+--						print("|< a >|" + transizione.destinazione.first.id + "|< specifica una condizione di valore (non pulito) >|" + cond.value + "|< illegittimo !%N")
+--					end
+--				end
+--			else
+--				transizione.set_condizione ({TRANSIZIONE}.Valore_Nullo)
+--			end
+--		end
 
 	assegna_condizione (transition: XML_ELEMENT; transizione: TRANSIZIONE)
 	-- TODO: migliorare il controllo della correttezza sintattica delle condizione per interi
@@ -666,6 +709,33 @@ feature -- inizializzazione azioni
 			end
 		end
 
+--		assegna_azioni (action_list: LIST [XML_ELEMENT]; transizione: TRANSIZIONE)
+--			-- assegna le azioni in `action_list' alla `transizione'
+--			local
+--				i: INTEGER
+--			do
+--				across
+--					action_list as al
+--				loop
+--					if al.item.name ~ "assign" then
+--						assegna_azione_assign (al.item, transizione)
+--					elseif al.item.name ~ "log" then
+--						assegna_azione_log (al.item, transizione)
+--					else
+--						print ("AVVISO: la transizione da >|")
+--						from
+--							i := transizione.sorgente.lower
+--						until
+--							i = transizione.sorgente.count + 1
+--						loop
+--							print(transizione.sorgente[i].id)
+--						end
+--						print("|< a >|" + transizione.destinazione.first.id + "|< specifica un'azione >|" + al.item.name + "|< sconosciuta!%N")
+--	--OLD				print ("AVVISO: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|< specifica un'azione >|" + al.item.name + "|< sconosciuta!%N")
+--					end
+--				end
+--			end
+
 	assegna_azione_assign (p_azione: XML_ELEMENT; transizione: TRANSIZIONE)
 		local
 			testo, esito, variabile, espressione: STRING
@@ -681,6 +751,30 @@ feature -- inizializzazione azioni
 				creatore_di_assegna.stampa_errata (testo, esito, variabile, espressione)
 			end
 		end
+
+--	assegna_azione_assign (p_azione: XML_ELEMENT; transizione: TRANSIZIONE)
+--		local
+--			testo,testo_bis, esito, variabile, espressione: STRING
+--			i: INTEGER
+--		do
+--			esito := creatore_di_assegna.ammissibile (p_azione, variabili).esito
+--			variabile := creatore_di_assegna.ammissibile (p_azione, variabili).variabile
+--			espressione := creatore_di_assegna.ammissibile (p_azione, variabili).espressione
+--			if esito ~ "OK" then
+--				transizione.azioni.force (creatore_di_assegna.crea_istanza (variabile, espressione), transizione.azioni.count + 1)
+--			else
+--				testo_bis := " "
+--				from
+--					i := transizione.sorgente.lower
+--				until
+--					i = transizione.sorgente.count + 1
+--				loop
+--					testo_bis := testo_bis + transizione.sorgente[i].id
+--				end
+--			testo := "nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + testo_bis + "|< a >|" + transizione.destinazione.first.id + "|<"
+--			creatore_di_assegna.stampa_errata (testo, esito, variabile, espressione)
+--			end
+--		end
 
 	nome_evento (transizione: TRANSIZIONE): STRING
 		do
@@ -700,6 +794,24 @@ feature -- inizializzazione azioni
 --OLD			print ("ERRORE: l'azione <log> nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|< non ha attributo 'name'!%N")
 			end
 		end
+
+--		assegna_azione_log (p_azione: XML_ELEMENT; transizione: TRANSIZIONE)
+--			local i: INTEGER
+--			do
+--				if attached p_azione.attribute_by_name ("name") as name then
+--					transizione.azioni.force (create {STAMPA}.make_with_text (name.value), transizione.azioni.count + 1)
+--				else
+--					print ("ERRORE: l'azione <log> nella transizione con evento >|" + nome_evento(transizione) + "|< da >|")
+--					from i:= transizione.sorgente.lower
+--						until
+--							i = transizione.sorgente.count + 1
+--						loop
+--						print (transizione.sorgente[i].id)
+--					end
+--					print ("|< a >|" + transizione.destinazione.first.id + "|< non ha attributo 'name'!%N")
+--	--OLD			print ("ERRORE: l'azione <log> nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|< non ha attributo 'name'!%N")
+--				end
+--			end
 
 feature -- inizializzazione onentry/onexit
 

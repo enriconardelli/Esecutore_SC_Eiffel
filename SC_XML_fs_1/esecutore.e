@@ -88,6 +88,73 @@ feature -- evoluzione della statechart
 --		end
 
 -- VERSIONE DA COSTRUTTO FORK
+
+--	evolvi_SC (eventi: ARRAY [LINKED_SET [STRING]])
+--		local
+--			istante: INTEGER
+--			prossima_conf_base: ARRAY [STATO]
+--			transizioni_eseguibili: ARRAY [TRANSIZIONE]
+--			transizione_corrente: TRANSIZIONE
+--		do
+--			print ("%Nentrato in evolvi_SC:  %N %N")
+--			from
+--				istante := 1
+--			until
+--				stato_final (state_chart.conf_base) or istante > eventi.count
+--			loop
+--				if attached eventi [istante] as eventi_correnti then
+--					stampa_conf_corrente (istante)
+--					create prossima_conf_base.make_empty
+--					transizioni_eseguibili := trova_transizioni_eseguibili (eventi_correnti, state_chart.variabili)
+
+---- PROVA CON iterazione sulle transizioni eseguibili
+-- 					across transizioni_eseguibili as sc_cb
+----					across state_chart.conf_base as sc_cb
+
+----						conf_base_corrente as cbc -- l'attributo conf_base_corrente è stato rimpiazzato state_chart.conf_base
+--					loop
+
+---- PROVA CON iterazione sulle transizioni eseguibili
+--						transizione_corrente := sc_cb.item
+----						transizione_corrente := sc_cb.item.transizione_abilitata (eventi_correnti, state_chart.variabili)
+
+--						if attached transizione_corrente as tc and then transizioni_eseguibili.has (tc) then
+--							salva_storie (antenato_massimo_uscita (tc)) -- dal MASTER
+--							esegui_azioni (tc) -- , cbc.item)
+--							trova_default (tc.destinazione.first, prossima_conf_base)
+---- OLD						trova_default (tc.destinazione, prossima_conf_base)
+--								-- MODIFICA PER CONSIDERARE I FORK
+--							if tc.fork then
+--								across tc.destinazione as mt_corrente
+--								loop
+--									trova_default (mt_corrente.item, prossima_conf_base)
+--								end
+--							end
+--							aggiungi_paralleli (tc.destinazione.first, prossima_conf_base)
+---- OLD							aggiungi_paralleli (tc.destinazione, prossima_conf_base)
+--								-- FINE MODIFICA
+--						else
+
+---- PROVA CON iterazione sulle transizioni eseguibili
+--							prossima_conf_base.force (sc_cb.item.sorgente.first, prossima_conf_base.count + 1)
+----							prossima_conf_base.force (sc_cb.item, prossima_conf_base.count + 1)
+
+--						end
+--					end
+--					aggiungi_stati_attivi(prossima_conf_base) -- si mantiene versione MASTER
+----					prossima_conf_base := elimina_stati_inattivi (prossima_conf_base)  -- questa era quella di costrutto FORK
+--					prossima_conf_base := riordina_stati (prossima_conf_base) -- si mantiene versione MASTER
+----					prossima_conf_base := riordina_conf_base (prossima_conf_base) -- questa era quella di costrutto FORK
+--					if not prossima_conf_base.is_empty then
+--						state_chart.conf_base.copy (prossima_conf_base)
+--					end
+--				end
+--				istante := istante + 1
+--			end
+--			print ("%NHo terminato l'elaborazione degli eventi%N")
+--			stampa_conf_corrente (istante)
+--		end
+
 	evolvi_SC (eventi: ARRAY [LINKED_SET [STRING]])
 		local
 			istante: INTEGER
@@ -305,6 +372,49 @@ feature -- evoluzione della statechart
 			end
 		end
 
+--		antenato_massimo_uscita (transizione: TRANSIZIONE): STATO
+--		-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
+--		-- restituisce l'antenato più grande dal quale si esce con 'transizione'
+--			local
+--				contesto, stato_temp: detachable STATO
+--			do
+--				Result := transizione.sorgente.first
+--				if transizione.internal then
+--					if transizione.sorgente.first.antenato_di (transizione.destinazione.first) then
+--	-- OLD				if transizione.sorgente.antenato_di (transizione.destinazione) then
+--						across
+--							transizione.sorgente.first.figli as figli
+--						loop
+--							if figli.item.attivo then
+--								Result := figli.item
+--							end
+--						end
+--					else
+--						across
+--							transizione.destinazione.first.figli as figli
+--	-- OLD						transizione.destinazione.figli as figli
+--						loop
+--							if figli.item.attivo then
+--								Result := figli.item
+--							end
+--						end
+--					end
+--				else
+--					contesto := trova_contesto (transizione.sorgente.first, transizione.destinazione.first)
+--	-- OLD				contesto := trova_contesto (transizione.sorgente, transizione.destinazione)
+--					from
+--						stato_temp := transizione.sorgente.first
+--					until
+--					 	stato_temp = contesto
+--					loop
+--						if attached stato_temp then
+--							Result := stato_temp
+--							stato_temp := stato_temp.genitore
+--						end
+--					end
+--				end
+--			end
+
 	antenato_massimo_uscita (transizione: TRANSIZIONE): STATO
 	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
 	-- restituisce l'antenato più grande dal quale si esce con 'transizione'
@@ -478,7 +588,29 @@ feature -- evoluzione della statechart
 			Result := corrente
 		end
 
-feature -- esecuzione azioni
+--feature -- esecuzione azioni
+
+--	esegui_azioni (transizione: TRANSIZIONE)
+--		local
+--			contesto: detachable STATO
+--		do
+--			if transizione.internal then
+--				if transizione.sorgente.first.antenato_di (transizione.destinazione.first) then
+----OLD				if transizione.sorgente.antenato_di (transizione.destinazione) then
+--					contesto := transizione.sorgente.first
+--				else
+--					contesto := transizione.destinazione.first
+----OLD					contesto := transizione.destinazione
+--				end
+--			else
+--				contesto := trova_contesto (transizione.sorgente.first, transizione.destinazione.first)
+---- OLD				contesto := trova_contesto (transizione.sorgente, transizione.destinazione)
+--			end
+--			esegui_azioni_onexit (antenato_massimo_uscita (transizione))
+--			esegui_azioni_transizione (transizione.azioni)
+--			esegui_azioni_onentry (contesto, transizione.destinazione.first)
+---- OLD			esegui_azioni_onentry (contesto, transizione.destinazione)
+--		end
 
 	esegui_azioni (transizione: TRANSIZIONE)
 		local
@@ -589,11 +721,41 @@ feature -- utilita
 		Result := stati_ordinati
 	end
 
-	stati_eseguibili (eventi: LINKED_SET[STRING]; variabili: DATAMODEL): ARRAY[STATO]
-	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
-	-- A partire dalla configurazione di base ritorna gli stati che hanno transizioni abilitate in base a `eventi' e `variabili'
-	-- N.B. gli stati tornati possono non essere stati atomici, ma stati gerarchici le cui transizioni sono eseguibili dagli stati atomici
-	--		loro discendenti, che sono rilevate da `transizione_abilitata' in assenza di transizioni direttamente abilitate nello stato atomico
+--	stati_eseguibili (eventi: LINKED_SET[STRING]; variabili: DATAMODEL): ARRAY[STATO]
+--	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
+--	-- A partire dalla configurazione di base ritorna gli stati che hanno transizioni abilitate in base a `eventi' e `variabili'
+--	-- N.B. gli stati tornati possono non essere stati atomici, ma stati gerarchici le cui transizioni sono eseguibili dagli stati atomici
+--	--		loro discendenti, che sono rilevate da `transizione_abilitata' in assenza di transizioni direttamente abilitate nello stato atomico
+--		local
+--			i: INTEGER
+--		do
+--			create Result.make_empty
+--			across
+--				state_chart.conf_base as sc_cb
+--			loop
+--				debug ("SC_transizioni_eseguibili") print ("  stato corrente di conf_base: " + sc_cb.item.id + "%N") end
+--				if attached sc_cb.item.transizione_abilitata (eventi, variabili) as ta then
+--					debug ("SC_transizioni_eseguibili") print ("    con transizione abilitata da ") end
+--					from
+-- 						i:=ta.sorgente.lower
+--					until
+--						i = ta.sorgente.count + 1
+--					loop
+--						debug("SC_transizioni_eseguibili") print(ta.sorgente[i].id) end
+--						Result.force (ta.sorgente[i], Result.count + 1)
+--					end
+--					debug("SC_transizioni_eseguibili") print(" a " + ta.destinazione.first.id + "%N") end
+---- OLD					debug ("SC_transizioni_eseguibili") print ("    con transizione abilitata da " + ta.sorgente.id + " a " + ta.destinazione.id + "%N") end
+--				end
+--			end
+--			Result := riordina_stati (Result)
+--		end
+
+	stati_eseguibili (eventi: LINKED_SET[STRING]; variabili: DATAMODEL):ARRAY[STATO]
+--	Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
+--  A partire dalla configurazione di base ritorna gli stati che hanno transizioni abilitate in base a `eventi' e `variabili'
+--	N.B. gli stati tornati possono non essere stati atomici, ma stati gerarchici le cui transizioni sono eseguibili dagli stati atomici
+--		loro discendenti, che sono rilevate da `transizione_abilitata' in assenza di transizioni direttamente abilitate nello stato atomico
 		do
 			create Result.make_empty
 			across
