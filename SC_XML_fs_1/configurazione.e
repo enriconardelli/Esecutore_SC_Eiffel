@@ -575,7 +575,8 @@ feature -- inizializzazione transizioni
 
 	verifica_internal (transizione: TRANSIZIONE): BOOLEAN
 		do
-			if (attached {STATO_XOR} transizione.sorgente as ts and then ts.antenato_di (transizione.destinazione.first)) or else (transizione.destinazione.first.antenato_di (transizione.sorgente)) or else (transizione.destinazione.first = transizione.sorgente) then
+			if (attached {STATO_XOR} transizione.sorgente.first as ts and then ts.antenato_di (transizione.destinazione.first)) or else (transizione.destinazione.first.antenato_di (transizione.sorgente.first)) or else (transizione.destinazione.first = transizione.sorgente.first) then
+-- PRIMA DI MERGE if (attached {STATO_XOR} transizione.sorgente as ts and then ts.antenato_di (transizione.destinazione.first)) or else (transizione.destinazione.first.antenato_di (transizione.sorgente)) or else (transizione.destinazione.first = transizione.sorgente) then
 --OLD		if (attached {STATO_XOR} transizione.sorgente as ts and then ts.antenato_di (transizione.destinazione)) or else (transizione.destinazione.antenato_di (transizione.sorgente)) or else (transizione.destinazione = transizione.sorgente) then
 				Result := true
 			end
@@ -636,14 +637,15 @@ feature -- inizializzazione transizioni
 	-- TODO: migliorare il controllo della correttezza sintattica delle condizione per interi
 		do
 			if attached transition.attribute_by_name ("cond") as cond then
+				-- TODO: migliorare la stampa in caso di errori producendo l'elenco completo di tutte le sorgenti e di tutte le destinazioni in caso di transizioni MERGE e FORK
 				if id_illegittimo (cond.value) then
-					print ("ERRORE: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica una condizione di valore >|" + cond.value + "|< stringa vuota o blank o Valore_Nullo !%N")
+					print ("ERRORE: la transizione da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica una condizione di valore >|" + cond.value + "|< stringa vuota o blank o Valore_Nullo !%N")
 --OLD				print ("ERRORE: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|< specifica una condizione di valore >|" + cond.value + "|< stringa vuota o blank o Valore_Nullo !%N")
 				else
 					if booleana_legittima (cond.value) or intera_legittima (cond.value) then
 						transizione.set_condizione (pulisci_stringa (cond.value))
 					else
-						print ("ERRORE: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica una condizione di valore (non pulito) >|" + cond.value + "|< illegittimo !%N")
+						print ("ERRORE: la transizione da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica una condizione di valore (non pulito) >|" + cond.value + "|< illegittimo !%N")
 --OLD					print ("ERRORE: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|< specifica una condizione di valore (non pulito) >|" + cond.value + "|< illegittimo !%N")
 					end
 				end
@@ -703,7 +705,8 @@ feature -- inizializzazione azioni
 				elseif al.item.name ~ "log" then
 					assegna_azione_log (al.item, transizione)
 				else
-					print ("AVVISO: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica un'azione >|" + al.item.name + "|< sconosciuta!%N")
+				-- TODO: migliorare la stampa producendo l'elenco completo di tutte le sorgenti e di tutte le destinazioni in caso di transizioni MERGE e FORK
+					print ("AVVISO: la transizione da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica un'azione >|" + al.item.name + "|< sconosciuta!%N")
 --OLD				print ("AVVISO: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|< specifica un'azione >|" + al.item.name + "|< sconosciuta!%N")
 				end
 			end
@@ -746,7 +749,8 @@ feature -- inizializzazione azioni
 			if esito ~ "OK" then
 				transizione.azioni.force (creatore_di_assegna.crea_istanza (variabile, espressione), transizione.azioni.count + 1)
 			else
-				testo := "nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.first.id + "|<"
+				-- TODO: migliorare la stampa producendo l'elenco complet di tutte le sorgenti e di tutte le destinazioni in caso di transizioni MERGE e FORK
+				testo := "nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|<"
 --OLD			testo := "nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|<"
 				creatore_di_assegna.stampa_errata (testo, esito, variabile, espressione)
 			end
@@ -790,7 +794,8 @@ feature -- inizializzazione azioni
 			if attached p_azione.attribute_by_name ("name") as name then
 				transizione.azioni.force (create {STAMPA}.make_with_text (name.value), transizione.azioni.count + 1)
 			else
-				print ("ERRORE: l'azione <log> nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.first.id + "|< non ha attributo 'name'!%N")
+				-- TODO: migliorare la stampa producendo l'elenco completo di tutte le sorgenti e di tutte le destinazioni in caso di transizioni MERGE e FORK
+				print ("ERRORE: l'azione <log> nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|< non ha attributo 'name'!%N")
 --OLD			print ("ERRORE: l'azione <log> nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|< non ha attributo 'name'!%N")
 			end
 		end

@@ -16,7 +16,7 @@ feature -- costante
 
 feature -- creazione
 
---	NOTA: non cambia perché in caso di destinazioni multiple viene invocata con la prima
+--	NOTA: non cambia perché in caso di sorgenti o destinazioni multiple viene invocata con la prima sorgente/destinazione
 	make_with_target(stato_destinazione, stato_sorgente: STATO)
 		do
 			create destinazione.make
@@ -42,8 +42,8 @@ feature -- attributi
 
     azioni: ARRAY [AZIONE]
 
-	--sorgente: LINKED_LIST [STATO]
-    sorgente: STATO
+	sorgente: LINKED_LIST [STATO]
+-- PRIMA DI MERGE    sorgente: STATO
 
 	-- TODO: eliminare multi_target e ridefinire `destinazione' come LINKED_LIST [STATO]
 	-- OLD	destinazione: STATO
@@ -82,8 +82,8 @@ feature -- setter
 
 	set_sorgente (uno_stato: STATO)
 		do
-			--sorgente.force(uno_stato)
-			sorgente := uno_stato
+			sorgente.force(uno_stato)
+-- PRIMA DI MERGE sorgente := uno_stato
 		end
 
 	set_internal
