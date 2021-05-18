@@ -19,6 +19,7 @@ feature -- creazione
 --	NOTA: non cambia perché in caso di sorgenti o destinazioni multiple viene invocata con la prima sorgente/destinazione
 	make_with_target(stato_destinazione, stato_sorgente: STATO)
 		do
+			create sorgente.make
 			create destinazione.make
 			set_sorgente(stato_sorgente)
 			set_target(stato_destinazione)

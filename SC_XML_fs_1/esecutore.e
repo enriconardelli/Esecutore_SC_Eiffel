@@ -780,13 +780,17 @@ feature -- utilita
 				if attached sc_cb.item.transizione_abilitata (eventi, variabili) as ta then
 -- PRIMA DI MERGE	debug ("SC_transizioni_eseguibili") print ("    con transizione abilitata da " + ta.sorgente.id + " a " + ta.destinazione.first.id + "%N") end
 					debug ("SC_transizioni_eseguibili") print ("    con transizione abilitata da ") end
-					from
- 						i:=ta.sorgente.lower
-					until
-						i = ta.sorgente.count + 1
+					across ta.sorgente as tas
+--					from
+-- 						i:=ta.sorgente.lower
+--					until
+--						i = ta.sorgente.count + 1
 					loop
-						debug("SC_transizioni_eseguibili") print(ta.sorgente[i].id) end
-						Result.force (ta.sorgente[i], Result.count + 1)
+--						debug("SC_transizioni_eseguibili") print(ta.sorgente[i].id) end
+						debug("SC_transizioni_eseguibili") print(tas.item.id) end
+--						Result.force (ta.sorgente[i], Result.count + 1)
+						Result.force (tas.item, Result.count + 1)
+--						i := i+1
 					end
 					debug("SC_transizioni_eseguibili") print(" a " + ta.destinazione.first.id + "%N") end
 -- PRIMA DI MERGE	Result.force (ta.sorgente, Result.count + 1)
