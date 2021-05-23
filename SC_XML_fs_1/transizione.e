@@ -46,9 +46,7 @@ feature -- attributi
 	sorgente: LINKED_LIST [STATO]
 -- PRIMA DI MERGE    sorgente: STATO
 
-	-- TODO: eliminare multi_target e ridefinire `destinazione' come LINKED_LIST [STATO]
-	-- OLD	destinazione: STATO
-	 destinazione: LINKED_LIST [STATO]
+	destinazione: LINKED_LIST [STATO]
 
 	internal: BOOLEAN
 
@@ -57,9 +55,6 @@ feature -- attributi
 	fork: BOOLEAN
 
 	merge:BOOLEAN
-
-	-- TODO: eliminare multi_target e ridefinire `destinazione' come LINKED_LIST [STATO]
---	multi_target: detachable LINKED_LIST [STATO]
 
 	--FINE AGGIUNTE
 
@@ -78,7 +73,6 @@ feature -- setter
 	set_target (uno_stato: STATO)
 		do
 			destinazione.force(uno_stato)
--- OLD			destinazione := uno_stato
 		end
 
 	set_sorgente (uno_stato: STATO)
@@ -109,9 +103,6 @@ feature -- setter
 			if not destinazione.has(uno_stato) then
 				destinazione.force(uno_stato)
 			end
--- OLD				if uno_stato /= destinazione then
---				if attached multi_target as mt then mt.force(uno_stato) end
---			end
 		end
 
 	--FINE AGGIUNTE	
