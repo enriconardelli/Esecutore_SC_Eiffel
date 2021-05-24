@@ -437,12 +437,12 @@ feature -- inizializzazione transizioni
 			end
 		end
 
-	-- AGGIUNTE FORK
+	-- AGGIUNTE FORK E MERGE
 
 	transizione_multitarget_ammissibile(lista_stati: LIST[READABLE_STRING_32]):BOOLEAN
 	-- TODO: rifattorizzare nome in destinazioni_multiple_compatibili
 		-- prende in imput una  lista di stati e ritorna True se sono ammissibili come multitarget
-		-- di una transizione fork: a due a due devono avere un minimo antenato comune di tipo AND in comune
+		-- di una transizione fork o merge: a due a due devono avere un minimo antenato comune di tipo AND in comune
 		-- e non devono essere l'uno discendente dell'altro.
 	do
 		Result:=True
