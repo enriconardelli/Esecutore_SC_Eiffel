@@ -391,11 +391,13 @@ feature -- inizializzazione transizioni
 			transizione: TRANSIZIONE
 		do
 			debug ("SC_assegna_transizioni") stampa_elemento (transition_element) end
+			-- SE transition_element.attribute_by_name ("target") ha più di un valore si tratta di una FORK
+			-- SE INVECE esiste transition_element.attribute_by_name ("source") si tratta di una MERGE
 			if attached transition_element.attribute_by_name ("target") as t then
 				-- AGGIUNTE PER COSTRUTTO FORK
 				if attached stati.item (t.value.split(' ').first) as dest then
 					-- uso come primo target il primo che compare
-					if not transizione_illegale (stato, dest) and transizione_multitarget_ammissibile(t.value.split(' ')) then
+					if not transizione_illegale (stato, dest) and transizione_multipla_ammissibile(t.value.split(' ')) then
 					-- TODO: perché transizione_illegale si fa solo sulla prima delle destinazioni multiple?
 						create transizione.make_with_target (dest, stato)
 						-- TODO: verificare che è un errore etichettare 'internal' una transizione fork
@@ -422,7 +424,8 @@ feature -- inizializzazione transizioni
 						stato.aggiungi_transizione (transizione)
 					else
 						print ("ERRORE: transizione non legale! ")
-						if not transizione_multitarget_ammissibile(t.value.split(' ')) then
+						-- TODO: se ci sono più target nella transizioni vanno stampati tutti
+						if not transizione_multipla_ammissibile(t.value.split(' ')) then
 							print (" - Le destinazioni multiple indicate non sono tra loro compatibili %N")
 						else
 							print (" - Da >|" + stato.id + "|< a >|" + dest.id + "|< %N")
@@ -439,10 +442,10 @@ feature -- inizializzazione transizioni
 
 	-- AGGIUNTE FORK E MERGE
 
-	transizione_multitarget_ammissibile(lista_stati: LIST[READABLE_STRING_32]):BOOLEAN
-	-- TODO: rifattorizzare nome in destinazioni_multiple_compatibili
-		-- prende in imput una  lista di stati e ritorna True se sono ammissibili come multitarget
-		-- di una transizione fork o merge: a due a due devono avere un minimo antenato comune di tipo AND in comune
+	transizione_multipla_ammissibile(lista_stati: LIST[READABLE_STRING_32]):BOOLEAN
+		-- prende in input una  lista di stati e ritorna True se sono ammissibili come sorgenti multiple di una transizione merge
+		-- o come destinazioni multiple di una transizione fork: a due a due devono avere
+		-- un minimo antenato comune di tipo AND in comune
 		-- e non devono essere l'uno discendente dell'altro.
 	do
 		Result:=True
@@ -814,7 +817,7 @@ feature -- supporto generale
 			if element.name ~ "transition" then
 				print ("%N   con evento " + valore_attributo (element, "event"))
 				print ("%N   con condizione " + valore_attributo (element, "cond"))
-				-- non va modificato perché stampa tutto il valore dell'attributo "target"
+				print ("%N   con ulteriori sorgenti " + valore_attributo (element, "source"))
 				print ("%N   con destinazione " + valore_attributo (element, "target"))
 				print ("%N")
 			elseif element.has_attribute_by_name ("id") then
