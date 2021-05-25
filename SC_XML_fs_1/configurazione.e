@@ -393,6 +393,8 @@ feature -- inizializzazione transizioni
 			debug ("SC_assegna_transizioni") stampa_elemento (transition_element) end
 			-- SE transition_element.attribute_by_name ("target") ha più di un valore si tratta di una FORK
 			-- SE INVECE esiste transition_element.attribute_by_name ("source") si tratta di una MERGE
+			-- e in questo caso oltre allo `stato' passato come argomento a questa feature la transizione
+			-- va assegnata anche a tutti gli stati che sono presenti nell'attributo source
 			if attached transition_element.attribute_by_name ("target") as t then
 				-- AGGIUNTE PER COSTRUTTO FORK
 				if attached stati.item (t.value.split(' ').first) as dest then
