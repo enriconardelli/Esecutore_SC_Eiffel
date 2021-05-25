@@ -89,6 +89,39 @@ feature --test
 			assert ("ERRORE il sistema non ha terminato nello stato corretto S", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"S"))
 		end
 
+	t_costrutto_merge_6
+	 -- Sara Forte, 25/05/2021
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "costrutto_merge_6.xml"
+			nomi_files_prova [2] := test_data_dir + "costrutto_merge_eventi_con_merge.txt"
+			create esecutore.make (nomi_files_prova)
+			assert ("ERRORE il sistema non ha terminato nello stato corretto S", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"A1") and conf_has_state(esecutore.state_chart.conf_base,"C2"))
+		end
+
+	t_costrutto_merge_8
+	 -- Sara Forte, 25/05/2021
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "costrutto_merge_8.xml"
+			nomi_files_prova [2] := test_data_dir + "costrutto_merge_eventi_con_merge.txt"
+			create esecutore.make (nomi_files_prova)
+			assert ("ERRORE il sistema non ha terminato nello stato corretto S", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"S"))
+		end
+
+	t_costrutto_merge_10
+	 -- Sara Forte, 25/05/2021
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "costrutto_merge_10.xml"
+			nomi_files_prova [2] := test_data_dir + "costrutto_merge_eventi_con_merge.txt"
+			create esecutore.make (nomi_files_prova)
+			assert ("ERRORE il sistema non ha terminato nello stato corretto S", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"S"))
+		end
+
 -- RISOLVERE: a transizione_multitarget_ammissibile bisognerebbe passare un argomento di tipo LIST[READABLE_STRING_32], ma come fare?
 --	t_costrutto_merge_non_ammissibile_2
 --	 --Maria Ludovica Sarandrea, 23/05/2021
