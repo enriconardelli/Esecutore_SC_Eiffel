@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="S">
+	<state id="S">
+	</state>
+	
+	<parallel id="X">	
+
+		<state id="A" initial="A2">
+			<parallel id="A1">
+				<state id="A11" initial="A111">	
+					<state id="A111">
+						<transition event="e" target="S" source="B31 C3">
+						</transition>			
+					</state>
+					<state id="A112">			
+					</state>						
+				</state>
+				
+				<state id="A12">			
+				</state>							
+			</parallel>
+			
+			<state id="A2">			
+			</state>			
+			
+		</state>	
+		
+		<parallel id="B">	
+			<state id="B1" initial='B1a'>
+				<state id="B1a">
+				</state>
+				<state id="B1b">
+				</state>		
+			</state>
+			
+			<parallel id="B2">
+				<state id="B21">
+				</state>
+				<state id="B22">
+				</state>			
+			</parallel>
+			
+			<state id="B3" initial="B31">
+				<state id="B31">
+					<transition event="e" target="S" source="A111 C3">
+					</transition>
+				</state>
+				<state id="B32">
+				</state>		
+			</state>								
+		</parallel>
+		
+		<parallel id="C">
+				
+			<state id="C1" initial="C11">
+				<state id="C11">
+				</state>		
+			</state>	
+			<state id="C1a" initial="C2">
+			
+				<state id="C2" initial="C2">
+					<state id="C21">
+					</state>			
+				</state>
+				
+				<parallel id="C3">
+					<transition event="e" target="S" source="A111 B31">
+					</transition>
+					<state id="C31">
+					</state>
+					<state id="C32">
+					</state>			
+				</parallel>
+				
+				<state id="C4">
+				</state>
+			</state>								
+							
+		</parallel>
+														
+	</parallel>
+
+</scxml>
