@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="S">
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="X">
 	<state id="S">
 	</state>
 	
@@ -58,7 +58,7 @@
 			</state>	
 			<state id="C1a" initial="C2">
 			
-				<state id="C2" initial="C2">
+				<state id="C2" initial="C21">
 					<state id="C21">
 					</state>			
 				</state>
