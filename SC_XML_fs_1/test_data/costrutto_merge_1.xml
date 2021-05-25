@@ -5,7 +5,7 @@
 	<parallel id="X">	
 		<state id="A" initial="A1">
 			<state id="A1">
-			<transition event="e" target="A1" source="B2">
+			<transition event="e" target="S" source="B2">
 			</transition>
 			</state>		
 		</state>
@@ -13,11 +13,11 @@
 			<state id="B1">
 			</state>
 			<state id="B2">
-			<transition event="e" target="B2" source="A1">
+			<transition event="e" target="S" source="A1">
 			</transition>
 			</state>
 		</state>
-		<transition event="f" target="X">
+		<transition event="f" target="S">
 		</transition>							
 	</parallel>
 
