@@ -12,8 +12,6 @@
 				<state id="B21">
 				</state>			
 				<state id="B22">
-					<transition event="e" target="S" source="B1">
-					</transition>
 				</state>			
 			</state>
 			<transition event="f" target="S">

@@ -13,8 +13,6 @@
 			<state id="B1">
 			</state>
 			<state id="B2">
-			<transition event="e" target="S" source="A1">
-			</transition>
 			</state>
 		</state>
 		<transition event="f" target="S">

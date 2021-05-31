@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="S">
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="X">
 	<state id="S">
 	</state>
 
-	<state id="X" initial="A">
+	<parallel id="X">
 		<state id="A">
-		<transition event="e" target="S" source="B">
-		</transition>
+			<transition event="e" target="S" source="B">
+			</transition>
 		</state>
 		<state id="B">
-			<transition event="e" target="S" source="A">
-		</transition>
 		</state>
-	</state>							
+	</parallel>							
 
 </scxml>

@@ -11,16 +11,12 @@
 				</state>	
 			</state>
 			<state id="B2">
-				<transition event="e" target="S2" source="A C2">
-				</transition>
 			</state>						
 		</state>
 		<state id="C" initial="C2">
 			<state id="C1">
 			</state>
 			<state id="C2">
-				<transition event="e" target="S2" source="A B2">
-				</transition>
 			</state>	
 		</state>							
 	</parallel>

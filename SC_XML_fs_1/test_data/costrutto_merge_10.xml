@@ -42,8 +42,6 @@
 			
 			<state id="B3" initial="B31">
 				<state id="B31">
-					<transition event="e" target="S" source="A111 C3">
-					</transition>
 				</state>
 				<state id="B32">
 				</state>		
@@ -64,8 +62,6 @@
 				</state>
 				
 				<parallel id="C3">
-					<transition event="e" target="S" source="A111 B31">
-					</transition>
 					<state id="C31">
 					</state>
 					<state id="C32">
