@@ -105,6 +105,14 @@ feature -- setter
 			end
 		end
 
+	add_source(uno_stato: STATO)
+		do
+			if not sorgente.has (uno_stato) then
+				sorgente.force (uno_stato)
+			end
+		end
+
+
 	--FINE AGGIUNTE	
 
 
