@@ -3,13 +3,13 @@
 	<state id="S">
 	</state>
 
-	<parallel id="X">
+	<state id="X">
 		<state id="A">
 			<transition event="e" target="S" source="B">
 			</transition>
 		</state>
 		<state id="B">
 		</state>
-	</parallel>							
+	</state>							
 
 </scxml>
