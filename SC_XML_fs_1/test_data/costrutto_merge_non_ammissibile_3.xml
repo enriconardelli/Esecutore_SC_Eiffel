@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="X">
-		<state id="X" initial="A">
+	<state id="X" initial="A">
 		<parallel id="A">
 			<state id="A1" initial='A11'>
 				<state id="A11">
@@ -32,7 +32,5 @@
 
 	<state id="S">
 	</state>
-
-							
 
 </scxml>
