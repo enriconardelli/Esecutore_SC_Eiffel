@@ -439,6 +439,7 @@ feature -- inizializzazione transizioni
 	assegna_transizione_merge(transition_element: XML_ELEMENT; stato: STATO)
 		local
 			transizione: TRANSIZIONE
+			source_list: LIST [READABLE_STRING_32]
 		do
 			-- se esiste transition_element.attribute_by_name ("source") si tratta di una transizione MERGE
 			-- quindi la funzione assegna la transizione, oltre che allo `stato' passato come argomento,
@@ -446,13 +447,17 @@ feature -- inizializzazione transizioni
 			if attached transition_element.attribute_by_name ("target") as t then
 				if attached transition_element.attribute_by_name ("source") as s then
 					if attached stati.item (t.value.split(' ').first) as dest then
-						if attached stati.item (s.value.split(' ').first) as sorg then
-							if transizione_multipla_ammissibile(s.value.split(' ')) then
+						source_list := s.value.split(' ')
+						source_list.extend (stato.id)
+--						if attached stati.item (s.value.split(' ').first) as sorg then
+							if transizione_multipla_ammissibile(source_list) then
+--							if transizione_multipla_ammissibile(s.value.split(' ')) then
 								create transizione.make_with_target (dest, stato)
 								transizione.set_merge
 								-- separo le destinazioni e le scorro tutte aggiungendole alla transizione
 								across
-								s.value.split(' ') as it
+									source_list as it
+--									s.value.split(' ') as it
 								loop
 									if attached stati.item(it.item) as st then transizione.add_source (st) end
 								end
@@ -461,12 +466,15 @@ feature -- inizializzazione transizioni
 								assegna_azioni (transition_element.elements, transizione)
 								stato.aggiungi_transizione (transizione)
 								print (" - Da >|" + stato.id + "|< a >|" + dest.id + "|< %N")
+								-- TODO: mentre stato.id esiste perché è stato creato da `istanzia_stati' gli altri stati sorgente
+								-- TODO: della transizione merge potrebbero ancora non essere stati letti e quindi non posso controllare
+								-- TODO: se esistono in `stati'. Questo controllo andrebbe fatto alla fine della creazione di tutta la SC.
 							else
 								print ("ERRORE: Le sorgenti multiple indicate non sono tra loro compatibili %N")
 							end
-						else
-							print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con sorgente >|" + s.value.split(' ').first + "|< che non appartiene alla SC!%N")
-						end
+--						else
+--							print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con sorgente >|" + s.value.split(' ').first + "|< che non appartiene alla SC!%N")
+--						end
 					else
 						print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value.split(' ').first + "|< che non appartiene alla SC!%N")
 					end
