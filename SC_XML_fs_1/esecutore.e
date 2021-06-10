@@ -261,6 +261,8 @@ feature -- evoluzione della statechart
 	antenato_massimo_uscita (transizione: TRANSIZIONE): STATO
 	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
 	-- restituisce l'antenato più grande dal quale si esce con 'transizione'
+	-- TODO: controllare perché qui e in `esegui_azioni' si chiede di fare gli stessi controlli
+	-- TODO: su transizioni internal che non siano multisorgente e che le sorgenti multiple siano compatibili
 		local
 			contesto, stato_temp: detachable STATO
 		do
@@ -439,6 +441,8 @@ feature -- evoluzione della statechart
 feature -- esecuzione azioni
 
 	esegui_azioni (transizione: TRANSIZIONE)
+	-- TODO: controllare perché qui e in `antenato_massimo_uscita' si chiede di fare gli stessi controlli
+	-- TODO: su transizioni internal che non siano multisorgente e che le sorgenti multiple siano compatibili
 		local
 			contesto: detachable STATO
 		do
@@ -549,7 +553,7 @@ feature -- utilita
 		end
 		Result := stati_ordinati
 	end
-	
+
 	stati_eseguibili (eventi: LINKED_SET[STRING]; variabili: DATAMODEL): ARRAY[STATO]
 --	Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
 --  A partire dalla configurazione di base ritorna gli stati che hanno transizioni abilitate in base a `eventi' e `variabili'
