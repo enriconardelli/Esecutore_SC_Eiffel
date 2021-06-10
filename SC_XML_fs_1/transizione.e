@@ -16,9 +16,10 @@ feature -- costante
 
 feature -- creazione
 
---	NOTA: non cambia perché in caso di destinazioni multiple viene invocata con la prima
+--	NOTA: non cambia perché in caso di sorgenti o destinazioni multiple viene invocata con la prima sorgente/destinazione
 	make_with_target(stato_destinazione, stato_sorgente: STATO)
 		do
+			create sorgente.make
 			create destinazione.make
 			set_sorgente(stato_sorgente)
 			set_target(stato_destinazione)
@@ -28,6 +29,7 @@ feature -- creazione
 			condizione := Valore_Nullo
 			-- AGGIUNTE FORK
 			fork := False
+			merge:= False
 --			la create successiva scompare
 --			create multi_target.make
 			-- FINE AGGIUNTE
@@ -41,20 +43,18 @@ feature -- attributi
 
     azioni: ARRAY [AZIONE]
 
-    sorgente: STATO
+	sorgente: LINKED_LIST [STATO]
+-- PRIMA DI MERGE    sorgente: STATO
 
-	-- TODO: eliminare multi_target e ridefinire `destinazione' come LINKED_LIST [STATO]
-	-- OLD	destinazione: STATO
-	 destinazione: LINKED_LIST [STATO]
+	destinazione: LINKED_LIST [STATO]
 
 	internal: BOOLEAN
 
-	--AGGIUNTE FORK
+	--AGGIUNTE FORK e MERGE
 
 	fork: BOOLEAN
 
-	-- TODO: eliminare multi_target e ridefinire `destinazione' come LINKED_LIST [STATO]
---	multi_target: detachable LINKED_LIST [STATO]
+	merge:BOOLEAN
 
 	--FINE AGGIUNTE
 
@@ -73,12 +73,12 @@ feature -- setter
 	set_target (uno_stato: STATO)
 		do
 			destinazione.force(uno_stato)
--- OLD			destinazione := uno_stato
 		end
 
 	set_sorgente (uno_stato: STATO)
 		do
-			sorgente := uno_stato
+			sorgente.force(uno_stato)
+-- PRIMA DI MERGE sorgente := uno_stato
 		end
 
 	set_internal
@@ -93,15 +93,25 @@ feature -- setter
 			fork := True
 		end
 
+	set_merge
+		do
+			merge:=True
+		end
+
 	add_target(uno_stato: STATO)
 		do
 			if not destinazione.has(uno_stato) then
 				destinazione.force(uno_stato)
 			end
--- OLD				if uno_stato /= destinazione then
---				if attached multi_target as mt then mt.force(uno_stato) end
---			end
 		end
+
+	add_source(uno_stato: STATO)
+		do
+			if not sorgente.has (uno_stato) then
+				sorgente.force (uno_stato)
+			end
+		end
+
 
 	--FINE AGGIUNTE	
 
@@ -181,4 +191,5 @@ feature -- check
 			Result := False
 		end
 	end
+
 end

@@ -4,10 +4,11 @@
 		<root class="ESECUTORE" feature="make"/>
 		<option debug="true" warning="true" is_obsolete_routine_type="true">
 			<debug name="sc_assegna_initial" enabled="false"/>
-			<debug name="sc_assegna_transizioni" enabled="false"/>
+			<debug name="sc_assegna_transizioni" enabled="true"/>
 			<debug name="sc_first_sub_state" enabled="false"/>
-			<debug name="sc_inizializza_variabili" enabled="true"/>
-			<debug name="sc_modifica_variabili" enabled="true"/>
+			<debug name="sc_inizializza_variabili" enabled="false"/>
+			<debug name="sc_modifica_variabili" enabled="false"/>
+			<debug name="sc_transizione_illegale" enabled="true"/>
 			<debug name="sc_transizione_illegittima" enabled="false"/>
 			<debug name="sc_transizioni_eseguibili" enabled="false"/>
 			<debug name="xml_print" enabled="false"/>

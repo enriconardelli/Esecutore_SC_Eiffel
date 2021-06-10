@@ -50,44 +50,6 @@ feature -- Creazione sia per i test che per esecuzione interattiva
 
 feature -- evoluzione della statechart
 
--- VERSIONE DA MASTER
--- TODO: ELIMINARE UNA VOLTA COMPLETARI I TEST DI INTEGRAZIONE CON COSTRUTTO_FORK
---	evolvi_SC (eventi: ARRAY [LINKED_SET [STRING]])
---		local
---			istante: INTEGER
---			prossima_conf_base: ARRAY [STATO]
---			transizioni_eseguibili: ARRAY [TRANSIZIONE]
---		do
---			print ("%Nentrato in evolvi_SC:  %N %N")
---			from
---				istante := 1
---			until
---				stato_final (state_chart.conf_base) or istante > eventi.count
---			loop
---				if attached eventi [istante] as eventi_correnti then
---					stampa_conf_corrente (istante)
---					create prossima_conf_base.make_empty
---					transizioni_eseguibili := trova_transizioni_eseguibili (eventi_correnti, state_chart.variabili)
---					across transizioni_eseguibili as te
---					loop
---						salva_storie (antenato_massimo_uscita (te.item))
---						esegui_azioni (te.item)
---						trova_default (te.item.destinazione, prossima_conf_base)
---						aggiungi_paralleli (te.item.destinazione, prossima_conf_base)
---					end
---					aggiungi_stati_attivi(prossima_conf_base)
---					prossima_conf_base := riordina_stati(prossima_conf_base)
---					if not prossima_conf_base.is_empty then
---						state_chart.conf_base.copy (prossima_conf_base)
---					end
---				end
---				istante := istante + 1
---			end
---			print ("%NHo terminato l'elaborazione degli eventi%N")
---			stampa_conf_corrente (istante)
---		end
-
--- VERSIONE DA COSTRUTTO FORK
 	evolvi_SC (eventi: ARRAY [LINKED_SET [STRING]])
 		local
 			istante: INTEGER
@@ -121,25 +83,18 @@ feature -- evoluzione della statechart
 							salva_storie (antenato_massimo_uscita (tc)) -- dal MASTER
 							esegui_azioni (tc) -- , cbc.item)
 							trova_default (tc.destinazione.first, prossima_conf_base)
--- OLD						trova_default (tc.destinazione, prossima_conf_base)
-								-- MODIFICA PER CONSIDERARE I FORK
 							if tc.fork then
 								across tc.destinazione as mt_corrente
--- OLD						if tc.fork and attached tc.multi_target as tcmt then
--- OLD							across
--- OLD								tcmt as mt_corrente
 								loop
 									trova_default (mt_corrente.item, prossima_conf_base)
 								end
 							end
 							aggiungi_paralleli (tc.destinazione.first, prossima_conf_base)
--- OLD							aggiungi_paralleli (tc.destinazione, prossima_conf_base)
-								-- FINE MODIFICA
 						else
 
 -- PROVA CON iterazione sulle transizioni eseguibili
-							prossima_conf_base.force (sc_cb.item.sorgente, prossima_conf_base.count + 1)
---							prossima_conf_base.force (sc_cb.item, prossima_conf_base.count + 1)
+							prossima_conf_base.force (sc_cb.item.sorgente.first, prossima_conf_base.count + 1)
+-- PRIMA DI MERGE			prossima_conf_base.force (sc_cb.item.sorgente, prossima_conf_base.count + 1)
 
 						end
 					end
@@ -261,7 +216,6 @@ feature -- evoluzione della statechart
 
 					if attached sorgenti[i].transizione_abilitata (eventi, variabili) as ta then
 						debug ("SC_transizioni_eseguibili") print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.first.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id) end
--- OLD						debug ("SC_transizioni_eseguibili") print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id) end
 						if attached uscita_precedente implies antenato_massimo_uscita(ta).incomparabile_con(uscita_precedente) then
 							-- questa transizione mi fa uscire da uno stato incomparabile con quello della precedente transizione
 							debug ("SC_transizioni_eseguibili") print(" viene mantenuto per la transizione.%N") end
@@ -282,7 +236,6 @@ feature -- evoluzione della statechart
 					debug ("SC_transizioni_eseguibili")
 						if attached sorgenti[i].transizione_abilitata (eventi, variabili) as ta then
 							print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.first.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id)
--- OLD							print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id)
 							print(" e' antenato di sorgente successiva " + (i+1).out + ": " + sorgenti[i+1].id + " e viene scartato.%N")
 						end
 					end
@@ -308,15 +261,20 @@ feature -- evoluzione della statechart
 	antenato_massimo_uscita (transizione: TRANSIZIONE): STATO
 	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
 	-- restituisce l'antenato più grande dal quale si esce con 'transizione'
+	-- TODO: controllare perché qui e in `esegui_azioni' si chiede di fare gli stessi controlli
+	-- TODO: su transizioni internal che non siano multisorgente e che le sorgenti multiple siano compatibili
 		local
 			contesto, stato_temp: detachable STATO
 		do
-			Result := transizione.sorgente
+			Result := transizione.sorgente.first
+-- PRIMA DI MERGE Result := transizione.sorgente
 			if transizione.internal then
-				if transizione.sorgente.antenato_di (transizione.destinazione.first) then
--- OLD				if transizione.sorgente.antenato_di (transizione.destinazione) then
+-- TODO: controllare quando si leggono le transizioni marcate "internal" che non siano multisorgente
+				if transizione.sorgente.first.antenato_di (transizione.destinazione.first) then
+-- PRIMA DI MERGE if transizione.sorgente.antenato_di (transizione.destinazione.first) then
 					across
-						transizione.sorgente.figli as figli
+						transizione.sorgente.first.figli as figli
+-- PRIMA DI MERGE 		transizione.sorgente.figli as figli
 					loop
 						if figli.item.attivo then
 							Result := figli.item
@@ -325,7 +283,6 @@ feature -- evoluzione della statechart
 				else
 					across
 						transizione.destinazione.first.figli as figli
--- OLD						transizione.destinazione.figli as figli
 					loop
 						if figli.item.attivo then
 							Result := figli.item
@@ -333,10 +290,13 @@ feature -- evoluzione della statechart
 					end
 				end
 			else
-				contesto := trova_contesto (transizione.sorgente, transizione.destinazione.first)
--- OLD				contesto := trova_contesto (transizione.sorgente, transizione.destinazione)
+-- TODO: controllare quando si leggono le transizioni multi-sorgente che tutte le sorgenti siano tra loro compatibili
+-- TODO: come accade per le transizioni multi-destinazione in cui si controlla che tutte le destinazioni siano tra loro compatibili
+				contesto := trova_contesto (transizione.sorgente.first, transizione.destinazione.first)
+-- PRIMA DI MERGE contesto := trova_contesto (transizione.sorgente, transizione.destinazione.first)
 				from
-					stato_temp := transizione.sorgente
+					stato_temp := transizione.sorgente.first
+-- PRIMA DI MERGE	stato_temp := transizione.sorgente
 				until
 				 	stato_temp = contesto
 				loop
@@ -481,25 +441,30 @@ feature -- evoluzione della statechart
 feature -- esecuzione azioni
 
 	esegui_azioni (transizione: TRANSIZIONE)
+	-- TODO: controllare perché qui e in `antenato_massimo_uscita' si chiede di fare gli stessi controlli
+	-- TODO: su transizioni internal che non siano multisorgente e che le sorgenti multiple siano compatibili
 		local
 			contesto: detachable STATO
 		do
 			if transizione.internal then
-				if transizione.sorgente.antenato_di (transizione.destinazione.first) then
+-- TODO: controllare quando si leggono le transizioni marcate "internal" che non siano multisorgente
+				if transizione.sorgente.first.antenato_di (transizione.destinazione.first) then
+-- PRIMA DI MERGE if transizione.sorgente.antenato_di (transizione.destinazione.first) then
 --OLD				if transizione.sorgente.antenato_di (transizione.destinazione) then
-					contesto := transizione.sorgente
+					contesto := transizione.sorgente.first
+-- PRIMA DI MERGE	contesto := transizione.sorgente
 				else
 					contesto := transizione.destinazione.first
---OLD					contesto := transizione.destinazione
 				end
 			else
-				contesto := trova_contesto (transizione.sorgente, transizione.destinazione.first)
--- OLD				contesto := trova_contesto (transizione.sorgente, transizione.destinazione)
+-- TODO: controllare quando si leggono le transizioni multi-sorgente che tutte le sorgenti siano tra loro compatibili
+-- TODO: come accade per le transizioni multi-destinazione in cui si controlla che tutte le destinazioni siano tra loro compatibili
+				contesto := trova_contesto (transizione.sorgente.first, transizione.destinazione.first)
+-- PRIMA DI MERGE contesto := trova_contesto (transizione.sorgente, transizione.destinazione.first)
 			end
 			esegui_azioni_onexit (antenato_massimo_uscita (transizione))
 			esegui_azioni_transizione (transizione.azioni)
 			esegui_azioni_onentry (contesto, transizione.destinazione.first)
--- OLD			esegui_azioni_onentry (contesto, transizione.destinazione)
 		end
 
 	esegui_onexit (p_stato_corrente: STATO)
@@ -590,10 +555,10 @@ feature -- utilita
 	end
 
 	stati_eseguibili (eventi: LINKED_SET[STRING]; variabili: DATAMODEL): ARRAY[STATO]
-	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
-	-- A partire dalla configurazione di base ritorna gli stati che hanno transizioni abilitate in base a `eventi' e `variabili'
-	-- N.B. gli stati tornati possono non essere stati atomici, ma stati gerarchici le cui transizioni sono eseguibili dagli stati atomici
-	--		loro discendenti, che sono rilevate da `transizione_abilitata' in assenza di transizioni direttamente abilitate nello stato atomico
+--	Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
+--  A partire dalla configurazione di base ritorna gli stati che hanno transizioni abilitate in base a `eventi' e `variabili'
+--	N.B. gli stati tornati possono non essere stati atomici, ma stati gerarchici le cui transizioni sono eseguibili dagli stati atomici
+--		loro discendenti, che sono rilevate da `transizione_abilitata' in assenza di transizioni direttamente abilitate nello stato atomico
 		do
 			create Result.make_empty
 			across
@@ -601,9 +566,22 @@ feature -- utilita
 			loop
 				debug ("SC_transizioni_eseguibili") print ("  stato corrente di conf_base: " + sc_cb.item.id + "%N") end
 				if attached sc_cb.item.transizione_abilitata (eventi, variabili) as ta then
-					debug ("SC_transizioni_eseguibili") print ("    con transizione abilitata da " + ta.sorgente.id + " a " + ta.destinazione.first.id + "%N") end
--- OLD					debug ("SC_transizioni_eseguibili") print ("    con transizione abilitata da " + ta.sorgente.id + " a " + ta.destinazione.id + "%N") end
-					Result.force (ta.sorgente, Result.count + 1)
+-- PRIMA DI MERGE	debug ("SC_transizioni_eseguibili") print ("    con transizione abilitata da " + ta.sorgente.id + " a " + ta.destinazione.first.id + "%N") end
+					debug ("SC_transizioni_eseguibili") print ("    con transizione abilitata da ") end
+					across ta.sorgente as tas
+--					from
+-- 						i:=ta.sorgente.lower
+--					until
+--						i = ta.sorgente.count + 1
+					loop
+--						debug("SC_transizioni_eseguibili") print(ta.sorgente[i].id) end
+						debug("SC_transizioni_eseguibili") print(tas.item.id) end
+--						Result.force (ta.sorgente[i], Result.count + 1)
+						Result.force (tas.item, Result.count + 1)
+--						i := i+1
+					end
+					debug("SC_transizioni_eseguibili") print(" a " + ta.destinazione.first.id + "%N") end
+-- PRIMA DI MERGE	Result.force (ta.sorgente, Result.count + 1)
 				end
 			end
 			Result := riordina_stati (Result)
