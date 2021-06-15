@@ -58,13 +58,12 @@ feature --test
 
 	t_costrutto_merge_3_1
 	 --Maria Ludovica Sarandrea, 23/05/2021
-		local
-			esecutore: ESECUTORE
+	 	local
+	 		conf_finale : LINKED_SET[STRING]
 		do
-			nomi_files_prova [1] := test_data_dir + "costrutto_merge_3.xml"
-			nomi_files_prova [2] := test_data_dir + "costrutto_merge_eventi_non_merge.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato nello stato corretto S", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"S"))
+			create conf_finale.make
+			conf_finale.force("S")
+			evoluzione_state_chart("costrutto_merge_3.xml", "costrutto_merge_eventi_non_merge.txt", conf_finale)
 		end
 
 	t_costrutto_merge_4
