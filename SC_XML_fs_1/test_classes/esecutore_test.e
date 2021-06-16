@@ -44,22 +44,20 @@ feature -- Test routines
 			end
 		end
 
-	conf_has_state_1( conf: ARRAY [STATO]; stato: LINKED_SET [STRING]):BOOLEAN
+	conf_has_states( conf: ARRAY [STATO]; stato: LINKED_SET [STRING]):BOOLEAN
 	-- Controlla se `conf' e `stato' sono uguali
 		do
-			Result := TRUE
+			Result := True
 			if conf.count /= stato.count then
 				Result := FALSE
 			end
-			across conf as c
+			across stato as s
 			loop
-				across stato as s
-				loop
-					if not c.item.id.is_equal(s.item) then
-						Result := FALSE
-					end
-				end
+		    	if not conf_has_state (conf , s.item) then
+		    		Result := False
+		    	end
 			end
+
 		end
 
 --	evoluzione_state_chart(stati: STRING; eventi: STRING; stati_corretti: LINKED_SET[STRING]): BOOLEAN
@@ -84,6 +82,6 @@ feature -- Test routines
 				nomi_files_prova [2] := test_data_dir + eventi
 				create esecutore.make (nomi_files_prova)
 
-				assert ("ERRORE il sistema non ha terminato nello stato corretto ", conf_has_state_1(esecutore.state_chart.conf_base, stati_corretti))
+				assert ("ERRORE il sistema non ha terminato nello stato corretto ", conf_has_states(esecutore.state_chart.conf_base, stati_corretti))
 			end
 end
