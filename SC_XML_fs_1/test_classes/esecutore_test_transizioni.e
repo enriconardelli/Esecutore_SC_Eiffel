@@ -12,104 +12,122 @@ class
 
 inherit
 	ESECUTORE_TEST
-		redefine
-			on_prepare
-		end
 
 feature {NONE} -- supporto
 
 	test_data_dir_local: STRING = "transizioni"
 
-	on_prepare
+	evoluzione_state_chart_local(eventi: STRING; stati_corretti: LINKED_SET[STRING])
 		do
-			precursor
 			test_data_dir_local.append_character(a_path.directory_separator)
-			nomi_files_prova [1] := test_data_dir + test_data_dir_local + "transizioni.xml"
-			nomi_files_prova [2] := test_data_dir + test_data_dir_local
+			evoluzione_state_chart(test_data_dir_local + "transizioni.xml",test_data_dir_local + eventi,stati_corretti)
+
 		end
 
 feature -- Test routines
 
 	t_transizioni_legali_1
 		local
-			esecutore: ESECUTORE
+	 		conf_finale : LINKED_SET[STRING]
 		do
-			nomi_files_prova [2] := nomi_files_prova [2] + "transizioni_eventi_1.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non termina negli stati corretti ( A1a A2b B1 )", esecutore.state_chart.conf_base.count = 3 and conf_has_state(esecutore.state_chart.conf_base,"A1a") and conf_has_state(esecutore.state_chart.conf_base,"A2b") and conf_has_state(esecutore.state_chart.conf_base,"B1") )
+			create conf_finale.make
+			conf_finale.force("A1a")
+			conf_finale.force("A2b")
+			conf_finale.force("B1")
+			evoluzione_state_chart_local("transizioni_eventi_1.txt", conf_finale)
 		end
+
 
 	t_transizioni_legali_2
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [2] := nomi_files_prova [2] + "transizioni_eventi_2.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non termina negli stati corretti ( A1a A2b B1 )", esecutore.state_chart.conf_base.count = 3 and conf_has_state(esecutore.state_chart.conf_base,"A1a") and conf_has_state(esecutore.state_chart.conf_base,"A2b") and conf_has_state(esecutore.state_chart.conf_base,"B1") )
-		end
+	local
+ 		conf_finale : LINKED_SET[STRING]
+	do
+		create conf_finale.make
+		conf_finale.force("A1a")
+		conf_finale.force("A2b")
+		conf_finale.force("B1")
+		evoluzione_state_chart_local("transizioni_eventi_2.txt", conf_finale)
+	end
 
 	t_transizioni_legali_3
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [2] := nomi_files_prova [2] + "transizioni_eventi_3.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non termina negli stati corretti ( A1a A2b B2 )", esecutore.state_chart.conf_base.count = 3 and conf_has_state(esecutore.state_chart.conf_base,"A1a") and conf_has_state(esecutore.state_chart.conf_base,"A2b") and conf_has_state(esecutore.state_chart.conf_base,"B2") )
-		end
+	local
+ 		conf_finale : LINKED_SET[STRING]
+	do
+		create conf_finale.make
+		conf_finale.force("A1a")
+		conf_finale.force("A2b")
+		conf_finale.force("B2")
+		evoluzione_state_chart_local("transizioni_eventi_3.txt", conf_finale)
+	end
 
 	t_transizioni_legali_4
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [2] := nomi_files_prova [2] + "transizioni_eventi_4.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non termina negli stati corretti ( A1a A2b B2 )", esecutore.state_chart.conf_base.count = 3 and conf_has_state(esecutore.state_chart.conf_base,"A1a") and conf_has_state(esecutore.state_chart.conf_base,"A2b") and conf_has_state(esecutore.state_chart.conf_base,"B2") )
-		end
+	local
+ 		conf_finale : LINKED_SET[STRING]
+	do
+		create conf_finale.make
+		conf_finale.force("A1a")
+		conf_finale.force("A2b")
+		conf_finale.force("B2")
+		evoluzione_state_chart_local("transizioni_eventi_4.txt", conf_finale)
+	end
 
 	t_transizioni_legali_5
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [2] := nomi_files_prova [2] + "transizioni_eventi_5.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non termina negli stati corretti ( A1a A2b B2 )", esecutore.state_chart.conf_base.count = 3 and conf_has_state(esecutore.state_chart.conf_base,"A1a") and conf_has_state(esecutore.state_chart.conf_base,"A2b") and conf_has_state(esecutore.state_chart.conf_base,"B2") )
-		end
+	local
+ 		conf_finale : LINKED_SET[STRING]
+	do
+		create conf_finale.make
+		conf_finale.force("A1a")
+		conf_finale.force("A2b")
+		conf_finale.force("B2")
+		evoluzione_state_chart_local("transizioni_eventi_5.txt", conf_finale)
+	end
 
 	t_transizioni_legali_6
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [2] := nomi_files_prova [2] + "transizioni_eventi_6.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non termina negli stati corretti ( A1b A2b B2 )", esecutore.state_chart.conf_base.count = 3 and conf_has_state(esecutore.state_chart.conf_base,"A1b") and conf_has_state(esecutore.state_chart.conf_base,"A2b") and conf_has_state(esecutore.state_chart.conf_base,"B2") )
-		end
+	local
+ 		conf_finale : LINKED_SET[STRING]
+	do
+		create conf_finale.make
+		conf_finale.force("A1b")
+		conf_finale.force("A2b")
+		conf_finale.force("B2")
+		evoluzione_state_chart_local("transizioni_eventi_6.txt", conf_finale)
+	end
 
 	t_transizioni_legali_7
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [2] := nomi_files_prova [2] + "transizioni_eventi_7.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non termina negli stati corretti ( A1a X Y B2 )", esecutore.state_chart.conf_base.count = 4 and conf_has_state(esecutore.state_chart.conf_base,"A1a") and conf_has_state(esecutore.state_chart.conf_base,"X") and conf_has_state(esecutore.state_chart.conf_base,"Y") and conf_has_state(esecutore.state_chart.conf_base,"B2") )
-		end
+	local
+ 		conf_finale : LINKED_SET[STRING]
+	do
+		create conf_finale.make
+		conf_finale.force("A1a")
+		conf_finale.force("X")
+		conf_finale.force("Y")
+		conf_finale.force("B2")
+		evoluzione_state_chart_local("transizioni_eventi_7.txt", conf_finale)
+	end
 
 	t_transizioni_legali_8
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [2] := nomi_files_prova [2] + "transizioni_eventi_8.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non termina negli stati corretti ( A1a X Y B2 )", esecutore.state_chart.conf_base.count = 4 and conf_has_state(esecutore.state_chart.conf_base,"A1a") and conf_has_state(esecutore.state_chart.conf_base,"X") and conf_has_state(esecutore.state_chart.conf_base,"Y") and conf_has_state(esecutore.state_chart.conf_base,"B2") )
-		end
+	local
+ 		conf_finale : LINKED_SET[STRING]
+	do
+		create conf_finale.make
+		conf_finale.force("A1a")
+		conf_finale.force("X")
+		conf_finale.force ("Y")
+		conf_finale.force("B2")
+		evoluzione_state_chart_local("transizioni_eventi_8.txt", conf_finale)
+	end
 
 	t_transizioni_legali_9
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [2] := nomi_files_prova [2] + "transizioni_eventi_9.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non termina negli stati corretti ( A1a X Z B2 )", esecutore.state_chart.conf_base.count = 4 and conf_has_state(esecutore.state_chart.conf_base,"A1a") and conf_has_state(esecutore.state_chart.conf_base,"X") and conf_has_state(esecutore.state_chart.conf_base,"Z") and conf_has_state(esecutore.state_chart.conf_base,"B2") )
-		end
+	local
+ 		conf_finale : LINKED_SET[STRING]
+	do
+		create conf_finale.make
+		conf_finale.force("A1a")
+		conf_finale.force("X")
+		conf_finale.force("Z")
+		conf_finale.force("B2")
+		evoluzione_state_chart_local("transizioni_eventi_9.txt", conf_finale)
+	end
 
 end
 
