@@ -73,8 +73,8 @@ feature -- Test routines
 --		end
 
 		evoluzione_state_chart(stati: STRING; eventi: STRING; stati_corretti: LINKED_SET[STRING])
-		--Prende in input il file .xml della state-chart e il file .txt degli eventi e restituisce l'elenco degli stati
-		--della configurazione finale.
+		--Prende in input il file .xml della state-chart e il file .txt degli eventi e restituisce errore se
+		--il sistema non termina negli stati corretti.
 			local
 				esecutore: ESECUTORE
 			do
