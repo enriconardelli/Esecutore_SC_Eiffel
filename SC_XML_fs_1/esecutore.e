@@ -80,7 +80,10 @@ feature -- evoluzione della statechart
 --						transizione_corrente := sc_cb.item.transizione_abilitata (eventi_correnti, state_chart.variabili)
 
 						if attached transizione_corrente as tc and then transizioni_eseguibili.has (tc) then
+							-- TODO inserire qui chiamata a pulisci_storie
+							-- TODO stampare la storia di antenato_massimo_uscita (tc)
 							salva_storie (antenato_massimo_uscita (tc)) -- dal MASTER
+							-- TODO stampare la storia di antenato_massimo_uscita (tc)
 							esegui_azioni (tc) -- , cbc.item)
 							trova_default (tc.destinazione.first, prossima_conf_base)
 							if tc.fork then
@@ -116,12 +119,13 @@ feature -- evoluzione della statechart
 	-- Arianna & Riccardo 05/07/2020
 	-- aggiorna le storie nei discendenti dello 'stato_uscente'
 		do
+			-- TODO eliminare qui la chiama a pulisci_storie
 			pulisci_storie(stato_uscente)
 			across
 				state_chart.conf_base as cbc
 			loop
 				if stato_uscente.antenato_di (cbc.item)	then
-					salva_percorso(cbc.item, stato_uscente)
+					salva_storia(cbc.item, stato_uscente)
 				end
 			end
 		end
@@ -152,7 +156,7 @@ feature -- evoluzione della statechart
 			end
 		end
 
-	salva_percorso(stato_conf_base, stato_uscente: STATO)
+	salva_storia(stato_conf_base, stato_uscente: STATO)
 	-- Arianna & Riccardo 05/07/2020
 	-- memorizza i percorsi di uscita partendo da 'stato_conf_base' e arrivando fino a 'stato_uscente'
 		local
@@ -407,7 +411,10 @@ feature -- evoluzione della statechart
 			if attached{STORIA_DEEP} stato.storia as st then
 				across
 					st.stati_memorizzati as sm
+				from
+					print ("  stampo la storia di stato : " + stato.id + " che ha una storia DEEP che contiene %N")
 				loop
+					print ("    lo stato : " + sm.item.id + " %N")
 					sm.item.set_attivo
 					esegui_onentry(sm.item)
 					if sm.item.stato_atomico then
