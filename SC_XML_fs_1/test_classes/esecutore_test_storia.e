@@ -80,7 +80,7 @@ feature -- Test routines
 				evoluzione_state_chart("storia_tra_xor.xml", "storia_tra_xor_eventi_4_2.txt", conf_finale)
 			end
 
---	t_storia_tra_xor_5
+	t_storia_tra_xor_5
 --	TODO: verificare errore!
 -- OLD:
 --	local
@@ -92,13 +92,13 @@ feature -- Test routines
 --		assert("ERRORE: il sistema non termina in (R1)", not conf_has_state(esecutore.state_chart.conf_base,"R1"))
 --	end
 -- NEW:
---		local
---		 		conf_finale : LINKED_SET[STRING]
---			do
---				create conf_finale.make
---				conf_finale.force("R1")
---				evoluzione_state_chart("storia_tra_xor.xml", "storia_tra_xor_eventi_5.txt", conf_finale)
---			end
+		local
+		 		conf_finale : LINKED_SET[STRING]
+			do
+				create conf_finale.make
+				conf_finale.force("R1")
+				evoluzione_state_chart("storia_tra_xor.xml", "storia_tra_xor_eventi_5.txt", conf_finale)
+			end
 	t_storia_complesso_1
 		local
 		 		conf_finale : LINKED_SET[STRING]
