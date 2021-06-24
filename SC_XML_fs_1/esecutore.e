@@ -181,6 +181,15 @@ feature -- evoluzione della statechart
 					end
 				end
 			end
+			if attached percorso_uscita as pu then
+				across
+					pu as pu1
+				loop
+					print(" Storia: ")
+					print(pu1.item.id)
+				end
+			end
+
 		end
 
 	trova_transizioni_eseguibili(eventi: LINKED_SET[STRING]; variabili: DATAMODEL): ARRAY[TRANSIZIONE]
