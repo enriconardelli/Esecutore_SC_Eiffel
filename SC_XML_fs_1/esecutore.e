@@ -81,6 +81,7 @@ feature -- evoluzione della statechart
 
 						if attached transizione_corrente as tc and then transizioni_eseguibili.has (tc) then
 							salva_storie (antenato_massimo_uscita (tc)) -- dal MASTER
+							stampa_storia (antenato_massimo_uscita (tc))
 							esegui_azioni (tc) -- , cbc.item)
 							trova_default (tc.destinazione.first, prossima_conf_base)
 							if tc.fork then
@@ -182,14 +183,14 @@ feature -- evoluzione della statechart
 						storia.memorizza_stato (percorso_uscita.first)
 					end
 			end
-			if attached percorso_uscita as pu then
-				across
-					pu as pu1
-				loop
-					print(" Storia: ")
-					print(pu1.item.id)
-				end
-			end
+--			if attached percorso_uscita as pu then
+--				across
+--					pu as pu1
+--				loop
+--					print(" Storia: ")
+--					print(pu1.item.id)
+--				end
+--			end
 
 		end
 --	salva_percorso(stato_conf_base, stato_uscente: STATO)
@@ -676,7 +677,7 @@ feature -- utilita
 					print(sm.item.id)
 				end
 			elseif attached{STORIA_SHALLOW} stato_storia.storia as ss and then attached ss.stato_memorizzato as ssm then
-				print("Storia: ")
+				print(" Storia: ")
 				print(ssm.id)
 			end
 		end
