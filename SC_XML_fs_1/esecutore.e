@@ -125,61 +125,29 @@ feature -- evoluzione della statechart
 					salva_percorso(cbc.item, stato_uscente)
 				end
 			end
-
 		end
 
---	pulisci_storie(stato_uscita: STATO)
---	-- Arianna & Riccardo 26/07/2020
---	-- elimina gli stati salvati in tutte le storie che si incontrano nel percorso dagli stati di state_chart.conf_base allo 'stato_uscita'
---		local
---			stato_temp: STATO
---		do
---			across
---				state_chart.conf_base as cbc
---			loop
---				if stato_uscita.antenato_di (cbc.item)	then
---					from
---						stato_temp := cbc.item
---					until
---						stato_temp = stato_uscita
---					loop
---						if attached stato_temp.storia as storia then
---							storia.svuota_memoria
---						end
---						if attached stato_temp.genitore as gen then
---							stato_temp := gen
---						end
---					end
---				end
---			end
---		end
-
 	pulisci_storie(stato_uscita: STATO)
-	-- Copia per trovare errore
-	--
+	-- Arianna & Riccardo 26/07/2020
 	-- elimina gli stati salvati in tutte le storie che si incontrano nel percorso dagli stati di state_chart.conf_base allo 'stato_uscita'
+	-- Edit Forte, Sarandrea 28/06/2021
+	-- correzione errore
 		local
 			stato_temp: STATO
 		do
-			print(" Sono in piulisci_storia %N")
 			across
 				state_chart.conf_base as cbc
 			loop
-				print(" Sono nel primo loop %N ")
 				if stato_uscita.antenato_di (cbc.item)	then
 					from
 						stato_temp := cbc.item
 					until
 						stato_temp = stato_uscita
 					loop
-						print(" Sono nel secondo loop %N ")
-						print(stato_temp.id)
-						if attached stato_temp.storia as storia then
-							print(" Sto svuotando la storia di: ")
-							print(stato_temp.id)
-							storia.svuota_memoria
-						end
 						if attached stato_temp.genitore as gen then
+							if attached gen.storia as storia then
+							storia.svuota_memoria
+							end
 							stato_temp := gen
 						end
 					end
@@ -206,15 +174,15 @@ feature -- evoluzione della statechart
 					if attached stato_temp.genitore as gen then
 						stato_temp := gen
 					end
-				end
 
 					if attached{STORIA_DEEP} stato_temp.storia as storia then
-					-- se la storia è "deep" salvo tutto l'array del percorso
+						-- se la storia è "deep" salvo tutto l'array del percorso
 						storia.aggiungi_stati (percorso_uscita)
 					elseif attached{STORIA_SHALLOW} stato_temp.storia as storia then
 						-- se la storia è "shallow" salvo solo lo stato uscente allo stesso livello della storia
 						storia.memorizza_stato (percorso_uscita.first)
 					end
+				end
 			end
 --			if attached percorso_uscita as pu then
 --				across
@@ -226,45 +194,6 @@ feature -- evoluzione della statechart
 --			end
 
 		end
---	salva_percorso(stato_conf_base, stato_uscente: STATO)
---	-- Arianna & Riccardo 05/07/2020
---	-- memorizza i percorsi di uscita partendo da 'stato_conf_base' e arrivando fino a 'stato_uscente'
---		local
---			stato_temp: STATO
---			percorso_uscita: LINKED_LIST[STATO]
---		do
---			if stato_uscente /= stato_conf_base then
---				-- se esco da uno stato atomico non ho storia
---				create percorso_uscita.make
---				from
---					stato_temp := stato_conf_base
---				until
---					stato_temp = stato_uscente
---				loop
---					percorso_uscita.put_front (stato_temp)
---					if attached stato_temp.genitore as gen then
---						stato_temp := gen
---					end
-
---					if attached{STORIA_DEEP} stato_temp.storia as storia then
---						-- se la storia è "deep" salvo tutto l'array del percorso
---						storia.aggiungi_stati (percorso_uscita)
---					elseif attached{STORIA_SHALLOW} stato_temp.storia as storia then
---						-- se la storia è "shallow" salvo solo lo stato uscente allo stesso livello della storia
---						storia.memorizza_stato (percorso_uscita.first)
---					end
---				end
---			end
---			if attached percorso_uscita as pu then
---				across
---					pu as pu1
---				loop
---					print(" Storia: ")
---					print(pu1.item.id)
---				end
---			end
-
---		end
 
 	trova_transizioni_eseguibili(eventi: LINKED_SET[STRING]; variabili: DATAMODEL): ARRAY[TRANSIZIONE]
 		-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
@@ -702,15 +631,16 @@ feature -- utilita
 
 	stampa_storia (stato_storia: STATO)
 		do
+			print(" Storia di ")
+			print(stato_storia.id)
+			print(" : ")
 			if attached{STORIA_DEEP} stato_storia.storia as ss then
 				across
 					ss.stati_memorizzati as sm
 				loop
-					print(" Storia: ")
 					print(sm.item.id)
 				end
 			elseif attached{STORIA_SHALLOW} stato_storia.storia as ss and then attached ss.stato_memorizzato as ssm then
-				print(" Storia: ")
 				print(ssm.id)
 			end
 		end

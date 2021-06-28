@@ -449,7 +449,7 @@ feature -- Test routines
 			evoluzione_state_chart("storia_con_internal__var_deep.xml", "storia_con_internal_eventi_08.txt", conf_finale)
 		end
 
---	t_storia_con_internal__var_deep_09
+	t_storia_con_internal__var_deep_09
 -- TODO: verificare errore!
 -- OLD:
 --		local
@@ -461,13 +461,13 @@ feature -- Test routines
 --			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 --		end
 -- NEW:
---		local
---	 		conf_finale : LINKED_SET[STRING]
---		do
---			create conf_finale.make
---			conf_finale.force("S2")
---			evoluzione_state_chart("storia_con_internal__var_deep.xml", "storia_con_internal_eventi_09.txt", conf_finale)
---		end
+		local
+	 		conf_finale : LINKED_SET[STRING]
+		do
+			create conf_finale.make
+			conf_finale.force("S2")
+			evoluzione_state_chart("storia_con_internal__var_deep.xml", "storia_con_internal_eventi_09.txt", conf_finale)
+		end
 
 	t_storia_con_internal__var_deep_10
 		local
@@ -478,7 +478,7 @@ feature -- Test routines
 			evoluzione_state_chart("storia_con_internal__var_deep.xml", "storia_con_internal_eventi_10.txt", conf_finale)
 		end
 
---	t_storia_con_internal__var_deep_11
+	t_storia_con_internal__var_deep_11
 -- TODO: verificare errore!
 -- OLD:
 --		local
@@ -490,13 +490,13 @@ feature -- Test routines
 --			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
 --		end
 -- NEW:
---		local
---	 		conf_finale : LINKED_SET[STRING]
---		do
---			create conf_finale.make
---			conf_finale.force("S2")
---			evoluzione_state_chart("storia_con_internal__var_deep.xml", "storia_con_internal_eventi_11.txt", conf_finale)
---		end
+		local
+	 		conf_finale : LINKED_SET[STRING]
+		do
+			create conf_finale.make
+			conf_finale.force("S2")
+			evoluzione_state_chart("storia_con_internal__var_deep.xml", "storia_con_internal_eventi_11.txt", conf_finale)
+		end
 
 	t_storia_con_internal__var_deep_12
 		local
@@ -925,7 +925,7 @@ feature -- Test routines
 			evoluzione_state_chart("storie_inscatolate_complesso.xml", "storie_inscatolate_complesso_eventi_17_a.txt", conf_finale)
 		end
 
---	t_storie_inscatolate_alternativo_03
+	t_storie_inscatolate_alternativo_03
 -- TODO: verificare errore!
 -- OLD:
 --		local
@@ -937,15 +937,15 @@ feature -- Test routines
 --			assert("ERRORE: il sistema non termina in (Q)", conf_has_state(esecutore.state_chart.conf_base,"Q"))
 --		end
 -- NEW:
---		local
---	 		conf_finale : LINKED_SET[STRING]
---		do
---			create conf_finale.make
---			conf_finale.force("Q")
---			evoluzione_state_chart("storie_inscatolate_alternativo.xml", "storie_inscatolate_alternativo_eventi_03.txt", conf_finale)
---		end
+		local
+	 		conf_finale : LINKED_SET[STRING]
+		do
+			create conf_finale.make
+			conf_finale.force("Q")
+			evoluzione_state_chart("storie_inscatolate_alternativo.xml", "storie_inscatolate_alternativo_eventi_03.txt", conf_finale)
+		end
 
---	t_storie_inscatolate_alternativo_03_a
+	t_storie_inscatolate_alternativo_03_a
 -- TODO: verificare errore!
 -- OLD:
 --		local
@@ -957,13 +957,13 @@ feature -- Test routines
 --			assert("ERRORE: il sistema non termina in (F2)", conf_has_state(esecutore.state_chart.conf_base,"F2"))
 --		end
 -- NEW:
---		local
---	 		conf_finale : LINKED_SET[STRING]
---		do
---			create conf_finale.make
---			conf_finale.force("F2")
---			evoluzione_state_chart("storie_inscatolate_alternativo.xml", "storie_inscatolate_alternativo_eventi_03_a.txt", conf_finale)
---		end
+		local
+	 		conf_finale : LINKED_SET[STRING]
+		do
+			create conf_finale.make
+			conf_finale.force("F2")
+			evoluzione_state_chart("storie_inscatolate_alternativo.xml", "storie_inscatolate_alternativo_eventi_03_a.txt", conf_finale)
+		end
 
 	t_storie_inscatolate_alternativo_03_b
 		local
@@ -974,7 +974,7 @@ feature -- Test routines
 			evoluzione_state_chart("storie_inscatolate_alternativo.xml", "storie_inscatolate_alternativo_eventi_03_b.txt", conf_finale)
 		end
 
---	t_storie_inscatolate_alternativo_03_c
+	t_storie_inscatolate_alternativo_03_c
 -- TODO: verificare errore!
 -- OLD:
 --	local
@@ -986,15 +986,15 @@ feature -- Test routines
 --			assert("ERRORE: il sistema non termina in (F2)", conf_has_state(esecutore.state_chart.conf_base,"F2"))
 --		end
 -- NEW:
---		local
---	 		conf_finale : LINKED_SET[STRING]
---		do
---			create conf_finale.make
---			conf_finale.force("F2")
---			evoluzione_state_chart("storie_inscatolate_alternativo.xml", "storie_inscatolate_alternativo_eventi_03_c.txt", conf_finale)
---		end
+		local
+	 		conf_finale : LINKED_SET[STRING]
+		do
+			create conf_finale.make
+			conf_finale.force("F2")
+			evoluzione_state_chart("storie_inscatolate_alternativo.xml", "storie_inscatolate_alternativo_eventi_03_c.txt", conf_finale)
+		end
 
---	t_storie_inscatolate_alternativo_07
+	t_storie_inscatolate_alternativo_07
 --	TODO: verificare errore!
 --	OLD:
 --	local
@@ -1006,15 +1006,15 @@ feature -- Test routines
 --		assert("ERRORE: il sistema non termina in (R2)", conf_has_state(esecutore.state_chart.conf_base,"R2"))
 --	end
 --	NEW:
---		local
---	 		conf_finale : LINKED_SET[STRING]
---		do
---			create conf_finale.make
---			conf_finale.force("R2")
---			evoluzione_state_chart("storie_inscatolate_alternativo.xml", "storie_inscatolate_alternativo_eventi_07.txt", conf_finale)
---		end
+		local
+	 		conf_finale : LINKED_SET[STRING]
+		do
+			create conf_finale.make
+			conf_finale.force("R2")
+			evoluzione_state_chart("storie_inscatolate_alternativo.xml", "storie_inscatolate_alternativo_eventi_07.txt", conf_finale)
+		end
 
---	t_storie_inscatolate_alternativo_07_a
+	t_storie_inscatolate_alternativo_07_a
 --	TODO: verificare errore!
 --	OLD:
 --	local
@@ -1026,13 +1026,13 @@ feature -- Test routines
 --		assert("ERRORE: il sistema non termina in (F2)", conf_has_state(esecutore.state_chart.conf_base,"F2"))
 --	end
 --NEW:
---		local
---	 		conf_finale : LINKED_SET[STRING]
---		do
---			create conf_finale.make
---			conf_finale.force("F2")
---			evoluzione_state_chart("storie_inscatolate_alternativo.xml", "storie_inscatolate_alternativo_eventi_07_a.txt", conf_finale)
---		end
+		local
+	 		conf_finale : LINKED_SET[STRING]
+		do
+			create conf_finale.make
+			conf_finale.force("F2")
+			evoluzione_state_chart("storie_inscatolate_alternativo.xml", "storie_inscatolate_alternativo_eventi_07_a.txt", conf_finale)
+		end
 
 	t_storie_inscatolate_alternativo_15
 		local
@@ -1042,7 +1042,7 @@ feature -- Test routines
 			conf_finale.force("S")
 			evoluzione_state_chart("storie_inscatolate_alternativo.xml", "storie_inscatolate_alternativo_eventi_15.txt", conf_finale)
 		end
---	t_storie_inscatolate_alternativo_15_a
+	t_storie_inscatolate_alternativo_15_a
 -- TODO: verificare errore!
 -- OLD:
 --	t_storie_inscatolate_alternativo_15_a
@@ -1056,13 +1056,13 @@ feature -- Test routines
 --		end
 
 -- NEW:
---		local
---	 		conf_finale : LINKED_SET[STRING]
---		do
---			create conf_finale.make
---			conf_finale.force("F2")
---			evoluzione_state_chart("storie_inscatolate_alternativo.xml", "storie_inscatolate_alternativo_eventi_15_a.txt", conf_finale)
---		end
+		local
+	 		conf_finale : LINKED_SET[STRING]
+		do
+			create conf_finale.make
+			conf_finale.force("F2")
+			evoluzione_state_chart("storie_inscatolate_alternativo.xml", "storie_inscatolate_alternativo_eventi_15_a.txt", conf_finale)
+		end
 
 	t_storie_inscatolate_alternativo_16
 		local
