@@ -128,22 +128,55 @@ feature -- evoluzione della statechart
 
 		end
 
+--	pulisci_storie(stato_uscita: STATO)
+--	-- Arianna & Riccardo 26/07/2020
+--	-- elimina gli stati salvati in tutte le storie che si incontrano nel percorso dagli stati di state_chart.conf_base allo 'stato_uscita'
+--		local
+--			stato_temp: STATO
+--		do
+--			across
+--				state_chart.conf_base as cbc
+--			loop
+--				if stato_uscita.antenato_di (cbc.item)	then
+--					from
+--						stato_temp := cbc.item
+--					until
+--						stato_temp = stato_uscita
+--					loop
+--						if attached stato_temp.storia as storia then
+--							storia.svuota_memoria
+--						end
+--						if attached stato_temp.genitore as gen then
+--							stato_temp := gen
+--						end
+--					end
+--				end
+--			end
+--		end
+
 	pulisci_storie(stato_uscita: STATO)
-	-- Arianna & Riccardo 26/07/2020
+	-- Copia per trovare errore
+	--
 	-- elimina gli stati salvati in tutte le storie che si incontrano nel percorso dagli stati di state_chart.conf_base allo 'stato_uscita'
 		local
 			stato_temp: STATO
 		do
+			print(" Sono in piulisci_storia %N")
 			across
 				state_chart.conf_base as cbc
 			loop
+				print(" Sono nel primo loop %N ")
 				if stato_uscita.antenato_di (cbc.item)	then
 					from
 						stato_temp := cbc.item
 					until
 						stato_temp = stato_uscita
 					loop
+						print(" Sono nel secondo loop %N ")
+						print(stato_temp.id)
 						if attached stato_temp.storia as storia then
+							print(" Sto svuotando la storia di: ")
+							print(stato_temp.id)
 							storia.svuota_memoria
 						end
 						if attached stato_temp.genitore as gen then
@@ -673,7 +706,7 @@ feature -- utilita
 				across
 					ss.stati_memorizzati as sm
 				loop
-					print("Storia: ")
+					print(" Storia: ")
 					print(sm.item.id)
 				end
 			elseif attached{STORIA_SHALLOW} stato_storia.storia as ss and then attached ss.stato_memorizzato as ssm then
