@@ -9,13 +9,25 @@ class
 
 inherit
 	ESECUTORE_TEST
+	redefine
+		on_prepare
+	end
+
+feature {NONE} -- Supporto
+
+conf_finale: LINKED_SET [STRING]
 
 feature --test
+	on_prepare
+		do
+			Precursor
+			create conf_finale.make
+		end
 
 	t_costrutto_fork_1
 	 --Filippo & Iezzi
-	 	local
-	 		conf_finale : LINKED_SET[STRING]
+
+
 		do
 			create conf_finale.make
 			conf_finale.force("A1")
@@ -25,19 +37,16 @@ feature --test
 
 	t_costrutto_fork_1_1
 	 --Filippo & Iezzi
-		 	local
-		 		conf_finale : LINKED_SET[STRING]
-			do
-				create conf_finale.make
-				conf_finale.force("A1")
+ 			do
+ 				conf_finale.force("A1")
 				conf_finale.force("B2")
 				evoluzione_state_chart("costrutto_fork_1.xml", "costrutto_fork_eventi_non_fork.txt", conf_finale)
 			end
 
 	t_costrutto_fork_1_con_azioni
 	 --Filippo & Iezzi
-	 	local
-	 		conf_finale : LINKED_SET[STRING]
+
+
 		do
 			create conf_finale.make
 			conf_finale.force("A1")
@@ -47,8 +56,8 @@ feature --test
 
 	t_costrutto_fork_1_1_con_azioni
 	 --Filippo & Iezzi
-	 local
-	 		conf_finale : LINKED_SET[STRING]
+
+
 		do
 			create conf_finale.make
 			conf_finale.force("A1")
@@ -58,8 +67,8 @@ feature --test
 
 	t_costrutto_fork_2
 	 --Filippo & Iezzi
-	 	local
-	 		conf_finale : LINKED_SET[STRING]
+
+
 		do
 			create conf_finale.make
 			conf_finale.force("A")
@@ -71,8 +80,8 @@ feature --test
 
 	t_costrutto_fork_2_variante
 	 --Filippo & Iezzi
-	 	 	local
-	 		conf_finale : LINKED_SET[STRING]
+
+
 		do
 			create conf_finale.make
 			conf_finale.force("A")
@@ -84,8 +93,8 @@ feature --test
 
 	t_costrutto_fork_2_1
 	 --Filippo & Iezzi
-	 	 	local
-	 		conf_finale : LINKED_SET[STRING]
+
+
 		do
 			create conf_finale.make
 			conf_finale.force("A")
@@ -97,8 +106,8 @@ feature --test
 
 	t_costrutto_fork_3
 	 --Filippo & Iezzi
-	 	 	local
-	 		conf_finale : LINKED_SET[STRING]
+
+
 		do
 			create conf_finale.make
 			conf_finale.force("A")
@@ -110,11 +119,8 @@ feature --test
 
 	t_costrutto_fork_3_bis
 	 --Filippo & Iezzi
-		 	local
-		 		conf_finale : LINKED_SET[STRING]
-			do
-				create conf_finale.make
-				conf_finale.force("A")
+ 			do
+ 				conf_finale.force("A")
 				conf_finale.force("B211")
 				conf_finale.force ("B11")
 				evoluzione_state_chart("costrutto_fork_3_bis.xml", "costrutto_fork_eventi_con_fork.txt", conf_finale)
@@ -122,11 +128,8 @@ feature --test
 
 	t_costrutto_fork_3_1
 	 --Filippo & Iezzi
-		 	local
-		 		conf_finale : LINKED_SET[STRING]
-			do
-				create conf_finale.make
-				conf_finale.force("A")
+ 			do
+ 				conf_finale.force("A")
 				conf_finale.force("B22")
 				conf_finale.force ("B11")
 				evoluzione_state_chart("costrutto_fork_3.xml", "costrutto_fork_eventi_non_fork.txt", conf_finale)
@@ -134,8 +137,8 @@ feature --test
 
 	t_costrutto_fork_4
 	 --Filippo & Iezzi
-	 	 	local
-	 		conf_finale : LINKED_SET[STRING]
+
+
 		do
 			create conf_finale.make
 			conf_finale.force("A")
@@ -147,19 +150,16 @@ feature --test
 
 	t_costrutto_fork_4_1
 	 --Filippo & Iezzi
-		 	local
-		 		conf_finale : LINKED_SET[STRING]
-			do
-				create conf_finale.make
-				conf_finale.force("A")
+ 			do
+ 				conf_finale.force("A")
 				conf_finale.force("B2")
 				conf_finale.force ("C")
 				evoluzione_state_chart("costrutto_fork_4.xml", "costrutto_fork_eventi_non_fork.txt", conf_finale)
 			end
 	t_costrutto_fork_5
 	 --Filippo & Iezzi
-	 	local
-	 		conf_finale : LINKED_SET[STRING]
+
+
 		do
 			create conf_finale.make
 			conf_finale.force("A2")
@@ -170,8 +170,8 @@ feature --test
 
 	t_costrutto_fork_5_bis
 	 --Filippo & Iezzi
-	 	local
-	 		conf_finale : LINKED_SET[STRING]
+
+
 		do
 			create conf_finale.make
 			conf_finale.force("A2")
@@ -183,11 +183,8 @@ feature --test
 
 	t_costrutto_fork_6
 	 --Filippo & Iezzi
-		 	local
-		 		conf_finale : LINKED_SET[STRING]
-			do
-				create conf_finale.make
-				conf_finale.force("B1")
+ 			do
+ 				conf_finale.force("B1")
 				conf_finale.force("B2")
 				conf_finale.force ("B3")
 				conf_finale.force ("C2")
@@ -196,8 +193,8 @@ feature --test
 
 	t_costrutto_fork_7
 	 --Filippo & Iezzi
-	 	local
-	 		conf_finale : LINKED_SET[STRING]
+
+
 		do
 			create conf_finale.make
 			conf_finale.force("A1")
@@ -209,11 +206,8 @@ feature --test
 
 	t_costrutto_fork_8
 	 --Filippo & Iezzi
-		 	local
-		 		conf_finale : LINKED_SET[STRING]
-			do
-				create conf_finale.make
-				conf_finale.force("A11")
+ 			do
+ 				conf_finale.force("A11")
 				conf_finale.force("A2")
 				conf_finale.force ("B122")
 				evoluzione_state_chart("costrutto_fork_8.xml", "costrutto_fork_eventi_con_fork.txt", conf_finale)
@@ -221,11 +215,8 @@ feature --test
 
 	t_costrutto_fork_9
 	 --Filippo & Iezzi
-		 	local
-		 		conf_finale : LINKED_SET[STRING]
-			do
-				create conf_finale.make
-				conf_finale.force("A11")
+ 			do
+ 				conf_finale.force("A11")
 				conf_finale.force ("A22")
 				conf_finale.force("B12")
 				conf_finale.force ("B11")
@@ -233,8 +224,8 @@ feature --test
 			end
 
 	t_costrutto_fork_10
-	 	 	local
-	 		conf_finale : LINKED_SET[STRING]
+
+
 		do
 			create conf_finale.make
 			conf_finale.force("A111")
@@ -251,33 +242,24 @@ feature --test
 
 	t_costrutto_fork_non_ammissibile
 	 --Filippo & Iezzi
-		local
-		 		conf_finale : LINKED_SET[STRING]
-			do
-				create conf_finale.make
-				conf_finale.force("S")
-				evoluzione_state_chart("costrutto_fork_non_ammissibile.xml", "costrutto_fork_eventi_con_fork.txt", conf_finale)
-			end
+		 do
+ 			conf_finale.force("S")
+			evoluzione_state_chart("costrutto_fork_non_ammissibile.xml", "costrutto_fork_eventi_con_fork.txt", conf_finale)
+		end
 
 
 	t_costrutto_fork_non_ammissibile_2
 	 --Filippo & Iezzi
-		local
-		 		conf_finale : LINKED_SET[STRING]
-			do
-				create conf_finale.make
-				conf_finale.force("S")
+ 			do
+ 				conf_finale.force("S")
 				evoluzione_state_chart("costrutto_fork_non_ammissibile_2.xml", "costrutto_fork_eventi_con_fork.txt", conf_finale)
 			end
 
 	t_costrutto_fork_non_ammissibile_3
 	 --Filippo & Iezzi
-		local
-		 		conf_finale : LINKED_SET[STRING]
-			do
-				create conf_finale.make
-				conf_finale.force("S")
-				evoluzione_state_chart("costrutto_fork_non_ammissibile_3.xml", "costrutto_fork_eventi_con_fork.txt", conf_finale)
-			end
+		 do
+ 			conf_finale.force("S")
+			evoluzione_state_chart("costrutto_fork_non_ammissibile_3.xml", "costrutto_fork_eventi_con_fork.txt", conf_finale)
+		end
 
 end

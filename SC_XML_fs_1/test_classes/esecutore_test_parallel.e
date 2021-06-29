@@ -9,23 +9,30 @@ class
 
 inherit
 	ESECUTORE_TEST
+	redefine
+			on_prepare
+		end
 
-feature -- Test
+feature {NONE} -- Supporto
+
+	conf_finale: LINKED_SET [STRING]
+
+feature -- Test routines
+
+	on_prepare
+		do
+			Precursor
+			create conf_finale.make
+		end
 
 	t_base_parallelo
-		local
-		 	conf_finale : LINKED_SET[STRING]
-		do
-			create conf_finale.make
+ 		do
 			conf_finale.force("C")
 			evoluzione_state_chart("base_parallelo.xml", "base_parallelo_eventi.txt", conf_finale)
 		end
 
 	t_condizioni_parallelo
-		local
-		 	conf_finale : LINKED_SET[STRING]
-		do
-			create conf_finale.make
+ 		do
 			conf_finale.force("C")
 			evoluzione_state_chart("parallelo_condizioni.xml", "parallelo_condizioni_eventi.txt", conf_finale)
 			--assert ("ERRORE il sistema non impostato correttamente le condizioni", esecutore.state_chart.variabili.booleane.item ("alfa"))
@@ -33,10 +40,7 @@ feature -- Test
 
 	t_entrata
 	-- La transizione ha come target lo stato AND
-		local
-		 	conf_finale : LINKED_SET[STRING]
-		do
-			create conf_finale.make
+ 		do
 			conf_finale.force("A2A1")
 			conf_finale.force("A2B1")
 			evoluzione_state_chart("entrata_1.xml", "entrata_1_eventi.txt", conf_finale)
@@ -44,10 +48,7 @@ feature -- Test
 
 	t_entrata_2
 	-- La transizione ha come target un sotto-stato dello stato AND
-		local
-		 	conf_finale : LINKED_SET[STRING]
-		do
-			create conf_finale.make
+ 		do
 			conf_finale.force("A2A2")
 			conf_finale.force("A2B1")
 			evoluzione_state_chart("entrata_2.xml", "entrata_2_eventi.txt", conf_finale)
@@ -55,29 +56,20 @@ feature -- Test
 
 	t_uscita
 	-- La transizione esce da un sotto-stato dello stato AND
-		local
-		 	conf_finale : LINKED_SET[STRING]
-		do
-			create conf_finale.make
+ 		do
 			conf_finale.force("A1")
 			evoluzione_state_chart("uscita.xml", "uscita_eventi.txt", conf_finale)
 		end
 
 	t_esempio_complesso
-		local
-		 	conf_finale : LINKED_SET[STRING]
-		do
-			create conf_finale.make
+ 		do
 			conf_finale.force("A11")
 			evoluzione_state_chart("complesso.xml", "complesso_eventi.txt", conf_finale)
 		end
 
 	t_transizione_parallelo_interna
 	-- Arianna & Riccardo 26/04/2020
-		local
-		 	conf_finale : LINKED_SET[STRING]
-		do
-			create conf_finale.make
+ 		do
 			conf_finale.force("A2A2")
 			conf_finale.force("A2B2")
 			evoluzione_state_chart("transizione_parallelo_interna.xml", "transizione_parallelo_interna_eventi.txt", conf_finale)
@@ -85,20 +77,14 @@ feature -- Test
 
 	t_parallelo_una_profondita
 	-- Arianna & Riccardo 26/04/2020
-		local
-		 	conf_finale : LINKED_SET[STRING]
-		do
-			create conf_finale.make
+ 		do
 			conf_finale.force("A")
 			conf_finale.force("UNO")
 			evoluzione_state_chart("parallelo_una_profondita.xml", "parallelo_una_profondita_eventi.txt", conf_finale)
 		end
 
 	t_parallelo_piu_profondo
-		local
-		 	conf_finale : LINKED_SET[STRING]
-		do
-			create conf_finale.make
+ 		do
 			conf_finale.force("A2A1")
 			conf_finale.force("P1")
 			conf_finale.force("P2")
@@ -107,10 +93,7 @@ feature -- Test
 
 	t_misto_parallel_1
 	-- Alessandro & Giulia 01/05/2020
-		local
-		 	conf_finale : LINKED_SET[STRING]
-		do
-			create conf_finale.make
+ 		do
 			conf_finale.force("A")
 			conf_finale.force("B2")
 			conf_finale.force ("B1")
@@ -121,10 +104,7 @@ feature -- Test
 	--Claudia & Federico 01/05/2020
 	--Quando vengono eseguite transizioni all' interno di uno stato parallelo, a sua volta contenuto in uno stato parallelo
 	--Viene "scordata" la configurazione a livello più alto (nell' esecuzione di questo test la configurazione finale dovrebbe contenere anche lo stato B1, che invece non appare)
-		local
-		 	conf_finale : LINKED_SET[STRING]
-		do
-			create conf_finale.make
+ 		do
 			conf_finale.force("A1A2")
 			conf_finale.force("A1B")
 			conf_finale.force ("A1C")
@@ -134,10 +114,7 @@ feature -- Test
 
 	t_transizione_non_ammissibile
 	-- Arianna Calzuola & Riccardo Malandruccolo 07/05/2020
-		local
-		 	conf_finale : LINKED_SET[STRING]
-		do
-			create conf_finale.make
+ 		do
 			conf_finale.force("P1")
 			conf_finale.force("P2")
 			evoluzione_state_chart("transizione_non_ammissibile.xml", "transizione_non_ammissibile_eventi.txt", conf_finale)
@@ -146,10 +123,7 @@ feature -- Test
 	t_internal_con_sorgente_parallelo
 	-- Arianna Calzuola & Riccardo Malandruccolo 08/05/2020
 	-- se la transizione fosse internal si dimenticherebbe della struttura in parallelo
-		local
-		 	conf_finale : LINKED_SET[STRING]
-		do
-			create conf_finale.make
+ 		do
 			conf_finale.force("P1")
 			conf_finale.force("P2B")
 			evoluzione_state_chart("internal_da_parallelo.xml", "internal_da_parallelo_eventi.txt", conf_finale)
@@ -157,10 +131,7 @@ feature -- Test
 
 	t_figlio_genitore
 	-- Arianna & Riccardo 21/05/2020
-		local
-		 	conf_finale : LINKED_SET[STRING]
-		do
-			create conf_finale.make
+ 		do
 			conf_finale.force("P1A1")
 			conf_finale.force("P1B1")
 			conf_finale.force ("P2")
@@ -168,20 +139,14 @@ feature -- Test
 		end
 
 	t_transizione_senza_evento_1
-		local
-		 	conf_finale : LINKED_SET[STRING]
-		do
-			create conf_finale.make
+ 		do
 			conf_finale.force("S2")
 			conf_finale.force("T2")
 			evoluzione_state_chart("transizione_senza_evento_parallelo.xml", "transizione_senza_evento_parallelo_eventi.txt", conf_finale)
 		end
 
 	t_transizione_senza_evento_2
-		local
-		 	conf_finale : LINKED_SET[STRING]
-		do
-			create conf_finale.make
+ 		do
 			conf_finale.force("S2")
 			conf_finale.force("T2")
 			evoluzione_state_chart("transizione_senza_evento_parallelo_bis.xml", "transizione_senza_evento_parallelo_eventi.txt", conf_finale)
