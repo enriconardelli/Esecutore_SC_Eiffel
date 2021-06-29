@@ -74,17 +74,6 @@ feature -- Test routines
 		end
 
 	t_storia_tra_xor_5
-			--	TODO: verificare errore!
-			-- OLD:
-			--
-			--		esecutore: ESECUTORE
-			--	do
-			--		nomi_files_prova [1] := test_data_dir + "storia_tra_xor.xml"
-			--  			nomi_files_prova [2] := test_data_dir + "storia_tra_xor_eventi_5.txt"
-			--		create esecutore.make (nomi_files_prova)
-			--		assert("ERRORE: il sistema non termina in (R1)", not conf_has_state(esecutore.state_chart.conf_base,"R1"))
-			--	end
-			-- NEW:
 		do
 			conf_finale.force ("R1")
 			evoluzione_state_chart ("storia_tra_xor.xml", "storia_tra_xor_eventi_5.txt", conf_finale)
@@ -338,17 +327,6 @@ feature -- Test routines
 		end
 
 	t_storia_con_internal__var_deep_09
-			-- TODO: verificare errore!
-			-- OLD:
-			--
-			--			esecutore: ESECUTORE
-			--		do
-			--			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_deep.xml"
-			--  			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_09.txt"
-			--			create esecutore.make (nomi_files_prova)
-			--			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
-			--		end
-			-- NEW:
 		do
 			conf_finale.force ("S2")
 			evoluzione_state_chart ("storia_con_internal__var_deep.xml", "storia_con_internal_eventi_09.txt", conf_finale)
@@ -361,17 +339,6 @@ feature -- Test routines
 		end
 
 	t_storia_con_internal__var_deep_11
-			-- TODO: verificare errore!
-			-- OLD:
-			--
-			--			esecutore: ESECUTORE
-			--		do
-			--			nomi_files_prova [1] := test_data_dir + "storia_con_internal__var_deep.xml"
-			--  			nomi_files_prova [2] := test_data_dir + "storia_con_internal_eventi_11.txt"
-			--			create esecutore.make (nomi_files_prova)
-			--			assert("ERRORE: il sistema non termina in (S2)", conf_has_state(esecutore.state_chart.conf_base,"S2"))
-			--		end
-			-- NEW:
 		do
 			conf_finale.force ("S2")
 			evoluzione_state_chart ("storia_con_internal__var_deep.xml", "storia_con_internal_eventi_11.txt", conf_finale)
@@ -663,34 +630,12 @@ feature -- Test routines
 		end
 
 	t_storie_inscatolate_alternativo_03
-			-- TODO: verificare errore!
-			-- OLD:
-			--
-			--			esecutore: ESECUTORE
-			--		do
-			--			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_alternativo.xml"
-			--  			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_alternativo_eventi_03.txt"
-			--			create esecutore.make (nomi_files_prova)
-			--			assert("ERRORE: il sistema non termina in (Q)", conf_has_state(esecutore.state_chart.conf_base,"Q"))
-			--		end
-			-- NEW:
 		do
 			conf_finale.force ("Q")
 			evoluzione_state_chart ("storie_inscatolate_alternativo.xml", "storie_inscatolate_alternativo_eventi_03.txt", conf_finale)
 		end
 
 	t_storie_inscatolate_alternativo_03_a
-			-- TODO: verificare errore!
-			-- OLD:
-			--
-			--			esecutore: ESECUTORE
-			--		do
-			--			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_alternativo.xml"
-			--  			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_alternativo_eventi_03_a.txt"
-			--			create esecutore.make (nomi_files_prova)
-			--			assert("ERRORE: il sistema non termina in (F2)", conf_has_state(esecutore.state_chart.conf_base,"F2"))
-			--		end
-			-- NEW:
 		do
 			conf_finale.force ("F2")
 			evoluzione_state_chart ("storie_inscatolate_alternativo.xml", "storie_inscatolate_alternativo_eventi_03_a.txt", conf_finale)
@@ -703,51 +648,18 @@ feature -- Test routines
 		end
 
 	t_storie_inscatolate_alternativo_03_c
-			-- TODO: verificare errore!
-			-- OLD:
-			--
-			--			esecutore: ESECUTORE
-			--		do
-			--			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_alternativo.xml"
-			--  			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_alternativo_eventi_03_c.txt"
-			--			create esecutore.make (nomi_files_prova)
-			--			assert("ERRORE: il sistema non termina in (F2)", conf_has_state(esecutore.state_chart.conf_base,"F2"))
-			--		end
-			-- NEW:
 		do
 			conf_finale.force ("F2")
 			evoluzione_state_chart ("storie_inscatolate_alternativo.xml", "storie_inscatolate_alternativo_eventi_03_c.txt", conf_finale)
 		end
 
 	t_storie_inscatolate_alternativo_07
-			--	TODO: verificare errore!
-			--	OLD:
-			--
-			--		esecutore: ESECUTORE
-			--	do
-			--		nomi_files_prova [1] := test_data_dir + "storie_inscatolate_alternativo.xml"
-			--  			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_alternativo_eventi_07.txt"
-			--		create esecutore.make (nomi_files_prova)
-			--		assert("ERRORE: il sistema non termina in (R2)", conf_has_state(esecutore.state_chart.conf_base,"R2"))
-			--	end
-			--	NEW:
 		do
 			conf_finale.force ("R2")
 			evoluzione_state_chart ("storie_inscatolate_alternativo.xml", "storie_inscatolate_alternativo_eventi_07.txt", conf_finale)
 		end
 
 	t_storie_inscatolate_alternativo_07_a
-			--	TODO: verificare errore!
-			--	OLD:
-			--
-			--		esecutore: ESECUTORE
-			--	do
-			--		nomi_files_prova [1] := test_data_dir + "storie_inscatolate_alternativo.xml"
-			--  			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_alternativo_eventi_07_a.txt"
-			--		create esecutore.make (nomi_files_prova)
-			--		assert("ERRORE: il sistema non termina in (F2)", conf_has_state(esecutore.state_chart.conf_base,"F2"))
-			--	end
-			--NEW:
 		do
 			conf_finale.force ("F2")
 			evoluzione_state_chart ("storie_inscatolate_alternativo.xml", "storie_inscatolate_alternativo_eventi_07_a.txt", conf_finale)
@@ -760,19 +672,6 @@ feature -- Test routines
 		end
 
 	t_storie_inscatolate_alternativo_15_a
-			-- TODO: verificare errore!
-			-- OLD:
-			--	t_storie_inscatolate_alternativo_15_a
-			--
-			--			esecutore: ESECUTORE
-			--		do
-			--			nomi_files_prova [1] := test_data_dir + "storie_inscatolate_alternativo.xml"
-			--  			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_alternativo_eventi_15_a.txt"
-			--			create esecutore.make (nomi_files_prova)
-			--			assert("ERRORE: il sistema non termina in (F2)", conf_has_state(esecutore.state_chart.conf_base,"F2"))
-			--		end
-
-			-- NEW:
 		do
 			conf_finale.force ("F2")
 			evoluzione_state_chart ("storie_inscatolate_alternativo.xml", "storie_inscatolate_alternativo_eventi_15_a.txt", conf_finale)
