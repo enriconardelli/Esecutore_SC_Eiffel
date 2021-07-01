@@ -237,7 +237,8 @@ feature -- inizializzazione SC
 								-- `e.item' ha attributo 'initial'
 							if attached stati.item (initial_attr.value) as initial_state then
 								if stato.figli.has (initial_state) then
-									stato.set_initial (initial_state)
+									stato.set_stato_initial (initial_state)
+--									stato.set_initial (initial_state)
 								else
 									print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come sotto-stato iniziale di default dello stato >|" + stato.id + "|< non e' figlio di questo stato!%N")
 								end
@@ -247,7 +248,8 @@ feature -- inizializzazione SC
 						else -- `e.item' non ha attributo 'initial' ma certamente first_sub_state ritorna figlio <state> o <parallel>
 							print ("AVVISO: lo <state> >|" + stato.id + "|< non specifica attributo 'initial', si sceglie il primo figlio che sia <state> o <parallel>.%N")
 							if attached first_sub_state (e.item) as fss then
-								stato.set_initial (fss)
+								stato.set_stato_initial (fss)
+--								stato.set_initial (fss)
 							end
 						end
 						-- ricorsione sui figli
