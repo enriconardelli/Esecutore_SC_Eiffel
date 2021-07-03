@@ -148,16 +148,17 @@ feature -- inizializzazione SC
 			loop
 				if e.item.name ~ "final" and attached e.item.attribute_by_name ("id") as id then
 				-- TODO: avvisare se "id" è assente
-					stati.extend (create {STATO}.make_final_with_id (id.value), id.value)
+					stati.extend (create {STATO_ATOMICO}.make_final_with_id (id.value), id.value)
 				end
 			end
 		end
 
-	istanzia_stati (elements: LIST [XML_ELEMENT]; p_genitore: detachable STATO)
+	istanzia_stati (elements: LIST [XML_ELEMENT]; p_genitore: detachable STATO_GERARCHICO)
 		-- crea gli stati assegnando loro l'eventuale genitore e gli eventuali figli
 		-- TODO: feature complessa, è possibile semplificarla?
 		local
-			stato_temp: STATO
+			stato_temp: STATO_ATOMICO
+			stato_ger_temp: STATO_GERARCHICO
 		do
 			across
 				elements as e
@@ -179,21 +180,22 @@ feature -- inizializzazione SC
 									-- elemento corrente <state> ha figli, quindi è gerarchico
 									if attached p_genitore as pg then
 										-- istanzio elemento corrente con genitore e glielo assegno come figlio
-										stato_temp := create {STATO_XOR}.make_with_id_and_parent (id_attr.value, pg)
-										pg.add_figlio (stato_temp)
+										stato_ger_temp := create {STATO_XOR}.make_with_id_and_parent (id_attr.value, pg)
+										pg.add_figlio (stato_ger_temp)
 									else -- istanzio elemento corrente senza genitore
-										stato_temp := create {STATO_XOR}.make_with_id (id_attr.value)
+										stato_ger_temp := create {STATO_XOR}.make_with_id (id_attr.value)
 									end
-									stati.extend (stato_temp, id_attr.value)
+									stati.extend (stato_ger_temp, id_attr.value)
 									-- ricorsione sui figli con sé stesso come genitore
-									istanzia_stati (e.item.elements, stati.item (id_attr.value))
+--									istanzia_stati (e.item.elements, stati.item (id_attr.value))
+									istanzia_stati (e.item.elements, stato_ger_temp)
 								else -- elemento corrente <state> non ha figli, quindi è atomico
 									if attached p_genitore as pg then
 										-- istanzio elemento corrente con genitore e glielo assegno come figlio
-										stato_temp := create {STATO}.make_with_id_and_parent (id_attr.value, pg)
+										stato_temp := create {STATO_ATOMICO}.make_with_id_and_parent (id_attr.value, pg)
 										pg.add_figlio (stato_temp)
 									else -- istanzio elemento corrente senza genitore
-										stato_temp := create {STATO}.make_with_id (id_attr.value)
+										stato_temp := create {STATO_ATOMICO}.make_with_id (id_attr.value)
 									end
 									stati.extend (stato_temp, id_attr.value)
 								end
@@ -203,14 +205,15 @@ feature -- inizializzazione SC
 									-- elemento corrente <parallel> ha figli
 									if attached p_genitore as pg then
 										-- istanzio elemento corrente con genitore e glielo assegno come figlio
-										stato_temp := create {STATO_AND}.make_with_id_and_parent (id_attr.value, pg)
-										pg.add_figlio (stato_temp)
+										stato_ger_temp := create {STATO_AND}.make_with_id_and_parent (id_attr.value, pg)
+										pg.add_figlio (stato_ger_temp)
 									else -- istanzio elemento corrente senza genitore
-										stato_temp := create {STATO_AND}.make_with_id (id_attr.value)
+										stato_ger_temp := create {STATO_AND}.make_with_id (id_attr.value)
 									end
-									stati.extend (stato_temp, id_attr.value)
+									stati.extend (stato_ger_temp, id_attr.value)
 										-- ricorsione sui figli con sé stesso come genitore
-									istanzia_stati (e.item.elements, stati.item (id_attr.value))
+--									istanzia_stati (e.item.elements, stati.item (id_attr.value))
+									istanzia_stati (e.item.elements, stato_ger_temp)
 								else -- elemento corrente <parallel> non ha figli
 									print ("ERRORE: lo stato <parallel> >|" + id_attr.value + "|< non ha figli !%N")
 								end
@@ -237,8 +240,7 @@ feature -- inizializzazione SC
 								-- `e.item' ha attributo 'initial'
 							if attached stati.item (initial_attr.value) as initial_state then
 								if stato.figli.has (initial_state) then
-									stato.set_stato_initial (initial_state)
---									stato.set_initial (initial_state)
+									stato.set_initial (initial_state)
 								else
 									print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come sotto-stato iniziale di default dello stato >|" + stato.id + "|< non e' figlio di questo stato!%N")
 								end
@@ -248,8 +250,7 @@ feature -- inizializzazione SC
 						else -- `e.item' non ha attributo 'initial' ma certamente first_sub_state ritorna figlio <state> o <parallel>
 							print ("AVVISO: lo <state> >|" + stato.id + "|< non specifica attributo 'initial', si sceglie il primo figlio che sia <state> o <parallel>.%N")
 							if attached first_sub_state (e.item) as fss then
-								stato.set_stato_initial (fss)
---								stato.set_initial (fss)
+								stato.set_initial (fss)
 							end
 						end
 						-- ricorsione sui figli
