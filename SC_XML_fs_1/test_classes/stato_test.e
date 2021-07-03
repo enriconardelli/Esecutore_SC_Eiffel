@@ -19,11 +19,11 @@ inherit
 
 feature {NONE} -- Supporto
 
-	stato_prova, stato_prova_senza_evento: STATO
+	stato_prova, stato_prova_senza_evento: STATO_GERARCHICO
 
-	target_prova_1, target_prova_2, target_prova_3: STATO
+	target_prova_1, target_prova_2, target_prova_3: STATO_ATOMICO
 
-	target_prova_senza_evento_1, target_prova_senza_evento_2, target_prova_senza_evento_3: STATO
+	target_prova_senza_evento_1, target_prova_senza_evento_2, target_prova_senza_evento_3: STATO_ATOMICO
 
 	transizione_prova_1, transizione_prova_2, transizione_prova_3: TRANSIZIONE
 
@@ -182,28 +182,6 @@ feature -- Test routines
 			set_cond_prova (TRUE, FALSE, TRUE)
 			set_eventi_prova ("evento1", "evento2", "evento3")
 			assert ("ERRORE: transizione abilitata con evento molteplici non rivela quella corretta", stato_prova.transizione_abilitata (eventi_prova, variabili_prova) = transizione_prova_1)
-		end
-
-	t_attivabile_con_evento
-		do
-			set_cond_prova (TRUE, FALSE, FALSE)
-			assert ("la prima transizione attivabile non e' rilevata", stato_prova.attivabile (transizione_prova_1, "evento1", variabili_prova.booleane))
-			set_cond_prova (TRUE, TRUE, FALSE)
-			assert ("la seconda transizione attivabile non e' rilevata", stato_prova.attivabile (transizione_prova_2, "evento2", variabili_prova.booleane))
-			set_cond_prova (FALSE, FALSE, TRUE)
-			assert ("la terza transizione attivabile non e' rilevata", stato_prova.attivabile (transizione_prova_3, "evento1", variabili_prova.booleane))
-		end
-
-	t_numero_transizioni_abilitate_con_evento_non_determinismo
-		do
-			set_cond_prova (TRUE, TRUE, TRUE)
-			assert ("ci sono due transizioni abilitate non rilevate", stato_prova.numero_transizioni_abilitate ("evento1", variabili_prova.booleane) = 2)
-		end
-
-	t_numero_transizioni_abilitate_con_evento_determinismo
-		do
-			set_cond_prova (TRUE, TRUE, FALSE)
-			assert ("unica transizione abilitata non rilevata", stato_prova.numero_transizioni_abilitate ("evento1", variabili_prova.booleane) = 1)
 		end
 
 end
