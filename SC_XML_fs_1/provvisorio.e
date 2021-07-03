@@ -1,19 +1,21 @@
-ï»¿note
+
+	note
 	description: "Classe che rappresenta lo stato della state chart"
 	author: "EN + studenti corsi PSI"
 	date: ""
 	revision: ""
 
+deferred class
+	PROVVISORIO
+
+
 -- TODO: classe da ristrutturare trasformandola in deferred con due sotto-classi per stati atomici e gerarchici,
--- STATO_ATOMICO Ã¨ effective, mentre STATO_GERARCHICO Ã¨ anch'essa deferred
+-- STATO_ATOMICO è effective, mentre STATO_GERARCHICO è anch'essa deferred
 -- ed ha come sotto-classi effective STATO_XOR e STATO_AND
 -- spostare feature figli, add_Figlio, make_with_parent in STATO_GERARCHICO
 
-class
-	STATO
-
-create
-	make_with_id, make_final_with_id, make_with_id_and_parent
+--create
+--	make_with_id, make_final_with_id, make_with_id_and_parent
 
 feature -- attributi
 
@@ -25,14 +27,16 @@ feature -- attributi
 	attivo: BOOLEAN
 		-- indipendentemente se sia uno stato atomico o meno
 
-	initial: ARRAY [STATO]
+--	initial: ARRAY [STATO]
 		-- il figlio iniziale di default (tutti i figli nel caso di STATO_AND)
+		--solo per gerarchico
 
 	genitore: detachable STATO
 		-- l'eventuale genitore dello stato corrente
 
-	figli: ARRAY [STATO]
+--	figli: ARRAY [STATO]
 		-- gli stati figli dello stato corrente
+		--solo gerarchico
 
 	id: STRING
 
@@ -42,35 +46,43 @@ feature -- attributi
 	onExit: ARRAY [AZIONE]
 		-- le azioni eseguite all'uscita dallo stato (reazioni statiche exiting [xs] di Harel)
 
-	storia: detachable STORIA
+	stato_atomico: BOOLEAN
+		--è TRUE se lo stato è atomico
+
+--	storia: detachable STORIA
+	--solo gerarchico
 
 feature --creazione
 
 	make_with_id (un_id: STRING)
-		require
-			non_e_stringa_nulla: not (un_id ~ "")
-		do
-			id := un_id
-			finale := False
-			create initial.make_empty
-			create figli.make_empty
-			create transizioni.make_empty
-			create onEntry.make_empty
-			create onExit.make_empty
-		ensure
-			attributo_assegnato: id = un_id
+		deferred
 		end
 
-	make_final_with_id (un_id: STRING)
-		require
-			non_e_stringa_nulla: not (un_id ~ "")
-		do
-			make_with_id (un_id)
-			set_final
-		ensure
-			attributo_assegnato: id = un_id
-			final_assegnato: finale = True
-		end
+--	make_with_id (un_id: STRING)
+--		require
+--			non_e_stringa_nulla: not (un_id ~ "")
+--		do
+--			id := un_id
+--			create initial.make_empty
+--			create figli.make_empty
+--			create transizioni.make_empty
+--			create onEntry.make_empty
+--			create onExit.make_empty
+--		ensure
+--			attributo_assegnato: id = un_id
+--		end
+
+--solo per atomico
+--	make_final_with_id (un_id: STRING)
+--		require
+--			non_e_stringa_nulla: not (un_id ~ "")
+--		do
+--			make_with_id (un_id)
+--			set_final
+--		ensure
+--			attributo_assegnato: id = un_id
+--			final_assegnato: finale = True
+--		end
 
 	make_with_id_and_parent (un_id: STRING; un_genitore: STATO)
 		require
@@ -96,11 +108,9 @@ feature -- setter
 		end
 
 	set_final
-		do
-			finale := True
-		ensure
-			ora_e_finale: finale
+		deferred
 		end
+
 
 	set_onEntry (una_azione: AZIONE)
 		do
@@ -123,12 +133,10 @@ feature -- setter
 			genitore_acquisito: genitore = un_genitore
 		end
 
-feature -- stato
-	stato_atomico: BOOLEAN
-		-- ritorna vero se lo stato Ã¨ uno stato atomico
-		do
-			Result := figli.is_empty
+	set_atomico
+		deferred
 		end
+
 
 feature -- modifica
 
@@ -137,24 +145,25 @@ feature -- modifica
 			transizioni.force (una_transizione, transizioni.count + 1)
 		end
 
-	add_figlio (uno_stato: STATO)
-		do
-			figli.force (uno_stato, figli.count + 1)
-		end
+--gerarchico
+--	add_figlio (uno_stato: STATO)
+--		do
+--			figli.force (uno_stato, figli.count + 1)
+--		end
 
-	add_storia (una_storia: STORIA)
-		do
-			storia := una_storia
-		end
+--	add_storia (una_storia: STORIA)
+--		do
+--			storia := una_storia
+--		end
 
 feature -- situazione
 
 	transizione_abilitata (eventi: LINKED_SET [STRING]; variabili: DATAMODEL): detachable TRANSIZIONE
 	-- restituisce in base ai valori correnti di `eventi' e `variabili' la prima transizione abilitata in questo stato
-	-- sia direttamente nello stato (prioritÃ  SCXML dell'ordine di scrittura nel file .xml) o (se non ve ne sono)
-	-- mediante ereditarietÃ  da un antenato (prioritÃ  strutturale object oriented)
-	-- TODO: nel caso di un evento (o piÃ¹ eventi presenti nello stesso istante) in grado di abilitare piÃ¹ transizioni
-	-- TODO: 	se Ã¨ uno stesso evento si puÃ² rilevare durante l'analisi della SC (e poi vanno introdotte e gestite qui le prioritÃ )
+	-- sia direttamente nello stato (priorità SCXML dell'ordine di scrittura nel file .xml) o (se non ve ne sono)
+	-- mediante ereditarietà da un antenato (priorità strutturale object oriented)
+	-- TODO: 	nel caso di un evento (o più eventi presenti nello stesso istante) in grado di abilitare più transizioni
+	-- TODO: 	se è uno stesso evento si può rilevare durante l'analisi della SC (e poi vanno introdotte e gestite qui le priorità)
 	-- TODO: 	se sono eventi diversi va rilevato dinamicamente in questa feature
 		local
 			index_count: INTEGER
@@ -185,19 +194,22 @@ feature -- situazione
 			end
 		end
 
-	antenato_di (uno_stato: STATO): BOOLEAN
-		-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
-		-- controlla se il Current Ã¨ antenato "proprio" di `uno_stato'
-		do
-			if attached uno_stato.genitore as sg then
-				if sg = Current then
-					Result := true
-				else
-					Result := antenato_di (sg)
-				end
-			else -- `uno_stato' non ha antenati
-				Result := false
-			end
+--	antenato_di (uno_stato: STATO): BOOLEAN
+--		-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
+--		-- controlla se il Current è antenato "proprio" di `uno_stato'
+--		do
+--			if attached uno_stato.genitore as sg then
+--				if sg = Current then
+--					Result := true
+--				else
+--					Result := antenato_di (sg)
+--				end
+--			else -- `uno_stato' non ha antenati
+--				Result := false
+--			end
+--		end
+	antenato_di (uno_stato: STATO):BOOLEAN
+		deferred
 		end
 
 	incomparabile_con (uno_stato: STATO): BOOLEAN
@@ -210,21 +222,26 @@ feature -- situazione
 
 	-- AGGIUNTE FORK
 
+--	ha_sottostati_attivi:BOOLEAN
+--		--Filippo & Iezzi 30/09/2020
+--	do
+--		Result:= False
+--		across figli as f
+--		loop
+--			 if f.item.attivo then
+--		 		Result:=True
+--			 else
+--		 		if f.item.figli.count>0 and Result=False then
+--		 		Result:=f.item.ha_sottostati_attivi
+--		 		end
+--			 end
+--		end
+--	end
+
 	ha_sottostati_attivi:BOOLEAN
-		--Filippo & Iezzi 30/09/2020
-	do
-		Result:= False
-		across figli as f
-		loop
-			 if f.item.attivo then
-		 		Result:=True
-			 else
-		 		if f.item.figli.count>0 and Result=False then
-		 		Result:=f.item.ha_sottostati_attivi
-		 		end
-			 end
+		deferred
 		end
-	end
+
 
 	--FINE AGGIUNTE
 
@@ -243,7 +260,7 @@ feature -- routines forse inutili
 		end
 
 	attivabile (una_transizione: TRANSIZIONE; evento_corrente: STRING; hash_delle_condizioni: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
-		-- verifica, in caso `una_transizione' che ha un evento se Ã¨ uguale a `evento_corrente' e se la condizione e' vera
+		-- verifica, in caso `una_transizione' che ha un evento se è uguale a `evento_corrente' e se la condizione e' vera
 		-- verifica, in caso `una_transizione' senza evento se la condizione e' vera
 		-- Giulia Iezzi, Alessando Filippo 12/apr/2020; EN 21/apr/2020
 		-- TODO completare test per questa feature
@@ -268,8 +285,8 @@ feature -- routines forse inutili
 			end
 		end
 
-	target (evento_corrente: STRING; hash_delle_condizioni: HASH_TABLE [BOOLEAN, STRING]): detachable STATO
-		-- ritorna Current se con `evento_corrente' nella configurazione corrente non Ã¨ attivabile alcuna transizione
+	target (evento_corrente: STRING; hash_delle_condizioni: HASH_TABLE [BOOLEAN, STRING]): detachable PROVVISORIO
+		-- ritorna Current se con `evento_corrente' nella configurazione corrente non è attivabile alcuna transizione
 		-- ritorna lo stato a cui porta la transizione di indice minimo attivabile nella configurazione corrente con `evento_corrente'
 		-- Giulia Iezzi, Alessando Filippo 12/apr/2020; EN 21/apr/2020
 		-- non viene mai chiamata
@@ -287,50 +304,32 @@ feature -- routines forse inutili
 			end
 		end
 
-	get_transition (evento_corrente: STRING): TRANSIZIONE
-		-- ritorna la transizione abilitata con `evento_corrente'
-		-- non viene mai invocata
-		-- TODO: da rimuovere quando si ristruttura la classe
-		local
-			index_count: INTEGER
-			index: INTEGER
-		do
-			from
-				index_count := transizioni.lower
-			until
-				index_count = transizioni.upper + 1
-			loop
-				if attached transizioni [index_count].evento as te then
-					if te.is_equal (evento_corrente) then
-						index := index_count
-					end
-				end
-				index_count := index_count + 1
-			end
-			Result := transizioni [index]
-		end
-
 feature -- utilita
 
 	stampa
-	do
-		print("--------------------%N")
-		print("stato con id = " + id + "%N")
-		if attached genitore as g then print("  genitore: " + g.id + "%N") end
-		if not initial.is_empty then
-			print("  initial: ")
-			across initial as i
-			loop print(i.item.id + ", ")
-			end
-			print("%N")
+		deferred
 		end
-		if not figli.is_empty then
-			print("  figli: ")
-			across figli as f
-			loop print (f.item.id + ", ")
-			end
-			print("%N")
-		end
-	end
+--	stampa
+--	do
+--		print("--------------------%N")
+--		print("stato con id = " + id + "%N")
+--		if attached genitore as g then print("  genitore: " + g.id + "%N") end
+--		if not initial.is_empty then
+--			print("  initial: ")
+--			across initial as i
+--			loop print(i.item.id + ", ")
+--			end
+--			print("%N")
+--		end
+--		if not figli.is_empty then
+--			print("  figli: ")
+--			across figli as f
+--			loop print (f.item.id + ", ")
+--			end
+--			print("%N")
+--		end
+--	end
 
 end
+
+

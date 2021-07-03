@@ -197,7 +197,6 @@ feature -- evoluzione della statechart
 			end
 		end
 
-
 	salva_percorso(stato_conf_base, stato_uscente: STATO)
 	-- Arianna & Riccardo 05/07/2020
 	-- memorizza i percorsi di uscita partendo da 'stato_conf_base' e arrivando fino a 'stato_uscente'

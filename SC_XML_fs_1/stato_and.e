@@ -8,10 +8,10 @@ class
 	STATO_AND
 
 inherit
-	STATO_GERARCHICO
+	STATO
 
 create
-	make_with_id, make_final_with_id, make_with_id_and_parent
+	make_with_id, make_with_id_and_parent
 
 feature -- setter
 
