@@ -50,44 +50,6 @@ feature -- Creazione sia per i test che per esecuzione interattiva
 
 feature -- evoluzione della statechart
 
--- VERSIONE DA MASTER
--- TODO: ELIMINARE UNA VOLTA COMPLETARI I TEST DI INTEGRAZIONE CON COSTRUTTO_FORK
---	evolvi_SC (eventi: ARRAY [LINKED_SET [STRING]])
---		local
---			istante: INTEGER
---			prossima_conf_base: ARRAY [STATO]
---			transizioni_eseguibili: ARRAY [TRANSIZIONE]
---		do
---			print ("%Nentrato in evolvi_SC:  %N %N")
---			from
---				istante := 1
---			until
---				stato_final (state_chart.conf_base) or istante > eventi.count
---			loop
---				if attached eventi [istante] as eventi_correnti then
---					stampa_conf_corrente (istante)
---					create prossima_conf_base.make_empty
---					transizioni_eseguibili := trova_transizioni_eseguibili (eventi_correnti, state_chart.variabili)
---					across transizioni_eseguibili as te
---					loop
---						salva_storie (antenato_massimo_uscita (te.item))
---						esegui_azioni (te.item)
---						trova_default (te.item.destinazione, prossima_conf_base)
---						aggiungi_paralleli (te.item.destinazione, prossima_conf_base)
---					end
---					aggiungi_stati_attivi(prossima_conf_base)
---					prossima_conf_base := riordina_stati(prossima_conf_base)
---					if not prossima_conf_base.is_empty then
---						state_chart.conf_base.copy (prossima_conf_base)
---					end
---				end
---				istante := istante + 1
---			end
---			print ("%NHo terminato l'elaborazione degli eventi%N")
---			stampa_conf_corrente (istante)
---		end
-
--- VERSIONE DA COSTRUTTO FORK
 	evolvi_SC (eventi: ARRAY [LINKED_SET [STRING]])
 		local
 			istante: INTEGER
@@ -108,45 +70,31 @@ feature -- evoluzione della statechart
 
 -- PROVA CON iterazione sulle transizioni eseguibili
  					across transizioni_eseguibili as sc_cb
---					across state_chart.conf_base as sc_cb
-
---						conf_base_corrente as cbc -- l'attributo conf_base_corrente è stato rimpiazzato state_chart.conf_base
-					loop
+ 					loop
 
 -- PROVA CON iterazione sulle transizioni eseguibili
 						transizione_corrente := sc_cb.item
---						transizione_corrente := sc_cb.item.transizione_abilitata (eventi_correnti, state_chart.variabili)
 
 						if attached transizione_corrente as tc and then transizioni_eseguibili.has (tc) then
 							salva_storie (antenato_massimo_uscita (tc)) -- dal MASTER
 							esegui_azioni (tc) -- , cbc.item)
 							trova_default (tc.destinazione.first, prossima_conf_base)
--- OLD						trova_default (tc.destinazione, prossima_conf_base)
-								-- MODIFICA PER CONSIDERARE I FORK
 							if tc.fork then
 								across tc.destinazione as mt_corrente
--- OLD						if tc.fork and attached tc.multi_target as tcmt then
--- OLD							across
--- OLD								tcmt as mt_corrente
 								loop
 									trova_default (mt_corrente.item, prossima_conf_base)
 								end
 							end
 							aggiungi_paralleli (tc.destinazione.first, prossima_conf_base)
--- OLD							aggiungi_paralleli (tc.destinazione, prossima_conf_base)
-								-- FINE MODIFICA
 						else
 
 -- PROVA CON iterazione sulle transizioni eseguibili
 							prossima_conf_base.force (sc_cb.item.sorgente, prossima_conf_base.count + 1)
---							prossima_conf_base.force (sc_cb.item, prossima_conf_base.count + 1)
 
 						end
 					end
 					aggiungi_stati_attivi(prossima_conf_base) -- si mantiene versione MASTER
---					prossima_conf_base := elimina_stati_inattivi (prossima_conf_base)  -- questa era quella di costrutto FORK
 					prossima_conf_base := riordina_stati (prossima_conf_base) -- si mantiene versione MASTER
---					prossima_conf_base := riordina_conf_base (prossima_conf_base) -- questa era quella di costrutto FORK
 					if not prossima_conf_base.is_empty then
 						state_chart.conf_base.copy (prossima_conf_base)
 					end
@@ -262,7 +210,6 @@ feature -- evoluzione della statechart
 
 					if attached sorgenti[i].transizione_abilitata (eventi, variabili) as ta then
 						debug ("SC_transizioni_eseguibili") print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.first.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id) end
--- OLD						debug ("SC_transizioni_eseguibili") print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id) end
 						if attached uscita_precedente implies antenato_massimo_uscita(ta).incomparabile_con(uscita_precedente) then
 							-- questa transizione mi fa uscire da uno stato incomparabile con quello della precedente transizione
 							debug ("SC_transizioni_eseguibili") print(" viene mantenuto per la transizione.%N") end
@@ -283,7 +230,6 @@ feature -- evoluzione della statechart
 					debug ("SC_transizioni_eseguibili")
 						if attached sorgenti[i].transizione_abilitata (eventi, variabili) as ta then
 							print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.first.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id)
--- OLD							print(" sorgente " + i.out + ": lo stato " + sorgenti[i].id + " con transizione a destinazione stato " + ta.destinazione.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita(ta).id)
 							print(" e' antenato di sorgente successiva " + (i+1).out + ": " + sorgenti[i+1].id + " e viene scartato.%N")
 						end
 					end
@@ -315,7 +261,6 @@ feature -- evoluzione della statechart
 			Result := transizione.sorgente
 			if transizione.internal then
 				if transizione.sorgente.antenato_di (transizione.destinazione.first) then
--- OLD				if transizione.sorgente.antenato_di (transizione.destinazione) then
 					across
 						transizione.sorgente.figli as figli
 					loop
@@ -326,7 +271,6 @@ feature -- evoluzione della statechart
 				else
 					across
 						transizione.destinazione.first.figli as figli
--- OLD						transizione.destinazione.figli as figli
 					loop
 						if figli.item.attivo then
 							Result := figli.item
@@ -335,7 +279,6 @@ feature -- evoluzione della statechart
 				end
 			else
 				contesto := trova_contesto (transizione.sorgente, transizione.destinazione.first)
--- OLD				contesto := trova_contesto (transizione.sorgente, transizione.destinazione)
 				from
 					stato_temp := transizione.sorgente
 				until
@@ -360,12 +303,7 @@ feature -- evoluzione della statechart
 				across dg.initial as dgi
 				loop
 					if not dgi.item.is_equal(p_destinazione) then
-						-- se dgi.item è la destinazione non devo aggiungerla perché l'ho già fatto
--- VERSIONE DEL MASTER
---						trova_default (dgi.item, prossima_conf_base)
-							--AGGIUNTE FORK
 						aggiungi_sottostati (dgi.item, prossima_conf_base)
-							--FINE AGGIUNTE
 					end
 				end
 			end
@@ -375,7 +313,6 @@ feature -- evoluzione della statechart
 			end
 		end
 
-	--AGGIUNTE FORK
 
 	aggiungi_sottostati (stato: STATO; prossima_conf_base: ARRAY [STATO])
 			-- se il target NON contiene un sottostato attivo si comporta come trova_default
@@ -407,7 +344,6 @@ feature -- evoluzione della statechart
 			end
 		end
 
-	--FINE AGGIUNTE
 
 	trova_default (stato: STATO; prossima_conf_base: ARRAY [STATO])
 	-- segue le transizioni di default e aggiunge lo stato atomico a `prossima_conf_base'
@@ -487,20 +423,16 @@ feature -- esecuzione azioni
 		do
 			if transizione.internal then
 				if transizione.sorgente.antenato_di (transizione.destinazione.first) then
---OLD				if transizione.sorgente.antenato_di (transizione.destinazione) then
 					contesto := transizione.sorgente
 				else
 					contesto := transizione.destinazione.first
---OLD					contesto := transizione.destinazione
 				end
 			else
 				contesto := trova_contesto (transizione.sorgente, transizione.destinazione.first)
--- OLD				contesto := trova_contesto (transizione.sorgente, transizione.destinazione)
 			end
 			esegui_azioni_onexit (antenato_massimo_uscita (transizione))
 			esegui_azioni_transizione (transizione.azioni)
 			esegui_azioni_onentry (contesto, transizione.destinazione.first)
--- OLD			esegui_azioni_onentry (contesto, transizione.destinazione)
 		end
 
 	esegui_onexit (p_stato_corrente: STATO)
@@ -603,7 +535,6 @@ feature -- utilita
 				debug ("SC_transizioni_eseguibili") print ("  stato corrente di conf_base: " + sc_cb.item.id + "%N") end
 				if attached sc_cb.item.transizione_abilitata (eventi, variabili) as ta then
 					debug ("SC_transizioni_eseguibili") print ("    con transizione abilitata da " + ta.sorgente.id + " a " + ta.destinazione.first.id + "%N") end
--- OLD					debug ("SC_transizioni_eseguibili") print ("    con transizione abilitata da " + ta.sorgente.id + " a " + ta.destinazione.id + "%N") end
 					Result.force (ta.sorgente, Result.count + 1)
 				end
 			end
