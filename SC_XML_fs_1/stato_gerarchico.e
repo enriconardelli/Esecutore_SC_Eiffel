@@ -18,13 +18,6 @@ create
 	make_final_with_id,
 	make_with_id_and_parent
 
-feature --setter
-
-	set_stato_atomico
-		do
-			stato_atomico := False
-		end
-
 feature --situazione
 
 	add_figlio (uno_stato: STATO)
@@ -46,6 +39,23 @@ feature --situazione
 				end
 			else
 				Result := False
+			end
+		end
+
+
+	ha_sottostati_attivi:BOOLEAN
+	--Filippo & Iezzi 30/09/2020
+		do
+			Result:= False
+			across figli as f
+			loop
+				if f.item.attivo then
+					Result:=True
+				else
+					if f.item.figli.count>0 and Result=False then
+						Result:=f.item.ha_sottostati_attivi
+					end
+				end
 			end
 		end
 
@@ -74,6 +84,6 @@ feature --utilità
 			end
 		end
 
-end 
+end
 
 

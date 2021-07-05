@@ -34,9 +34,6 @@ feature --attributi
 
 	storia: detachable STORIA
 
-	stato_atomico: BOOLEAN
-	--indica se uno stato è atomico o meno
-
 feature --creazione
 
 	make_with_id (un_id: STRING)
@@ -50,7 +47,6 @@ feature --creazione
 			create figli.make_empty
 			create onEntry.make_empty
 			create onExit.make_empty
-			set_stato_atomico
 		ensure
 			attributo_assegnato: id = un_id
 		end
@@ -115,10 +111,6 @@ feature --setter
 			genitore := un_genitore
 		ensure
 			genitore_acquisito: genitore = un_genitore
-		end
-
-	set_stato_atomico
-		deferred
 		end
 
 feature --azione
@@ -190,18 +182,7 @@ feature --situazione
 
 	ha_sottostati_attivi:BOOLEAN
 	--Filippo & Iezzi 30/09/2020
-		do
-			Result:= False
-			across figli as f
-			loop
-				if f.item.attivo then
-					Result:=True
-				else
-					if f.item.figli.count>0 and Result=False then
-						Result:=f.item.ha_sottostati_attivi
-					end
-				end
-			end
+		deferred
 		end
 
 feature --utilità

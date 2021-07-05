@@ -442,7 +442,7 @@ feature -- evoluzione della statechart
 				loop
 					sm.item.set_attivo
 					esegui_onentry(sm.item)
-					if sm.item.stato_atomico then
+					if attached {STATO_ATOMICO} sm.item then
 						prossima_conf_base.force (sm.item, prossima_conf_base.count + 1)
 					end
 				end
@@ -528,7 +528,7 @@ feature -- esecuzione azioni
 	esegui_azioni_onexit (stato_uscita: STATO)
 	-- Arianna & Riccardo 13/05/2020
 		do
-			if not stato_uscita.stato_atomico then
+			if attached {STATO_GERARCHICO} stato_uscita then
 				across
 					stato_uscita.figli as sf
 				loop
