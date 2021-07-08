@@ -70,15 +70,7 @@ feature -- evoluzione della statechart
 
 -- PROVA CON iterazione sulle transizioni eseguibili
  					across transizioni_eseguibili as sc_cb
---<<<<<<< HEAD
  					loop
---=======
-----					across state_chart.conf_base as sc_cb
-
-----						conf_base_corrente as cbc -- l'attributo conf_base_corrente � stato rimpiazzato state_chart.conf_base
---					loop
--->>>>>>> master
-
 -- PROVA CON iterazione sulle transizioni eseguibili
 						transizione_corrente := sc_cb.item
 
@@ -158,9 +150,7 @@ feature -- evoluzione della statechart
 			end
 		end
 
---	salva_percorso(stato_conf_base, stato_uscente: STATO)
 	salva_storia(stato_conf_base, stato_uscente: STATO)
--->>>>>>> master
 	-- Arianna & Riccardo 05/07/2020
 	-- memorizza i percorsi di uscita partendo da 'stato_conf_base' e arrivando fino a 'stato_uscente'
 		local
@@ -189,15 +179,6 @@ feature -- evoluzione della statechart
 					end
 				end
 			end
---			if attached percorso_uscita as pu then
---				across
---					pu as pu1
---				loop
---					print(" Storia: ")
---					print(pu1.item.id)
---				end
---			end
-
 		end
 
 	trova_transizioni_eseguibili(eventi: LINKED_SET[STRING]; variabili: DATAMODEL): ARRAY[TRANSIZIONE]
@@ -326,13 +307,6 @@ feature -- evoluzione della statechart
 				across dg.initial as dgi
 				loop
 					if not dgi.item.is_equal(p_destinazione) then
---<<<<<<< HEAD
---=======
---						-- se dgi.item � la destinazione non devo aggiungerla perch� l'ho gi� fatto
----- VERSIONE DEL MASTER
-----						trova_default (dgi.item, prossima_conf_base)
---							--AGGIUNTE FORK
--->>>>>>> master
 						aggiungi_sottostati (dgi.item, prossima_conf_base)
 					end
 				end
@@ -405,10 +379,7 @@ feature -- evoluzione della statechart
 			if attached{STORIA_DEEP} stato.storia as st then
 				across
 					st.stati_memorizzati as sm
-				from
-					print ("  stampo la storia di stato : " + stato.id + " che ha una storia DEEP che contiene %N")
 				loop
-					print ("    lo stato : " + sm.item.id + " %N")
 					sm.item.set_attivo
 					esegui_onentry(sm.item)
 					if attached {STATO_ATOMICO} sm.item then
@@ -451,11 +422,6 @@ feature -- evoluzione della statechart
 feature -- esecuzione azioni
 
 	esegui_azioni (transizione: TRANSIZIONE)
---<<<<<<< HEAD
---=======
---	-- TODO: controllare perch� qui e in `antenato_massimo_uscita' si chiede di fare gli stessi controlli
---	-- TODO: su transizioni internal che non siano multisorgente e che le sorgenti multiple siano compatibili
--->>>>>>> master
 		local
 			contesto: detachable STATO
 		do
