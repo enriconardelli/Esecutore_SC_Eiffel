@@ -148,16 +148,17 @@ feature -- inizializzazione SC
 			loop
 				if e.item.name ~ "final" and attached e.item.attribute_by_name ("id") as id then
 				-- TODO: avvisare se "id" è assente
-					stati.extend (create {STATO}.make_final_with_id (id.value), id.value)
+					stati.extend (create {STATO_ATOMICO}.make_final_with_id (id.value), id.value)
 				end
 			end
 		end
 
-	istanzia_stati (elements: LIST [XML_ELEMENT]; p_genitore: detachable STATO)
+	istanzia_stati (elements: LIST [XML_ELEMENT]; p_genitore: detachable STATO_GERARCHICO)
 		-- crea gli stati assegnando loro l'eventuale genitore e gli eventuali figli
 		-- TODO: feature complessa, è possibile semplificarla?
 		local
-			stato_temp: STATO
+			stato_temp: STATO_ATOMICO
+			stato_ger_temp: STATO_GERARCHICO
 		do
 			across
 				elements as e
@@ -179,21 +180,22 @@ feature -- inizializzazione SC
 									-- elemento corrente <state> ha figli, quindi è gerarchico
 									if attached p_genitore as pg then
 										-- istanzio elemento corrente con genitore e glielo assegno come figlio
-										stato_temp := create {STATO_XOR}.make_with_id_and_parent (id_attr.value, pg)
-										pg.add_figlio (stato_temp)
+										stato_ger_temp := create {STATO_XOR}.make_with_id_and_parent (id_attr.value, pg)
+										pg.add_figlio (stato_ger_temp)
 									else -- istanzio elemento corrente senza genitore
-										stato_temp := create {STATO_XOR}.make_with_id (id_attr.value)
+										stato_ger_temp := create {STATO_XOR}.make_with_id (id_attr.value)
 									end
-									stati.extend (stato_temp, id_attr.value)
+									stati.extend (stato_ger_temp, id_attr.value)
 									-- ricorsione sui figli con sé stesso come genitore
-									istanzia_stati (e.item.elements, stati.item (id_attr.value))
+--									istanzia_stati (e.item.elements, stati.item (id_attr.value))
+									istanzia_stati (e.item.elements, stato_ger_temp)
 								else -- elemento corrente <state> non ha figli, quindi è atomico
 									if attached p_genitore as pg then
 										-- istanzio elemento corrente con genitore e glielo assegno come figlio
-										stato_temp := create {STATO}.make_with_id_and_parent (id_attr.value, pg)
+										stato_temp := create {STATO_ATOMICO}.make_with_id_and_parent (id_attr.value, pg)
 										pg.add_figlio (stato_temp)
 									else -- istanzio elemento corrente senza genitore
-										stato_temp := create {STATO}.make_with_id (id_attr.value)
+										stato_temp := create {STATO_ATOMICO}.make_with_id (id_attr.value)
 									end
 									stati.extend (stato_temp, id_attr.value)
 								end
@@ -203,14 +205,15 @@ feature -- inizializzazione SC
 									-- elemento corrente <parallel> ha figli
 									if attached p_genitore as pg then
 										-- istanzio elemento corrente con genitore e glielo assegno come figlio
-										stato_temp := create {STATO_AND}.make_with_id_and_parent (id_attr.value, pg)
-										pg.add_figlio (stato_temp)
+										stato_ger_temp := create {STATO_AND}.make_with_id_and_parent (id_attr.value, pg)
+										pg.add_figlio (stato_ger_temp)
 									else -- istanzio elemento corrente senza genitore
-										stato_temp := create {STATO_AND}.make_with_id (id_attr.value)
+										stato_ger_temp := create {STATO_AND}.make_with_id (id_attr.value)
 									end
-									stati.extend (stato_temp, id_attr.value)
+									stati.extend (stato_ger_temp, id_attr.value)
 										-- ricorsione sui figli con sé stesso come genitore
-									istanzia_stati (e.item.elements, stati.item (id_attr.value))
+--									istanzia_stati (e.item.elements, stati.item (id_attr.value))
+									istanzia_stati (e.item.elements, stato_ger_temp)
 								else -- elemento corrente <parallel> non ha figli
 									print ("ERRORE: lo stato <parallel> >|" + id_attr.value + "|< non ha figli !%N")
 								end
@@ -385,137 +388,97 @@ feature -- inizializzazione storia
 
 feature -- inizializzazione transizioni
 
-	assegna_transizione (transition_element: XML_ELEMENT; stato: STATO)
-		-- assegna a `stato' la transizione specificata in `transition_element' tenendo conto del tipo di transizione
-		do
-			debug ("SC_assegna_transizioni") stampa_elemento (transition_element) end
-				if attached transition_element.attribute_by_name ("target") as t then
-					if t.value.split(' ').count > 1 then
-						if attached transition_element.attribute_by_name ("source") as s then
-							print ("ERRORE: non posso avere contemporaneamente transizioni fork e merge!")
-						else
-							assegna_transizione_fork(transition_element, stato)
-						end
-					else
-						if attached transition_element.attribute_by_name ("source") as s then
-							assegna_transizione_merge(transition_element, stato)
-						else
-							assegna_transizione_singola(transition_element, stato)
-						end
-					end
-				else
-					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")
-				end
-		end
+-- VERSIONE ORIGINALE DEL MASTER
+-- TODO: COMPLETATI I TEST DI INTEGRAZIONE COL COSTRUTTO FORK SI PUÒ ELIMINARE
+--	assegna_transizione (transition_element: XML_ELEMENT; stato: STATO)
+--		-- assegna a `stato' la transizione specificata in `transition_element'
+--		local
+--			transizione: TRANSIZIONE
+--		do
+--			debug ("SC_assegna_transizioni") stampa_elemento (transition_element) end
+--			if attached transition_element.attribute_by_name ("target") as t then
+--				if attached stati.item (t.value) as destinazione then
+--					if not transizione_illegale (stato, destinazione) then
+--						create transizione.make_with_target (destinazione, stato)
+--						if attached transition_element.attribute_by_name ("type") as type then
+--							if type.value ~ "internal" and verifica_internal (transizione) then
+--								transizione.set_internal
+--							end
+--						end
+--						assegna_evento (transition_element, transizione)
+--						assegna_condizione (transition_element, transizione)
+--						assegna_azioni (transition_element.elements, transizione)
+--						stato.aggiungi_transizione (transizione)
+--					else
+--						print ("ERRORE: transizione non legale da >|" + stato.id + "|< a >|" + destinazione.id + "|< !%N")
+--					end
+--				else
+--					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value + "|< che non appartiene alla SC!%N")
+--				end
+--			else
+--				print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")
+--			end
+--		end
 
-	assegna_transizione_singola (transition_element: XML_ELEMENT; stato: STATO)
+-- VERSIONE DA COSTRUTTO FORK MODIFICATA PER COMPATIBILITÀ CON MASTER
+	assegna_transizione (transition_element: XML_ELEMENT; stato: STATO)
 		-- assegna a `stato' la transizione specificata in `transition_element'
 		local
 			transizione: TRANSIZIONE
 		do
+			debug ("SC_assegna_transizioni") stampa_elemento (transition_element) end
 			if attached transition_element.attribute_by_name ("target") as t then
+				-- AGGIUNTE PER COSTRUTTO FORK
 				if attached stati.item (t.value.split(' ').first) as dest then
-					if not transizione_illegale (stato, dest) then
+					-- uso come primo target il primo che compare
+					if not transizione_illegale (stato, dest) and transizione_multitarget_ammissibile(t.value.split(' ')) then
+					-- TODO: perché transizione_illegale si fa solo sulla prima delle destinazioni multiple?
 						create transizione.make_with_target (dest, stato)
+						-- TODO: verificare che è un errore etichettare 'internal' una transizione fork
 						if attached transition_element.attribute_by_name ("type") as type then
 							if type.value ~ "internal" and verifica_internal (transizione) then
 								transizione.set_internal
 							end
 						end
-						assegna_evento (transition_element, transizione)
-						assegna_condizione (transition_element, transizione)
-						assegna_azioni (transition_element.elements, transizione)
-						stato.aggiungi_transizione (transizione)
-						print (" - Da >|" + stato.id + "|< a >|" + dest.id + "|< %N")
-					else
-						print ("ERRORE: transizione non legale! ")
-					end
-				else
-					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value.split(' ').first + "|< che non appartiene alla SC!%N")
-				end
-			end
-		end
-	-- AGGIUNTE FORK E MERGE
-	assegna_transizione_merge(transition_element: XML_ELEMENT; stato: STATO)
-		local
-			transizione: TRANSIZIONE
-			source_list: LIST [READABLE_STRING_32]
-		do
-			-- se esiste transition_element.attribute_by_name ("source") si tratta di una transizione MERGE
-			-- quindi la funzione assegna la transizione, oltre che allo `stato' passato come argomento,
-			-- anche a tutti gli stati presenti nell'attributo source
-			if attached transition_element.attribute_by_name ("target") as t then
-				if attached transition_element.attribute_by_name ("source") as s then
-					if attached stati.item (t.value.split(' ').first) as dest then
-						source_list := s.value.split(' ')
-						source_list.extend (stato.id)
-						if transizione_multipla_ammissibile(source_list) then
-							create transizione.make_with_target (dest, stato)
-							transizione.set_merge
-							-- separo le destinazioni e le scorro tutte aggiungendole alla transizione
-							across
-								source_list as it
-							loop
-								if attached stati.item(it.item) as st then transizione.add_source (st) end
-							end
-							assegna_evento (transition_element, transizione)
-							assegna_condizione (transition_element, transizione)
-							assegna_azioni (transition_element.elements, transizione)
-							stato.aggiungi_transizione (transizione)
-							print (" - Da >|" + stato.id + "|< a >|" + dest.id + "|< %N")
-							-- TODO: mentre stato.id esiste perché è stato creato da `istanzia_stati' gli altri stati sorgente
-							-- TODO: della transizione merge potrebbero ancora non essere stati letti e quindi non posso controllare
-							-- TODO: se esistono in `stati'. Questo controllo andrebbe fatto alla fine della creazione di tutta la SC.
-						else
-							print ("ERRORE: Le sorgenti multiple indicate per la transizione che parte dallo stato >|" + stato.id + "|< non sono tra loro compatibili %N")
-						end
-					else
-						print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value.split(' ').first + "|< che non appartiene alla SC!%N")
-					end
-				else
-					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con sorgente multipla non specificata (manca il 'source')!%N")
-				end
-			end
-		end
-
-	assegna_transizione_fork(transition_element: XML_ELEMENT; stato: STATO)
-			-- se esiste transition_element.attribute_by_name ("target") si tratta di una transizione FORK
-			-- quindi la funzione assegna la transizione allo `stato' passato come argoment
-			-- salvando anche tutte le destinazioni della transizione
-		local
-			transizione: TRANSIZIONE
-		do
-			-- SE transition_element.attribute_by_name ("target") ha più di un valore si tratta di una FORK
-			if attached transition_element.attribute_by_name ("target") as t then
-				if attached stati.item (t.value.split(' ').first) as dest then
-					-- uso come primo target il primo che compare
-					if transizione_multipla_ammissibile(t.value.split(' ')) then
-						create transizione.make_with_target (dest, stato)
-							-- separo le destinazioni e le scorro tutte aggiungendole alla transizione
+						if  t.value.split(' ').count > 1 then
+							-- TODO: controllare che non vi siano stati indicati più volte come destinazione
+							-- TODO: non sarà un errore ma devo inserirlo una volta sola						
 							transizione.set_fork
+							-- separo le destinazioni e le scorro tutte aggiungendole alla transizione
 							across
 								t.value.split(' ') as it
 							loop
 								if attached stati.item(it.item) as s then transizione.add_target (s) end
 							end
+						end
+				--FINE AGGIUNTE		
 						assegna_evento (transition_element, transizione)
 						assegna_condizione (transition_element, transizione)
 						assegna_azioni (transition_element.elements, transizione)
 						stato.aggiungi_transizione (transizione)
-						print (" - Da >|" + stato.id + "|< a >|" + dest.id + "|< %N")
 					else
-						print ("ERRORE: Le destinazioni multiple indicate non sono tra loro compatibili %N")
+						print ("ERRORE: transizione non legale! ")
+						if not transizione_multitarget_ammissibile(t.value.split(' ')) then
+							print (" - Le destinazioni multiple indicate non sono tra loro compatibili %N")
+						else
+							print (" - Da >|" + stato.id + "|< a >|" + dest.id + "|< %N")
+						end
+
 					end
 				else
 					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value.split(' ').first + "|< che non appartiene alla SC!%N")
 				end
+			else
+				print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")
 			end
 		end
 
-	transizione_multipla_ammissibile(lista_stati: LIST[READABLE_STRING_32]):BOOLEAN
-		-- prende in input una  lista di stati e ritorna True se sono ammissibili come sorgenti multiple di una transizione merge
-		-- o come destinazioni multiple di una transizione fork: a due a due devono avere
-		-- un minimo antenato comune di tipo AND in comune
+	-- AGGIUNTE FORK
+
+	transizione_multitarget_ammissibile(lista_stati: LIST[READABLE_STRING_32]):BOOLEAN
+	-- TODO: rifattorizzare nome in destinazioni_multiple_compatibili
+		-- prende in imput una  lista di stati e ritorna True se sono ammissibili come multitarget
+		-- di una transizione fork: a due a due devono avere un minimo antenato comune di tipo AND in comune
 		-- e non devono essere l'uno discendente dell'altro.
 	do
 		Result:=True
@@ -615,8 +578,8 @@ feature -- inizializzazione transizioni
 
 	verifica_internal (transizione: TRANSIZIONE): BOOLEAN
 		do
-			if (attached {STATO_XOR} transizione.sorgente.first as ts and then ts.antenato_di (transizione.destinazione.first)) or else (transizione.destinazione.first.antenato_di (transizione.sorgente.first)) or else (transizione.destinazione.first = transizione.sorgente.first) then
--- PRIMA DI MERGE if (attached {STATO_XOR} transizione.sorgente as ts and then ts.antenato_di (transizione.destinazione.first)) or else (transizione.destinazione.first.antenato_di (transizione.sorgente)) or else (transizione.destinazione.first = transizione.sorgente) then
+			if (attached {STATO_XOR} transizione.sorgente as ts and then ts.antenato_di (transizione.destinazione.first)) or else (transizione.destinazione.first.antenato_di (transizione.sorgente)) or else (transizione.destinazione.first = transizione.sorgente) then
+--OLD		if (attached {STATO_XOR} transizione.sorgente as ts and then ts.antenato_di (transizione.destinazione)) or else (transizione.destinazione.antenato_di (transizione.sorgente)) or else (transizione.destinazione = transizione.sorgente) then
 				Result := true
 			end
 		end
@@ -633,15 +596,14 @@ feature -- inizializzazione transizioni
 	-- TODO: migliorare il controllo della correttezza sintattica delle condizione per interi
 		do
 			if attached transition.attribute_by_name ("cond") as cond then
-				-- TODO: migliorare la stampa in caso di errori producendo l'elenco completo di tutte le sorgenti e di tutte le destinazioni in caso di transizioni MERGE e FORK
 				if id_illegittimo (cond.value) then
-					print ("ERRORE: la transizione da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica una condizione di valore >|" + cond.value + "|< stringa vuota o blank o Valore_Nullo !%N")
+					print ("ERRORE: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica una condizione di valore >|" + cond.value + "|< stringa vuota o blank o Valore_Nullo !%N")
 --OLD				print ("ERRORE: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|< specifica una condizione di valore >|" + cond.value + "|< stringa vuota o blank o Valore_Nullo !%N")
 				else
 					if booleana_legittima (cond.value) or intera_legittima (cond.value) then
 						transizione.set_condizione (pulisci_stringa (cond.value))
 					else
-						print ("ERRORE: la transizione da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica una condizione di valore (non pulito) >|" + cond.value + "|< illegittimo !%N")
+						print ("ERRORE: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica una condizione di valore (non pulito) >|" + cond.value + "|< illegittimo !%N")
 --OLD					print ("ERRORE: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|< specifica una condizione di valore (non pulito) >|" + cond.value + "|< illegittimo !%N")
 					end
 				end
@@ -701,8 +663,7 @@ feature -- inizializzazione azioni
 				elseif al.item.name ~ "log" then
 					assegna_azione_log (al.item, transizione)
 				else
-				-- TODO: migliorare la stampa producendo l'elenco completo di tutte le sorgenti e di tutte le destinazioni in caso di transizioni MERGE e FORK
-					print ("AVVISO: la transizione da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica un'azione >|" + al.item.name + "|< sconosciuta!%N")
+					print ("AVVISO: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica un'azione >|" + al.item.name + "|< sconosciuta!%N")
 --OLD				print ("AVVISO: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|< specifica un'azione >|" + al.item.name + "|< sconosciuta!%N")
 				end
 			end
@@ -718,8 +679,7 @@ feature -- inizializzazione azioni
 			if esito ~ "OK" then
 				transizione.azioni.force (creatore_di_assegna.crea_istanza (variabile, espressione), transizione.azioni.count + 1)
 			else
-				-- TODO: migliorare la stampa producendo l'elenco complet di tutte le sorgenti e di tutte le destinazioni in caso di transizioni MERGE e FORK
-				testo := "nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|<"
+				testo := "nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.first.id + "|<"
 --OLD			testo := "nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|<"
 				creatore_di_assegna.stampa_errata (testo, esito, variabile, espressione)
 			end
@@ -739,8 +699,7 @@ feature -- inizializzazione azioni
 			if attached p_azione.attribute_by_name ("name") as name then
 				transizione.azioni.force (create {STAMPA}.make_with_text (name.value), transizione.azioni.count + 1)
 			else
-				-- TODO: migliorare la stampa producendo l'elenco completo di tutte le sorgenti e di tutte le destinazioni in caso di transizioni MERGE e FORK
-				print ("ERRORE: l'azione <log> nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|< non ha attributo 'name'!%N")
+				print ("ERRORE: l'azione <log> nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.first.id + "|< non ha attributo 'name'!%N")
 --OLD			print ("ERRORE: l'azione <log> nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|< non ha attributo 'name'!%N")
 			end
 		end
@@ -887,7 +846,7 @@ feature -- supporto generale
 			if element.name ~ "transition" then
 				print ("%N   con evento " + valore_attributo (element, "event"))
 				print ("%N   con condizione " + valore_attributo (element, "cond"))
-				print ("%N   con ulteriori sorgenti " + valore_attributo (element, "source"))
+				-- non va modificato perché stampa tutto il valore dell'attributo "target"
 				print ("%N   con destinazione " + valore_attributo (element, "target"))
 				print ("%N")
 			elseif element.has_attribute_by_name ("id") then
