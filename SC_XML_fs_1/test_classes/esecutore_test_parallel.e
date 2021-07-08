@@ -9,181 +9,147 @@ class
 
 inherit
 	ESECUTORE_TEST
+	redefine
+			on_prepare
+		end
 
-feature -- Test
+feature {NONE} -- Supporto
+
+	conf_finale: LINKED_SET [STRING]
+
+feature -- Test routines
+
+	on_prepare
+		do
+			Precursor
+			create conf_finale.make
+		end
 
 	t_base_parallelo
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "base_parallelo.xml"
-			nomi_files_prova [2] := test_data_dir + "base_parallelo_eventi.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( C )", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"C") )
+ 		do
+			conf_finale.force("C")
+			evoluzione_state_chart("base_parallelo.xml", "base_parallelo_eventi.txt", conf_finale)
 		end
 
 	t_condizioni_parallelo
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "parallelo_condizioni.xml"
-			nomi_files_prova [2] := test_data_dir + "parallelo_condizioni_eventi.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( C )", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"C") )
-	 		assert ("ERRORE il sistema non impostato correttamente le condizioni", esecutore.state_chart.variabili.booleane.item ("alfa"))
+ 		do
+			conf_finale.force("C")
+			evoluzione_state_chart("parallelo_condizioni.xml", "parallelo_condizioni_eventi.txt", conf_finale)
+			--assert ("ERRORE il sistema non impostato correttamente le condizioni", esecutore.state_chart.variabili.booleane.item ("alfa"))
 		end
 
 	t_entrata
 	-- La transizione ha come target lo stato AND
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "entrata_1.xml"
-			nomi_files_prova [2] := test_data_dir + "entrata_1_eventi.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A2A1 - A2B1 )", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"A2A1") and conf_has_state(esecutore.state_chart.conf_base,"A2B1") )
+ 		do
+			conf_finale.force("A2A1")
+			conf_finale.force("A2B1")
+			evoluzione_state_chart("entrata_1.xml", "entrata_1_eventi.txt", conf_finale)
 		end
 
 	t_entrata_2
 	-- La transizione ha come target un sotto-stato dello stato AND
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "entrata_2.xml"
-			nomi_files_prova [2] := test_data_dir + "entrata_2_eventi.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A2A2 - A2B1 )", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"A2A2") and conf_has_state(esecutore.state_chart.conf_base,"A2B1") )
+ 		do
+			conf_finale.force("A2A2")
+			conf_finale.force("A2B1")
+			evoluzione_state_chart("entrata_2.xml", "entrata_2_eventi.txt", conf_finale)
 		end
 
 	t_uscita
 	-- La transizione esce da un sotto-stato dello stato AND
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "uscita.xml"
-			nomi_files_prova [2] := test_data_dir + "uscita_eventi.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A1 )", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"A1") )
+ 		do
+			conf_finale.force("A1")
+			evoluzione_state_chart("uscita.xml", "uscita_eventi.txt", conf_finale)
 		end
 
 	t_esempio_complesso
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "complesso.xml"
-			nomi_files_prova [2] := test_data_dir + "complesso_eventi.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A11 )", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"A11") )
+ 		do
+			conf_finale.force("A11")
+			evoluzione_state_chart("complesso.xml", "complesso_eventi.txt", conf_finale)
 		end
 
 	t_transizione_parallelo_interna
 	-- Arianna & Riccardo 26/04/2020
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "transizione_parallelo_interna.xml"
-			nomi_files_prova [2] := test_data_dir + "transizione_parallelo_interna_eventi.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( A2A2 , A2B2 )", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"A2A2") and  conf_has_state(esecutore.state_chart.conf_base,"A2B2"))
+ 		do
+			conf_finale.force("A2A2")
+			conf_finale.force("A2B2")
+			evoluzione_state_chart("transizione_parallelo_interna.xml", "transizione_parallelo_interna_eventi.txt", conf_finale)
 		end
 
 	t_parallelo_una_profondita
 	-- Arianna & Riccardo 26/04/2020
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "parallelo_una_profondita.xml"
-			nomi_files_prova [2] := test_data_dir + "parallelo_una_profondita_eventi.txt"
-			create esecutore.make (nomi_files_prova)
-			 assert ("ERRORE lo stato corrente non è (A,UNO)", conf_has_state(esecutore.state_chart.conf_base,"A") and conf_has_state(esecutore.state_chart.conf_base,"UNO"))
+ 		do
+			conf_finale.force("A")
+			conf_finale.force("UNO")
+			evoluzione_state_chart("parallelo_una_profondita.xml", "parallelo_una_profondita_eventi.txt", conf_finale)
 		end
 
 	t_parallelo_piu_profondo
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "parallelo_piu_profondo.xml"
-			nomi_files_prova [2] := test_data_dir + "parallelo_piu_profondo_eventi.txt"
-			create esecutore.make (nomi_files_prova)
-			 assert ("ERRORE lo stato corrente non è (A2A1, P1, P2)", conf_has_state(esecutore.state_chart.conf_base,"A2A1") and conf_has_state(esecutore.state_chart.conf_base,"P1") and conf_has_state(esecutore.state_chart.conf_base,"P2"))
+ 		do
+			conf_finale.force("A2A1")
+			conf_finale.force("P1")
+			conf_finale.force("P2")
+			evoluzione_state_chart("parallelo_piu_profondo.xml", "parallelo_piu_profondo_eventi.txt", conf_finale)
 		end
 
 	t_misto_parallel_1
 	-- Alessandro & Giulia 01/05/2020
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "multi_parallel_1.xml"
-			nomi_files_prova [2] := test_data_dir + "multi_parallel_1_eventi.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE lo configurazione base corrente non è (A,B2,B1)", conf_has_state(esecutore.state_chart.conf_base,"A") and conf_has_state(esecutore.state_chart.conf_base,"B1") and conf_has_state(esecutore.state_chart.conf_base,"B2"))
+ 		do
+			conf_finale.force("A")
+			conf_finale.force("B2")
+			conf_finale.force ("B1")
+			evoluzione_state_chart("multi_parallel_1.xml", "multi_parallel_1_eventi.txt", conf_finale)
 		end
 
 	t_transizioni_interne_parallel
 	--Claudia & Federico 01/05/2020
 	--Quando vengono eseguite transizioni all' interno di uno stato parallelo, a sua volta contenuto in uno stato parallelo
 	--Viene "scordata" la configurazione a livello più alto (nell' esecuzione di questo test la configurazione finale dovrebbe contenere anche lo stato B1, che invece non appare)
-	local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "transizioni_interne_parallelo.xml"
-			nomi_files_prova [2] := test_data_dir + "transizioni_interne_parallelo_eventi.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE lo configurazione base corrente non è (A1A2,A1B,A1C,B1)", conf_has_state(esecutore.state_chart.conf_base,"A1A2") and conf_has_state(esecutore.state_chart.conf_base,"A1B") and conf_has_state(esecutore.state_chart.conf_base,"A1C") and conf_has_state(esecutore.state_chart.conf_base,"B1"))
+ 		do
+			conf_finale.force("A1A2")
+			conf_finale.force("A1B")
+			conf_finale.force ("A1C")
+			conf_finale.force ("B1")
+			evoluzione_state_chart("transizioni_interne_parallelo.xml", "transizioni_interne_parallelo_eventi.txt", conf_finale)
 		end
 
 	t_transizione_non_ammissibile
 	-- Arianna Calzuola & Riccardo Malandruccolo 07/05/2020
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "transizione_non_ammissibile.xml"
- 		nomi_files_prova [2] := test_data_dir + "transizione_non_ammissibile_eventi.txt"
-		create esecutore.make (nomi_files_prova)
-		assert ("ERRORE lo stato corrente non è (P1, P2)", conf_has_state(esecutore.state_chart.conf_base,"P1") and conf_has_state(esecutore.state_chart.conf_base,"P2"))
-	end
+ 		do
+			conf_finale.force("P1")
+			conf_finale.force("P2")
+			evoluzione_state_chart("transizione_non_ammissibile.xml", "transizione_non_ammissibile_eventi.txt", conf_finale)
+		end
 
 	t_internal_con_sorgente_parallelo
 	-- Arianna Calzuola & Riccardo Malandruccolo 08/05/2020
 	-- se la transizione fosse internal si dimenticherebbe della struttura in parallelo
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "internal_da_parallelo.xml"
-  			nomi_files_prova [2] := test_data_dir + "internal_da_parallelo_eventi.txt"
-			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (P1,P2B)", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"P1") and conf_has_state(esecutore.state_chart.conf_base,"P2B"))
+ 		do
+			conf_finale.force("P1")
+			conf_finale.force("P2B")
+			evoluzione_state_chart("internal_da_parallelo.xml", "internal_da_parallelo_eventi.txt", conf_finale)
 		end
 
 	t_figlio_genitore
 	-- Arianna & Riccardo 21/05/2020
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "transizione_figlio_genitore.xml"
-  			nomi_files_prova [2] := test_data_dir + "transizione_figlio_genitore_eventi.txt"
-			create esecutore.make (nomi_files_prova)
-			assert("ERRORE: il sistema non termina in (P1A1,P1B1,P2)", esecutore.state_chart.conf_base.count = 3 and conf_has_state(esecutore.state_chart.conf_base,"P1A1") and conf_has_state(esecutore.state_chart.conf_base,"P1B1") and conf_has_state(esecutore.state_chart.conf_base,"P2"))
+ 		do
+			conf_finale.force("P1A1")
+			conf_finale.force("P1B1")
+			conf_finale.force ("P2")
+			evoluzione_state_chart("transizione_figlio_genitore.xml", "transizione_figlio_genitore_eventi.txt", conf_finale)
 		end
 
 	t_transizione_senza_evento_1
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "transizione_senza_evento_parallelo.xml"
-			nomi_files_prova [2] := test_data_dir + "transizione_senza_evento_parallelo_eventi.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non termina negli stati corretti ( S2 T2 )", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"S2") and conf_has_state(esecutore.state_chart.conf_base,"T2") )
+ 		do
+			conf_finale.force("S2")
+			conf_finale.force("T2")
+			evoluzione_state_chart("transizione_senza_evento_parallelo.xml", "transizione_senza_evento_parallelo_eventi.txt", conf_finale)
 		end
 
 	t_transizione_senza_evento_2
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "transizione_senza_evento_parallelo_bis.xml"
-			nomi_files_prova [2] := test_data_dir + "transizione_senza_evento_parallelo_eventi.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non termina negli stati corretti ( S2 T2 )", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"S2") and conf_has_state(esecutore.state_chart.conf_base,"T2") )
+ 		do
+			conf_finale.force("S2")
+			conf_finale.force("T2")
+			evoluzione_state_chart("transizione_senza_evento_parallelo_bis.xml", "transizione_senza_evento_parallelo_eventi.txt", conf_finale)
 		end
 
 end

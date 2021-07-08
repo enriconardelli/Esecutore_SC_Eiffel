@@ -10,318 +10,255 @@ class
 inherit
 
 	ESECUTORE_TEST
+	redefine
+			on_prepare
+		end
+
+feature {NONE} -- Supporto
+
+	conf_finale: LINKED_SET [STRING]
 
 feature -- Test routines
+
+	on_prepare
+		do
+			Precursor
+			create conf_finale.make
+		end
 
 	t_non_determinismo_1_1
 	 --Filippo & Iezzi 08/05/2020
 	 --finisce in C perché esegue la transizione più interna
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "non_determinismo_1.xml"
-			nomi_files_prova [2] := test_data_dir + "non_determinismo_1_1_eventi.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( C )", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"C") )
+		 do
+			conf_finale.force("C")
+			evoluzione_state_chart("non_determinismo_1.xml", "non_determinismo_1_1_eventi.txt", conf_finale)
 		end
 
 	t_non_determinismo_1_2
 	 --Filippo & Iezzi 08/05/2020
 	 --finisce in B perché compare prima nel file xml
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "non_determinismo_1.xml"
-			nomi_files_prova [2] := test_data_dir + "non_determinismo_1_2_eventi.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( B )", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"B") )
+		 do
+			conf_finale.force("B")
+			evoluzione_state_chart("non_determinismo_1.xml", "non_determinismo_1_2_eventi.txt", conf_finale)
 		end
 
 	t_non_determinismo_1_3
 	 --Filippo & Iezzi 08/05/2020
 	 --finisce in D1 perché esegue la transizione dal primo stato della configurazione
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "non_determinismo_1.xml"
-			nomi_files_prova [2] := test_data_dir + "non_determinismo_1_3_eventi.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( D1 )", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"D1") )
+		 do
+			conf_finale.force("D1")
+			evoluzione_state_chart("non_determinismo_1.xml", "non_determinismo_1_3_eventi.txt", conf_finale)
 		end
 
 	t_non_determinismo_1_3_alt
 	 --finisce in D1 perché esegue la transizione dal primo stato della configurazione
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "non_determinismo_1_alt.xml"
-			nomi_files_prova [2] := test_data_dir + "non_determinismo_1_3_eventi.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( D1 )", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"D1") )
+		 do
+			conf_finale.force("D1")
+			evoluzione_state_chart("non_determinismo_1_alt.xml", "non_determinismo_1_3_eventi.txt", conf_finale)
 		end
 
 	t_non_determinismo_1_4
 	 --Filippo & Iezzi 08/05/2020
 	 --finisce in D1 perché esegue la transizione dal primo stato della configurazione
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "non_determinismo_1.xml"
-			nomi_files_prova [2] := test_data_dir + "non_determinismo_1_4_eventi.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( D1 )", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"D1") )
+		 do
+			conf_finale.force("D1")
+			evoluzione_state_chart("non_determinismo_1.xml", "non_determinismo_1_4_eventi.txt", conf_finale)
 		end
 
 	t_non_determinismo_1_4_alt
 	 --finisce in D1 perché esegue la transizione dal primo stato della configurazione
-		local
-			esecutore: ESECUTORE
-		do
-			nomi_files_prova [1] := test_data_dir + "non_determinismo_1_alt.xml"
-			nomi_files_prova [2] := test_data_dir + "non_determinismo_1_4_eventi.txt"
-			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato negli stati corretti ( D1 )", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"D1") )
+		 do
+			conf_finale.force("D1")
+			evoluzione_state_chart("non_determinismo_1_alt.xml", "non_determinismo_1_4_eventi.txt", conf_finale)
 		end
 
 	t_non_determinismo_1_5
 	-- Alessandro Filippo & Giulia Iezzi 25/05/2020
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "non_determinismo_1_5.xml"
-  		nomi_files_prova [2] := test_data_dir + "non_determinismo_1_5_eventi.txt"
-		create esecutore.make (nomi_files_prova)
-		assert("ERRORE: il sistema non termina in (A3,B11,B12b)", esecutore.state_chart.conf_base.count = 3 and conf_has_state(esecutore.state_chart.conf_base,"A3") and conf_has_state(esecutore.state_chart.conf_base,"B11")  and conf_has_state(esecutore.state_chart.conf_base,"B12b"))
-	end
+		 do
+			conf_finale.force("A3")
+			conf_finale.force("B11")
+			conf_finale.force("B12b")
+			evoluzione_state_chart("non_determinismo_1_5.xml", "non_determinismo_1_5_eventi.txt", conf_finale)
+		end
+
 
 	t_non_determinismo_1_5_1
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "non_determinismo_1_5_1.xml"
-  		nomi_files_prova [2] := test_data_dir + "non_determinismo_1_5_eventi.txt"
-		create esecutore.make (nomi_files_prova)
-		assert("ERRORE: il sistema non termina in (A3,B11a,B12a)", esecutore.state_chart.conf_base.count = 3 and conf_has_state(esecutore.state_chart.conf_base,"A3") and conf_has_state(esecutore.state_chart.conf_base,"B11a")  and conf_has_state(esecutore.state_chart.conf_base,"B12a"))
-	end
+		 do
+			conf_finale.force("A3")
+			conf_finale.force("B11a")
+			conf_finale.force("B12a")
+			evoluzione_state_chart("non_determinismo_1_5_1.xml", "non_determinismo_1_5_eventi.txt", conf_finale)
+		end
+
 
 	t_non_determinismo_1_5_2
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "non_determinismo_1_5_2.xml"
-  		nomi_files_prova [2] := test_data_dir + "non_determinismo_1_5_eventi.txt"
-		create esecutore.make (nomi_files_prova)
-		assert("ERRORE: il sistema non termina in (A3,B11a,B12b)", esecutore.state_chart.conf_base.count = 3 and conf_has_state(esecutore.state_chart.conf_base,"A3") and conf_has_state(esecutore.state_chart.conf_base,"B11a")  and conf_has_state(esecutore.state_chart.conf_base,"B12b"))
-	end
+		 do
+			conf_finale.force("A3")
+			conf_finale.force("B11a")
+			conf_finale.force("B12b")
+			evoluzione_state_chart("non_determinismo_1_5_2.xml", "non_determinismo_1_5_eventi.txt", conf_finale)
+		end
+
 
 	t_non_determinismo_1_5_3
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "non_determinismo_1_5_3.xml"
-  		nomi_files_prova [2] := test_data_dir + "non_determinismo_1_5_eventi.txt"
-		create esecutore.make (nomi_files_prova)
-		assert("ERRORE: il sistema non termina in (A3,B11a,B12b)", esecutore.state_chart.conf_base.count = 3 and conf_has_state(esecutore.state_chart.conf_base,"A3") and conf_has_state(esecutore.state_chart.conf_base,"B11a")  and conf_has_state(esecutore.state_chart.conf_base,"B12b"))
-	end
+		 do
+			conf_finale.force("A3")
+			conf_finale.force("B11a")
+			conf_finale.force("B12b")
+			evoluzione_state_chart("non_determinismo_1_5_3.xml", "non_determinismo_1_5_eventi.txt", conf_finale)
+		end
 
 	t_non_determinismo_1_6
 	-- Alessandro Filippo & Giulia Iezzi 25/05/2020
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "non_determinismo_1_6.xml"
-  		nomi_files_prova [2] := test_data_dir + "non_determinismo_1_6_eventi.txt"
-		create esecutore.make (nomi_files_prova)
-		assert("ERRORE: il sistema non termina in (B1,B21)", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"B1") and conf_has_state(esecutore.state_chart.conf_base,"B21"))
-	end
+		 do
+			conf_finale.force("B1")
+			conf_finale.force("B21")
+			evoluzione_state_chart("non_determinismo_1_6.xml", "non_determinismo_1_6_eventi.txt", conf_finale)
+		end
 
 	t_non_determinismo_1_6_var
 	-- TODO: rispetto a 1_6 gli eventi compaiono in ordine diverso (sempre nello stesso istante)
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "non_determinismo_1_6.xml"
-  		nomi_files_prova [2] := test_data_dir + "non_determinismo_1_6_eventi_var.txt"
-		create esecutore.make (nomi_files_prova)
-		assert("ERRORE: il sistema non termina in (B1,B21)", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"B1") and conf_has_state(esecutore.state_chart.conf_base,"B21"))
-	end
+		 do
+			conf_finale.force("B1")
+			conf_finale.force("B21")
+			evoluzione_state_chart("non_determinismo_1_6.xml", "non_determinismo_1_6_eventi_var.txt", conf_finale)
+		end
 
 	t_non_determinismo_1_7_1
 	-- Alessandro Filippo & Giulia Iezzi 25/05/2020
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "non_determinismo_1_7_1.xml"
-  		nomi_files_prova [2] := test_data_dir + "non_determinismo_1_7_eventi.txt"
-		create esecutore.make (nomi_files_prova)
-		assert("ERRORE: il sistema non termina in (C)", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"C"))
-	end
+		 do
+			conf_finale.force("C")
+			evoluzione_state_chart("non_determinismo_1_7_1.xml", "non_determinismo_1_7_eventi.txt", conf_finale)
+		end
 
 	t_non_determinismo_1_7_2
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "non_determinismo_1_7_2.xml"
-  		nomi_files_prova [2] := test_data_dir + "non_determinismo_1_7_eventi.txt"
-		create esecutore.make (nomi_files_prova)
-		assert("ERRORE: il sistema non termina in (B11,A2)", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"B11") and conf_has_state(esecutore.state_chart.conf_base,"A2"))
-	end
+		 do
+			conf_finale.force("B11")
+			conf_finale.force("A2")
+			evoluzione_state_chart("non_determinismo_1_7_2.xml", "non_determinismo_1_7_eventi.txt", conf_finale)
+		end
 
 	t_non_determinismo_1_7_3
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "non_determinismo_1_7_3.xml"
-  		nomi_files_prova [2] := test_data_dir + "non_determinismo_1_7_eventi.txt"
-		create esecutore.make (nomi_files_prova)
-		assert("ERRORE: il sistema non termina in (C)", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"C"))
-	end
+		 do
+			conf_finale.force("C")
+			evoluzione_state_chart("non_determinismo_1_7_3.xml", "non_determinismo_1_7_eventi.txt", conf_finale)
+		end
 
 	t_non_determinismo_1_7_4
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "non_determinismo_1_7_4.xml"
-  		nomi_files_prova [2] := test_data_dir + "non_determinismo_1_7_eventi.txt"
-		create esecutore.make (nomi_files_prova)
-		assert("ERRORE: il sistema non termina in (B11,A1)", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"B11") and conf_has_state(esecutore.state_chart.conf_base,"A1"))
-	end
+		 do
+			conf_finale.force("B11")
+			conf_finale.force("A1")
+			evoluzione_state_chart("non_determinismo_1_7_4.xml", "non_determinismo_1_7_eventi.txt", conf_finale)
+		end
 
 	t_non_determinismo_2_1
 	-- Arianna Calzuola & Riccardo Malandruccolo 08/05/2020
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "non_determinismo_2_1.xml"
-  		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_1_eventi.txt"
-		create esecutore.make (nomi_files_prova)
-		assert("ERRORE: il sistema non termina in (P1B,P2A)", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"P1B") and conf_has_state(esecutore.state_chart.conf_base,"P2A"))
-	end
+		 do
+			conf_finale.force("P1B")
+			conf_finale.force("P2A")
+			evoluzione_state_chart("non_determinismo_2_1.xml", "non_determinismo_2_1_eventi.txt", conf_finale)
+		end
 
 	t_non_determinismo_2_2
 	-- Arianna Calzuola & Riccardo Malandruccolo 08/05/2020
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "non_determinismo_2_2.xml"
-  		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_2_eventi.txt"
-		create esecutore.make (nomi_files_prova)
-		assert("ERRORE 2_2: il sistema non entra in A", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"A"))
-	end
+		 do
+			conf_finale.force("A")
+			evoluzione_state_chart("non_determinismo_2_2.xml", "non_determinismo_2_2_eventi.txt", conf_finale)
+		end
 
 	t_non_determinismo_2_3
 	-- Arianna Calzuola & Riccardo Malandruccolo 08/05/2020
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "non_determinismo_2_3.xml"
-  		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_3_eventi.txt"
-		create esecutore.make (nomi_files_prova)
-		assert("ERRORE 2_3: il sistema non termina in (B,P2)", esecutore.state_chart.conf_base.count = 2 and conf_has_state(esecutore.state_chart.conf_base,"B") and conf_has_state(esecutore.state_chart.conf_base,"P2"))
-	end
+		 do
+			conf_finale.force("B")
+			conf_finale.force("P2")
+			evoluzione_state_chart("non_determinismo_2_3.xml", "non_determinismo_2_3_eventi.txt", conf_finale)
+		end
 
 	t_non_determinismo_2_4
 	-- Arianna & Riccardo 21/05/2020
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "non_determinismo_2_4.xml"
-  		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_4_eventi.txt"
-		create esecutore.make (nomi_files_prova)
-		assert("ERRORE: il sistema non termina in (P1A2,P1B1,P2)", esecutore.state_chart.conf_base.count = 3 and conf_has_state(esecutore.state_chart.conf_base,"P1A2") and conf_has_state(esecutore.state_chart.conf_base,"P1B1") and conf_has_state(esecutore.state_chart.conf_base,"P2"))
-	end
+		 do
+			conf_finale.force("P1A2")
+			conf_finale.force("P1B1")
+			conf_finale.force("P2")
+			evoluzione_state_chart("non_determinismo_2_4.xml", "non_determinismo_2_4_eventi.txt", conf_finale)
+		end
 
 	t_non_determinismo_2_5_1
 	-- Arianna & Riccardo 21/05/2020
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "non_determinismo_2_5.xml"
-  		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_5_1_eventi.txt"
-		create esecutore.make (nomi_files_prova)
-		assert("ERRORE: il sistema non termina in (P1B,P2A,R1B,R2A)", esecutore.state_chart.conf_base.count = 4 and conf_has_state(esecutore.state_chart.conf_base,"P1B") and conf_has_state(esecutore.state_chart.conf_base,"P2A") and conf_has_state(esecutore.state_chart.conf_base,"R1B") and conf_has_state(esecutore.state_chart.conf_base,"R2A"))
-	end
+		 do
+			conf_finale.force("P1B")
+			conf_finale.force("P2A")
+			conf_finale.force("R1B")
+			conf_finale.force("R2A")
+			evoluzione_state_chart("non_determinismo_2_5.xml", "non_determinismo_2_5_1_eventi.txt", conf_finale)
+		end
 
 	t_non_determinismo_2_5_2
 	-- Arianna & Riccardo 21/05/2020
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "non_determinismo_2_5.xml"
-  		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_5_2_eventi.txt"
-		create esecutore.make (nomi_files_prova)
-		assert("ERRORE: il sistema non termina in (P1B,P2A,G)", esecutore.state_chart.conf_base.count = 3 and conf_has_state(esecutore.state_chart.conf_base,"P1B") and conf_has_state(esecutore.state_chart.conf_base,"P2A") and conf_has_state(esecutore.state_chart.conf_base,"G"))
-	end
+		 do
+			conf_finale.force("P1B")
+			conf_finale.force("P2A")
+			conf_finale.force("G")
+			evoluzione_state_chart("non_determinismo_2_5.xml", "non_determinismo_2_5_2_eventi.txt", conf_finale)
+		end
 
 	t_non_determinismo_2_6
 	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "non_determinismo_2_6.xml"
- 		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_6_eventi.txt"
-		create esecutore.make (nomi_files_prova)
-		assert("ERRORE: il sistema non termina in (P1A1B, P1A2, P1A3B, P2A2, P2B, P2C1A, P2C1B, A2, B1, P3B1)", esecutore.state_chart.conf_base.count = 10 and conf_has_state(esecutore.state_chart.conf_base,"P1A1B") and conf_has_state(esecutore.state_chart.conf_base,"P1A2")  and conf_has_state(esecutore.state_chart.conf_base,"P1A3B") and conf_has_state(esecutore.state_chart.conf_base,"P2A2")  and conf_has_state(esecutore.state_chart.conf_base,"P2B") and conf_has_state(esecutore.state_chart.conf_base,"P2C1A")  and conf_has_state(esecutore.state_chart.conf_base,"P2C1B") and conf_has_state(esecutore.state_chart.conf_base,"A2")  and conf_has_state(esecutore.state_chart.conf_base,"B1") and conf_has_state(esecutore.state_chart.conf_base,"P3B1"))
-	end
+		 do
+			conf_finale.force("P1A1B")
+			conf_finale.force("P1A2")
+			conf_finale.force("P1A3B")
+			conf_finale.force("P2A2")
+			conf_finale.force("P2B")
+			conf_finale.force("P2C1A")
+			conf_finale.force("P2C1B")
+			conf_finale.force("A2")
+			conf_finale.force("B1")
+			conf_finale.force("P3B1")
+			evoluzione_state_chart("non_determinismo_2_6.xml", "non_determinismo_2_6_eventi.txt", conf_finale)
+		end
 
 	t_non_determinismo_2_7_1
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "non_determinismo_2_7.xml"
- 		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_7_eventi.txt"
-		create esecutore.make (nomi_files_prova)
-		assert("ERRORE: il sistema non termina in (P1B,P2A,G)", esecutore.state_chart.conf_base.count = 3 and conf_has_state(esecutore.state_chart.conf_base,"P1B") and conf_has_state(esecutore.state_chart.conf_base,"P2A") and conf_has_state(esecutore.state_chart.conf_base,"G"))
-	end
+		 do
+			conf_finale.force("P1B")
+			conf_finale.force("P2A")
+			conf_finale.force("G")
+			evoluzione_state_chart("non_determinismo_2_7.xml", "non_determinismo_2_7_eventi.txt", conf_finale)
+		end
 
 	t_non_determinismo_2_7_2
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "non_determinismo_2_7_alt.xml"
- 		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_7_eventi.txt"
-		create esecutore.make (nomi_files_prova)
-		assert("ERRORE: il sistema non termina in (P1B,P2A,R1B,R2A)", esecutore.state_chart.conf_base.count = 4 and conf_has_state(esecutore.state_chart.conf_base,"P1B") and conf_has_state(esecutore.state_chart.conf_base,"P2A") and conf_has_state(esecutore.state_chart.conf_base,"R1B") and conf_has_state(esecutore.state_chart.conf_base,"R2A"))
-	end
+		 do
+			conf_finale.force("P1B")
+			conf_finale.force("P2A")
+			conf_finale.force("R1B")
+			conf_finale.force("R2A")
+			evoluzione_state_chart("non_determinismo_2_7_alt.xml", "non_determinismo_2_7_eventi.txt", conf_finale)
+		end
 
 	t_non_determinismo_2_8_1
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "non_determinismo_2_8.xml"
- 		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_8_eventi.txt"
-		create esecutore.make (nomi_files_prova)
-		assert("ERRORE: il sistema non termina in (H)", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"H"))
-	end
+		 do
+			conf_finale.force("H")
+			evoluzione_state_chart("non_determinismo_2_8.xml", "non_determinismo_2_8_eventi.txt", conf_finale)
+		end
 
 	t_non_determinismo_2_8_2
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "non_determinismo_2_8_alt.xml"
- 		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_8_eventi.txt"
-		create esecutore.make (nomi_files_prova)
-		assert("ERRORE: il sistema non termina in (P1A,P2A,R1B,R2A)", esecutore.state_chart.conf_base.count = 4 and conf_has_state(esecutore.state_chart.conf_base,"P1A") and conf_has_state(esecutore.state_chart.conf_base,"P2A") and conf_has_state(esecutore.state_chart.conf_base,"R1B") and conf_has_state(esecutore.state_chart.conf_base,"R2A"))
-	end
+		 do
+			conf_finale.force("P1A")
+			conf_finale.force("P2A")
+			conf_finale.force("R1B")
+			conf_finale.force("R2A")
+			evoluzione_state_chart("non_determinismo_2_8_alt.xml", "non_determinismo_2_8_eventi.txt", conf_finale)
+		end
 
 	t_non_determinismo_2_9_1
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "non_determinismo_2_9.xml"
- 		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_9_eventi.txt"
-		create esecutore.make (nomi_files_prova)
-		assert("ERRORE: il sistema non termina in (F)", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"F"))
-	end
+		 do
+			conf_finale.force("F")
+			evoluzione_state_chart("non_determinismo_2_9.xml", "non_determinismo_2_9_eventi.txt", conf_finale)
+		end
 
 	t_non_determinismo_2_9_2
-	local
-		esecutore: ESECUTORE
-	do
-		nomi_files_prova [1] := test_data_dir + "non_determinismo_2_9_alt.xml"
- 		nomi_files_prova [2] := test_data_dir + "non_determinismo_2_9_eventi.txt"
-		create esecutore.make (nomi_files_prova)
-		assert("ERRORE: il sistema non termina in (F)", esecutore.state_chart.conf_base.count = 1 and conf_has_state(esecutore.state_chart.conf_base,"F"))
-	end
-
+		 do
+			conf_finale.force("F")
+			evoluzione_state_chart("non_determinismo_2_9_alt.xml", "non_determinismo_2_9_eventi.txt", conf_finale)
+		end
 end

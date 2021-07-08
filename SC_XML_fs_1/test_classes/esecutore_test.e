@@ -44,4 +44,31 @@ feature -- Test routines
 			end
 		end
 
+	conf_has_states( conf: ARRAY [STATO]; stato: LINKED_SET [STRING]):BOOLEAN
+	-- Controlla se `conf' e `stato' sono uguali
+		do
+			Result := True
+			if conf.count /= stato.count then
+				Result := FALSE
+			end
+			across stato as s
+			loop
+		    	if not conf_has_state (conf , s.item) then
+		    		Result := False
+		    	end
+			end
+
+		end
+
+	evoluzione_state_chart(stati: STRING; eventi: STRING; stati_corretti: LINKED_SET[STRING])
+	--Prende in input il file .xml della state-chart e il file .txt degli eventi e restituisce errore se
+	--il sistema non termina negli stati corretti.
+		local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + stati
+			nomi_files_prova [2] := test_data_dir + eventi
+			create esecutore.make (nomi_files_prova)
+			assert ("ERRORE il sistema non ha terminato nello stato corretto ", conf_has_states(esecutore.state_chart.conf_base, stati_corretti))
+		end
 end
