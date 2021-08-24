@@ -13,8 +13,8 @@ class
 inherit
 	ESECUTORE_TEST
 	redefine
-			on_prepare
-		end
+		on_prepare
+	end
 
 feature {NONE} -- Supporto
 
@@ -26,7 +26,6 @@ feature {NONE} -- Supporto
 		do
 			test_data_dir_local.append_character(a_path.directory_separator)
 			evoluzione_state_chart(test_data_dir_local + "transizioni.xml",test_data_dir_local + eventi,stati_corretti)
-
 		end
 
 feature -- Test routines
@@ -35,6 +34,7 @@ feature -- Test routines
 			Precursor
 			create conf_finale.make
 		end
+
 	t_transizioni_legali_1
 
 		do 	conf_finale.force("A1a")
