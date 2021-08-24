@@ -5,7 +5,7 @@
 		<state id="A">	
 		</state>
 		<parallel id="B">
-			<state id="B1" initial="B12">
+			<state id="B1" initial="B11">
 				<state id="B11">
 				</state>
 				<state id="B12">
