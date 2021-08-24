@@ -171,10 +171,10 @@ feature -- evoluzione della statechart
 					end
 
 					if attached{STORIA_DEEP} stato_temp.storia as storia then
-						-- se la storia ï¿½ "deep" salvo tutto l'array del percorso
+						-- se la storia è "deep" salvo tutto l'array del percorso
 						storia.aggiungi_stati (percorso_uscita)
 					elseif attached{STORIA_SHALLOW} stato_temp.storia as storia then
-						-- se la storia ï¿½ "shallow" salvo solo lo stato uscente allo stesso livello della storia
+						-- se la storia è "shallow" salvo solo lo stato uscente allo stesso livello della storia
 						storia.memorizza_stato (percorso_uscita.first)
 					end
 				end
@@ -184,7 +184,7 @@ feature -- evoluzione della statechart
 	trova_transizioni_eseguibili(eventi: LINKED_SET[STRING]; variabili: DATAMODEL): ARRAY[TRANSIZIONE]
 		-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
 		-- restituisce l'array di transizioni che possono essere eseguite nello stato attuale del sistema
-		-- rispettando le specifiche SCXML dell'ordine degli stati nel file .xml e della gerarchia (prioritï¿½ strutturale object-oriented)
+		-- rispettando le specifiche SCXML dell'ordine degli stati nel file .xml e della gerarchia (priorità strutturale object-oriented)
 		local
 			transizioni: ARRAY [TRANSIZIONE]
 			i: INTEGER
@@ -205,10 +205,10 @@ feature -- evoluzione della statechart
 				i = sorgenti.upper + 1
 			loop
 				if i = sorgenti.upper or else not sorgenti[i].antenato_di(sorgenti[i+1]) then
-					-- gli stati in sorgenti non sono tutti stati atomici, perchï¿½ sono gli stati da cui fisicamente partono le transizioni eseguibili,
-					--		e quindi uno stato in sorgenti che ï¿½ antenato dello stato immediatamente successivo non deve essere considerato, perchï¿½
-					--		la prioritï¿½ strutturale object-oriented dï¿½ la prioritï¿½ al secondo. (vedi t_non_determinismo_1_7_3 e 1_7_4)
-					-- se non ï¿½ antenato di questo secondo non ï¿½ antenato di alcun altro dopo di esso, dal momento che il non essere
+					-- gli stati in sorgenti non sono tutti stati atomici, perché sono gli stati da cui fisicamente partono le transizioni eseguibili,
+					--		e quindi uno stato in sorgenti che è antenato dello stato immediatamente successivo non deve essere considerato, perché
+					--		la priorità strutturale object-oriented dà la priorità al secondo. (vedi t_non_determinismo_1_7_3 e 1_7_4)
+					-- se non è antenato di questo secondo non è antenato di alcun altro dopo di esso, dal momento che il non essere
 					--		antenato di quello immediatamente successivo implica - a causa del riordinamento degli stati in sorgenti in base
 					--		all'ordine di specifica nel file .xml - che nessuno dei suoi discendenti possiede transizioni eseguibili
 
@@ -222,11 +222,11 @@ feature -- evoluzione della statechart
 						else
 							-- questa transizione esce da uno stato atomico parallelo di quello della precedente transizione scelta e
 							-- gli AMU (antenato_massimo_uscita) di questi due stati atomici in parallelo tra loro sono uno antenato dell'altro.
-							-- poichï¿½ le transizioni sono sempre associate agli stati atomici questa transizione mi farebbe uscire da
+							-- poiché le transizioni sono sempre associate agli stati atomici questa transizione mi farebbe uscire da
 							-- da un antenato parallelo comune a entrambi gli stati atomici.
-							-- la precedente transizione mi puï¿½ aver giï¿½ fatto uscire da tale comune antenato (vedi test t_non_determinismo_2_8_1)
-							-- e quindi questa transizione o ï¿½ superflua o incompatibile (e la precedente ha la prioritï¿½)
-							-- oppure no (t_non_determinismo_2_8_2) e allora questa transizione ï¿½ incompatibile (e la precedente ha la prioritï¿½)
+							-- la precedente transizione mi può aver già fatto uscire da tale comune antenato (vedi test t_non_determinismo_2_8_1)
+							-- e quindi questa transizione o è superflua o incompatibile (e la precedente ha la priorità)
+							-- oppure no (t_non_determinismo_2_8_2) e allora questa transizione è incompatibile (e la precedente ha la priorità)
 							debug ("SC_transizioni_eseguibili") print(" viene scartato perche' AMU e' antenato o discendente di precedente AMU o coincide.'.%N") end
 						end
 					end
@@ -298,12 +298,12 @@ feature -- evoluzione della statechart
 
 	aggiungi_paralleli (p_destinazione: STATO; prossima_conf_base: ARRAY [STATO])
 	-- inserisce in `prossima_conf_base' i default degli stati in parallelo rispetto al target
-	-- qualora vi siano stati giï¿½ attivi non dï¿½ luogo a configurazioni non corrette
+	-- qualora vi siano stati già attivi non dà luogo a configurazioni non corrette
 	-- TODO: la riga precedente non capisco bene che vuol dire, esprimere meglio
 		do
 			p_destinazione.set_attivo
 			if attached {STATO_AND} p_destinazione.genitore as dg and then not dg.attivo then
-				-- se lo stato genitore ï¿½ un AND scorro i suoi figli
+				-- se lo stato genitore è un AND scorro i suoi figli
 				across dg.initial as dgi
 				loop
 					if not dgi.item.is_equal(p_destinazione) then
@@ -351,7 +351,7 @@ feature -- evoluzione della statechart
 
 	trova_default (stato: STATO; prossima_conf_base: ARRAY [STATO])
 	-- segue le transizioni di default e aggiunge lo stato atomico a `prossima_conf_base'
-	-- se ï¿½ presente una storia (non vuota) allora viene seguita al posto delle transizioni di default
+	-- se è presente una storia (non vuota) allora viene seguita al posto delle transizioni di default
 		do
 			if attached stato.storia as storia and then not storia.storia_vuota then
 				segui_storia(stato, prossima_conf_base)
@@ -364,7 +364,7 @@ feature -- evoluzione della statechart
 						trova_default (si.item, prossima_conf_base)
 					end
 				else
-					-- `stato' ï¿½ uno stato atomico
+					-- `stato' è uno stato atomico
 					prossima_conf_base.force (stato, prossima_conf_base.count + 1)
 				end
 			end
@@ -393,7 +393,7 @@ feature -- evoluzione della statechart
 
 	trova_contesto (p_sorgente, p_destinazione: STATO): detachable STATO
 			-- trova il contesto in base alla specifica SCXML secondo cui il contesto
-			-- ï¿½ il minimo antenato comune PROPRIO a p_sorgente e p_destinazione
+			-- è il minimo antenato comune PROPRIO a p_sorgente e p_destinazione
 		local
 			antenati: HASH_TABLE [STRING, STRING]
 			corrente: STATO
@@ -511,7 +511,7 @@ feature -- utilita
 
 	riordina_stati (p_stati: ARRAY[STATO]): ARRAY[STATO]
 	-- Agulini Claudia & Fiorini Federico 11/05/2020
-	-- Riordina `p_stati' in base all'ordine del file .xml, che ï¿½ quello con cui sono stati creati gli stati
+	-- Riordina `p_stati' in base all'ordine del file .xml, che è quello con cui sono stati creati gli stati
 	local
 		stati_ordinati: ARRAY[STATO]
 	do
