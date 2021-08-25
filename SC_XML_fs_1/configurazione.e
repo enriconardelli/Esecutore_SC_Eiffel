@@ -429,7 +429,7 @@ feature -- inizializzazione transizioni
 						assegna_azioni (transition_element.elements, transizione)
 						stato.aggiungi_transizione (transizione)
 					else
-						print ("ERRORE: transizione non legale! ")
+						print ("ERRORE: transizione illegale! ")
 						if not transizione_multitarget_ammissibile(destinazioni) then
 							print (" - Le destinazioni multiple indicate non sono tra loro compatibili %N")
 						else
