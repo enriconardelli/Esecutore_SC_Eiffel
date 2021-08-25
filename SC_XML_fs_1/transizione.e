@@ -1,7 +1,7 @@
 note
 	description: "La classe che rappresenta le transizioni"
 	author: "EN + studenti corsi PSI"
-	date: "Maggio 2021"
+	date: "Agosto 2021"
 	revision: "$Revision$"
 
 class
@@ -16,8 +16,8 @@ feature -- costante
 
 feature -- creazione
 
---	NOTA: non cambia perché in caso di destinazioni multiple viene invocata con la prima
 	make_with_target(stato_destinazione, stato_sorgente: STATO)
+		--	in caso di destinazioni multiple viene invocata con la prima e le altre si aggiungono dopo
 		do
 			create destinazione.make
 			set_sorgente(stato_sorgente)
@@ -26,11 +26,7 @@ feature -- creazione
 			evento := Void
 			internal := False
 			condizione := Valore_Nullo
-			-- AGGIUNTE FORK
 			fork := False
---			la create successiva scompare
---			create multi_target.make
-			-- FINE AGGIUNTE
 		end
 
 feature -- attributi
@@ -43,20 +39,11 @@ feature -- attributi
 
     sorgente: STATO
 
-	-- TODO: eliminare multi_target e ridefinire `destinazione' come LINKED_LIST [STATO]
-	-- OLD	destinazione: STATO
-	 destinazione: LINKED_LIST [STATO]
+	destinazione: LINKED_LIST [STATO]
 
 	internal: BOOLEAN
 
-	--AGGIUNTE FORK
-
 	fork: BOOLEAN
-
-	-- TODO: eliminare multi_target e ridefinire `destinazione' come LINKED_LIST [STATO]
---	multi_target: detachable LINKED_LIST [STATO]
-
-	--FINE AGGIUNTE
 
 feature -- setter
 
@@ -73,7 +60,6 @@ feature -- setter
 	set_target (uno_stato: STATO)
 		do
 			destinazione.force(uno_stato)
--- OLD			destinazione := uno_stato
 		end
 
 	set_sorgente (uno_stato: STATO)
@@ -86,8 +72,6 @@ feature -- setter
 			internal := True
 		end
 
-	-- AGGIUNTE FORK	
-
 	set_fork
 		do
 			fork := True
@@ -98,12 +82,7 @@ feature -- setter
 			if not destinazione.has(uno_stato) then
 				destinazione.force(uno_stato)
 			end
--- OLD				if uno_stato /= destinazione then
---				if attached multi_target as mt then mt.force(uno_stato) end
---			end
 		end
-
-	--FINE AGGIUNTE	
 
 
 feature -- check
