@@ -195,7 +195,7 @@ feature --test
 			create configurazione.make
 			configurazione.extend ("A")
 			configurazione.extend ("B")
-			assert ("ERRORE il sistema non riconosce che la configurazione di stati non è ammissibile per il costrutto merge", esecutore.state_chart.transizione_multitarget_ammissibile (configurazione))
+			assert ("ERRORE il sistema non riconosce che la configurazione di stati non è ammissibile per il costrutto merge", not esecutore.state_chart.transizione_multitarget_ammissibile (configurazione))
 		end
 
 -- RISOLVERE: a transizione_multitarget_ammissibile bisognerebbe passare un argomento di tipo LIST[READABLE_STRING_32], ma come fare?
