@@ -55,7 +55,6 @@ feature -- evoluzione della statechart
 			istante: INTEGER
 			prossima_conf_base: ARRAY [STATO]
 			transizioni_eseguibili: ARRAY [TRANSIZIONE]
---			transizione_corrente: TRANSIZIONE
 		do
 			print ("%Nentrato in evolvi_SC:  %N %N")
 			from
@@ -69,8 +68,6 @@ feature -- evoluzione della statechart
 					transizioni_eseguibili := trova_transizioni_eseguibili (eventi_correnti, state_chart.variabili)
  					across transizioni_eseguibili as te
  					loop
--- 						transizione_corrente := te.item
---						if attached transizione_corrente as tc and then transizioni_eseguibili.has (tc) then
 						salva_storie (antenato_massimo_uscita (te.item))
 						stampa_storia (antenato_massimo_uscita (te.item))
 						esegui_azioni (te.item)
@@ -82,10 +79,6 @@ feature -- evoluzione della statechart
 							end
 						end
 						aggiungi_paralleli (te.item.destinazione.first, prossima_conf_base)
---						else
---							print ("%N%N%N====================== ECCOMI ==================== %N%N%N")
---							prossima_conf_base.force (te.item.sorgente, prossima_conf_base.count + 1)
---						end
 					end
 					aggiungi_stati_attivi(prossima_conf_base)
 					prossima_conf_base := riordina_stati (prossima_conf_base)
