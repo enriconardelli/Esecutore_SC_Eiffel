@@ -55,7 +55,7 @@ feature -- evoluzione della statechart
 			istante: INTEGER
 			prossima_conf_base: ARRAY [STATO]
 			transizioni_eseguibili: ARRAY [TRANSIZIONE]
-			transizione_corrente: TRANSIZIONE
+--			transizione_corrente: TRANSIZIONE
 		do
 			print ("%Nentrato in evolvi_SC:  %N %N")
 			from
@@ -67,29 +67,28 @@ feature -- evoluzione della statechart
 					stampa_conf_corrente (istante)
 					create prossima_conf_base.make_empty
 					transizioni_eseguibili := trova_transizioni_eseguibili (eventi_correnti, state_chart.variabili)
- 					across transizioni_eseguibili as sc_cb
+ 					across transizioni_eseguibili as te
  					loop
-						transizione_corrente := sc_cb.item
-						if attached transizione_corrente as tc and then transizioni_eseguibili.has (tc) then
-							-- TODO inserire qui chiamata a pulisci_storie
-							-- TODO stampare la storia di antenato_massimo_uscita (tc)
-							salva_storie (antenato_massimo_uscita (tc)) -- dal MASTER
-							stampa_storia (antenato_massimo_uscita (tc))
-							esegui_azioni (tc) -- , cbc.item)
-							trova_default (tc.destinazione.first, prossima_conf_base)
-							if tc.fork then
-								across tc.destinazione as mt_corrente
-								loop
-									trova_default (mt_corrente.item, prossima_conf_base)
-								end
+-- 						transizione_corrente := te.item
+--						if attached transizione_corrente as tc and then transizioni_eseguibili.has (tc) then
+						salva_storie (antenato_massimo_uscita (te.item))
+						stampa_storia (antenato_massimo_uscita (te.item))
+						esegui_azioni (te.item)
+						trova_default (te.item.destinazione.first, prossima_conf_base)
+						if te.item.fork then
+							across te.item.destinazione as mt_corrente
+							loop
+								trova_default (mt_corrente.item, prossima_conf_base)
 							end
-							aggiungi_paralleli (tc.destinazione.first, prossima_conf_base)
-						else
-							prossima_conf_base.force (sc_cb.item.sorgente, prossima_conf_base.count + 1)
 						end
+						aggiungi_paralleli (te.item.destinazione.first, prossima_conf_base)
+--						else
+--							print ("%N%N%N====================== ECCOMI ==================== %N%N%N")
+--							prossima_conf_base.force (te.item.sorgente, prossima_conf_base.count + 1)
+--						end
 					end
-					aggiungi_stati_attivi(prossima_conf_base) -- si mantiene versione MASTER
-					prossima_conf_base := riordina_stati (prossima_conf_base) -- si mantiene versione MASTER
+					aggiungi_stati_attivi(prossima_conf_base)
+					prossima_conf_base := riordina_stati (prossima_conf_base)
 					if not prossima_conf_base.is_empty then
 						state_chart.conf_base.copy (prossima_conf_base)
 					end
