@@ -22,13 +22,14 @@ feature {NONE} -- Supporto
 	altra_configurazione_prova, configurazione_prova: CONFIGURAZIONE
 	ambiente_prova: AMBIENTE
 	a_path: PATH
-	test_data_dir: STRING = "test_data"
+	test_data_dir: STRING
 
 feature -- Test routines
 
 	on_prepare
 		do
 		    create a_path.make_current
+			create test_data_dir.make_from_string ("test_data")
 			test_data_dir.append_character(a_path.directory_separator)
 		    create nomi_files_prova.make_filled ("", 1, 2)
 		    create ambiente_prova.make_empty

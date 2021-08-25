@@ -15,7 +15,7 @@ inherit
 
 feature {NONE} -- Supporto
 	a_path: PATH
-	test_data_dir: STRING = "test_data"
+	test_data_dir: STRING
 	altro_configurazione_prova, configurazione_prova: CONFIGURAZIONE
 
 feature -- Test routines
@@ -23,6 +23,7 @@ feature -- Test routines
 	on_prepare
 		do
 			create a_path.make_current
+			create test_data_dir.make_from_string ("test_data")
 			test_data_dir.append_character(a_path.directory_separator)
 			create configurazione_prova.make(test_data_dir + "tre_stati_atomici.xml")
 			create altro_configurazione_prova.make(test_data_dir + "tre_stati_atomici.xml")

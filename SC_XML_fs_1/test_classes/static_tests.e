@@ -27,13 +27,14 @@ feature -- access
 
 	a_path: PATH
 
-	test_data_dir: STRING = "test_data"
+	test_data_dir: STRING
 
 feature -- preparazione
 
 	on_prepare
 		do
 			create a_path.make_current
+			create test_data_dir.make_from_string ("test_data")
 			test_data_dir.append_character(a_path.directory_separator)
 			file_name :=test_data_dir + "cronometro.xml"
 				--| Instantiate parser
