@@ -96,9 +96,7 @@ feature --test
 	 --Maria Ludovica Sarandrea, 23/05/2021
 	 -- EN, 24/08/2021
 		do
-				conf_finale.force("A")
-				conf_finale.force("B1")
-				conf_finale.force("B21")
+				conf_finale.force("S")
 			evoluzione_state_chart("costrutto_merge_3.xml", "costrutto_merge_eventi_non_merge.txt", conf_finale)
 		end
 
@@ -106,16 +104,14 @@ feature --test
 	 -- EN, 24/08/2021
 			do
 				conf_finale.force("S")
-				evoluzione_state_chart("costrutto_merge_3_bis.xml", "costrutto_merge_eventi_non_merge.txt", conf_finale)
+				evoluzione_state_chart("costrutto_merge_3_bis.xml", "costrutto_merge_eventi_con_merge.txt", conf_finale)
 			end
 
 	t_costrutto_merge_3_bis_1
 	 -- EN, 24/08/2021
 			do
-				conf_finale.force("A")
-				conf_finale.force("B1")
-				conf_finale.force("B21")
-				evoluzione_state_chart("costrutto_merge_3_bis.xml", "costrutto_merge_eventi_con_merge.txt", conf_finale)
+				conf_finale.force("S")
+				evoluzione_state_chart("costrutto_merge_3_bis.xml", "costrutto_merge_eventi_non_merge.txt", conf_finale)
 			end
 
 	t_costrutto_merge_4
@@ -153,7 +149,7 @@ feature --test
 	 -- EN, 24/08/2021
 			do
 				conf_finale.force("A")
-				conf_finale.force("B12")
+				conf_finale.force("B11")
 				conf_finale.force("B21")
 				evoluzione_state_chart("costrutto_merge_4_ter.xml", "costrutto_merge_eventi_con_merge.txt", conf_finale)
 			end
@@ -161,9 +157,7 @@ feature --test
 	t_costrutto_merge_4_ter_1
 	 -- EN, 24/08/2021
 			do
-				conf_finale.force("A")
-				conf_finale.force("B12")
-				conf_finale.force("B21")
+				conf_finale.force("S")
 				evoluzione_state_chart("costrutto_merge_4_ter.xml", "costrutto_merge_eventi_non_merge.txt", conf_finale)
 			end
 

@@ -17,7 +17,7 @@
 			<state id="C1">
 			</state>
 			<state id="C2">
-				<transition event="f" target="S1" source="B1">
+				<transition event="f" target="S1" source="B2">
 				</transition>
 			</state>	
 		</state>							
