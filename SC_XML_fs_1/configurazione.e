@@ -407,21 +407,24 @@ feature -- inizializzazione transizioni
 					if not transizione_illegale (stato, dest) and transizione_multitarget_ammissibile(destinazioni) then
 					-- TODO: perché transizione_illegale si fa solo sulla prima delle destinazioni multiple?
 						create transizione.make_with_target (dest, stato)
-						-- TODO: verificare che è un errore etichettare 'internal' una transizione fork
 						if attached transition_element.attribute_by_name ("type") as type then
-							if type.value ~ "internal" and verifica_internal (transizione) then
+							if type.value ~ "internal" and internal_legittima (transizione) then
 								transizione.set_internal
 							end
 						end
-						if  t.value.split(' ').count > 1 then
-							-- TODO: controllare che non vi siano stati indicati più volte come destinazione
-							-- TODO: non sarà un errore ma devo inserirlo una volta sola						
-							transizione.set_fork
-							-- separo le destinazioni e le scorro tutte aggiungendole alla transizione
-							across
-								t.value.split(' ') as it
-							loop
-								if attached stati.item(it.item) as s then transizione.add_target (s) end
+						if t.value.split(' ').count > 1 then
+							if transizione.internal then
+								print ("ERRORE: transizione interna illegale perché con destinazioni multiple! ")
+								print ("  Transizione da >|" + stato.id + "|< a ")
+								stampa_destinazioni_multiple(t.value.split(' '))
+							else
+								transizione.set_fork
+								-- separo le destinazioni e le aggiungo alla transizione
+								across
+									t.value.split(' ') as d
+								loop
+									if attached stati.item(d.item) as s then transizione.add_target (s) end
+								end
 							end
 						end
 						assegna_evento (transition_element, transizione)
@@ -544,10 +547,10 @@ feature -- inizializzazione transizioni
 			end
 		end
 
-	verifica_internal (transizione: TRANSIZIONE): BOOLEAN
+	internal_legittima (transizione: TRANSIZIONE): BOOLEAN
 		do
-			if (attached {STATO_XOR} transizione.sorgente as ts and then ts.antenato_di (transizione.destinazione.first)) or else (transizione.destinazione.first.antenato_di (transizione.sorgente)) or else (transizione.destinazione.first = transizione.sorgente) then
---OLD		if (attached {STATO_XOR} transizione.sorgente as ts and then ts.antenato_di (transizione.destinazione)) or else (transizione.destinazione.antenato_di (transizione.sorgente)) or else (transizione.destinazione = transizione.sorgente) then
+--			if (attached {STATO_XOR} transizione.sorgente as ts and then ts.antenato_di (transizione.destinazione.first)) or else (transizione.destinazione.first.antenato_di (transizione.sorgente)) or else (transizione.destinazione.first = transizione.sorgente) then
+			if (transizione.sorgente.antenato_di (transizione.destinazione.first)) or else (transizione.destinazione.first.antenato_di (transizione.sorgente)) or else (transizione.destinazione.first = transizione.sorgente) then
 				Result := true
 			end
 		end
@@ -566,13 +569,11 @@ feature -- inizializzazione transizioni
 			if attached transition.attribute_by_name ("cond") as cond then
 				if id_illegittimo (cond.value) then
 					print ("ERRORE: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica una condizione di valore >|" + cond.value + "|< stringa vuota o blank o Valore_Nullo !%N")
---OLD				print ("ERRORE: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|< specifica una condizione di valore >|" + cond.value + "|< stringa vuota o blank o Valore_Nullo !%N")
 				else
 					if booleana_legittima (cond.value) or intera_legittima (cond.value) then
 						transizione.set_condizione (pulisci_stringa (cond.value))
 					else
 						print ("ERRORE: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica una condizione di valore (non pulito) >|" + cond.value + "|< illegittimo !%N")
---OLD					print ("ERRORE: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|< specifica una condizione di valore (non pulito) >|" + cond.value + "|< illegittimo !%N")
 					end
 				end
 			else
@@ -806,6 +807,15 @@ feature -- supporto generale
 				end
 			end
 
+		end
+
+	stampa_destinazioni_multiple (destinazioni: LIST[READABLE_STRING_32])
+		do
+			across destinazioni as d
+			loop
+				print (" >|" + d.item + "|< - ")
+			end
+			print ("%N")
 		end
 
 	stampa_elemento (element: XML_ELEMENT)
