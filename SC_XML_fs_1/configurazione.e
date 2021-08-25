@@ -419,7 +419,7 @@ feature -- inizializzazione transizioni
 								stampa_destinazioni_multiple(t.value.split(' '))
 							else
 								transizione.set_fork
-								-- separo le destinazioni e le aggiungo alla transizione
+								-- separo le destinazioni e le aggiungo (senza duplicazioni) alla transizione
 								across
 									t.value.split(' ') as d
 								loop

@@ -73,9 +73,11 @@ feature -- evoluzione della statechart
 						esegui_azioni (te.item)
 						trova_default (te.item.destinazione.first, prossima_conf_base)
 						if te.item.fork then
-							across te.item.destinazione as mt_corrente
+							across te.item.destinazione as destinazione_corrente
+							-- TODO: se ci sono destinazioni multiple `trova_default' viene eseguita due volte sulla prima destinazione
+							-- TODO: si dovrebbe vedere perché dovrebbe eseguire due volte l'azione "on_entry"
 							loop
-								trova_default (mt_corrente.item, prossima_conf_base)
+								trova_default (destinazione_corrente.item, prossima_conf_base)
 							end
 						end
 						aggiungi_paralleli (te.item.destinazione.first, prossima_conf_base)
@@ -332,7 +334,6 @@ feature -- evoluzione della statechart
 				trova_default(stato,prossima_conf_base)
 			end
 		end
-
 
 	trova_default (stato: STATO; prossima_conf_base: ARRAY [STATO])
 	-- segue le transizioni di default e aggiunge lo stato atomico a `prossima_conf_base'
