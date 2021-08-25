@@ -388,39 +388,6 @@ feature -- inizializzazione storia
 
 feature -- inizializzazione transizioni
 
--- VERSIONE ORIGINALE DEL MASTER
--- TODO: COMPLETATI I TEST DI INTEGRAZIONE COL COSTRUTTO FORK SI PUÒ ELIMINARE
---	assegna_transizione (transition_element: XML_ELEMENT; stato: STATO)
---		-- assegna a `stato' la transizione specificata in `transition_element'
---		local
---			transizione: TRANSIZIONE
---		do
---			debug ("SC_assegna_transizioni") stampa_elemento (transition_element) end
---			if attached transition_element.attribute_by_name ("target") as t then
---				if attached stati.item (t.value) as destinazione then
---					if not transizione_illegale (stato, destinazione) then
---						create transizione.make_with_target (destinazione, stato)
---						if attached transition_element.attribute_by_name ("type") as type then
---							if type.value ~ "internal" and verifica_internal (transizione) then
---								transizione.set_internal
---							end
---						end
---						assegna_evento (transition_element, transizione)
---						assegna_condizione (transition_element, transizione)
---						assegna_azioni (transition_element.elements, transizione)
---						stato.aggiungi_transizione (transizione)
---					else
---						print ("ERRORE: transizione non legale da >|" + stato.id + "|< a >|" + destinazione.id + "|< !%N")
---					end
---				else
---					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value + "|< che non appartiene alla SC!%N")
---				end
---			else
---				print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")
---			end
---		end
-
--- VERSIONE DA COSTRUTTO FORK MODIFICATA PER COMPATIBILITÀ CON MASTER
 	assegna_transizione (transition_element: XML_ELEMENT; stato: STATO)
 		-- assegna a `stato' la transizione specificata in `transition_element'
 		local
@@ -429,14 +396,15 @@ feature -- inizializzazione transizioni
 		do
 			debug ("SC_assegna_transizioni") stampa_elemento (transition_element) end
 			if attached transition_element.attribute_by_name ("target") as t then
-				-- AGGIUNTE PER COSTRUTTO FORK
+			-- TODO: t.value.split ritorna una LIST[READABLE_STRING_32] che è più generale di LINKED_LIST[STRING]
+			-- TODO: per cui devo inserire una per una le stringhe tornate dallo split in `destinazioni' che è del tipo corretto
+				create destinazioni.make
+				across t.value.split (' ') as l loop
+					destinazioni.extend (l.item)
+				end
 				if attached {STATO} stati.item (t.value.split(' ').first) as dest then
-					-- uso come primo target il primo che compare
-					create destinazioni.make
-					across t.value.split (' ') as l loop
-						destinazioni.extend (l.item)
-					end
-					if not transizione_illegale (stato, dest) and transizione_multitarget_ammissibile(destinazioni) then -- t.value.split(' ')) then
+					-- uso come prima destinazione il primo che compare
+					if not transizione_illegale (stato, dest) and transizione_multitarget_ammissibile(destinazioni) then
 					-- TODO: perché transizione_illegale si fa solo sulla prima delle destinazioni multiple?
 						create transizione.make_with_target (dest, stato)
 						-- TODO: verificare che è un errore etichettare 'internal' una transizione fork
@@ -456,14 +424,13 @@ feature -- inizializzazione transizioni
 								if attached stati.item(it.item) as s then transizione.add_target (s) end
 							end
 						end
-				--FINE AGGIUNTE		
 						assegna_evento (transition_element, transizione)
 						assegna_condizione (transition_element, transizione)
 						assegna_azioni (transition_element.elements, transizione)
 						stato.aggiungi_transizione (transizione)
 					else
 						print ("ERRORE: transizione non legale! ")
-						if not transizione_multitarget_ammissibile(destinazioni) then -- t.value.split(' ')) then
+						if not transizione_multitarget_ammissibile(destinazioni) then
 							print (" - Le destinazioni multiple indicate non sono tra loro compatibili %N")
 						else
 							print (" - Da >|" + stato.id + "|< a >|" + dest.id + "|< %N")
@@ -478,22 +445,20 @@ feature -- inizializzazione transizioni
 			end
 		end
 
-	-- AGGIUNTE FORK
-
-	transizione_multitarget_ammissibile(lista_stati: LINKED_LIST [STRING]): BOOLEAN -- LIST[READABLE_STRING_32]):BOOLEAN
+	transizione_multitarget_ammissibile(lista_stati: LINKED_LIST [STRING]): BOOLEAN
 	-- TODO: rifattorizzare nome in destinazioni_multiple_compatibili
-		-- prende in imput una  lista di stati e ritorna True se sono ammissibili come multitarget
-		-- di una transizione fork: a due a due devono avere un minimo antenato comune di tipo AND in comune
+		-- prende in imput una  lista di nomi di stati e ritorna True se sono ammissibili come destinazioni multiple
+		-- di una transizione fork: a due a due devono avere un minimo antenato comune di tipo AND
 		-- e non devono essere l'uno discendente dell'altro.
 	do
-		Result:=True
+		Result := true
 		across lista_stati as stato loop
 			across lista_stati as altro_stato loop
 				if attached stati.item(stato.item) as sc then
 					if attached stati.item(altro_stato.item) as asc then
 						if not sc.is_equal (asc) then
 							if transizione_verticale(sc,asc) or not attached {STATO_AND} minimo_antenato_comune(sc,asc) then
-								Result:=False
+								Result := false
 							end
 						end
 					end
@@ -502,12 +467,10 @@ feature -- inizializzazione transizioni
 		end
 	end
 
-	--FINE AGGIUNTE
-
 	transizione_illegale (p_sorgente, p_destinazione: STATO): BOOLEAN
-			-- transizione è illegale se il minimo antenato comune (mac) è <parallel> e:
-			-- sorgente e destinazione sono uno antenato dell'altro e sono tutti <parallel> dal più alto al genitore del più basso
-			-- mac è diverso da entrambi (attraversamento frontiera)
+			-- transizione è illegale se il minimo antenato comune (MAC) è <parallel> e inoltre:
+			-- sorgente e destinazione sono uno antenato dell'altro e sono tutti <parallel> dal più alto al genitore del più basso, oppure se
+			-- MAC è diverso da entrambi (attraversamento frontiera)
 		local
 			stato_mac, altro_stato: STATO
 		do
