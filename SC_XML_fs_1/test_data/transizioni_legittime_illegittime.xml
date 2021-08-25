@@ -1,7 +1,4 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<!--	gli eventi che iniziano con L corrispondono a transizioni legittimee
-			mentre quelli che iniziano con N corrispondo a quelle illegittime
--->
 <scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="S">
 
 <parallel id="S">	
@@ -29,9 +26,6 @@
 			</transition>
 
 			<state id="A1a">
-				<transition event="Lc" target="A1b">
-					<log name="da A1a a A1b" />
-				</transition>
 				<transition event="Nf" target="A2a">
 					<log name="da A1a a A2a" />
 				</transition>
@@ -41,6 +35,9 @@
 			</state>
 
 			<state id="A1b">
+				<transition event="Lc" target="A1a">
+					<log name="da A1b a A1a" />
+				</transition>
 			</state>
 		</state>
 
@@ -53,7 +50,7 @@
 			</transition>
 
 			<parallel id="A2a">
-				<state id="P" initial="X">
+				<state id="P" initial="W">
 					<state id="X">
 					</state>
 					<state id="W">
@@ -62,7 +59,7 @@
 						</transition>
 					</state>
 				</state>
-				<state id="Q" initial="Y">
+				<state id="Q" initial="Z">
 					<state id="Y">
 					</state>
 					<state id="Z">
@@ -77,15 +74,12 @@
 				<transition event="Lg" target="S">
 					<log name="da A2b a S" />
 				</transition>
-				<transition event="Ni" target="B2">
-					<log name="da A2b a B2" />
-				</transition>
 			</state>
 		</state>
 		
 	</parallel>
 
-	<state id="B" initial="B2">
+	<state id="B" initial="B1">
 		<state id="B1">
 			<transition event="La" target="B1">
 				<log name="da B1 a B1" />
@@ -97,6 +91,9 @@
 		<state id="B2">
 			<transition event="Ld" target="B">
 				<log name="da B2 a B" />
+			</transition>
+			<transition event="Ni" target="A2b">
+				<log name="da B2 a A2b" />
 			</transition>
 		</state>
 	</state>
