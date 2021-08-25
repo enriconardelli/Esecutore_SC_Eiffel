@@ -425,13 +425,18 @@ feature -- inizializzazione transizioni
 		-- assegna a `stato' la transizione specificata in `transition_element'
 		local
 			transizione: TRANSIZIONE
+			destinazioni: LINKED_LIST[STRING]
 		do
 			debug ("SC_assegna_transizioni") stampa_elemento (transition_element) end
 			if attached transition_element.attribute_by_name ("target") as t then
 				-- AGGIUNTE PER COSTRUTTO FORK
-				if attached stati.item (t.value.split(' ').first) as dest then
+				if attached {STATO} stati.item (t.value.split(' ').first) as dest then
 					-- uso come primo target il primo che compare
-					if not transizione_illegale (stato, dest) and transizione_multitarget_ammissibile(t.value.split(' ')) then
+					create destinazioni.make
+					across t.value.split (' ') as l loop
+						destinazioni.extend (l.item)
+					end
+					if not transizione_illegale (stato, dest) and transizione_multitarget_ammissibile(destinazioni) then -- t.value.split(' ')) then
 					-- TODO: perché transizione_illegale si fa solo sulla prima delle destinazioni multiple?
 						create transizione.make_with_target (dest, stato)
 						-- TODO: verificare che è un errore etichettare 'internal' una transizione fork
@@ -458,7 +463,7 @@ feature -- inizializzazione transizioni
 						stato.aggiungi_transizione (transizione)
 					else
 						print ("ERRORE: transizione non legale! ")
-						if not transizione_multitarget_ammissibile(t.value.split(' ')) then
+						if not transizione_multitarget_ammissibile(destinazioni) then -- t.value.split(' ')) then
 							print (" - Le destinazioni multiple indicate non sono tra loro compatibili %N")
 						else
 							print (" - Da >|" + stato.id + "|< a >|" + dest.id + "|< %N")
@@ -475,7 +480,7 @@ feature -- inizializzazione transizioni
 
 	-- AGGIUNTE FORK
 
-	transizione_multitarget_ammissibile(lista_stati: LIST[READABLE_STRING_32]):BOOLEAN
+	transizione_multitarget_ammissibile(lista_stati: LINKED_LIST [STRING]): BOOLEAN -- LIST[READABLE_STRING_32]):BOOLEAN
 	-- TODO: rifattorizzare nome in destinazioni_multiple_compatibili
 		-- prende in imput una  lista di stati e ritorna True se sono ammissibili come multitarget
 		-- di una transizione fork: a due a due devono avere un minimo antenato comune di tipo AND in comune
