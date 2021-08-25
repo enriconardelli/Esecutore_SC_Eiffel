@@ -69,7 +69,7 @@ feature -- evoluzione della statechart
  					across transizioni_eseguibili as te
  					loop
 						salva_storie (antenato_massimo_uscita (te.item))
-						stampa_storia (antenato_massimo_uscita (te.item))
+						debug ("SC_storia") stampa_storia (antenato_massimo_uscita (te.item)) end
 						esegui_azioni (te.item)
 						trova_default (te.item.destinazione.first, prossima_conf_base)
 						if te.item.fork then
