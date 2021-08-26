@@ -19,6 +19,7 @@ feature -- creazione
 	make_with_target(stato_destinazione, stato_sorgente: STATO)
 		--	in caso di destinazioni multiple viene invocata con la prima e le altre si aggiungono dopo
 		do
+			create sorgente.make
 			create destinazione.make
 			set_sorgente(stato_sorgente)
 			set_target(stato_destinazione)
@@ -27,6 +28,7 @@ feature -- creazione
 			internal := False
 			condizione := Valore_Nullo
 			fork := False
+			merge := False
 		end
 
 feature -- attributi
@@ -37,13 +39,15 @@ feature -- attributi
 
     azioni: ARRAY [AZIONE]
 
-    sorgente: STATO
+    sorgente: LINKED_LIST[STATO]
 
 	destinazione: LINKED_LIST [STATO]
 
 	internal: BOOLEAN
 
 	fork: BOOLEAN
+
+	merge: BOOLEAN
 
 feature -- setter
 
@@ -64,7 +68,7 @@ feature -- setter
 
 	set_sorgente (uno_stato: STATO)
 		do
-			sorgente := uno_stato
+			sorgente.force(uno_stato)
 		end
 
 	set_internal
@@ -77,10 +81,22 @@ feature -- setter
 			fork := True
 		end
 
+	set_merge
+		do
+			fork := True
+		end
+
 	add_target(uno_stato: STATO)
 		do
 			if not destinazione.has(uno_stato) then
 				destinazione.force(uno_stato)
+			end
+		end
+
+	add_source(uno_stato: STATO)
+		do
+			if not sorgente.has(uno_stato) then
+				sorgente.force(uno_stato)
 			end
 		end
 

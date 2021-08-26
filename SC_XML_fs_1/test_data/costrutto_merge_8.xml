@@ -19,11 +19,11 @@
 			<state id="B1" initial="B12">
 				<state id="B11">			
 				</state>
-			</state>
-                    	<state id="B12" initial="B122">
-				<state id="B121">
-				</state>
-				<state id="B122">
+                    		<state id="B12" initial="B122">
+					<state id="B121">
+					</state>
+					<state id="B122">
+					</state>
 				</state>
                 	</state>			
 		</state>								

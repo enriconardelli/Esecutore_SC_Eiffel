@@ -18,7 +18,7 @@ feature -- Attributi
 	ambiente_corrente: AMBIENTE
 			-- rappresenta l'ambiente in cui la SC si evolve
 
-feature -- Creazione sia per i test che per esecuzione interattiva
+--feature -- Creazione sia per i test che per esecuzione interattiva
 
 	make (nomi_files: ARRAY [STRING])
 			-- prepara ed esegue la SC con i parametri passati come argomento
@@ -48,51 +48,127 @@ feature -- Creazione sia per i test che per esecuzione interattiva
 			print ("%N CREAZIONE FINE%N=========%N")
 		end
 
+
+
 feature -- evoluzione della statechart
 
-	evolvi_SC (eventi: ARRAY [LINKED_SET [STRING]])
-		local
-			istante: INTEGER
-			prossima_conf_base: ARRAY [STATO]
-			transizioni_eseguibili: ARRAY [TRANSIZIONE]
-		do
-			print ("%Nentrato in evolvi_SC:  %N %N")
-			from
-				istante := 1
-			until
-				stato_final (state_chart.conf_base) or istante > eventi.count
-			loop
-				if attached eventi [istante] as eventi_correnti then
-					stampa_conf_corrente (istante)
-					create prossima_conf_base.make_empty
-					transizioni_eseguibili := trova_transizioni_eseguibili (eventi_correnti, state_chart.variabili)
- 					across transizioni_eseguibili as te
- 					loop
-						salva_storie (antenato_massimo_uscita (te.item))
-						debug ("SC_storia") stampa_storia (antenato_massimo_uscita (te.item)) end
-						esegui_azioni (te.item)
-						trova_default (te.item.destinazione.first, prossima_conf_base)
-						if te.item.fork then
-							across te.item.destinazione as destinazione_corrente
-							-- TODO: se ci sono destinazioni multiple `trova_default' viene eseguita due volte sulla prima destinazione
-							-- TODO: si dovrebbe vedere perché dovrebbe eseguire due volte l'azione "on_entry"
-							loop
-								trova_default (destinazione_corrente.item, prossima_conf_base)
-							end
-						end
-						aggiungi_paralleli (te.item.destinazione.first, prossima_conf_base)
-					end
-					aggiungi_stati_attivi(prossima_conf_base)
-					prossima_conf_base := riordina_stati (prossima_conf_base)
-					if not prossima_conf_base.is_empty then
-						state_chart.conf_base.copy (prossima_conf_base)
-					end
-				end
-				istante := istante + 1
-			end
-			print ("%NHo terminato l'elaborazione degli eventi%N")
-			stampa_conf_corrente (istante)
-		end
+--	evolvi_SC (eventi: ARRAY [LINKED_SET [STRING]])
+--		local
+--			istante: INTEGER
+--			prossima_conf_base: ARRAY [STATO]
+--			transizioni_eseguibili: ARRAY [TRANSIZIONE]
+--		do
+--			print ("%Nentrato in evolvi_SC:  %N %N")
+--			from
+--				istante := 1
+--			until
+--				stato_final (state_chart.conf_base) or istante > eventi.count
+--			loop
+--				if attached eventi [istante] as eventi_correnti then
+--					stampa_conf_corrente (istante)
+--					create prossima_conf_base.make_empty
+--					transizioni_eseguibili := trova_transizioni_eseguibili (eventi_correnti, state_chart.variabili)
+-- 					across transizioni_eseguibili as te
+-- 					loop
+--						salva_storie (antenato_massimo_uscita (te.item))
+--						debug ("SC_storia") stampa_storia (antenato_massimo_uscita (te.item)) end
+--						esegui_azioni (te.item)
+--						trova_default (te.item.destinazione.first, prossima_conf_base)
+--						if te.item.fork then
+--							across te.item.destinazione as destinazione_corrente
+--							-- TODO: se ci sono destinazioni multiple `trova_default' viene eseguita due volte sulla prima destinazione
+--							-- TODO: si dovrebbe vedere perché dovrebbe eseguire due volte l'azione "on_entry"
+--							loop
+--								trova_default (destinazione_corrente.item, prossima_conf_base)
+--							end
+--						end
+--						aggiungi_paralleli (te.item.destinazione.first, prossima_conf_base)
+--					end
+--					aggiungi_stati_attivi(prossima_conf_base)
+--					prossima_conf_base := riordina_stati (prossima_conf_base)
+--					if not prossima_conf_base.is_empty then
+--						state_chart.conf_base.copy (prossima_conf_base)
+--					end
+--				end
+--				istante := istante + 1
+--			end
+--			print ("%NHo terminato l'elaborazione degli eventi%N")
+--			stampa_conf_corrente (istante)
+--		end
+
+	    evolvi_SC (eventi: ARRAY [LINKED_SET [STRING]])
+        local
+            istante: INTEGER
+            prossima_conf_base: ARRAY [STATO]
+            transizioni_eseguibili: ARRAY [TRANSIZIONE]
+            transizione_corrente: TRANSIZIONE
+        do
+            print ("%Nentrato in evolvi_SC:  %N %N")
+            from
+                istante := 1
+            until
+                stato_final (state_chart.conf_base) or istante > eventi.count
+            loop
+                if attached eventi [istante] as eventi_correnti then
+                    stampa_conf_corrente (istante)
+                    create prossima_conf_base.make_empty
+                    transizioni_eseguibili := trova_transizioni_eseguibili (eventi_correnti, state_chart.variabili)
+
+
+
+-- PROVA CON iterazione sulle transizioni eseguibili
+                     across transizioni_eseguibili as sc_cb
+--                    across state_chart.conf_base as sc_cb
+
+
+
+--                        conf_base_corrente as cbc -- l'attributo conf_base_corrente è stato rimpiazzato state_chart.conf_base
+                    loop
+
+
+
+-- PROVA CON iterazione sulle transizioni eseguibili
+                        transizione_corrente := sc_cb.item
+--                        transizione_corrente := sc_cb.item.transizione_abilitata (eventi_correnti, state_chart.variabili)
+
+
+
+                        if attached transizione_corrente as tc and then transizioni_eseguibili.has (tc) then
+                            salva_storie (antenato_massimo_uscita (tc)) -- dal MASTER
+                            esegui_azioni (tc) -- , cbc.item)
+                            trova_default (tc.destinazione.first, prossima_conf_base)
+                            if tc.fork then
+                                across tc.destinazione as mt_corrente
+                                loop
+                                    trova_default (mt_corrente.item, prossima_conf_base)
+                                end
+                            end
+                            aggiungi_paralleli (tc.destinazione.first, prossima_conf_base)
+                        else
+
+
+
+-- PROVA CON iterazione sulle transizioni eseguibili
+                            prossima_conf_base.force (sc_cb.item.sorgente.first, prossima_conf_base.count + 1)
+-- PRIMA DI MERGE            prossima_conf_base.force (sc_cb.item.sorgente, prossima_conf_base.count + 1)
+
+
+
+                        end
+                    end
+                    aggiungi_stati_attivi(prossima_conf_base) -- si mantiene versione MASTER
+--                    prossima_conf_base := elimina_stati_inattivi (prossima_conf_base)  -- questa era quella di costrutto FORK
+                    prossima_conf_base := riordina_stati (prossima_conf_base) -- si mantiene versione MASTER
+--                    prossima_conf_base := riordina_conf_base (prossima_conf_base) -- questa era quella di costrutto FORK
+                    if not prossima_conf_base.is_empty then
+                        state_chart.conf_base.copy (prossima_conf_base)
+                    end
+                end
+                istante := istante + 1
+            end
+            print ("%NHo terminato l'elaborazione degli eventi%N")
+            stampa_conf_corrente (istante)
+        end
 
 	salva_storie(stato_uscente: STATO)
 	-- Arianna & Riccardo 05/07/2020
@@ -249,11 +325,11 @@ feature -- evoluzione della statechart
 		local
 			contesto, stato_temp: detachable STATO
 		do
-			Result := transizione.sorgente
+			Result := transizione.sorgente.first
 			if transizione.internal then
-				if transizione.sorgente.antenato_di (transizione.destinazione.first) then
+				if transizione.sorgente.first.antenato_di (transizione.destinazione.first) then
 					across
-						transizione.sorgente.figli as figli
+						transizione.sorgente.first.figli as figli
 					loop
 						if figli.item.attivo then
 							Result := figli.item
@@ -269,9 +345,9 @@ feature -- evoluzione della statechart
 					end
 				end
 			else
-				contesto := trova_contesto (transizione.sorgente, transizione.destinazione.first)
+				contesto := trova_contesto (transizione.sorgente.first, transizione.destinazione.first)
 				from
-					stato_temp := transizione.sorgente
+					stato_temp := transizione.sorgente.first
 				until
 				 	stato_temp = contesto
 				loop
@@ -412,13 +488,13 @@ feature -- esecuzione azioni
 			contesto: detachable STATO
 		do
 			if transizione.internal then
-				if transizione.sorgente.antenato_di (transizione.destinazione.first) then
-					contesto := transizione.sorgente
+				if transizione.sorgente.first.antenato_di (transizione.destinazione.first) then
+					contesto := transizione.sorgente.first
 				else
 					contesto := transizione.destinazione.first
 				end
 			else
-				contesto := trova_contesto (transizione.sorgente, transizione.destinazione.first)
+				contesto := trova_contesto (transizione.sorgente.first, transizione.destinazione.first)
 			end
 			esegui_azioni_onexit (antenato_massimo_uscita (transizione))
 			esegui_azioni_transizione (transizione.azioni)
@@ -512,24 +588,38 @@ feature -- utilita
 		Result := stati_ordinati
 	end
 
-	stati_eseguibili (eventi: LINKED_SET[STRING]; variabili: DATAMODEL): ARRAY[STATO]
-	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
-	-- A partire dalla configurazione di base ritorna gli stati che hanno transizioni abilitate in base a `eventi' e `variabili'
-	-- N.B. gli stati tornati possono non essere stati atomici, ma stati gerarchici le cui transizioni sono eseguibili dagli stati atomici
-	--		loro discendenti, che sono rilevate da `transizione_abilitata' in assenza di transizioni direttamente abilitate nello stato atomico
-		do
-			create Result.make_empty
-			across
-				state_chart.conf_base as sc_cb
-			loop
-				debug ("SC_transizioni_eseguibili") print ("  stato corrente di conf_base: " + sc_cb.item.id + "%N") end
-				if attached sc_cb.item.transizione_abilitata (eventi, variabili) as ta then
-					debug ("SC_transizioni_eseguibili") print ("    con transizione abilitata da " + ta.sorgente.id + " a " + ta.destinazione.first.id + "%N") end
-					Result.force (ta.sorgente, Result.count + 1)
-				end
-			end
-			Result := riordina_stati (Result)
-		end
+	    stati_eseguibili (eventi: LINKED_SET[STRING]; variabili: DATAMODEL): ARRAY[STATO]
+--    Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
+--  A partire dalla configurazione di base ritorna gli stati che hanno transizioni abilitate in base a `eventi' e `variabili'
+--    N.B. gli stati tornati possono non essere stati atomici, ma stati gerarchici le cui transizioni sono eseguibili dagli stati atomici
+--        loro discendenti, che sono rilevate da `transizione_abilitata' in assenza di transizioni direttamente abilitate nello stato atomico
+        do
+            create Result.make_empty
+            across
+                state_chart.conf_base as sc_cb
+            loop
+                debug ("SC_transizioni_eseguibili") print ("  stato corrente di conf_base: " + sc_cb.item.id + "%N") end
+                if attached sc_cb.item.transizione_abilitata (eventi, variabili) as ta then
+-- PRIMA DI MERGE    debug ("SC_transizioni_eseguibili") print ("    con transizione abilitata da " + ta.sorgente.id + " a " + ta.destinazione.first.id + "%N") end
+                    debug ("SC_transizioni_eseguibili") print ("    con transizione abilitata da ") end
+                    across ta.sorgente as tas
+--                    from
+--                         i:=ta.sorgente.lower
+--                    until
+--                        i = ta.sorgente.count + 1
+                    loop
+--                        debug("SC_transizioni_eseguibili") print(ta.sorgente[i].id) end
+                        debug("SC_transizioni_eseguibili") print(tas.item.id) end
+--                        Result.force (ta.sorgente[i], Result.count + 1)
+                        Result.force (tas.item, Result.count + 1)
+--                        i := i+1
+                    end
+                    debug("SC_transizioni_eseguibili") print(" a " + ta.destinazione.first.id + "%N") end
+-- PRIMA DI MERGE    Result.force (ta.sorgente, Result.count + 1)
+                end
+            end
+            Result := riordina_stati (Result)
+        end
 
 	stampa_conf_corrente (indice: INTEGER)
 		do
