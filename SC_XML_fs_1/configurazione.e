@@ -512,7 +512,7 @@ feature -- inizializzazione transizioni
                     if attached stati.item (t.value.split(' ').first) as dest then
                         source_list := s.value.split(' ')
                         source_list.extend (stato.id)
-                        if transizione_multitarget_ammissibile(source_list) and transizione_sorgenti_multiple_ammissibile(source_list) then
+                        if ancore_multiple_compatibili(source_list) and transizione_sorgenti_multiple_ammissibile(source_list) then
                             create transizione.make_with_target (dest, stato)
                             transizione.set_merge
                             -- separo le destinazioni e le scorro tutte aggiungendole alla transizione
@@ -554,7 +554,7 @@ feature -- inizializzazione transizioni
             if attached transition_element.attribute_by_name ("target") as t then
                 if attached stati.item (t.value.split(' ').first) as dest then
                     -- uso come primo target il primo che compare
-                    if transizione_multitarget_ammissibile(t.value.split(' ')) then
+                    if ancore_multiple_compatibili(t.value.split(' ')) then
                         create transizione.make_with_target (dest, stato)
                             -- separo le destinazioni e le scorro tutte aggiungendole alla transizione
                             transizione.set_fork
@@ -577,20 +577,20 @@ feature -- inizializzazione transizioni
             end
         end
 
-	transizione_multitarget_ammissibile(lista_stati: LIST [READABLE_STRING_32]): BOOLEAN
-	-- prende in input una  lista di stati e ritorna True se sono ammissibili come sorgenti multiple di una transizione merge
-        -- o come destinazioni multiple di una transizione fork: a due a due devono avere
-        -- un minimo antenato comune di tipo AND in comune
-        -- e non devono essere l'uno discendente dell'altro.
+	ancore_multiple_compatibili(lista_stati: LIST [READABLE_STRING_32]): BOOLEAN
+		-- prende in imput una  lista di nomi di stati e ritorna True se sono compatibili come
+		-- sorgenti multiple di una transizione merge o destinazioni multiple di una transizione fork:
+		-- a due a due devono avere un minimo antenato comune di tipo AND
+		-- e non devono essere l'una discendente dell'altra.
 	do
-		Result := true
+		Result := True
 		across lista_stati as stato loop
 			across lista_stati as altro_stato loop
 				if attached stati.item(stato.item) as sc then
 					if attached stati.item(altro_stato.item) as asc then
 						if not sc.is_equal (asc) then
 							if transizione_verticale(sc,asc) or not attached {STATO_AND} minimo_antenato_comune(sc,asc) then
-								Result := false
+								Result := False
 							end
 						end
 					end
