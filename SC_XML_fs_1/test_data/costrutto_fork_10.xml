@@ -56,7 +56,7 @@
 			</state>	
 			<state id="C1a" initial="C2">
 			
-				<state id="C2" initial="C2">
+				<state id="C2" initial="C21">
 					<state id="C21">
 					</state>			
 				</state>
