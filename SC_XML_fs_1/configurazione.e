@@ -451,24 +451,24 @@ feature -- inizializzazione transizioni
 		assegna_transizione (transition_element: XML_ELEMENT; stato: STATO)
         -- assegna a `stato' la transizione specificata in `transition_element' tenendo conto del tipo di transizione
         do
-            debug ("SC_assegna_transizioni") stampa_elemento (transition_element) end
-                if attached transition_element.attribute_by_name ("target") as t then
-                    if t.value.split(' ').count > 1 then
-                        if attached transition_element.attribute_by_name ("source") as s then
-                            print ("ERRORE: non posso avere contemporaneamente transizioni fork e merge!")
-                        else
-                            assegna_transizione_fork(transition_element, stato)
-                        end
+        	debug ("SC_assegna_transizioni") stampa_elemento (transition_element) end
+            if attached transition_element.attribute_by_name ("target") as t then
+                if t.value.split(' ').count > 1 then
+                    if attached transition_element.attribute_by_name ("source") as s then
+                        print ("ERRORE: non posso avere contemporaneamente transizioni fork e merge!")
                     else
-                        if attached transition_element.attribute_by_name ("source") as s then
-                            assegna_transizione_merge(transition_element, stato)
-                        else
-                            assegna_transizione_singola(transition_element, stato)
-                        end
+                        assegna_transizione_fork(transition_element, stato)
                     end
                 else
-                    print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")
+                    if attached transition_element.attribute_by_name ("source") as s then
+                        assegna_transizione_merge(transition_element, stato)
+                    else
+                        assegna_transizione_singola(transition_element, stato)
+                    end
                 end
+            else
+                print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")
+            end
         end
 
 	    assegna_transizione_singola (transition_element: XML_ELEMENT; stato: STATO)
@@ -498,7 +498,7 @@ feature -- inizializzazione transizioni
                 end
             end
         end
-    -- AGGIUNTE FORK E MERGE
+
     assegna_transizione_merge(transition_element: XML_ELEMENT; stato: STATO)
         local
             transizione: TRANSIZIONE
@@ -540,8 +540,6 @@ feature -- inizializzazione transizioni
                 end
             end
         end
-
-
 
     assegna_transizione_fork(transition_element: XML_ELEMENT; stato: STATO)
             -- se esiste transition_element.attribute_by_name ("target") si tratta di una transizione FORK
