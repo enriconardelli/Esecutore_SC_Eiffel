@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="S">
+
+<parallel id="S">	
+	<transition event="Lf" target="A2a">
+		<log name="da S a A2a" />
+	</transition>
+	<transition event="Lh" target="Q">
+		<log name="da S a Q" />
+	</transition>
+	
+	<parallel id="A" initial="A1">	
+		<transition event="Le" target="A1b">
+			<log name="da A a A1b" />
+		</transition>
+
+		<state id="A1" initial="A1a">
+
+			<state id="A1a">
+			</state>
+
+			<state id="A1b">
+				<transition event="Lc" target="A1a">
+					<log name="da A1b a A1a" />
+				</transition>
+			</state>
+		</state>
+
+		<state id="A2" initial="A2b">
+
+			<parallel id="A2a">
+				<state id="P" initial="W">
+					<state id="X">
+					</state>
+					<state id="W">
+					</state>
+				</state>
+				<state id="Q" initial="Z">
+					<state id="Y">
+					</state>
+					<state id="Z">
+						<transition event="Li" target="S">
+							<log name="da Z a S" />
+						</transition>
+					</state>
+				</state>
+			</parallel>
+
+			<state id="A2b">
+				<transition event="Lg" target="S">
+					<log name="da A2b a S" />
+				</transition>
+			</state>
+		</state>
+		
+	</parallel>
+
+	<state id="B" initial="B1">
+		<state id="B1">
+			<transition event="La" target="B1">
+				<log name="da B1 a B1" />
+			</transition>
+			<transition event="Lb" target="B2">
+				<log name="da B1 a B2" />
+			</transition>
+		</state>
+		<state id="B2">
+			<transition event="Ld" target="B">
+				<log name="da B2 a B" />
+			</transition>
+		</state>
+	</state>
+
+</parallel>
+</scxml>
