@@ -29,6 +29,8 @@ feature -- attributi
 
 	ha_problemi_con_il_file_della_sc: BOOLEAN
 
+	errore_costruzione_SC: BOOLEAN
+
 feature -- creazione
 
 	make (nome_SC: STRING)
@@ -113,13 +115,16 @@ feature -- inizializzazione SC
 				if attached {XML_ATTRIBUTE} data.item.attribute_by_name ("id") as nome then
 					if id_illegittimo (nome.value) then
 						print ("ERRORE: elemento <data> con 'id' >|" + nome.value + "|< di valore stringa vuota o blank o 'NULL' !%N")
+						errore_costruzione_SC := True
 					elseif attached {XML_ATTRIBUTE} data.item.attribute_by_name ("expr") as valore then
 						assegna_variabile (pulisci_stringa (nome.value), pulisci_stringa (valore.value))
 					else
 						print ("ERRORE: elemento <data> con id >|" + nome.value + "|< senza attributo 'expr'!%N")
+						errore_costruzione_SC := True
 					end
 				else
 					print ("ERRORE: elemento <data> senza attributo 'id'!%N")
+					errore_costruzione_SC := True
 				end
 			end
 			-- aggiunge variabile booleana '{TRANSIZIONE}.Valore_Nullo' che è sempre True e si usa per le transizioni che non specificano una condizione nel file del modello
@@ -137,6 +142,7 @@ feature -- inizializzazione SC
 				debug ("SC_inizializza_variabili") print ("Intero: " + variabile + " = " + variabili.intere [variabile].out + "%N") end
 			else
 				print ("ERRORE: elemento <data> con id >|" + variabile + "|< assegna a 'expr' il valore >|" + espressione + "|< non booleano e non intero!%N")
+				errore_costruzione_SC := True
 			end
 		end
 
@@ -167,13 +173,16 @@ feature -- inizializzazione SC
 					if not attached e.item.attribute_by_name ("id") then
 						print ("ERRORE: il seguente elemento <state> o <parallel> non ha 'id':%N")
 						stampa_elemento (e.item)
+						errore_costruzione_SC := True
 					elseif attached e.item.attribute_by_name ("id") as id_attr then
 						if id_attr.value ~ "" or id_attr.value.is_whitespace then
 							print ("ERRORE: il seguente elemento <state> o <parallel> ha un 'id' di valore stringa vuota o blank!%N")
 							stampa_elemento (e.item)
+							errore_costruzione_SC := True
 						elseif stati.has (id_attr.value) then
 							print ("ERRORE: il seguente elemento <state> o <parallel> ha un 'id' duplicato!%N")
 							stampa_elemento (e.item)
+							errore_costruzione_SC := True
 						else
 							if e.item.name ~ "state" then
 								if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
@@ -216,6 +225,7 @@ feature -- inizializzazione SC
 									istanzia_stati (e.item.elements, stato_ger_temp)
 								else -- elemento corrente <parallel> non ha figli
 									print ("ERRORE: lo stato <parallel> >|" + id_attr.value + "|< non ha figli !%N")
+									errore_costruzione_SC := True
 								end
 							end
 						end
@@ -243,9 +253,11 @@ feature -- inizializzazione SC
 									stato.set_initial (initial_state)
 								else
 									print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come sotto-stato iniziale di default dello stato >|" + stato.id + "|< non e' figlio di questo stato!%N")
+									errore_costruzione_SC := True
 								end
 							else
 								print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come sotto-stato iniziale di default dello stato >|" + stato.id + "|< non esiste!%N")
+								errore_costruzione_SC := True
 							end
 						else -- `e.item' non ha attributo 'initial' ma certamente first_sub_state ritorna figlio <state> o <parallel>
 							print ("AVVISO: lo <state> >|" + stato.id + "|< non specifica attributo 'initial', si sceglie il primo figlio che sia <state> o <parallel>.%N")
@@ -283,9 +295,11 @@ feature -- inizializzazione SC
 						iniziale_SC := r
 					else
 						print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come stato iniziale della statechart non è uno degli stati 'top'!%N")
+						errore_costruzione_SC := True
 					end
 				else -- l'initial della radice non esiste
 					print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come stato iniziale della statechart non esiste!%N")
+					errore_costruzione_SC := True
 				end
 			else -- la SC non specifica un sotto-stato iniziale di default si sceglie il primo
 				print ("AVVISO: la SC non specifica attributo 'initial', si sceglie il primo figlio che sia <state> o <parallel>.%N")
@@ -295,6 +309,7 @@ feature -- inizializzazione SC
 				inizializza_conf_base (isc)
 			else
 				print ("ERRORE: la SC non specifica attributo 'initial' ma non ha figli <state> o <parallel>!%N")
+				errore_costruzione_SC := True
 			end
 
 		end
@@ -350,6 +365,7 @@ feature -- inizializzazione SC
 				elseif not (e.item.name ~ "state" or e.item.name ~ "parallel") then
 					print ("ERRORE: lo stato >|" + stato.id + "|< specifica un figlio non ammissibile!")
 					stampa_elemento (e.item)
+					errore_costruzione_SC := True
 				end
 			end
 		end
@@ -456,6 +472,7 @@ feature -- inizializzazione transizioni
                 if t.value.split(' ').count > 1 then
                     if attached transition_element.attribute_by_name ("source") as s then
                         print ("ERRORE: non posso avere contemporaneamente transizioni fork e merge!")
+						errore_costruzione_SC := True
                     else
                         assegna_transizione_fork(transition_element, stato)
                     end
@@ -468,6 +485,7 @@ feature -- inizializzazione transizioni
                 end
             else
                 print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")
+				errore_costruzione_SC := True
             end
         end
 
@@ -478,7 +496,9 @@ feature -- inizializzazione transizioni
         do
             if attached transition_element.attribute_by_name ("target") as t then
                 if attached stati.item (t.value.split(' ').first) as dest then
-                    if not transizione_illegale (stato, dest) then
+                    if transizione_illegale (stato, dest) then
+--						errore_costruzione_SC := True
+                    else
                         create transizione.make_with_target (dest, stato)
                         if attached transition_element.attribute_by_name ("type") as type then
                             if type.value ~ "internal" and verifica_internal (transizione) then
@@ -489,12 +509,11 @@ feature -- inizializzazione transizioni
                         assegna_condizione (transition_element, transizione)
                         assegna_azioni (transition_element.elements, transizione)
                         stato.aggiungi_transizione (transizione)
-                        print (" - Da >|" + stato.id + "|< a >|" + dest.id + "|< %N")
-                    else
-                        print ("ERRORE: transizione non legale! ")
+                        debug ("sc_transizioni_legali") print (" - Transizione legale da >|" + stato.id + "|< a >|" + dest.id + "|< %N") end
                     end
                 else
                     print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value.split(' ').first + "|< che non appartiene alla SC!%N")
+--					errore_costruzione_SC := True
                 end
             end
         end
@@ -643,7 +662,6 @@ feature -- inizializzazione transizioni
 		local
 			stato_mac, altro_stato: STATO
 		do
-			debug ("sc_transizione_illegale") print ("transizione da >|" + p_sorgente.id + "|< a >|" + p_destinazione.id + "|< ") end
 			stato_mac := minimo_antenato_comune (p_sorgente, p_destinazione)
 			if attached {STATO_AND} stato_mac then
 				if transizione_verticale (p_sorgente, p_destinazione) then
@@ -654,11 +672,11 @@ feature -- inizializzazione transizioni
 					end
 					if catena_di_paralleli (altro_stato, stato_mac) then
 						Result := True
-						debug ("sc_transizione_illegale") print (" illegale: transizione con MAC <parallel> in verticale e catena di <parallel> %N") end
+						debug ("sc_transizioni_illegali") print ("ERRORE: transizione illegale: transizione con MAC <parallel> in verticale e catena di <parallel> %N") end
 					end
 				else -- stato_mac è diverso da entrambi
 					Result := True
-					debug ("sc_transizione_illegale") print (" illegale: transizione con MAC <parallel> in orizzontale tra discendenti del MAC (attraversa la frontiera)%N") end
+ 					debug ("sc_transizioni_illegali") print ("ERRORE: transizione illegale: transizione con MAC <parallel> in orizzontale tra discendenti del MAC (attraversa la frontiera)%N") end
 				end
 			end
 		end
