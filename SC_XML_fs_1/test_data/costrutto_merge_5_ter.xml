@@ -12,8 +12,6 @@
 				</state>
 				<state id="B12">
 				</state>
-				<transition event="e" target="S" source="A B2">
-				</transition>
 			</state>
 
 			<state id="B2" initial="B21">
@@ -21,6 +19,8 @@
 				</state>
 				<state id="B22">
 				</state>			
+				<transition event="e" target="S" source="A B1">
+				</transition>
 			</state>
 
 		</parallel>
