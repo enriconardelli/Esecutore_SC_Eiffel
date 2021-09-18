@@ -6,12 +6,11 @@
 			<debug name="sc_assegna_initial" enabled="false"/>
 			<debug name="sc_assegna_transizioni" enabled="false"/>
 			<debug name="sc_first_sub_state" enabled="false"/>
-			<debug name="sc_inizializza_variabili" enabled="true"/>
-			<debug name="sc_modifica_variabili" enabled="true"/>
-			<debug name="sc_transizione_illegittima" enabled="false"/>
+			<debug name="sc_inizializza_variabili" enabled="false"/>
+			<debug name="sc_modifica_variabili" enabled="false"/>
 			<debug name="sc_transizioni_eseguibili" enabled="false"/>
 			<debug name="sc_transizioni_illegali" enabled="true"/>
-			<debug name="sc_transizioni_legali" enabled="true"/>
+			<debug name="sc_transizioni_legali" enabled="false"/>
 			<debug name="xml_print" enabled="false"/>
 			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
 		</option>
