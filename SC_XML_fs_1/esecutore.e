@@ -604,7 +604,6 @@ feature -- utilita
             loop
                 debug ("SC_transizioni_eseguibili") print ("  stato corrente di conf_base: " + sc_cb.item.id + "%N") end
                 if attached sc_cb.item.transizione_abilitata (eventi, variabili) as ta then
--- PRIMA DI MERGE    debug ("SC_transizioni_eseguibili") print ("    con transizione abilitata da " + ta.sorgente.id + " a " + ta.destinazione.first.id + "%N") end
                     debug ("SC_transizioni_eseguibili") print ("    con transizione abilitata da ") end
                     across ta.sorgente as tas
                     loop
@@ -612,7 +611,6 @@ feature -- utilita
                         Result.force (tas.item, Result.count + 1)
                     end
                     debug("SC_transizioni_eseguibili") print(" a " + ta.destinazione.first.id + "%N") end
--- PRIMA DI MERGE    Result.force (ta.sorgente, Result.count + 1)
                 end
             end
             Result := riordina_stati (Result)
