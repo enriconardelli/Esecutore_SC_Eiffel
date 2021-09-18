@@ -114,6 +114,20 @@ feature --test
 				evoluzione_state_chart("costrutto_merge_3_bis.xml", "costrutto_merge_eventi_non_merge.txt", conf_finale)
 			end
 
+	t_costrutto_merge_3_ter
+	 -- EN, 19/09/2021
+			do
+				conf_finale.force("S")
+				evoluzione_state_chart("costrutto_merge_3_ter.xml", "costrutto_merge_eventi_con_merge.txt", conf_finale)
+			end
+
+	t_costrutto_merge_3_ter_1
+	 -- EN, 19/09/2021
+			do
+				conf_finale.force("S")
+				evoluzione_state_chart("costrutto_merge_3_ter.xml", "costrutto_merge_eventi_non_merge.txt", conf_finale)
+			end
+
 	t_costrutto_merge_4
 	 --Maria Ludovica Sarandrea, 23/05/2021
 	 -- EN, 24/08/2021
@@ -145,20 +159,46 @@ feature --test
 				evoluzione_state_chart("costrutto_merge_4_bis.xml", "costrutto_merge_eventi_non_merge.txt", conf_finale)
 			end
 
-	t_costrutto_merge_5_bis
-	 -- EN, 24/08/2021
+	t_costrutto_merge_5
+	 -- EN, 18/09/2021
 			do
-				conf_finale.force("A")
-				conf_finale.force("B12")
-				conf_finale.force("B21")
+				conf_finale.force("S")
+				evoluzione_state_chart("costrutto_merge_5.xml", "costrutto_merge_eventi_con_merge.txt", conf_finale)
+			end
+
+	t_costrutto_merge_5_1
+	 -- EN, 18/09/2021
+			do
+				conf_finale.force("S")
+				evoluzione_state_chart("costrutto_merge_5.xml", "costrutto_merge_eventi_non_merge.txt", conf_finale)
+			end
+
+	t_costrutto_merge_5_bis
+	 -- EN, 18/09/2021
+			do
+				conf_finale.force("S")
 				evoluzione_state_chart("costrutto_merge_5_bis.xml", "costrutto_merge_eventi_con_merge.txt", conf_finale)
 			end
 
 	t_costrutto_merge_5_bis_1
-	 -- EN, 24/08/2021
+	 -- EN, 18/09/2021
 			do
 				conf_finale.force("S")
 				evoluzione_state_chart("costrutto_merge_5_bis.xml", "costrutto_merge_eventi_non_merge.txt", conf_finale)
+			end
+
+	t_costrutto_merge_5_ter
+	 -- EN, 18/09/2021
+			do
+				conf_finale.force("S")
+				evoluzione_state_chart("costrutto_merge_5_ter.xml", "costrutto_merge_eventi_con_merge.txt", conf_finale)
+			end
+
+	t_costrutto_merge_5_ter_1
+	 -- EN, 18/09/2021
+			do
+				conf_finale.force("S")
+				evoluzione_state_chart("costrutto_merge_5_ter.xml", "costrutto_merge_eventi_non_merge.txt", conf_finale)
 			end
 
 	t_costrutto_merge_6
@@ -167,6 +207,38 @@ feature --test
 				conf_finale.force("A1")
 				conf_finale.force("C2")
 				evoluzione_state_chart("costrutto_merge_6.xml", "costrutto_merge_eventi_con_merge.txt", conf_finale)
+			end
+
+	t_costrutto_merge_7
+	 -- EN, 18/09/2021
+			do
+				conf_finale.force("A1")
+				conf_finale.force("B12")
+				conf_finale.force("B21")
+				evoluzione_state_chart("costrutto_merge_7.xml", "costrutto_merge_eventi_con_merge.txt", conf_finale)
+			end
+
+	t_costrutto_merge_7_1
+	 -- EN, 18/09/2021
+			do
+				conf_finale.force("S")
+				evoluzione_state_chart("costrutto_merge_7.xml", "costrutto_merge_eventi_non_merge.txt", conf_finale)
+			end
+
+	t_costrutto_merge_7_bis
+	 -- EN, 18/09/2021
+			do
+				conf_finale.force("A1")
+				conf_finale.force("B12")
+				conf_finale.force("B21")
+				evoluzione_state_chart("costrutto_merge_7_bis.xml", "costrutto_merge_eventi_con_merge.txt", conf_finale)
+			end
+
+	t_costrutto_merge_7_bis_1
+	 -- EN, 18/09/2021
+			do
+				conf_finale.force("S")
+				evoluzione_state_chart("costrutto_merge_7_bis.xml", "costrutto_merge_eventi_non_merge.txt", conf_finale)
 			end
 
 	t_costrutto_merge_8
