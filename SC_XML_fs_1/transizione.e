@@ -83,7 +83,7 @@ feature -- setter
 
 	set_merge
 		do
-			fork := True
+			merge := True
 		end
 
 	add_target(uno_stato: STATO)
@@ -99,7 +99,6 @@ feature -- setter
 				sorgente.force(uno_stato)
 			end
 		end
-
 
 feature -- check
 
