@@ -592,29 +592,55 @@ feature -- utilita
 		Result := stati_ordinati
 	end
 
-	    stati_eseguibili (eventi: LINKED_SET[STRING]; variabili: DATAMODEL): ARRAY[STATO]
---    Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
---  A partire dalla configurazione di base ritorna gli stati che hanno transizioni abilitate in base a `eventi' e `variabili'
---    N.B. gli stati tornati possono non essere stati atomici, ma stati gerarchici le cui transizioni sono eseguibili dagli stati atomici
---        loro discendenti, che sono rilevate da `transizione_abilitata' in assenza di transizioni direttamente abilitate nello stato atomico
-        do
-            create Result.make_empty
-            across
-                state_chart.conf_base as sc_cb
-            loop
-                debug ("SC_transizioni_eseguibili") print ("  stato corrente di conf_base: " + sc_cb.item.id + "%N") end
-                if attached sc_cb.item.transizione_abilitata (eventi, variabili) as ta then
-                    debug ("SC_transizioni_eseguibili") print ("    con transizione abilitata da ") end
-                    across ta.sorgente as tas
-                    loop
-                        debug("SC_transizioni_eseguibili") print(tas.item.id) end
-                        Result.force (tas.item, Result.count + 1)
-                    end
-                    debug("SC_transizioni_eseguibili") print(" a " + ta.destinazione.first.id + "%N") end
-                end
-            end
-            Result := riordina_stati (Result)
-        end
+	stati_eseguibili (eventi: LINKED_SET[STRING]; variabili: DATAMODEL): ARRAY[STATO]
+	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
+	-- A partire dalla configurazione di base ritorna gli stati che hanno transizioni abilitate in base a `eventi' e `variabili'
+	-- N.B. gli stati tornati possono non essere stati atomici, ma stati gerarchici le cui transizioni sono eseguibili dagli stati atomici
+	-- loro discendenti, che sono rilevate da `transizione_abilitata' in assenza di transizioni direttamente abilitate nello stato atomico
+		do
+			create Result.make_empty
+			across
+				state_chart.conf_base as sc_cb
+			loop
+				debug ("SC_transizioni_eseguibili") print ("  stato corrente di conf_base: " + sc_cb.item.id + "%N") end
+				if attached sc_cb.item.transizione_abilitata (eventi, variabili) as ta then
+					if ta.merge then
+						if sorgenti_multiple_attive (ta) then
+							debug ("SC_transizioni_eseguibili") print ("	con transizione MERGE abilitata da ") end
+							across ta.sorgente as tas
+							loop
+								debug("SC_transizioni_eseguibili") print(tas.item.id + " ") end
+								Result.force (tas.item, Result.count + 1)
+							end
+							debug("SC_transizioni_eseguibili") print(" a " + ta.destinazione.first.id + "%N") end
+						end
+					else
+						debug ("SC_transizioni_eseguibili") print ("	con transizione abilitata da ") end
+						across ta.sorgente as tas
+						loop
+							debug("SC_transizioni_eseguibili") print(tas.item.id + " ") end
+							Result.force (tas.item, Result.count + 1)
+						end
+						debug("SC_transizioni_eseguibili") print(" a " + ta.destinazione.first.id + "%N") end
+					end
+				end
+			end
+			Result := riordina_stati (Result)
+		end
+
+	sorgenti_multiple_attive (transizione_corrente: TRANSIZIONE): BOOLEAN
+	-- ritorna true solo se tutte le sorgenti di una transizione MERGE sono presenti nella configurazione attiva
+	do
+		Result := true
+		across transizione_corrente.sorgente as s
+			loop
+				if not state_chart.conf_base_has_state (s.item.id) then
+					debug("SC_transizioni_eseguibili") print(" transizione con sorgenti multiple NON attivabile: lo stato " + s.item.id + " non è nella configurazione di base. %N") end
+					Result := False
+				end
+			end
+	end
+
 
 	stampa_conf_corrente (indice: INTEGER)
 		do
