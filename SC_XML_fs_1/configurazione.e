@@ -629,7 +629,7 @@ feature -- inizializzazione transizioni
 	end
 
 	conf_base_has_state(stato: READABLE_STRING_32 ):BOOLEAN
-	-- Controlla se in `conf' è presente `stato'
+	-- Controlla se in `conf_base' è presente `stato'
 		local
 			corrente: STATO
 		do
@@ -651,22 +651,6 @@ feature -- inizializzazione transizioni
 				end
 			end
 		end
-
-
-	transizione_sorgenti_multiple_ammissibile(lista_stati: LIST [READABLE_STRING_32]): BOOLEAN
-	--prende in input una lista di stati e ritorna True nel caso in cui le sorgenti siano gli stati della configurazione corrente
-	--infatti in caso di difformità la transizione non deve essere eseguita-
-
-	do
-		Result := true
-		across lista_stati as s
-			loop
-				if not conf_base_has_state (s.item) then
-					print(" transizione con sorgenti multiple NON ammissibile: lo stato " + s.item + " non è nella configurazione di base")
-					Result := False
-				end
-			end
-	end
 
 	transizione_illegale (p_sorgente, p_destinazione: STATO): BOOLEAN
 			-- transizione è illegale se il minimo antenato comune (MAC) è <parallel> e inoltre:
