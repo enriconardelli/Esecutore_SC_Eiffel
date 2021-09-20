@@ -39,7 +39,7 @@ feature -- attributi
 
     azioni: ARRAY [AZIONE]
 
-    sorgente: LINKED_LIST[STATO]
+    sorgente: LINKED_LIST [STATO]
 
 	destinazione: LINKED_LIST [STATO]
 
