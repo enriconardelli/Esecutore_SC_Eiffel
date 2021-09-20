@@ -628,8 +628,8 @@ feature -- inizializzazione transizioni
 		end
 	end
 
-	conf_base_has_state(stato: READABLE_STRING_32 ):BOOLEAN
-	-- Controlla se in `config_base' è presente `stato'
+	configurazione_contiene(stato: READABLE_STRING_32 ):BOOLEAN
+	-- Controlla se lo lo `stato' fa parte della configurazione
 		local
 			corrente: STATO
 		do
