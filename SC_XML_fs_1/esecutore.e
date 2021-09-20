@@ -59,39 +59,39 @@ feature -- evoluzione della statechart
 	evolvi_SC (eventi: ARRAY [LINKED_SET [STRING]])
 		local
 			istante: INTEGER
-			prossima_conf_base: ARRAY [STATO]
+			prossima_config_base: ARRAY [STATO]
 			transizioni_eseguibili: ARRAY [TRANSIZIONE]
 		do
 			print ("%Nentrato in evolvi_SC:  %N %N")
 			from
 				istante := 1
 			until
-				stato_final (state_chart.conf_base) or istante > eventi.count
+				stato_final (state_chart.config_base) or istante > eventi.count
 			loop
 				if attached eventi [istante] as eventi_correnti then
 					stampa_conf_corrente (istante)
-					create prossima_conf_base.make_empty
+					create prossima_config_base.make_empty
 					transizioni_eseguibili := trova_transizioni_eseguibili (eventi_correnti, state_chart.variabili)
  					across transizioni_eseguibili as te
  					loop
 						salva_storie (antenato_massimo_uscita (te.item))
 						debug ("SC_storia") stampa_storia (antenato_massimo_uscita (te.item)) end
 						esegui_azioni (te.item)
-						trova_default (te.item.destinazione.first, prossima_conf_base)
+						trova_default (te.item.destinazione.first, prossima_config_base)
 						if te.item.fork then
 							across te.item.destinazione as destinazione_corrente
 							-- TODO: se ci sono destinazioni multiple `trova_default' viene eseguita due volte sulla prima destinazione
 							-- TODO: si dovrebbe vedere perché dovrebbe eseguire due volte l'azione "on_entry"
 							loop
-								trova_default (destinazione_corrente.item, prossima_conf_base)
+								trova_default (destinazione_corrente.item, prossima_config_base)
 							end
 						end
-						aggiungi_paralleli (te.item.destinazione.first, prossima_conf_base)
+						aggiungi_paralleli (te.item.destinazione.first, prossima_config_base)
 					end
-					aggiungi_stati_attivi(prossima_conf_base)
-					prossima_conf_base := riordina_stati (prossima_conf_base)
-					if not prossima_conf_base.is_empty then
-						state_chart.conf_base.copy (prossima_conf_base)
+					aggiungi_stati_attivi(prossima_config_base)
+					prossima_config_base := riordina_stati (prossima_config_base)
+					if not prossima_config_base.is_empty then
+						state_chart.config_base.copy (prossima_config_base)
 					end
 				end
 				istante := istante + 1
@@ -100,80 +100,6 @@ feature -- evoluzione della statechart
 			stampa_conf_corrente (istante)
 		end
 
---	    evolvi_SC (eventi: ARRAY [LINKED_SET [STRING]])
---        local
---            istante: INTEGER
---            prossima_conf_base: ARRAY [STATO]
---            transizioni_eseguibili: ARRAY [TRANSIZIONE]
---            transizione_corrente: TRANSIZIONE
---        do
---            print ("%Nentrato in evolvi_SC:  %N %N")
---            from
---                istante := 1
---            until
---                stato_final (state_chart.conf_base) or istante > eventi.count
---            loop
---                if attached eventi [istante] as eventi_correnti then
---                    stampa_conf_corrente (istante)
---                    create prossima_conf_base.make_empty
---                    transizioni_eseguibili := trova_transizioni_eseguibili (eventi_correnti, state_chart.variabili)
-
-
-
----- PROVA CON iterazione sulle transizioni eseguibili
---                     across transizioni_eseguibili as sc_cb
-----                    across state_chart.conf_base as sc_cb
-
-
-
-----                        conf_base_corrente as cbc -- l'attributo conf_base_corrente è stato rimpiazzato state_chart.conf_base
---                    loop
-
-
-
----- PROVA CON iterazione sulle transizioni eseguibili
---                        transizione_corrente := sc_cb.item
-----                        transizione_corrente := sc_cb.item.transizione_abilitata (eventi_correnti, state_chart.variabili)
-
-
-
---                        if attached transizione_corrente as tc and then transizioni_eseguibili.has (tc) then
---                            salva_storie (antenato_massimo_uscita (tc)) -- dal MASTER
---                            esegui_azioni (tc) -- , cbc.item)
---                            trova_default (tc.destinazione.first, prossima_conf_base)
---                            if tc.fork then
---                                across tc.destinazione as mt_corrente
---                                loop
---                                    trova_default (mt_corrente.item, prossima_conf_base)
---                                end
---                            end
---                            aggiungi_paralleli (tc.destinazione.first, prossima_conf_base)
---                        else
-
-
-
----- PROVA CON iterazione sulle transizioni eseguibili
---                            prossima_conf_base.force (sc_cb.item.sorgente.first, prossima_conf_base.count + 1)
----- PRIMA DI MERGE            prossima_conf_base.force (sc_cb.item.sorgente, prossima_conf_base.count + 1)
-
-
-
---                        end
---                    end
---                    aggiungi_stati_attivi(prossima_conf_base) -- si mantiene versione MASTER
-----                    prossima_conf_base := elimina_stati_inattivi (prossima_conf_base)  -- questa era quella di costrutto FORK
---                    prossima_conf_base := riordina_stati (prossima_conf_base) -- si mantiene versione MASTER
-----                    prossima_conf_base := riordina_conf_base (prossima_conf_base) -- questa era quella di costrutto FORK
---                    if not prossima_conf_base.is_empty then
---                        state_chart.conf_base.copy (prossima_conf_base)
---                    end
---                end
---                istante := istante + 1
---            end
---            print ("%NHo terminato l'elaborazione degli eventi%N")
---            stampa_conf_corrente (istante)
---        end
-
 	salva_storie(stato_uscente: STATO)
 	-- Arianna & Riccardo 05/07/2020
 	-- aggiorna le storie nei discendenti dello 'stato_uscente'
@@ -181,7 +107,7 @@ feature -- evoluzione della statechart
 			-- TODO eliminare qui la chiama a pulisci_storie
 			pulisci_storie(stato_uscente)
 			across
-				state_chart.conf_base as cbc
+				state_chart.config_base as cbc
 			loop
 				if stato_uscente.antenato_di (cbc.item)	then
 					salva_storia(cbc.item, stato_uscente)
@@ -191,14 +117,14 @@ feature -- evoluzione della statechart
 
 	pulisci_storie(stato_uscita: STATO)
 	-- Arianna & Riccardo 26/07/2020
-	-- elimina gli stati salvati in tutte le storie che si incontrano nel percorso dagli stati di state_chart.conf_base allo 'stato_uscita'
+	-- elimina gli stati salvati in tutte le storie che si incontrano nel percorso dagli stati di state_chart.config_base allo 'stato_uscita'
 	-- Edit Forte, Sarandrea 28/06/2021
 	-- correzione errore
 		local
 			stato_temp: STATO
 		do
 			across
-				state_chart.conf_base as cbc
+				state_chart.config_base as cbc
 			loop
 				if stato_uscita.antenato_di (cbc.item)	then
 					from
@@ -217,18 +143,18 @@ feature -- evoluzione della statechart
 			end
 		end
 
-	salva_storia(stato_conf_base, stato_uscente: STATO)
+	salva_storia(stato_config_base, stato_uscente: STATO)
 	-- Arianna & Riccardo 05/07/2020
-	-- memorizza i percorsi di uscita partendo da 'stato_conf_base' e arrivando fino a 'stato_uscente'
+	-- memorizza i percorsi di uscita partendo da 'stato_config_base' e arrivando fino a 'stato_uscente'
 		local
 			stato_temp: STATO
 			percorso_uscita: LINKED_LIST[STATO]
 		do
-			if stato_uscente /= stato_conf_base then
+			if stato_uscente /= stato_config_base then
 				-- se esco da uno stato atomico non ho storia
 				create percorso_uscita.make
 				from
-					stato_temp := stato_conf_base
+					stato_temp := stato_config_base
 				until
 					stato_temp = stato_uscente
 				loop
@@ -315,7 +241,7 @@ feature -- evoluzione della statechart
 	-- aggiunge stati attivi alla configurazione
 		do
 			across
-				state_chart.conf_base as sc_cb
+				state_chart.config_base as sc_cb
 			loop
 				if sc_cb.item.attivo then
 					conf_da_modificare.force (sc_cb.item, conf_da_modificare.count + 1)
@@ -363,8 +289,8 @@ feature -- evoluzione della statechart
 			end
 		end
 
-	aggiungi_paralleli (p_destinazione: STATO; prossima_conf_base: ARRAY [STATO])
-	-- inserisce in `prossima_conf_base' i default degli stati in parallelo rispetto al target
+	aggiungi_paralleli (p_destinazione: STATO; prossima_config_base: ARRAY [STATO])
+	-- inserisce in `prossima_config_base' i default degli stati in parallelo rispetto al target
 	-- qualora vi siano stati già attivi non dà luogo a configurazioni non corrette
 	-- TODO: la riga precedente non capisco bene che vuol dire, esprimere meglio
 		do
@@ -374,18 +300,18 @@ feature -- evoluzione della statechart
 				across dg.initial as dgi
 				loop
 					if not dgi.item.is_equal(p_destinazione) then
-						aggiungi_sottostati (dgi.item, prossima_conf_base)
+						aggiungi_sottostati (dgi.item, prossima_config_base)
 					end
 				end
 			end
 			if attached p_destinazione.genitore as dg then
 				--se ha un genitore ripeto aggiungi paralleli su di lui
-				aggiungi_paralleli (dg, prossima_conf_base)
+				aggiungi_paralleli (dg, prossima_config_base)
 			end
 		end
 
 
-	aggiungi_sottostati (stato: STATO; prossima_conf_base: ARRAY [STATO])
+	aggiungi_sottostati (stato: STATO; prossima_config_base: ARRAY [STATO])
 			-- se il target NON contiene un sottostato attivo si comporta come trova_default
 			-- altrimenti entra nello stato target e entra ricorsivamente nei suoi sottostati
 			-- che contengono un sottostato attivo
@@ -399,44 +325,44 @@ feature -- evoluzione della statechart
 					across
 						s_and.figli as fsa
 					loop
-						aggiungi_sottostati (fsa.item,prossima_conf_base)
+						aggiungi_sottostati (fsa.item,prossima_config_base)
 					end
 				else -- ripeto solo sui figli dello stato XOR che hanno un sottostato attivo
 					across
 						stato.figli as fs
 					loop
 						if fs.item.ha_sottostati_attivi then
-							aggiungi_sottostati (fs.item,prossima_conf_base)
+							aggiungi_sottostati (fs.item,prossima_config_base)
 						end
 					end
 				end
 			else
-				trova_default(stato,prossima_conf_base)
+				trova_default(stato,prossima_config_base)
 			end
 		end
 
-	trova_default (stato: STATO; prossima_conf_base: ARRAY [STATO])
-	-- segue le transizioni di default e aggiunge lo stato atomico a `prossima_conf_base'
+	trova_default (stato: STATO; prossima_config_base: ARRAY [STATO])
+	-- segue le transizioni di default e aggiunge lo stato atomico a `prossima_config_base'
 	-- se è presente una storia (non vuota) allora viene seguita al posto delle transizioni di default
 		do
 			if attached stato.storia as storia and then not storia.storia_vuota then
-				segui_storia(stato, prossima_conf_base)
+				segui_storia(stato, prossima_config_base)
 			else
 				stato.set_attivo
 				esegui_onentry(stato)
 				if not stato.initial.is_empty then
 					across stato.initial as  si
 					loop
-						trova_default (si.item, prossima_conf_base)
+						trova_default (si.item, prossima_config_base)
 					end
 				else
 					-- `stato' è uno stato atomico
-					prossima_conf_base.force (stato, prossima_conf_base.count + 1)
+					prossima_config_base.force (stato, prossima_config_base.count + 1)
 				end
 			end
 		end
 
-	segui_storia (stato: STATO; prossima_conf_base: ARRAY [STATO])
+	segui_storia (stato: STATO; prossima_config_base: ARRAY [STATO])
 	-- Arianna & Riccardo 05/07/2020
 	-- segue il percorso indicato dalla storia
 		do
@@ -449,11 +375,11 @@ feature -- evoluzione della statechart
 					sm.item.set_attivo
 					esegui_onentry(sm.item)
 					if attached {STATO_ATOMICO} sm.item then
-						prossima_conf_base.force (sm.item, prossima_conf_base.count + 1)
+						prossima_config_base.force (sm.item, prossima_config_base.count + 1)
 					end
 				end
 			elseif attached{STORIA_SHALLOW} stato.storia as st and then attached st.stato_memorizzato as sm then
-				trova_default (sm, prossima_conf_base)
+				trova_default (sm, prossima_config_base)
 			end
 		end
 
@@ -563,9 +489,9 @@ feature -- controllo
 
 	stato_final (stato: ARRAY [STATO]): BOOLEAN
 		require
-			contesto: state_chart.conf_base /= Void
+			contesto: state_chart.config_base /= Void
 		do
-			across state_chart.conf_base as cbc
+			across state_chart.config_base as cbc
 			loop
 				if cbc.item.finale then
 					result := True
@@ -600,9 +526,9 @@ feature -- utilita
 		do
 			create Result.make_empty
 			across
-				state_chart.conf_base as sc_cb
+				state_chart.config_base as sc_cb
 			loop
-				debug ("SC_transizioni_eseguibili") print ("  stato corrente di conf_base: " + sc_cb.item.id + "%N") end
+				debug ("SC_transizioni_eseguibili") print ("  stato corrente di config_base: " + sc_cb.item.id + "%N") end
 				if attached sc_cb.item.transizione_abilitata (eventi, variabili) as ta then
 					if ta.merge then
 						if sorgenti_multiple_attive (ta) then
@@ -649,7 +575,7 @@ feature -- utilita
 			print ("%N")
 			print ("  configurazione BASE corrente: ")
 			across
-				state_chart.conf_base as sc_cb
+				state_chart.config_base as sc_cb
 			loop
 				print (sc_cb.item.id + " ")
 			end

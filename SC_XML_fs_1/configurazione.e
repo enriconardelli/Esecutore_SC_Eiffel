@@ -12,7 +12,7 @@ create
 
 feature -- attributi
 
-	conf_base: ARRAY [STATO]
+	config_base: ARRAY [STATO]
 		-- gli stati atomici nella configurazione di base della statechart
 
 	stati: HASH_TABLE [STATO, STRING]
@@ -35,7 +35,7 @@ feature -- creazione
 
 	make (nome_SC: STRING)
 		do
-			create conf_base.make_empty
+			create config_base.make_empty
 			create stati.make (1)
 			create variabili.make
 			create creatore_di_assegna
@@ -83,7 +83,7 @@ feature -- supporto alla creazione
 				istanzia_final (f.elements)
 				istanzia_stati (f.elements, Void)
 				assegna_initial (f.elements)
-				inizializza_conf_base_radice (f)
+				inizializza_config_base_radice (f)
 				completa_stati (f.elements)
 			end
 		end
@@ -283,8 +283,8 @@ feature -- inizializzazione SC
 			end
 		end
 
-	inizializza_conf_base_radice (radice: XML_ELEMENT)
-		-- inizializza la radice di `conf_base' in base a stato top iniziale e poi invoca inizializzazione ricorsiva con esso
+	inizializza_config_base_radice (radice: XML_ELEMENT)
+		-- inizializza la radice di `config_base' in base a stato top iniziale e poi invoca inizializzazione ricorsiva con esso
 		-- NB: gli stati "top" della SC non hanno genitore
 		local
 			iniziale_SC: detachable STATO
@@ -306,7 +306,7 @@ feature -- inizializzazione SC
 				iniziale_SC := first_sub_state (radice)
 			end
 			if attached iniziale_SC as isc then
-				inizializza_conf_base (isc)
+				inizializza_config_base (isc)
 			else
 				print ("ERRORE: la SC non specifica attributo 'initial' ma non ha figli <state> o <parallel>!%N")
 				errore_costruzione_SC := True
@@ -314,19 +314,19 @@ feature -- inizializzazione SC
 
 		end
 
-	inizializza_conf_base (stato: STATO)
-		-- assegna ricorsivamente gli stati a `conf_base' a partire dallo stato gerarchico iniziale della SC
+	inizializza_config_base (stato: STATO)
+		-- assegna ricorsivamente gli stati a `config_base' a partire dallo stato gerarchico iniziale della SC
 		-- NB: ogni stato gerarchico della SC ha la feature `initial' non vuota
 		do
 			stato.set_attivo
 			if stato.initial.is_empty then
 				-- `stato' è uno stato atomico
-				conf_base.force (stato, conf_base.count + 1)
+				config_base.force (stato, config_base.count + 1)
 			else -- `stato' è uno stato gerarchico e si scende in ricorsione
 				across
 					stato.initial as figli
 				loop
-					inizializza_conf_base (figli.item)
+					inizializza_config_base (figli.item)
 				end
 			end
 		end
@@ -629,11 +629,11 @@ feature -- inizializzazione transizioni
 	end
 
 	conf_base_has_state(stato: READABLE_STRING_32 ):BOOLEAN
-	-- Controlla se in `conf_base' è presente `stato'
+	-- Controlla se in `config_base' è presente `stato'
 		local
 			corrente: STATO
 		do
-			across conf_base as c
+			across config_base as c
 			loop
 				if c.item.id.is_equal(stato) then
 					Result := True

@@ -70,6 +70,6 @@ feature -- Test routines
 			nomi_files_prova [1] := test_data_dir + stati
 			nomi_files_prova [2] := test_data_dir + eventi
 			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non ha terminato nello stato corretto ", conf_has_states(esecutore.state_chart.conf_base, stati_corretti))
+			assert ("ERRORE il sistema non ha terminato nello stato corretto ", conf_has_states(esecutore.state_chart.config_base, stati_corretti))
 		end
 end
