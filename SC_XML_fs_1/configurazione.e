@@ -13,7 +13,7 @@ create
 feature -- attributi
 
 	config_base: ARRAY [STATO]
-		-- gli stati atomici nella configurazione di base della statechart
+		-- la configurazione di base della statechart, cioè i soli stati atomici della configurazione
 
 	stati: HASH_TABLE [STATO, STRING]
 		-- gli stati della statechart
@@ -27,7 +27,7 @@ feature -- attributi
 	albero: XML_CALLBACKS_NULL_FILTER_DOCUMENT
 		-- albero XML con la SC letta dal file
 
-	ha_problemi_con_il_file_della_sc: BOOLEAN
+	errore_specifica_SC: BOOLEAN
 
 	errore_costruzione_SC: BOOLEAN
 
@@ -40,7 +40,7 @@ feature -- creazione
 			create variabili.make
 			create creatore_di_assegna
 			crea_albero (nome_SC)
-			if not ha_problemi_con_il_file_della_sc then
+			if not errore_specifica_SC then
 				crea_stati_e_condizioni
 			end
 		end
@@ -67,10 +67,10 @@ feature -- supporto alla creazione
 				print (" - ")
 				print (parser.last_error_description)
 				print ("%N ")
-				ha_problemi_con_il_file_della_sc := True
+				errore_specifica_SC := True
 			else
 				print ("Parsing OK. %N")
-				ha_problemi_con_il_file_della_sc := False
+				errore_specifica_SC := False
 			end
 		end
 
