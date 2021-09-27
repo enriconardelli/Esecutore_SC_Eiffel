@@ -404,66 +404,6 @@ feature -- inizializzazione storia
 
 feature -- inizializzazione transizioni
 
---	assegna_transizione (transition_element: XML_ELEMENT; stato: STATO)
---		-- assegna a `stato' la transizione specificata in `transition_element'
---		local
---			transizione: TRANSIZIONE
---			destinazioni: LINKED_LIST[STRING]
---		do
---			debug ("SC_assegna_transizioni") stampa_elemento (transition_element) end
---			if attached transition_element.attribute_by_name ("target") as t then
---			-- TODO: t.value.split ritorna una LIST[READABLE_STRING_32] che è più generale di LINKED_LIST[STRING]
---			-- TODO: per cui devo inserire una per una le stringhe tornate dallo split in `destinazioni' che è del tipo corretto
---				create destinazioni.make
---				across t.value.split (' ') as l loop
---					destinazioni.extend (l.item)
---				end
---				if attached {STATO} stati.item (t.value.split(' ').first) as dest then
---					-- uso come prima destinazione il primo che compare
---					if not transizione_illegale (stato, dest) and transizione_multitarget_ammissibile(destinazioni) then
---					-- TODO: perché transizione_illegale si fa solo sulla prima delle destinazioni multiple?
---						create transizione.make_with_target (dest, stato)
---						if attached transition_element.attribute_by_name ("type") as type then
---							if type.value ~ "internal" and internal_legittima (transizione) then
---								transizione.set_internal
---							end
---						end
---						if t.value.split(' ').count > 1 then
---							if transizione.internal then
---								print ("ERRORE: transizione interna illegale perché con destinazioni multiple! ")
---								print ("  Transizione da >|" + stato.id + "|< a ")
---								stampa_destinazioni_multiple(t.value.split(' '))
---							else
---								transizione.set_fork
---								-- separo le destinazioni e le aggiungo (senza duplicazioni) alla transizione
---								across
---									t.value.split(' ') as d
---								loop
---									if attached stati.item(d.item) as s then transizione.add_target (s) end
---								end
---							end
---						end
---						assegna_evento (transition_element, transizione)
---						assegna_condizione (transition_element, transizione)
---						assegna_azioni (transition_element.elements, transizione)
---						stato.aggiungi_transizione (transizione)
---					else
---						print ("ERRORE: transizione illegale! ")
---						if not transizione_multitarget_ammissibile(destinazioni) then
---							print (" - Le destinazioni multiple indicate non sono tra loro compatibili %N")
---						else
---							print (" - Da >|" + stato.id + "|< a >|" + dest.id + "|< %N")
---						end
-
---					end
---				else
---					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value.split(' ').first + "|< che non appartiene alla SC!%N")
---				end
---			else
---				print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")
---			end
---		end
-
 	assegna_transizione (transition_element: XML_ELEMENT; sorgente: STATO)
 		-- assegna a `sorgente' la transizione specificata in `transition_element' tenendo conto del tipo di transizione
 		local
@@ -541,6 +481,7 @@ feature -- inizializzazione transizioni
 		do
 			create tutte_le_sorgenti.make
 			tutte_le_sorgenti.copy (altre_sorgenti)
+			tutte_le_sorgenti.extend (sorgente)
 			if ancore_multiple_compatibili (tutte_le_sorgenti) then
 				create transizione.make_con_destinazione (destinazione, sorgente)
 				transizione.set_merge
@@ -613,7 +554,6 @@ feature -- inizializzazione transizioni
 			across lista_stati as s2 loop
 				if not s1.item.id.is_equal (s2.item.id) then
 					if transizione_verticale (s1.item, s2.item) or not attached {STATO_AND} minimo_antenato_comune(s1.item, s2.item) then
-						print("ERRORE: ancore multiple NON compatibili s1 = " + s1.item.id + "; s2 = " + s2.item.id + "%N")
 						Result := False
 					end
 				end
@@ -987,7 +927,7 @@ feature -- supporto generale
 		do
 			across ancore as a
 			loop
-				print (" >|" + a.item.id + "|< - ")
+				print ("  >|" + a.item.id + "|<  ")
 			end
 			print ("%N")
 		end
