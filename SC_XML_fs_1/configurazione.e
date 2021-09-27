@@ -464,23 +464,25 @@ feature -- inizializzazione transizioni
 --			end
 --		end
 
-	assegna_transizione (transition_element: XML_ELEMENT; stato: STATO)
-		-- assegna a `stato' la transizione specificata in `transition_element' tenendo conto del tipo di transizione
+	assegna_transizione (transition_element: XML_ELEMENT; sorgente: STATO)
+		-- assegna a `sorgente' la transizione specificata in `transition_element' tenendo conto del tipo di transizione
 		local
-			destinazioni_id: LINKED_LIST [STRING]
+			destinazioni: LINKED_LIST [STATO]
+			altre_sorgenti: LINKED_LIST [STATO]
 		do
 			debug ("SC_assegna_transizioni") stampa_elemento (transition_element) end
 			if attached transition_element.attribute_by_name ("target") as t then
-				destinazioni_id := get_nomi (t.value)
-				inspect destinazioni_id.count
+				destinazioni := get_stati (get_nomi (t.value))
+				inspect destinazioni.count
 				when 0 then
-					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata: il 'target' è vuoto!%N")
+					print ("ERRORE: lo stato >|" + sorgente.id + "|< ha una transizione con destinazione non specificata: il 'target' è vuoto!%N")
 					errore_costruzione_SC := True
 				when 1 then
 					if attached transition_element.attribute_by_name ("source") as s then
-						assegna_transizione_merge(transition_element, destinazioni_id, stato)
+						altre_sorgenti := get_stati (get_nomi (s.value))
+						assegna_transizione_merge(transition_element, destinazioni.first, sorgente, altre_sorgenti)
 					else
-						assegna_transizione_singola(transition_element, destinazioni_id.first, stato)
+						assegna_transizione_singola(transition_element, destinazioni.first, sorgente)
 					end
 				else
 					if attached transition_element.attribute_by_name ("source") as s then
@@ -488,11 +490,11 @@ feature -- inizializzazione transizioni
 						print ("ERRORE: non posso avere contemporaneamente transizioni fork e merge!%N")
 						errore_costruzione_SC := True
 					else
-						assegna_transizione_fork(transition_element, destinazioni_id, stato)
+						assegna_transizione_fork(transition_element, destinazioni, sorgente)
 					end
 				end
 			else
-				print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")
+				print ("ERRORE: lo stato >|" + sorgente.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")
 				errore_costruzione_SC := True
 			end
 		end
@@ -521,95 +523,77 @@ feature -- inizializzazione transizioni
 					if attached stati.item (l.item) as s then
 						Result.extend(s)
 					else
-						print("AVVISO: lo stato ≤|" + l.item + "|< non appartiene alla SC!%N")
+						print("AVVISO: lo stato >|" + l.item + "|< non appartiene alla SC!%N")
 					end
 				end
 		end
 
-	assegna_transizione_fork(transition_element: XML_ELEMENT; destinazioni_id: LINKED_LIST [STRING]; stato: STATO)
+	assegna_transizione_merge(transition_element: XML_ELEMENT; destinazione, sorgente: STATO; altre_sorgenti: LINKED_LIST [STATO])
 		local
 			transizione: TRANSIZIONE
+			sorgenti: LINKED_LIST [STATO]
 		do
-				if attached stati.item (destinazioni_id.first) as dest then
-					-- uso come prima destinazione la prima che compare
-					if ancore_multiple_compatibili(destinazioni_id) then
-						create transizione.make_con_destinazione (dest, stato)
-							-- separo le destinazioni e le scorro tutte aggiungendole alla transizione
-							transizione.set_fork
-							across
-								destinazioni_id as it
-							loop
-								if attached stati.item(it.item) as s then transizione.add_destinazione (s) end
-							end
-						completa_transizione (transition_element, transizione, stato)
-						debug ("sc_transizioni_legali") print (" - Transizione legale da >|" + stato.id + "|< a >|" + dest.id + "|< %N") end
-					else
-						print ("ERRORE: Le destinazioni multiple indicate non sono tra loro compatibili %N")
-						errore_costruzione_SC := True
-					end
-				else
-					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + destinazioni_id.first + "|< che non appartiene alla SC!%N")
-					errore_costruzione_SC := True
+			if ancore_multiple_compatibili (altre_sorgenti) then
+				create transizione.make_con_destinazione (destinazione, sorgente)
+				transizione.set_merge
+				-- separo le sorgenti e le scorro tutte aggiungendole alla transizione
+				across
+					altre_sorgenti as s
+				loop
+					transizione.add_sorgente (s.item)
 				end
-		end
-
-	assegna_transizione_merge(transition_element: XML_ELEMENT; destinazioni_id: LINKED_LIST [STRING]; stato: STATO)
-		local
-			transizione: TRANSIZIONE
-			sorgenti_id: LINKED_LIST [STRING]
-		do
-			if attached transition_element.attribute_by_name ("source") as s then
-				if attached stati.item (destinazioni_id.first) as dest then
-					sorgenti_id := get_nomi (s.value)
-					if ancore_multiple_compatibili(sorgenti_id) then
-						create transizione.make_con_destinazione (dest, stato)
-						transizione.set_merge
-						-- separo le sorgenti e le scorro tutte aggiungendole alla transizione
-						across
-							sorgenti_id as it
-						loop
-							if attached stati.item(it.item) as st then transizione.add_sorgente (st) end
-						end
-						completa_transizione (transition_element, transizione, stato)
-						debug ("sc_transizioni_legali") print (" - Transizione legale da >|" + stato.id + "|< a >|" + dest.id + "|< %N") end
-						-- TODO: mentre stato.id esiste perché è stato creato da `istanzia_stati' gli altri stati sorgente
-						-- TODO: della transizione merge potrebbero ancora non essere stati letti e quindi non posso controllare
-						-- TODO: se esistono in `stati'. Questo controllo andrebbe fatto alla fine della creazione di tutta la SC
-					else
-						print ("ERRORE: Le sorgenti multiple indicate per la transizione che parte dallo stato >|" + stato.id + "|< non sono tra loro compatibili %N")
-						errore_costruzione_SC := True
-					end
-				else
-					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + destinazioni_id.first + "|< che non appartiene alla SC!%N")
-					errore_costruzione_SC := True
-				end
+				completa_transizione (transition_element, transizione, sorgente)
+				-- TODO: aggiungere nel debug la stampa di tutte le sorgenti
+				debug ("sc_transizioni_legali") print (" - Transizione legale da >|" + sorgente.id + "|< a >|" + destinazione.id + "|< %N") end
+				-- TODO: mentre stato.id esiste perché è stato creato da `istanzia_stati' gli altri stati sorgente
+				-- TODO: della transizione merge potrebbero ancora non essere stati letti e quindi non posso controllare
+				-- TODO: se esistono in `stati'. Questo controllo andrebbe fatto alla fine della creazione di tutta la SC
 			else
-				print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con sorgente multipla non specificata (manca il 'source')!%N")
+				print ("ERRORE: Le sorgenti multiple indicate per la transizione che parte dallo stato >|" + sorgente.id + "|< non sono tra loro compatibili %N")
 				errore_costruzione_SC := True
 			end
 		end
 
-	assegna_transizione_singola (transition_element: XML_ELEMENT; id_destinazione: STRING; stato: STATO)
-		-- assegna a `stato' la transizione specificata in `transition_element'
+	assegna_transizione_singola (transition_element: XML_ELEMENT; destinazione, sorgente: STATO)
+		-- assegna a `sorgente' la transizione specificata in `transition_element' che porta a `destinazione'
 		local
 			transizione: TRANSIZIONE
 		do
-			if attached stati.item (id_destinazione) as dest then
-				if transizione_illegale (stato, dest) then
-					print ("ERRORE: transizione illegale da >|" + stato.id + "|< a >|" + id_destinazione + "|< !%N")
-					errore_costruzione_SC := True
-				else
-					create transizione.make_con_destinazione (dest, stato)
-					if attached transition_element.attribute_by_name ("type") as type then
-						if type.value ~ "internal" and interna_legale (transizione) then
-							transizione.set_interna
-						end
-					end
-					completa_transizione (transition_element, transizione, stato)
-					debug ("sc_transizioni_legali") print (" - Transizione legale da >|" + stato.id + "|< a >|" + dest.id + "|< %N") end
-				end
+			if transizione_illegale (sorgente, destinazione) then
+				print ("ERRORE: transizione illegale da >|" + sorgente.id + "|< a >|" + destinazione.id + "|< !%N")
+				errore_costruzione_SC := True
 			else
-				print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + id_destinazione + "|< che non appartiene alla SC!%N")
+				create transizione.make_con_destinazione (destinazione, sorgente)
+				if attached transition_element.attribute_by_name ("type") as type then
+					if type.value ~ "internal" and interna_legale (transizione) then
+						transizione.set_interna
+					end
+				end
+				completa_transizione (transition_element, transizione, sorgente)
+				debug ("sc_transizioni_legali") print (" - Transizione legale da >|" + sorgente.id + "|< a >|" + destinazione.id + "|< %N") end
+			end
+		end
+
+	assegna_transizione_fork(transition_element: XML_ELEMENT; destinazioni: LINKED_LIST [STATO]; sorgente: STATO)
+		local
+			transizione: TRANSIZIONE
+		do
+			-- uso come prima destinazione la prima che compare
+			if ancore_multiple_compatibili(destinazioni) then
+				create transizione.make_con_destinazione (destinazioni.first, sorgente)
+					-- separo le destinazioni e le scorro tutte aggiungendole alla transizione
+					transizione.set_fork
+					across
+						destinazioni as d
+					loop
+						transizione.add_destinazione (d.item)
+					end
+				completa_transizione (transition_element, transizione, sorgente)
+				-- TODO: aggiungere nel debug la stampa di tutte le destinazioni
+				debug ("sc_transizioni_legali") print (" - Transizione legale da >|" + sorgente.id + "|< a >|" + destinazioni.first.id + "|< %N") end
+			else
+				print ("ERRORE: Le destinazioni multiple indicate non sono tra loro compatibili %N")
+				stampa_destinazioni_multiple (destinazioni)
 				errore_costruzione_SC := True
 			end
 		end
@@ -623,7 +607,7 @@ feature -- inizializzazione transizioni
 		stato.aggiungi_transizione (transizione)
 	end
 
-	ancore_multiple_compatibili(lista_stati: LINKED_LIST [STRING]): BOOLEAN
+	ancore_multiple_compatibili(lista_stati: LINKED_LIST [STATO]): BOOLEAN
 --	ancore_multiple_compatibili(lista_stati: LIST [READABLE_STRING_32]): BOOLEAN
 		-- prende in imput una  lista di nomi di stati e ritorna True se sono compatibili come
 		-- sorgenti multiple di una transizione merge o destinazioni multiple di una transizione fork:
@@ -631,18 +615,18 @@ feature -- inizializzazione transizioni
 		-- e non devono essere l'una discendente dell'altra.
 	do
 		Result := True
-		across lista_stati as stato loop
-			across lista_stati as altro_stato loop
-				if attached stati.item(stato.item) as sc then
-					if attached stati.item(altro_stato.item) as asc then
-						if not sc.is_equal (asc) then
-							if transizione_verticale(sc,asc) or not attached {STATO_AND} minimo_antenato_comune(sc,asc) then
-								print(" ancore multiple NON compatibili sc = " + sc.id + "; asc = " + asc.id)
+		across lista_stati as s1 loop
+			across lista_stati as s2 loop
+--				if attached stati.item (stato_1.item) as s1 then
+--					if attached stati.item (stato_2.item) as s2 then
+						if not s1.item.id.is_equal (s2.item.id) then
+							if transizione_verticale (s1.item, s2.item) or not attached {STATO_AND} minimo_antenato_comune(s1.item, s2.item) then
+								print(" ancore multiple NON compatibili s1 = " + s1.item.id + "; s2 = " + s2.item.id)
 								Result := False
 							end
 						end
-					end
-				end
+--					end
+--				end
 			end
 		end
 	end
@@ -1009,11 +993,11 @@ feature -- supporto generale
 
 		end
 
-	stampa_destinazioni_multiple (destinazioni: LIST[READABLE_STRING_32])
+	stampa_destinazioni_multiple (destinazioni: LINKED_LIST[STATO])
 		do
 			across destinazioni as d
 			loop
-				print (" >|" + d.item + "|< - ")
+				print (" >|" + d.item.id + "|< - ")
 			end
 			print ("%N")
 		end
