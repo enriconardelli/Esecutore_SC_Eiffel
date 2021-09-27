@@ -472,35 +472,45 @@ feature -- inizializzazione transizioni
 		do
 			debug ("SC_assegna_transizioni") stampa_elemento (transition_element) end
 			if attached transition_element.attribute_by_name ("target") as t then
-			-- t.value.split ritorna una LIST[READABLE_STRING_32] che è più generale di LINKED_LIST[STRING]
-			-- per cui devo inserire una per una le stringhe tornate dallo split in `destinazioni' che è del tipo corretto
-				create destinazioni.make
-				across t.value.split (' ') as l loop
-					destinazioni.extend (l.item)
-				end
-				if destinazioni.count = 0 then
-					print ("ERRORE: non posso avere contemporaneamente transizioni fork e merge!")
-				end
-				if destinazioni.count > 1 then
-					if attached transition_element.attribute_by_name ("source") as s then
-						-- TODO: in realtà è possibile avere transizioni contemporaneamente fork e merge ma al momento non vengono gestite
-						print ("ERRORE: non posso avere contemporaneamente transizioni fork e merge!")
-						errore_costruzione_SC := True
-					else
-						assegna_transizione_fork(transition_element, stato)
-					end
-				else
+				destinazioni := get_nomi (t.value)
+				inspect destinazioni.count
+				when 0 then
+					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata: il 'target' è vuoto!%N")
+					errore_costruzione_SC := True
+				when 1 then
 					if attached transition_element.attribute_by_name ("source") as s then
 						assegna_transizione_merge(transition_element, stato)
 					else
-						-- TODO: se il contenuto di "target" era vuoto o fatto di blank che succede?
 						assegna_transizione_singola(transition_element, destinazioni.first, stato)
+					end
+				else
+					if attached transition_element.attribute_by_name ("source") as s then
+						-- TODO: in realtà è possibile avere transizioni contemporaneamente fork e merge ma al momento non vengono gestite
+						print ("ERRORE: non posso avere contemporaneamente transizioni fork e merge!%N")
+						errore_costruzione_SC := True
+					else
+						assegna_transizione_fork(transition_element, stato)
 					end
 				end
 			else
 				print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")
 				errore_costruzione_SC := True
 			end
+		end
+
+	get_nomi (una_stringa: STRING): LINKED_LIST [STRING]
+		-- ritorna i possibili nomi di stato, individuati come stringhe separate da uno o più spazi
+		local
+			lista: LIST [STRING]
+		do
+			create Result.make
+			lista := una_stringa.split(' ')
+			across lista as l
+				loop
+					if not l.item.is_equal("") then
+						Result.extend(l.item)
+					end
+				end
 		end
 
 	assegna_transizione_fork(transition_element: XML_ELEMENT; stato: STATO)
