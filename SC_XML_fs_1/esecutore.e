@@ -334,7 +334,7 @@ feature -- evoluzione della statechart
 		end
 
 	aggiungi_paralleli (p_destinazione: STATO; prossima_config_base: ARRAY [STATO])
-	-- inserisce in `prossima_config_base' i default degli stati in parallelo rispetto al target
+	-- inserisce in `prossima_config_base' i default degli stati in parallelo rispetto alla destinazione
 	-- qualora vi siano stati già attivi non dà luogo a configurazioni non corrette
 	-- TODO: la riga precedente non capisco bene che vuol dire, esprimere meglio
 		do
@@ -356,8 +356,8 @@ feature -- evoluzione della statechart
 
 
 	aggiungi_sottostati (stato: STATO; prossima_config_base: ARRAY [STATO])
-			-- se il target NON contiene un sottostato attivo si comporta come trova_default
-			-- altrimenti entra nello stato target e entra ricorsivamente nei suoi sottostati
+			-- se la destinazione NON contiene un sottostato attivo si comporta come trova_default
+			-- altrimenti entra nello stato destinazione e entra ricorsivamente nei suoi sottostati
 			-- che contengono un sottostato attivo
 			-- se incontra uno stato AND con un figlio attivo allora mette attivi tutti i suoi figli
 		do

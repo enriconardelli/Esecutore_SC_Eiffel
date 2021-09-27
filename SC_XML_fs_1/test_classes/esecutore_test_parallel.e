@@ -39,7 +39,7 @@ feature -- Test routines
 		end
 
 	t_entrata
-	-- La transizione ha come target lo stato AND
+	-- La transizione ha come destinazione lo stato AND
  		do
 			conf_finale.force("A2A1")
 			conf_finale.force("A2B1")
@@ -47,7 +47,7 @@ feature -- Test routines
 		end
 
 	t_entrata_2
-	-- La transizione ha come target un sotto-stato dello stato AND
+	-- La transizione ha come destinazione un sotto-stato dello stato AND
  		do
 			conf_finale.force("A2A2")
 			conf_finale.force("A2B1")

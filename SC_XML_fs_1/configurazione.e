@@ -523,15 +523,15 @@ feature -- inizializzazione transizioni
 			-- SE transition_element.attribute_by_name ("target") ha più di un valore si tratta di una FORK
 			if attached transition_element.attribute_by_name ("target") as t then
 				if attached stati.item (t.value.split(' ').first) as dest then
-					-- uso come primo target il primo che compare
+					-- uso come prima destinazione la prima che compare
 					if ancore_multiple_compatibili(t.value.split(' ')) then
-						create transizione.make_with_target (dest, stato)
+						create transizione.make_con_destinazione (dest, stato)
 							-- separo le destinazioni e le scorro tutte aggiungendole alla transizione
 							transizione.set_fork
 							across
 								t.value.split(' ') as it
 							loop
-								if attached stati.item(it.item) as s then transizione.add_target (s) end
+								if attached stati.item(it.item) as s then transizione.add_destinazione (s) end
 							end
 						completa_transizione (transition_element, transizione, stato)
 						debug ("sc_transizioni_legali") print (" - Transizione legale da >|" + stato.id + "|< a >|" + dest.id + "|< %N") end
@@ -563,13 +563,13 @@ feature -- inizializzazione transizioni
 							-- questo test riguarda l'effettiva esecuzione della transizione in funzione della configurazione corrente
 							-- e non l'ammissibilità della specifica delle sorgenti multiple e quindi non va eseguito in questo momento
 --						   if transizione_sorgenti_multiple_ammissibile(source_list) then
-								create transizione.make_with_target (dest, stato)
+								create transizione.make_con_destinazione (dest, stato)
 								transizione.set_merge
 								-- separo le destinazioni e le scorro tutte aggiungendole alla transizione
 								across
 									source_list as it
 								loop
-									if attached stati.item(it.item) as st then transizione.add_source (st) end
+									if attached stati.item(it.item) as st then transizione.add_sorgente (st) end
 								end
 								completa_transizione (transition_element, transizione, stato)
 								debug ("sc_transizioni_legali") print (" - Transizione legale da >|" + stato.id + "|< a >|" + dest.id + "|< %N") end
@@ -604,7 +604,7 @@ feature -- inizializzazione transizioni
 					print ("ERRORE: transizione illegale da >|" + stato.id + "|< a >|" + id_destinazione + "|< !%N")
 					errore_costruzione_SC := True
 				else
-					create transizione.make_with_target (dest, stato)
+					create transizione.make_con_destinazione (dest, stato)
 					if attached transition_element.attribute_by_name ("type") as type then
 						if type.value ~ "internal" and interna_legale (transizione) then
 							transizione.set_interna

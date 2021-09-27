@@ -8,7 +8,7 @@ class
 	TRANSIZIONE
 
 create
-	make_with_target
+	make_con_destinazione
 
 feature -- costante
 
@@ -16,13 +16,13 @@ feature -- costante
 
 feature -- creazione
 
-	make_with_target(stato_destinazione, stato_sorgente: STATO)
+	make_con_destinazione (stato_destinazione, stato_sorgente: STATO)
 		--	in caso di destinazioni multiple viene invocata con la prima e le altre si aggiungono dopo
 		do
 			create sorgente.make
 			create destinazione.make
-			set_sorgente(stato_sorgente)
-			set_target(stato_destinazione)
+			set_sorgente (stato_sorgente)
+			set_destinazione (stato_destinazione)
             create azioni.make_empty
 			evento := Void
 			interna := False
@@ -61,7 +61,7 @@ feature -- setter
 			condizione := a_string
 		end
 
-	set_target (uno_stato: STATO)
+	set_destinazione (uno_stato: STATO)
 		do
 			destinazione.force(uno_stato)
 		end
@@ -86,14 +86,14 @@ feature -- setter
 			merge := True
 		end
 
-	add_target(uno_stato: STATO)
+	add_destinazione(uno_stato: STATO)
 		do
 			if not destinazione.has(uno_stato) then
 				destinazione.force(uno_stato)
 			end
 		end
 
-	add_source(uno_stato: STATO)
+	add_sorgente(uno_stato: STATO)
 		do
 			if not sorgente.has(uno_stato) then
 				sorgente.force(uno_stato)
