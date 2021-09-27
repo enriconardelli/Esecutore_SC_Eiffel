@@ -480,7 +480,12 @@ feature -- inizializzazione transizioni
 				when 1 then
 					if attached transition_element.attribute_by_name ("source") as s then
 						altre_sorgenti := get_stati (get_nomi (s.value))
-						assegna_transizione_merge(transition_element, destinazioni.first, sorgente, altre_sorgenti)
+						if altre_sorgenti.count = 0 then
+							print ("AVVISO: lo stato >|" + sorgente.id + "|< ha una transizione in cui 'source' non contiene id di stati della SC!%N")
+							assegna_transizione_singola(transition_element, destinazioni.first, sorgente)
+						else
+							assegna_transizione_merge(transition_element, destinazioni.first, sorgente, altre_sorgenti)
+						end
 					else
 						assegna_transizione_singola(transition_element, destinazioni.first, sorgente)
 					end
@@ -524,7 +529,7 @@ feature -- inizializzazione transizioni
 					if attached stati.item (l.item) as s then
 						Result.extend(s)
 					else
-						print("AVVISO: lo stato >|" + l.item + "|< non appartiene alla SC!%N")
+						print("AVVISO: lo stato >|" + l.item + "|< non appartiene alla SC e viene scartato!%N")
 					end
 				end
 		end
@@ -608,11 +613,9 @@ feature -- inizializzazione transizioni
 			across lista_stati as s2 loop
 				if not s1.item.id.is_equal (s2.item.id) then
 					if transizione_verticale (s1.item, s2.item) or not attached {STATO_AND} minimo_antenato_comune(s1.item, s2.item) then
-						print("ERRORE: ancore multiple NON compatibili s1 = " + s1.item.id + "; s2 = " + s2.item.id)
+						print("ERRORE: ancore multiple NON compatibili s1 = " + s1.item.id + "; s2 = " + s2.item.id + "%N")
 						Result := False
 					end
-				else
-					print("AVVISO: ancore multiple DUPLICATE s1 = " + s1.item.id + "; s2 = " + s2.item.id)
 				end
 			end
 		end
