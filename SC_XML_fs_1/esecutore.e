@@ -299,8 +299,10 @@ feature -- evoluzione della statechart
 		local
 			contesto, stato_temp: detachable STATO
 		do
+		-- TODO: perché qui e in esegui_azioni si fanno gli stessi controlli con antenato_di e trova_contesto?
 			Result := transizione.sorgente.first
 			if transizione.interna then
+				-- TODO: perché si usa solo il primo di sorgente e destinazione?
 				if transizione.sorgente.first.antenato_di (transizione.destinazione.first) then
 					across
 						transizione.sorgente.first.figli as figli
@@ -319,6 +321,7 @@ feature -- evoluzione della statechart
 					end
 				end
 			else
+				-- TODO: perché si trova il contesto usando solo il primo di sorgente e destinazione?
 				contesto := trova_contesto (transizione.sorgente.first, transizione.destinazione.first)
 				from
 					stato_temp := transizione.sorgente.first
@@ -461,13 +464,16 @@ feature -- esecuzione azioni
 		local
 			contesto: detachable STATO
 		do
+		-- TODO: perché qui e in antenato_massimo_uscita si fanno gli stessi controlli con antenato_di e trova_contesto?
 			if transizione.interna then
+				-- TODO: perché si usa solo il primo di sorgente e destinazione?
 				if transizione.sorgente.first.antenato_di (transizione.destinazione.first) then
 					contesto := transizione.sorgente.first
 				else
 					contesto := transizione.destinazione.first
 				end
 			else
+				-- TODO: perché si trova il contesto usando solo il primo di sorgente e destinazione?
 				contesto := trova_contesto (transizione.sorgente.first, transizione.destinazione.first)
 			end
 			esegui_azioni_onexit (antenato_massimo_uscita (transizione))
