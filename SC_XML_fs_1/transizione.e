@@ -25,7 +25,7 @@ feature -- creazione
 			set_target(stato_destinazione)
             create azioni.make_empty
 			evento := Void
-			internal := False
+			interna := False
 			condizione := Valore_Nullo
 			fork := False
 			merge := False
@@ -43,7 +43,7 @@ feature -- attributi
 
 	destinazione: LINKED_LIST [STATO]
 
-	internal: BOOLEAN
+	interna: BOOLEAN
 
 	fork: BOOLEAN
 
@@ -71,9 +71,9 @@ feature -- setter
 			sorgente.force(uno_stato)
 		end
 
-	set_internal
+	set_interna
 		do
-			internal := True
+			interna := True
 		end
 
 	set_fork

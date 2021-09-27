@@ -606,8 +606,8 @@ feature -- inizializzazione transizioni
 				else
 					create transizione.make_with_target (dest, stato)
 					if attached transition_element.attribute_by_name ("type") as type then
-						if type.value ~ "internal" and verifica_internal (transizione) then
-							transizione.set_internal
+						if type.value ~ "internal" and interna_legale (transizione) then
+							transizione.set_interna
 						end
 					end
 					completa_transizione (transition_element, transizione, stato)
@@ -751,7 +751,7 @@ feature -- inizializzazione transizioni
 			end
 		end
 
-	verifica_internal (transizione: TRANSIZIONE): BOOLEAN
+	interna_legale (transizione: TRANSIZIONE): BOOLEAN
 		do
 			if (attached {STATO_XOR} transizione.sorgente.first as ts and then ts.antenato_di (transizione.destinazione.first)) or else (transizione.destinazione.first.antenato_di (transizione.sorgente.first)) or else (transizione.destinazione.first = transizione.sorgente.first) then
 --			if (transizione.sorgente.first.antenato_di (transizione.destinazione.first)) or else (transizione.destinazione.first.antenato_di (transizione.sorgente.first)) or else (transizione.destinazione.first = transizione.sorgente) then

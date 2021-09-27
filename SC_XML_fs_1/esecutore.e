@@ -300,7 +300,7 @@ feature -- evoluzione della statechart
 			contesto, stato_temp: detachable STATO
 		do
 			Result := transizione.sorgente.first
-			if transizione.internal then
+			if transizione.interna then
 				if transizione.sorgente.first.antenato_di (transizione.destinazione.first) then
 					across
 						transizione.sorgente.first.figli as figli
@@ -461,7 +461,7 @@ feature -- esecuzione azioni
 		local
 			contesto: detachable STATO
 		do
-			if transizione.internal then
+			if transizione.interna then
 				if transizione.sorgente.first.antenato_di (transizione.destinazione.first) then
 					contesto := transizione.sorgente.first
 				else
