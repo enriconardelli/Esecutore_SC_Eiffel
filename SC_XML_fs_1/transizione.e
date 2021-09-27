@@ -17,7 +17,7 @@ feature -- costante
 feature -- creazione
 
 	make_con_destinazione (stato_destinazione, stato_sorgente: STATO)
-		--	in caso di destinazioni multiple viene invocata con la prima e le altre si aggiungono dopo
+		--	in caso di destinazioni o sorgenti multiple viene invocata con la prima e le altre si aggiungono dopo
 		do
 			create sorgente.make
 			create destinazione.make
@@ -86,17 +86,27 @@ feature -- setter
 			merge := True
 		end
 
-	add_destinazione(uno_stato: STATO)
+	add_destinazioni (destinazioni: LINKED_LIST [STATO])
 		do
-			if not destinazione.has(uno_stato) then
-				destinazione.force(uno_stato)
+			across destinazioni as d
+			loop
+				if not destinazione.has(d.item) then
+					destinazione.force(d.item)
+				else
+					print("AVVISO: lo stato >|" + d.item.id + "|< è gia presente tra le destinazioni!%N")
+				end
 			end
 		end
 
-	add_sorgente(uno_stato: STATO)
+	add_sorgenti (sorgenti: LINKED_LIST [STATO])
 		do
-			if not sorgente.has(uno_stato) then
-				sorgente.force(uno_stato)
+			across sorgenti as s
+			loop
+				if not sorgente.has(s.item) then
+					sorgente.force(s.item)
+				else
+					print("AVVISO: lo stato >|" + s.item.id + "|< è gia presente tra le sorgenti!%N")
+				end
 			end
 		end
 
