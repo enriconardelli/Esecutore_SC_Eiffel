@@ -42,7 +42,7 @@ feature -- Attributi
 				print ("eventi verificati, si esegue la SC %N")
 				evolvi_SC (ambiente_corrente.eventi_esterni)
 			else
-				print ("Non si esegue la SC perché ")
+				print ("Non si esegue la SC perche' ")
 				if state_chart.errore_costruzione_SC then
 					print ("ci sono problemi nella costruzione della SC.%N")
 				else
