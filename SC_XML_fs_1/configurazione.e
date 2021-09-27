@@ -1,4 +1,4 @@
-note
+ï»¿note
 	description: "La classe che rappresenta la statechart"
 	author: "EN + studenti corsi PSI"
 	date: "Agosto 2020"
@@ -13,7 +13,7 @@ create
 feature -- attributi
 
 	config_base: ARRAY [STATO]
-		-- la configurazione di base della statechart, cioè i soli stati atomici della configurazione
+		-- la configurazione di base della statechart, cioÃ¨ i soli stati atomici della configurazione
 
 	stati: HASH_TABLE [STATO, STRING]
 		-- gli stati della statechart
@@ -91,7 +91,7 @@ feature -- supporto alla creazione
 feature -- inizializzazione SC
 
 	istanzia_datamodel (elements: LIST [XML_ELEMENT])
-		-- istanzia il <datamodel>, che può essere anche suddiviso in più nodi
+		-- istanzia il <datamodel>, che puÃ² essere anche suddiviso in piÃ¹ nodi
 		do
 			across
 				elements as e
@@ -127,7 +127,7 @@ feature -- inizializzazione SC
 					errore_costruzione_SC := True
 				end
 			end
-			-- aggiunge variabile booleana '{TRANSIZIONE}.Valore_Nullo' che è sempre True e si usa per le transizioni che non specificano una condizione nel file del modello
+			-- aggiunge variabile booleana '{TRANSIZIONE}.Valore_Nullo' che Ã¨ sempre True e si usa per le transizioni che non specificano una condizione nel file del modello
 			variabili.booleane.extend (True, {TRANSIZIONE}.Valore_Nullo)
 		end
 
@@ -153,7 +153,7 @@ feature -- inizializzazione SC
 				elements as e
 			loop
 				if e.item.name ~ "final" and attached e.item.attribute_by_name ("id") as id then
-				-- TODO: avvisare se "id" è assente
+				-- TODO: avvisare se "id" Ã¨ assente
 					stati.extend (create {STATO_ATOMICO}.make_final_with_id (id.value), id.value)
 				end
 			end
@@ -161,7 +161,7 @@ feature -- inizializzazione SC
 
 	istanzia_stati (elements: LIST [XML_ELEMENT]; p_genitore: detachable STATO_GERARCHICO)
 		-- crea gli stati assegnando loro l'eventuale genitore e gli eventuali figli
-		-- TODO: feature complessa, è possibile semplificarla?
+		-- TODO: feature complessa, Ã¨ possibile semplificarla?
 		local
 			stato_temp: STATO_ATOMICO
 			stato_ger_temp: STATO_GERARCHICO
@@ -186,7 +186,7 @@ feature -- inizializzazione SC
 						else
 							if e.item.name ~ "state" then
 								if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
-									-- elemento corrente <state> ha figli, quindi è gerarchico
+									-- elemento corrente <state> ha figli, quindi Ã¨ gerarchico
 									if attached p_genitore as pg then
 										-- istanzio elemento corrente con genitore e glielo assegno come figlio
 										stato_ger_temp := create {STATO_XOR}.make_with_id_and_parent (id_attr.value, pg)
@@ -195,10 +195,10 @@ feature -- inizializzazione SC
 										stato_ger_temp := create {STATO_XOR}.make_with_id (id_attr.value)
 									end
 									stati.extend (stato_ger_temp, id_attr.value)
-									-- ricorsione sui figli con sé stesso come genitore
+									-- ricorsione sui figli con sÃ© stesso come genitore
 --									istanzia_stati (e.item.elements, stati.item (id_attr.value))
 									istanzia_stati (e.item.elements, stato_ger_temp)
-								else -- elemento corrente <state> non ha figli, quindi è atomico
+								else -- elemento corrente <state> non ha figli, quindi Ã¨ atomico
 									if attached p_genitore as pg then
 										-- istanzio elemento corrente con genitore e glielo assegno come figlio
 										stato_temp := create {STATO_ATOMICO}.make_with_id_and_parent (id_attr.value, pg)
@@ -220,7 +220,7 @@ feature -- inizializzazione SC
 										stato_ger_temp := create {STATO_AND}.make_with_id (id_attr.value)
 									end
 									stati.extend (stato_ger_temp, id_attr.value)
-										-- ricorsione sui figli con sé stesso come genitore
+										-- ricorsione sui figli con sÃ© stesso come genitore
 --									istanzia_stati (e.item.elements, stati.item (id_attr.value))
 									istanzia_stati (e.item.elements, stato_ger_temp)
 								else -- elemento corrente <parallel> non ha figli
@@ -236,13 +236,13 @@ feature -- inizializzazione SC
 
 	assegna_initial (elements: LIST [XML_ELEMENT])
 		-- assegna ricorsivamente agli stati i loro sotto-stati iniziali di default
-		-- NB: regolarità di 'id' è stata già controllata in `istanzia_stati'
+		-- NB: regolaritÃ  di 'id' Ã¨ stata giÃ  controllata in `istanzia_stati'
 		do
 			across
 				elements as e
 			loop
 				debug ("SC_assegna_initial") if e.item.name ~ "state" or e.item.name ~ "parallel" then stampa_elemento (e.item) end end
-				-- NB: gli stati atomici non sono né {STATO_XOR} né {STATO_AND}
+				-- NB: gli stati atomici non sono nÃ© {STATO_XOR} nÃ© {STATO_AND}
 				if e.item.name ~ "state" and attached e.item.attribute_by_name ("id") as id_attr then
 					if attached {STATO_XOR} stati.item (id_attr.value) as stato then
 						-- istanza di stato {STATO_XOR} ha certamente figli
@@ -294,7 +294,7 @@ feature -- inizializzazione SC
 					if not attached r.genitore then
 						iniziale_SC := r
 					else
-						print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come stato iniziale della statechart non è uno degli stati 'top'!%N")
+						print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come stato iniziale della statechart non Ã¨ uno degli stati 'top'!%N")
 						errore_costruzione_SC := True
 					end
 				else -- l'initial della radice non esiste
@@ -320,9 +320,9 @@ feature -- inizializzazione SC
 		do
 			stato.set_attivo
 			if stato.initial.is_empty then
-				-- `stato' è uno stato atomico
+				-- `stato' Ã¨ uno stato atomico
 				config_base.force (stato, config_base.count + 1)
-			else -- `stato' è uno stato gerarchico e si scende in ricorsione
+			else -- `stato' Ã¨ uno stato gerarchico e si scende in ricorsione
 				across
 					stato.initial as figli
 				loop
@@ -341,7 +341,7 @@ feature -- inizializzazione SC
 					-- assenza di 'id' viene controllata in `istanzia_stati'
 					completa_stati (e.item.elements)
 					if attached stati.item (id_stato.value) as stato then
-						-- lo stato esiste perché viene creato in `stati' da `istanzia_stati'
+						-- lo stato esiste perchÃ© viene creato in `stati' da `istanzia_stati'
 						assegna_figli (stato, e.item)
 					end
 				end
@@ -378,15 +378,15 @@ feature -- inizializzazione storia
 			storia_temp: STORIA
 		do
 			if attached {STATO_XOR} stato as st_xor then
-				-- se uno stato composto ha più di una storia viene salvata solo la prima
-				-- TODO: verificare che uno stato può avere solo un figlio "history"
+				-- se uno stato composto ha piÃ¹ di una storia viene salvata solo la prima
+				-- TODO: verificare che uno stato puÃ² avere solo un figlio "history"
 				if attached history_element.attribute_by_name ("id") as h_id then
 					if attached history_element.attribute_by_name ("type") as h_tp and then h_tp.value ~ "deep" then
 						storia_temp := create {STORIA_DEEP}.make_history_with_id (h_id.value, st_xor)
 					else
 						storia_temp := create {STORIA_SHALLOW}.make_history_with_id (h_id.value, st_xor)
 					end
-				else -- non è necessario che la storia abbia un id
+				else -- non Ã¨ necessario che la storia abbia un id
 				-- TODO: ma se la storia non deve avere un id non si possono unificare i due rami dell'IF?
 					if attached history_element.attribute_by_name ("type") as h_tp and then h_tp.value ~ "deep" then
 						storia_temp := create {STORIA_DEEP}.make_history (st_xor)
@@ -397,7 +397,7 @@ feature -- inizializzazione storia
 				stato.add_storia (storia_temp)
 			end
 			if attached {STATO_AND} stato as st_and then
-				print ("AVVISO: " + st_and.id + " è uno stato parallelo, pertanto la sua storia non verrà considerata!%N")
+				print ("AVVISO: " + st_and.id + " Ã¨ uno stato parallelo, pertanto la sua storia non verrÃ  considerata!%N")
 			end
 		end
 
@@ -412,8 +412,8 @@ feature -- inizializzazione transizioni
 --		do
 --			debug ("SC_assegna_transizioni") stampa_elemento (transition_element) end
 --			if attached transition_element.attribute_by_name ("target") as t then
---			-- TODO: t.value.split ritorna una LIST[READABLE_STRING_32] che è più generale di LINKED_LIST[STRING]
---			-- TODO: per cui devo inserire una per una le stringhe tornate dallo split in `destinazioni' che è del tipo corretto
+--			-- TODO: t.value.split ritorna una LIST[READABLE_STRING_32] che Ã¨ piÃ¹ generale di LINKED_LIST[STRING]
+--			-- TODO: per cui devo inserire una per una le stringhe tornate dallo split in `destinazioni' che Ã¨ del tipo corretto
 --				create destinazioni.make
 --				across t.value.split (' ') as l loop
 --					destinazioni.extend (l.item)
@@ -421,7 +421,7 @@ feature -- inizializzazione transizioni
 --				if attached {STATO} stati.item (t.value.split(' ').first) as dest then
 --					-- uso come prima destinazione il primo che compare
 --					if not transizione_illegale (stato, dest) and transizione_multitarget_ammissibile(destinazioni) then
---					-- TODO: perché transizione_illegale si fa solo sulla prima delle destinazioni multiple?
+--					-- TODO: perchÃ© transizione_illegale si fa solo sulla prima delle destinazioni multiple?
 --						create transizione.make_with_target (dest, stato)
 --						if attached transition_element.attribute_by_name ("type") as type then
 --							if type.value ~ "internal" and internal_legittima (transizione) then
@@ -430,7 +430,7 @@ feature -- inizializzazione transizioni
 --						end
 --						if t.value.split(' ').count > 1 then
 --							if transizione.internal then
---								print ("ERRORE: transizione interna illegale perché con destinazioni multiple! ")
+--								print ("ERRORE: transizione interna illegale perchÃ© con destinazioni multiple! ")
 --								print ("  Transizione da >|" + stato.id + "|< a ")
 --								stampa_destinazioni_multiple(t.value.split(' '))
 --							else
@@ -467,29 +467,28 @@ feature -- inizializzazione transizioni
 	assegna_transizione (transition_element: XML_ELEMENT; stato: STATO)
 		-- assegna a `stato' la transizione specificata in `transition_element' tenendo conto del tipo di transizione
 		local
-			sorgenti: LINKED_LIST [STRING]
-			destinazioni: LINKED_LIST [STRING]
+			destinazioni_id: LINKED_LIST [STRING]
 		do
 			debug ("SC_assegna_transizioni") stampa_elemento (transition_element) end
 			if attached transition_element.attribute_by_name ("target") as t then
-				destinazioni := get_nomi (t.value)
-				inspect destinazioni.count
+				destinazioni_id := get_nomi (t.value)
+				inspect destinazioni_id.count
 				when 0 then
-					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata: il 'target' è vuoto!%N")
+					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione non specificata: il 'target' Ã¨ vuoto!%N")
 					errore_costruzione_SC := True
 				when 1 then
 					if attached transition_element.attribute_by_name ("source") as s then
-						assegna_transizione_merge(transition_element, stato)
+						assegna_transizione_merge(transition_element, destinazioni_id, stato)
 					else
-						assegna_transizione_singola(transition_element, destinazioni.first, stato)
+						assegna_transizione_singola(transition_element, destinazioni_id.first, stato)
 					end
 				else
 					if attached transition_element.attribute_by_name ("source") as s then
-						-- TODO: in realtà è possibile avere transizioni contemporaneamente fork e merge ma al momento non vengono gestite
+						-- TODO: in realtÃ  Ã¨ possibile avere transizioni contemporaneamente fork e merge ma al momento non vengono gestite
 						print ("ERRORE: non posso avere contemporaneamente transizioni fork e merge!%N")
 						errore_costruzione_SC := True
 					else
-						assegna_transizione_fork(transition_element, stato)
+						assegna_transizione_fork(transition_element, destinazioni_id, stato)
 					end
 				end
 			else
@@ -499,7 +498,7 @@ feature -- inizializzazione transizioni
 		end
 
 	get_nomi (una_stringa: STRING): LINKED_LIST [STRING]
-		-- ritorna i possibili nomi di stato, individuati come stringhe separate da uno o più spazi
+		-- ritorna i possibili nomi di stato, individuati come stringhe separate da uno o piÃ¹ spazi
 		local
 			lista: LIST [STRING]
 		do
@@ -513,23 +512,32 @@ feature -- inizializzazione transizioni
 				end
 		end
 
-	assegna_transizione_fork(transition_element: XML_ELEMENT; stato: STATO)
-			-- se esiste transition_element.attribute_by_name ("target") si tratta di una transizione FORK
-			-- quindi la funzione assegna la transizione allo `stato' passato come argoment
-			-- salvando anche tutte le destinazioni della transizione
+	get_stati (lista_id: LINKED_LIST [STRING]): LINKED_LIST [STATO]
+		-- ritorna una lista di stati corrispondenti agli identificatori in `lista_id'
+		do
+			create Result.make
+			across lista_id as l
+				loop
+					if attached stati.item (l.item) as s then
+						Result.extend(s)
+					else
+						print("AVVISO: lo stato â‰¤|" + l.item + "|< non appartiene alla SC!%N")
+					end
+				end
+		end
+
+	assegna_transizione_fork(transition_element: XML_ELEMENT; destinazioni_id: LINKED_LIST [STRING]; stato: STATO)
 		local
 			transizione: TRANSIZIONE
 		do
-			-- SE transition_element.attribute_by_name ("target") ha più di un valore si tratta di una FORK
-			if attached transition_element.attribute_by_name ("target") as t then
-				if attached stati.item (t.value.split(' ').first) as dest then
+				if attached stati.item (destinazioni_id.first) as dest then
 					-- uso come prima destinazione la prima che compare
-					if ancore_multiple_compatibili(t.value.split(' ')) then
+					if ancore_multiple_compatibili(destinazioni_id) then
 						create transizione.make_con_destinazione (dest, stato)
 							-- separo le destinazioni e le scorro tutte aggiungendole alla transizione
 							transizione.set_fork
 							across
-								t.value.split(' ') as it
+								destinazioni_id as it
 							loop
 								if attached stati.item(it.item) as s then transizione.add_destinazione (s) end
 							end
@@ -540,57 +548,44 @@ feature -- inizializzazione transizioni
 						errore_costruzione_SC := True
 					end
 				else
-					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value.split(' ').first + "|< che non appartiene alla SC!%N")
+					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + destinazioni_id.first + "|< che non appartiene alla SC!%N")
 					errore_costruzione_SC := True
 				end
-			end
 		end
 
-	assegna_transizione_merge(transition_element: XML_ELEMENT; stato: STATO)
+	assegna_transizione_merge(transition_element: XML_ELEMENT; destinazioni_id: LINKED_LIST [STRING]; stato: STATO)
 		local
 			transizione: TRANSIZIONE
-			source_list: LIST [READABLE_STRING_32]
+			sorgenti_id: LINKED_LIST [STRING]
 		do
-			-- se esiste transition_element.attribute_by_name ("source") si tratta di una transizione MERGE
-			-- quindi la funzione assegna la transizione, oltre che allo `stato' passato come argomento,
-			-- anche a tutti gli stati presenti nell'attributo source
-			if attached transition_element.attribute_by_name ("target") as t then
-				if attached transition_element.attribute_by_name ("source") as s then
-					if attached stati.item (t.value.split(' ').first) as dest then
-						source_list := s.value.split(' ')
-						source_list.extend (stato.id)
-						if ancore_multiple_compatibili(source_list) then
-							-- questo test riguarda l'effettiva esecuzione della transizione in funzione della configurazione corrente
-							-- e non l'ammissibilità della specifica delle sorgenti multiple e quindi non va eseguito in questo momento
---						   if transizione_sorgenti_multiple_ammissibile(source_list) then
-								create transizione.make_con_destinazione (dest, stato)
-								transizione.set_merge
-								-- separo le destinazioni e le scorro tutte aggiungendole alla transizione
-								across
-									source_list as it
-								loop
-									if attached stati.item(it.item) as st then transizione.add_sorgente (st) end
-								end
-								completa_transizione (transition_element, transizione, stato)
-								debug ("sc_transizioni_legali") print (" - Transizione legale da >|" + stato.id + "|< a >|" + dest.id + "|< %N") end
-								-- TODO: mentre stato.id esiste perché è stato creato da `istanzia_stati' gli altri stati sorgente
-								-- TODO: della transizione merge potrebbero ancora non essere stati letti e quindi non posso controllare
-								-- TODO: se esistono in `stati'. Questo controllo andrebbe fatto alla fine della creazione di tutta la SC
---							else
---								print ("ERRORE: La transizione a sorgenti multiple specificata per lo stato >|" + stato.id + "|< non indica sorgenti tra loro compatibili %N")
---								errore_costruzione_SC := True
-						else
-							print ("ERRORE: Le sorgenti multiple indicate per la transizione che parte dallo stato >|" + stato.id + "|< non sono tra loro compatibili %N")
-							errore_costruzione_SC := True
+			if attached transition_element.attribute_by_name ("source") as s then
+				if attached stati.item (destinazioni_id.first) as dest then
+					sorgenti_id := get_nomi (s.value)
+					if ancore_multiple_compatibili(sorgenti_id) then
+						create transizione.make_con_destinazione (dest, stato)
+						transizione.set_merge
+						-- separo le sorgenti e le scorro tutte aggiungendole alla transizione
+						across
+							sorgenti_id as it
+						loop
+							if attached stati.item(it.item) as st then transizione.add_sorgente (st) end
 						end
+						completa_transizione (transition_element, transizione, stato)
+						debug ("sc_transizioni_legali") print (" - Transizione legale da >|" + stato.id + "|< a >|" + dest.id + "|< %N") end
+						-- TODO: mentre stato.id esiste perchÃ© Ã¨ stato creato da `istanzia_stati' gli altri stati sorgente
+						-- TODO: della transizione merge potrebbero ancora non essere stati letti e quindi non posso controllare
+						-- TODO: se esistono in `stati'. Questo controllo andrebbe fatto alla fine della creazione di tutta la SC
 					else
-						print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + t.value.split(' ').first + "|< che non appartiene alla SC!%N")
+						print ("ERRORE: Le sorgenti multiple indicate per la transizione che parte dallo stato >|" + stato.id + "|< non sono tra loro compatibili %N")
 						errore_costruzione_SC := True
 					end
 				else
-					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con sorgente multipla non specificata (manca il 'source')!%N")
+					print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con destinazione >|" + destinazioni_id.first + "|< che non appartiene alla SC!%N")
 					errore_costruzione_SC := True
 				end
+			else
+				print ("ERRORE: lo stato >|" + stato.id + "|< ha una transizione con sorgente multipla non specificata (manca il 'source')!%N")
+				errore_costruzione_SC := True
 			end
 		end
 
@@ -628,7 +623,8 @@ feature -- inizializzazione transizioni
 		stato.aggiungi_transizione (transizione)
 	end
 
-	ancore_multiple_compatibili(lista_stati: LIST [READABLE_STRING_32]): BOOLEAN
+	ancore_multiple_compatibili(lista_stati: LINKED_LIST [STRING]): BOOLEAN
+--	ancore_multiple_compatibili(lista_stati: LIST [READABLE_STRING_32]): BOOLEAN
 		-- prende in imput una  lista di nomi di stati e ritorna True se sono compatibili come
 		-- sorgenti multiple di una transizione merge o destinazioni multiple di una transizione fork:
 		-- a due a due devono avere un minimo antenato comune di tipo AND
@@ -676,9 +672,9 @@ feature -- inizializzazione transizioni
 		end
 
 	transizione_illegale (p_sorgente, p_destinazione: STATO): BOOLEAN
-			-- transizione è illegale se il minimo antenato comune (MAC) è <parallel> e inoltre:
-			--   sorgente e destinazione sono uno antenato dell'altro e sono tutti <parallel> dal più alto al genitore del più basso,
-			--   oppure se MAC è diverso da entrambi (attraversamento frontiera)
+			-- transizione Ã¨ illegale se il minimo antenato comune (MAC) Ã¨ <parallel> e inoltre:
+			--   sorgente e destinazione sono uno antenato dell'altro e sono tutti <parallel> dal piÃ¹ alto al genitore del piÃ¹ basso,
+			--   oppure se MAC Ã¨ diverso da entrambi (attraversamento frontiera)
 		local
 			stato_mac, altro_stato: STATO
 		do
@@ -694,7 +690,7 @@ feature -- inizializzazione transizioni
 						Result := True
 						debug ("sc_transizioni_illegali") print ("ERRORE: transizione illegale: transizione con MAC <parallel> in verticale e catena di <parallel> %N") end
 					end
-				else -- stato_mac è diverso da entrambi
+				else -- stato_mac Ã¨ diverso da entrambi
 					Result := True
  					debug ("sc_transizioni_illegali") print ("ERRORE: transizione illegale: transizione con MAC <parallel> in orizzontale tra discendenti del MAC (attraversa la frontiera)%N") end
 				end
@@ -723,7 +719,7 @@ feature -- inizializzazione transizioni
 				antenati.put (corrente.id, corrente.id)
 				corrente := corrente.genitore
 			end
-				-- trova il più basso antenato di p_destinazione in "antenati" a partire da lui stesso
+				-- trova il piÃ¹ basso antenato di p_destinazione in "antenati" a partire da lui stesso
 			from
 				corrente := p_destinazione
 			until
@@ -735,7 +731,7 @@ feature -- inizializzazione transizioni
 		end
 
 	catena_di_paralleli (basso, alto: STATO): BOOLEAN
-			-- ritorna vero se dal genitore di `basso' c'è una catena continua di <parallel> fino ad `alto' che è il "mac"
+			-- ritorna vero se dal genitore di `basso' c'Ã¨ una catena continua di <parallel> fino ad `alto' che Ã¨ il "mac"
 		local
 			corrente: STATO
 		do
@@ -798,7 +794,7 @@ feature -- inizializzazione transizioni
 	intera_legittima (stringa: STRING): BOOLEAN
 	-- verifica che `stringa' sia una condizione intera legittima
 	-- TODO: si ripetono alcuni controlli fatti in TRANSIZIONI.check_condizione_intera per la verifica della condizione
-	-- TODO: verificare/definire quale deve essere la forma sintatticamente corretta delle condizioni (qualcosa è in TRANSIZIONI)
+	-- TODO: verificare/definire quale deve essere la forma sintatticamente corretta delle condizioni (qualcosa Ã¨ in TRANSIZIONI)
 	-- TODO: usare libreria di Eiffel 'parse' per analisi di correttezza della stringa delle condizioni (va aggiunta al progetto)
 		local
 			var: STRING
@@ -971,12 +967,12 @@ feature -- supporto generale
 
 	id_illegittimo (stringa: STRING): BOOLEAN
 		local
-			-- {TRANSIZIONE}.Valore_Nullo è una costante e non posso convertirla 'as_lower'
+			-- {TRANSIZIONE}.Valore_Nullo Ã¨ una costante e non posso convertirla 'as_lower'
 			valore_nullo: STRING
 		do
 			valore_nullo := {TRANSIZIONE}.Valore_Nullo
 			if stringa ~ "" or stringa.is_whitespace or stringa.as_lower ~ valore_nullo.as_lower  then
-				-- il Valore_Nullo non può essere specificato nel model ma solo assegnato nella costruzione della SC
+				-- il Valore_Nullo non puÃ² essere specificato nel model ma solo assegnato nella costruzione della SC
 				Result := True
 			else
 				Result := False
@@ -1003,7 +999,7 @@ feature -- supporto generale
 				print ("ERRORE: non esistono <state> o <parallel> nel modello!%N")
 			else
 				debug ("SC_first_sub_state") print ("AVVISO: trovato primo figlio <state> o <parallel>%N"); stampa_elemento (place_holder.item) end
-				-- NB: regolarità di 'id' è stata già controllata in `istanzia_stati'
+				-- NB: regolaritÃ  di 'id' Ã¨ stata giÃ  controllata in `istanzia_stati'
 				if attached place_holder.item.attribute_by_name ("id") as id_attr then
 					if attached stati.item (id_attr.value) as sub_state then
 						Result := sub_state
@@ -1028,7 +1024,7 @@ feature -- supporto generale
 			if element.name ~ "transition" then
 				print ("%N   con evento " + valore_attributo (element, "event"))
 				print ("%N   con condizione " + valore_attributo (element, "cond"))
-				-- non va modificato perché stampa tutto il valore dell'attributo "target"
+				-- non va modificato perchÃ© stampa tutto il valore dell'attributo "target"
 				print ("%N   con destinazione " + valore_attributo (element, "target"))
 				print ("%N")
 			elseif element.has_attribute_by_name ("id") then
