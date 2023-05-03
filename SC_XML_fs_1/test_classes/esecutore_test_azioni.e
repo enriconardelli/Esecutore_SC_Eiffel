@@ -231,8 +231,8 @@ feature -- Test
   			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_2_eventi_1.txt"
 			create esecutore.make (nomi_files_prova)
 			assert("ERRORE: il sistema non termina in (P1B, P2B)", conf_has_state(esecutore.state_chart.config_base,"P1B") and conf_has_state(esecutore.state_chart.config_base,"P2B"))
-			assert("ERRORE: M è diverso da 3",  esecutore.state_chart.variabili.intere.item ("M") = 0)
-     		assert("ERRORE: N è diverso da 0", esecutore.state_chart.variabili.intere.item ("N") = -1)
+			assert("ERRORE: M è diverso da 0",  esecutore.state_chart.variabili.intere.item ("M") = 0)
+     		assert("ERRORE: N è diverso da -1", esecutore.state_chart.variabili.intere.item ("N") = -1)
 		end
 
 	t_azioni_con_interi_2_2
