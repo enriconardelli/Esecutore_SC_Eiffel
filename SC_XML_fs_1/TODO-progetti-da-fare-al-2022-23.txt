@@ -8,22 +8,30 @@ PROCESSO
 
 AMBIENTE DI TEST
 - inserire i test per verificare che gli errori nella specifica della SC di sorgenti non compatibili per transizioni merge vengono rilevati dai test e non nella costruzione della SC: vanno quindi sistemati i test merge_non_ammissibile)
+ ==> trasformare errore_costruzione_SC (forse anche errore_specifica_SC) in INTEGER invece che boolean e usare questi valori interi per assert più precise
 
-- verificare sequenza di comportamenti, come per esempio gli stati attraversati da una SC a seguito di eventi, per evitare di dover fare tanti test ognuno con una sottosequenza degli eventi e verifica dello stato finale
-
-- controllare in ESECUTORE l'esecuzione delle azioni nel caso di sorgenti e transizioni multiple. Attualmente si verifica solo l'esecuzione delle azioni di assegnazione di variabili booleane e intere, quindi non si verifica l'esecuzione delle azioni di log, e si fanno le verifiche SOLO per transizioni né FORK né MERGE
-
+INTERESSANTE
 - gestione della negazione delle condizioni booleane
 
-- gestione della condizione di essere in uno stato mediante feature 'attivo' di array degli stati e non mediante le variabili booleane (accoppiato a scrittura "cond" come "in S" invece che "S"?)
+INTERESSANTE
+- gestione della condizione di essere in uno stato mediante feature 'attivo' di array degli stati e non mediante le variabili booleane (accoppiato a scrittura "cond" come "in STATO" invece che "S"?)
 
+INTERESSANTE MA DIFFICILE
 - aggiungere azioni di pulizia della storia deep e shallow
 
+MENO INTERESSANTE
 - trasformare STATO-GERARCHICO in deferred (spiegata più sotto)
 
+INTERESSANTE MA DA VERIFICARE QUANTO COMPLICATO
 - la feature `transizione_abilitata' in STATO restituisce l'ultima (nell'array delle transizioni, che è l'ordine con cui le transizioni per quello stato sono state descritte nel file .xml) transizione abilitata con l'evento o gli eventi correnti
  - se si tratta di più transizioni con stesso evento allora andrebbe segnalato in una fase di analisi della SC ed andrebbe indicato che vanno introdotte le priorità esplicite (di cui va realizzata l'implementazione)
  - se si tratta di più transizioni con eventi diversi la segnalazione a livello di analisi della SC non ha molto senso (visto che presumibilmente voglio che in uno stato con eventi diversi faccia cose diverse) ma andrebbe segnalato il non determinismo a tempo di esecuzione, accorgendosi che in quel momento è abilitata più di una transizione
+
+COMPLICATO E POCO UTILE 
+- verificare sequenza di comportamenti, come per esempio gli stati attraversati da una SC a seguito di eventi, per evitare di dover fare tanti test ognuno con una sottosequenza degli eventi e verifica dello stato finale
+
+POCO UTILE
+- controllare in ESECUTORE l'esecuzione delle azioni nel caso di sorgenti e transizioni multiple. Attualmente si verifica solo l'esecuzione delle azioni di assegnazione di variabili booleane e intere, quindi non si verifica l'esecuzione delle azioni di log, e si fanno le verifiche SOLO per transizioni né FORK né MERGE
 
 
 
