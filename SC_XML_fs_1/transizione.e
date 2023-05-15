@@ -132,15 +132,16 @@ feature -- check
 
 	check_condizione_booleana (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
 			-- Controlla se la condizione sulle variabili booleane è verificata.
+			-- Affinche' non ci siano problemi deterministici nessuna variabile booleana nella HASH_TABLE deve iniziare con "not "
 		do
 			if condizione ~ valore_nullo then
 				Result := True
-			else
-				if variabili_booleane.has (condizione) then
+			elseif variabili_booleane.has (condizione) then
 					Result := variabili_booleane.item (condizione)
-				else
+			elseif condizione.substring (1,4)="not " and variabili_booleane.has (condizione.substring (5,condizione.count)) then
+					Result := not variabili_booleane.item (condizione)
+			else
 					Result := False
-				end
 			end
 		end
 
