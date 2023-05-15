@@ -137,11 +137,11 @@ feature -- check
 			if condizione ~ valore_nullo then
 				Result := True
 			elseif variabili_booleane.has (condizione) then
-					Result := variabili_booleane.item (condizione)
-			elseif condizione.substring (1,4)="not " and variabili_booleane.has (condizione.substring (5,condizione.count)) then
-					Result := not variabili_booleane.item (condizione)
+				Result := variabili_booleane.item (condizione)
+			elseif condizione.substring (1, 4) = "not " and variabili_booleane.has (condizione.substring (5, condizione.count)) then
+				Result := not variabili_booleane.item (condizione)
 			else
-					Result := False
+				Result := False
 			end
 		end
 
@@ -186,6 +186,16 @@ feature -- check
 				end
 			else
 				Result := False
+			end
+		end
+
+	check_condizione_stato (stati: HASH_TABLE [STATO, STRING]): BOOLEAN
+	-- controlla se lo stato presente nella condizione è attivo o meno
+		do
+			if condizione.substring (1, 3)= "in " and then stati.has (condizione.substring (4,condizione.count)) then
+				if attached stati.item (condizione.substring (4,condizione.count)) as st implies st.attivo then
+					Result:=TRUE
+				end
 			end
 		end
 
