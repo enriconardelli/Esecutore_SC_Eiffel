@@ -10,21 +10,21 @@ class
 feature -- creatore
 
 	crea_istanza (variabile, espressione: STRING): ASSEGNA
-		-- crea le istanze delle sottoclassi di ASSEGNA in funzione dei parametri passati
-	require
-		espressione_ammissibile (espressione)
-	do
-		if valore_booleano (espressione) then
-			Result := create {ASSEGNA_BOOLEANO}.make_value (variabile, espressione)
-		elseif valore_intero (espressione) then
-			Result := create {ASSEGNA_INTERO}.make_value (variabile, espressione)
-		elseif valore_operazione (espressione) then
-			Result := create {ASSEGNA_INTERO}.make_oper (variabile, espressione)
-		else
-			-- impedisce errore di compilazione `Result' non assegnato propriamente (VEVI)
-			Result := create {ASSEGNA_NULLA}.make_empty
+			-- crea le istanze delle sottoclassi di ASSEGNA in funzione dei parametri passati
+		require
+			espressione_ammissibile (espressione)
+		do
+			if valore_booleano (espressione) then
+				Result := create {ASSEGNA_BOOLEANO}.make_value (variabile, espressione)
+			elseif valore_intero (espressione) then
+				Result := create {ASSEGNA_INTERO}.make_value (variabile, espressione)
+			elseif valore_operazione (espressione) then
+				Result := create {ASSEGNA_INTERO}.make_oper (variabile, espressione)
+			else
+					-- impedisce errore di compilazione `Result' non assegnato propriamente (VEVI)
+				Result := create {ASSEGNA_NULLA}.make_empty
+			end
 		end
-	end
 
 feature -- controllo valori
 
@@ -79,6 +79,5 @@ feature -- stampa
 				print ("ERRORE: l'azione <assign> " + testo + " assegna alla <location> >|" + variabile + "|< come <expr> il valore >|" + espressione + "|< non ammissibile!%N")
 			end
 		end
-
 
 end

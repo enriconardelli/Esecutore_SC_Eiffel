@@ -35,8 +35,8 @@ feature -- preparazione
 		do
 			create a_path.make_current
 			create test_data_dir.make_from_string ("test_data")
-			test_data_dir.append_character(a_path.directory_separator)
-			file_name :=test_data_dir + "cronometro.xml"
+			test_data_dir.append_character (a_path.directory_separator)
+			file_name := test_data_dir + "cronometro.xml"
 				--| Instantiate parser
 			create {XML_STANDARD_PARSER} parser.make
 				--| Build tree callbacks
@@ -49,10 +49,10 @@ feature -- preparazione
 			else
 				print ("Parsing OK. %N")
 			end
---			if attached tree.document as doc then
---				print ("Struttura del file XML %N")
---				inspect_node (doc)
---			end
+				--			if attached tree.document as doc then
+				--				print ("Struttura del file XML %N")
+				--				inspect_node (doc)
+				--			end
 		end
 
 feature -- supporto
@@ -88,7 +88,8 @@ feature -- supporto
 		end
 
 	root_has_attribute_named (a_name: STRING): BOOLEAN
-		local att: LIST [XML_ATTRIBUTE]
+		local
+			att: LIST [XML_ATTRIBUTE]
 		do
 			if attached tree.document.root_element as elt then
 				att := elt.attributes

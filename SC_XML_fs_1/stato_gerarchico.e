@@ -8,15 +8,14 @@ class
 	STATO_GERARCHICO
 
 inherit
+
 	STATO
 		redefine
 			stampa
 		end
 
 create
-	make_with_id,
-	make_final_with_id,
-	make_with_id_and_parent
+	make_with_id, make_final_with_id, make_with_id_and_parent
 
 feature --situazione
 
@@ -42,18 +41,18 @@ feature --situazione
 			end
 		end
 
-
-	ha_sottostati_attivi:BOOLEAN
-	--Filippo & Iezzi 30/09/2020
+	ha_sottostati_attivi: BOOLEAN
+			--Filippo & Iezzi 30/09/2020
 		do
-			Result:= False
-			across figli as f
+			Result := False
+			across
+				figli as f
 			loop
 				if f.item.attivo then
-					Result:=True
+					Result := True
 				else
-					if f.item.figli.count>0 and Result=False then
-						Result:=f.item.ha_sottostati_attivi
+					if f.item.figli.count > 0 and Result = False then
+						Result := f.item.ha_sottostati_attivi
 					end
 				end
 			end
@@ -85,5 +84,3 @@ feature --utilità
 		end
 
 end
-
-

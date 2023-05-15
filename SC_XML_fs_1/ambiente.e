@@ -47,7 +47,8 @@ feature
 					eventi_sulla_riga := file.last_string.twin.split (' ')
 					create eventi_contemporanei.make
 					eventi_contemporanei.compare_objects
-					across eventi_sulla_riga as er
+					across
+						eventi_sulla_riga as er
 					loop
 						eventi_contemporanei.force (er.item)
 					end
@@ -60,28 +61,32 @@ feature
 			end
 		end
 
-	verifica_eventi_esterni(state_chart: CONFIGURAZIONE): BOOLEAN
+	verifica_eventi_esterni (state_chart: CONFIGURAZIONE): BOOLEAN
 			-- Verifica che tutti gli eventi nel file compaiano effettivamente tra gli eventi di qualche transizione
 			-- Segnala l'eventuale presenza di eventi incompatibili
 		local
 			eventi_nella_SC: HASH_TABLE [BOOLEAN, STRING]
 		do
 			create eventi_nella_SC.make (0)
-			-- inserisce tutti gli eventi definiti nella SC in eventi_nella_SC
-			across state_chart.stati as  scs
+				-- inserisce tutti gli eventi definiti nella SC in eventi_nella_SC
+			across
+				state_chart.stati as scs
 			loop
-				across scs.item.transizioni as  t
+				across
+					scs.item.transizioni as t
 				loop
 					if attached t.item.evento as e then
 						eventi_nella_SC.put (True, e)
 					end
 				end
 			end
-			-- verifica che ogni evento esterno sia presente nella SC
+				-- verifica che ogni evento esterno sia presente nella SC
 			Result := true
-			across eventi_esterni as ee
+			across
+				eventi_esterni as ee
 			loop
-				across ee.item as ei
+				across
+					ee.item as ei
 				loop
 					if not eventi_nella_SC.has (ei.item) then
 						print ("AVVISO: l'evento " + ei.item + " non viene utilizzato dalla statechart letta!%N")

@@ -8,6 +8,7 @@ class
 	ASSEGNA_NULLA
 
 inherit
+
 	ASSEGNA
 
 create
@@ -22,7 +23,7 @@ feature
 
 	modifica_valore (variabili: DATAMODEL)
 		do
-			-- la classe esiste affinché la feature crea_istanza di ASSEGNA possa restituire un valore attached
+				-- la classe esiste affinché la feature crea_istanza di ASSEGNA possa restituire un valore attached
 		end
 
 end

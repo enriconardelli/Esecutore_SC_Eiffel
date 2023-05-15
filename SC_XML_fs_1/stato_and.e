@@ -8,6 +8,7 @@ class
 	STATO_AND
 
 inherit
+
 	STATO_GERARCHICO
 
 create
@@ -17,9 +18,11 @@ feature -- setter
 
 	set_initial
 		do
-			across figli as f
+			across
+				figli as f
 			loop
 				initial.force (f.item, initial.count + 1)
 			end
 		end
+
 end

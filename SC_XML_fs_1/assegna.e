@@ -8,12 +8,13 @@ deferred class
 	ASSEGNA
 
 inherit
+
 	AZIONE
 
 feature -- attributi
 
 	elemento_da_modificare: STRING
-		-- id della variabile
+			-- id della variabile
 
 feature -- modifica
 

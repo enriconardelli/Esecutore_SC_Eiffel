@@ -8,6 +8,7 @@ class
 	STATO_ATOMICO
 
 inherit
+
 	STATO
 
 create
@@ -15,16 +16,15 @@ create
 
 feature --situazione
 
-	antenato_di (uno_stato: STATO):BOOLEAN
+	antenato_di (uno_stato: STATO): BOOLEAN
 		do
-			Result:= False
+			Result := False
 		end
 
-
-	ha_sottostati_attivi:BOOLEAN
-	--Filippo & Iezzi 30/09/2020
+	ha_sottostati_attivi: BOOLEAN
+			--Filippo & Iezzi 30/09/2020
 		do
-			Result:= False
+			Result := False
 		end
 
 end

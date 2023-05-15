@@ -41,61 +41,52 @@ feature {NONE} -- Events
 		do
 			create variabili_prova.make
 
-			-- creo stato di prova con evento
-			-- ha 3 transizioni che portano su 3 destinazioni distinte
-			-- la transizione con evento1 e cond1 porta a destinazione_1
-			-- la transizione con evento2 e cond2 porta a destinazione_2
-			-- la transizione con evento3 e cond3 porta a destinazione_3
+				-- creo stato di prova con evento
+				-- ha 3 transizioni che portano su 3 destinazioni distinte
+				-- la transizione con evento1 e cond1 porta a destinazione_1
+				-- la transizione con evento2 e cond2 porta a destinazione_2
+				-- la transizione con evento3 e cond3 porta a destinazione_3
 			create stato_prova.make_with_id ("stato_prova")
-
 			create destinazione_prova_1.make_with_id ("destinazione_prova_1")
 			create transizione_prova_1.make_con_destinazione (destinazione_prova_1, stato_prova)
 			transizione_prova_1.set_evento ("evento1")
 			transizione_prova_1.set_condizione ("cond1")
 			stato_prova.aggiungi_transizione (transizione_prova_1)
-
 			create destinazione_prova_2.make_with_id ("destinazione_prova_2")
 			create transizione_prova_2.make_con_destinazione (destinazione_prova_2, stato_prova)
 			transizione_prova_2.set_evento ("evento2")
 			transizione_prova_2.set_condizione ("cond2")
 			stato_prova.aggiungi_transizione (transizione_prova_2)
-
 			create destinazione_prova_3.make_with_id ("destinazione_prova_3")
 			create transizione_prova_3.make_con_destinazione (destinazione_prova_3, stato_prova)
 			transizione_prova_3.set_evento ("evento1")
 			transizione_prova_3.set_condizione ("cond3")
 			stato_prova.aggiungi_transizione (transizione_prova_3)
-
 			variabili_prova.booleane.put (False, "cond1")
 			variabili_prova.booleane.put (False, "cond2")
 			variabili_prova.booleane.put (False, "cond3")
 
-			--creo stato di prova senza evento
-			-- ha 3 transizioni che portano su 3 destinazioni distinte
-			-- la transizione con cond1 porta a destinazione_1
-			-- la transizione con cond2 porta a destinazione_2
-			-- la transizione con cond2 porta a destinazione_3
+				--creo stato di prova senza evento
+				-- ha 3 transizioni che portano su 3 destinazioni distinte
+				-- la transizione con cond1 porta a destinazione_1
+				-- la transizione con cond2 porta a destinazione_2
+				-- la transizione con cond2 porta a destinazione_3
 			create stato_prova_senza_evento.make_final_with_id ("stato_prova_senza_evento")
-
 			create destinazione_prova_senza_evento_1.make_with_id ("destinazione_prova_senza_evento_1")
 			create transizione_prova_senza_evento_1.make_con_destinazione (destinazione_prova_senza_evento_1, stato_prova_senza_evento)
 			transizione_prova_senza_evento_1.set_condizione ("cond1")
 			stato_prova_senza_evento.aggiungi_transizione (transizione_prova_senza_evento_1)
-
 			create destinazione_prova_senza_evento_2.make_with_id ("destinazione_prova_senza_evento_2")
 			create transizione_prova_senza_evento_2.make_con_destinazione (destinazione_prova_senza_evento_2, stato_prova_senza_evento)
 			transizione_prova_senza_evento_2.set_condizione ("cond2")
 			stato_prova_senza_evento.aggiungi_transizione (transizione_prova_senza_evento_2)
-
 			create destinazione_prova_senza_evento_3.make_with_id ("destinazione_prova_senza_evento_3")
 			create transizione_prova_senza_evento_3.make_con_destinazione (destinazione_prova_senza_evento_3, stato_prova_senza_evento)
 			transizione_prova_senza_evento_3.set_condizione ("cond2")
 			stato_prova_senza_evento.aggiungi_transizione (transizione_prova_senza_evento_3)
-
 			create cond_prova_senza_evento.make (2)
 			cond_prova_senza_evento.put (False, "cond1")
 			cond_prova_senza_evento.put (False, "cond2")
-
 			create eventi_prova.make
 			eventi_prova.compare_objects
 			eventi_prova.force ("evento1")
@@ -147,7 +138,7 @@ feature -- Test routines
 			create stato_prova.make_with_id ("stato_prova")
 			create azione_prova.make_with_text ("prova")
 			stato_prova.set_OnEntry (azione_prova)
-			assert ("Azione OnEntry NON assegnata correttamente", stato_prova.OnEntry[1] ~ azione_prova)
+			assert ("Azione OnEntry NON assegnata correttamente", stato_prova.OnEntry [1] ~ azione_prova)
 		end
 
 	t_set_OnExit
@@ -157,16 +148,17 @@ feature -- Test routines
 			create stato_prova.make_with_id ("stato_prova")
 			create azione_prova.make_with_text ("prova")
 			stato_prova.set_OnExit (azione_prova)
-			assert ("Azione OnEntry NON assegnata correttamente", stato_prova.OnExit[1] ~ azione_prova)
+			assert ("Azione OnEntry NON assegnata correttamente", stato_prova.OnExit [1] ~ azione_prova)
 		end
 
 		-- Test per features con evento
 
 	t_abilitata_con_evento_non_esistente
-	local t:TRANSIZIONE
+		local
+			t: TRANSIZIONE
 		do
 			set_eventi_prova ("non", "non", "non")
-			t:=stato_prova.transizione_abilitata (eventi_prova, variabili_prova)
+			t := stato_prova.transizione_abilitata (eventi_prova, variabili_prova)
 			assert ("ERRORE: transizione abilitata con evento non_esistente", stato_prova.transizione_abilitata (eventi_prova, variabili_prova) = Void)
 		end
 

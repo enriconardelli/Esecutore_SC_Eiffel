@@ -8,6 +8,7 @@ class
 	STATO_XOR
 
 inherit
+
 	STATO_GERARCHICO
 
 create
@@ -21,4 +22,5 @@ feature -- setter
 		do
 			initial.force (uno_stato, 1)
 		end
+
 end

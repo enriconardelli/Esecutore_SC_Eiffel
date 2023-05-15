@@ -8,6 +8,7 @@ class
 	ASSEGNA_INTERO
 
 inherit
+
 	ASSEGNA
 
 create
@@ -16,24 +17,24 @@ create
 feature -- attributi
 
 	intero_da_assegnare: INTEGER
-		-- valore intero da riassegnare
+			-- valore intero da riassegnare
 
 	tipo_di_aggiornamento: detachable STRING
-		-- incremento o decremento ('inc' o 'dec')
+			-- incremento o decremento ('inc' o 'dec')
 
 feature -- creazione parametrica
 
 	make_value (variabile, espressione: STRING)
-	do
-		elemento_da_modificare := variabile
-		intero_da_assegnare := espressione.to_integer
-	end
+		do
+			elemento_da_modificare := variabile
+			intero_da_assegnare := espressione.to_integer
+		end
 
 	make_oper (variabile, espressione: STRING)
-	do
-		elemento_da_modificare := variabile
-		tipo_di_aggiornamento := espressione
-	end
+		do
+			elemento_da_modificare := variabile
+			tipo_di_aggiornamento := espressione
+		end
 
 feature -- modifica per interi
 
@@ -41,17 +42,25 @@ feature -- modifica per interi
 		do
 			if variabili.intere.has (elemento_da_modificare) then
 				if attached tipo_di_aggiornamento as type then
-					debug("sc_modifica_variabili") print("  ASSIGN: " + type + " " + elemento_da_modificare + "%N") end
-					if type ~ "inc" then
-						variabili.intere.replace (variabili.intere[elemento_da_modificare]+1, elemento_da_modificare)
-					elseif type ~ "dec" then
-						variabili.intere.replace (variabili.intere[elemento_da_modificare]-1, elemento_da_modificare)
+					debug ("sc_modifica_variabili")
+						print ("  ASSIGN: " + type + " " + elemento_da_modificare + "%N")
 					end
-					debug("sc_modifica_variabili") print("  -> Intero: " + elemento_da_modificare + " = " + variabili.intere[elemento_da_modificare].out + "%N") end
+					if type ~ "inc" then
+						variabili.intere.replace (variabili.intere [elemento_da_modificare] + 1, elemento_da_modificare)
+					elseif type ~ "dec" then
+						variabili.intere.replace (variabili.intere [elemento_da_modificare] - 1, elemento_da_modificare)
+					end
+					debug ("sc_modifica_variabili")
+						print ("  -> Intero: " + elemento_da_modificare + " = " + variabili.intere [elemento_da_modificare].out + "%N")
+					end
 				else
-					debug("sc_modifica_variabili") print("  ASSIGN: " + intero_da_assegnare.out + " --> " + elemento_da_modificare + "%N") end
+					debug ("sc_modifica_variabili")
+						print ("  ASSIGN: " + intero_da_assegnare.out + " --> " + elemento_da_modificare + "%N")
+					end
 					variabili.intere.replace (intero_da_assegnare, elemento_da_modificare)
-					debug("sc_modifica_variabili") print("  -> Intero: " + elemento_da_modificare + " = " + variabili.intere[elemento_da_modificare].out + "%N") end
+					debug ("sc_modifica_variabili")
+						print ("  -> Intero: " + elemento_da_modificare + " = " + variabili.intere [elemento_da_modificare].out + "%N")
+					end
 				end
 			end
 		end
