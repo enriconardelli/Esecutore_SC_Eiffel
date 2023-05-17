@@ -29,7 +29,30 @@ feature -- attributi
 
 	errore_specifica_SC: BOOLEAN
 
-	errore_costruzione_SC: BOOLEAN
+	errore_costruzione_SC: INTEGER
+
+	-- 1 Errore nel Datamodel: l'id di un data è una stringa vuota
+	-- 2 Errore nel Datamodel: manca l'"expr" di un data
+	-- 3 Errore nel Datamodel: manca l'attributo id di un data
+	-- 4 Errore nel Datamodel: l'"expr" di un data non è né un booleano né un intero
+	-- 5 Errore negli Stati: manca l'id di uno stato
+	-- 6 Errore negli Stati: l'id di uno stato è una stringa vuota
+	-- 7 Errore negli Stati: due Stati diversi hanno lo stesso id
+	-- 8 Errore nello stato parallel: un parallel non ha figli
+	-- 9 Errore nello Stato di default: lo stato intial indicato non è figlio dello stato di cui dovrebbe essere lo stato di default
+	-- 10 Errore nello Stato di default: lo stato initial indicato non esiste
+	-- 11 Errore nella radice della State Chart: la radice indicata ha un geniotore quindi non può essere radice
+	-- 12 Errore nella radice della State Chart: la radice indicata non esiste
+	-- 13 Errore nella radice della State Chart: la radice indicata è uno stato atomico
+	-- 14 Errore assegnazione figli a Stato: il figlio indiocato non è un figlio ammissibile di uno stato
+	-- 15 Errore in transizione: l'id del target della transizione non appartiene agli id degli stati della State Chart
+	-- 16 Errore in transizione: la transizione è una transizione sia merge che fork (da eliminare)
+	-- 17 Errore in transizione: la transizione non ha target specificato
+	-- 18 Errore in transizione merge: gli stati di partenza della transizione non sono compatibili
+	-- 19 Errore in transizione singola: lo stato di partenza e di destinazione non sono compatibili per una transizione
+	-- 20 Errore in transizione fork: i target non sono tra di loro compatibili
+	-- 21
+	-- 22
 
 feature -- creazione
 
@@ -115,16 +138,16 @@ feature -- inizializzazione SC
 				if attached {XML_ATTRIBUTE} data.item.attribute_by_name ("id") as nome then
 					if id_illegittimo (nome.value) then
 						print ("ERRORE: elemento <data> con 'id' >|" + nome.value + "|< di valore stringa vuota o blank o 'NULL' !%N")
-						errore_costruzione_SC := True
+						errore_costruzione_SC := 1
 					elseif attached {XML_ATTRIBUTE} data.item.attribute_by_name ("expr") as valore then
 						assegna_variabile (pulisci_stringa (nome.value), pulisci_stringa (valore.value))
 					else
 						print ("ERRORE: elemento <data> con id >|" + nome.value + "|< senza attributo 'expr'!%N")
-						errore_costruzione_SC := True
+						errore_costruzione_SC := 2
 					end
 				else
 					print ("ERRORE: elemento <data> senza attributo 'id'!%N")
-					errore_costruzione_SC := True
+					errore_costruzione_SC := 3
 				end
 			end
 				-- aggiunge variabile booleana '{TRANSIZIONE}.Valore_Nullo' che è sempre True e si usa per le transizioni che non specificano una condizione nel file del modello
@@ -146,7 +169,7 @@ feature -- inizializzazione SC
 				end
 			else
 				print ("ERRORE: elemento <data> con id >|" + variabile + "|< assegna a 'expr' il valore >|" + espressione + "|< non booleano e non intero!%N")
-				errore_costruzione_SC := True
+				errore_costruzione_SC := 4
 			end
 		end
 
@@ -177,16 +200,16 @@ feature -- inizializzazione SC
 					if not attached e.item.attribute_by_name ("id") then
 						print ("ERRORE: il seguente elemento <state> o <parallel> non ha 'id':%N")
 						stampa_elemento (e.item)
-						errore_costruzione_SC := True
+						errore_costruzione_SC := 5
 					elseif attached e.item.attribute_by_name ("id") as id_attr then
 						if id_attr.value ~ "" or id_attr.value.is_whitespace then
 							print ("ERRORE: il seguente elemento <state> o <parallel> ha un 'id' di valore stringa vuota o blank!%N")
 							stampa_elemento (e.item)
-							errore_costruzione_SC := True
+							errore_costruzione_SC := 6
 						elseif stati.has (id_attr.value) then
 							print ("ERRORE: il seguente elemento <state> o <parallel> ha un 'id' duplicato!%N")
 							stampa_elemento (e.item)
-							errore_costruzione_SC := True
+							errore_costruzione_SC := 7
 						else
 							if e.item.name ~ "state" then
 								if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
@@ -229,7 +252,7 @@ feature -- inizializzazione SC
 									istanzia_stati (e.item.elements, stato_ger_temp)
 								else -- elemento corrente <parallel> non ha figli
 									print ("ERRORE: lo stato <parallel> >|" + id_attr.value + "|< non ha figli !%N")
-									errore_costruzione_SC := True
+									errore_costruzione_SC := 8
 								end
 							end
 						end
@@ -261,11 +284,11 @@ feature -- inizializzazione SC
 									stato.set_initial (initial_state)
 								else
 									print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come sotto-stato iniziale di default dello stato >|" + stato.id + "|< non e' figlio di questo stato!%N")
-									errore_costruzione_SC := True
+									errore_costruzione_SC := 9
 								end
 							else
 								print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come sotto-stato iniziale di default dello stato >|" + stato.id + "|< non esiste!%N")
-								errore_costruzione_SC := True
+								errore_costruzione_SC := 10
 							end
 						else -- `e.item' non ha attributo 'initial' ma certamente first_sub_state ritorna figlio <state> o <parallel>
 							print ("AVVISO: lo <state> >|" + stato.id + "|< non specifica attributo 'initial', si sceglie il primo figlio che sia <state> o <parallel>.%N")
@@ -303,11 +326,11 @@ feature -- inizializzazione SC
 						iniziale_SC := r
 					else
 						print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come stato iniziale della statechart non è uno degli stati 'top'!%N")
-						errore_costruzione_SC := True
+						errore_costruzione_SC := 11
 					end
 				else -- l'initial della radice non esiste
 					print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come stato iniziale della statechart non esiste!%N")
-					errore_costruzione_SC := True
+					errore_costruzione_SC := 12
 				end
 			else -- la SC non specifica un sotto-stato iniziale di default si sceglie il primo
 				print ("AVVISO: la SC non specifica attributo 'initial', si sceglie il primo figlio che sia <state> o <parallel>.%N")
@@ -317,7 +340,7 @@ feature -- inizializzazione SC
 				inizializza_config_base (isc)
 			else
 				print ("ERRORE: la SC non specifica attributo 'initial' ma non ha figli <state> o <parallel>!%N")
-				errore_costruzione_SC := True
+				errore_costruzione_SC := 13
 			end
 		end
 
@@ -372,7 +395,7 @@ feature -- inizializzazione SC
 				elseif not (e.item.name ~ "state" or e.item.name ~ "parallel") then
 					print ("ERRORE: lo stato >|" + stato.id + "|< specifica un figlio non ammissibile!")
 					stampa_elemento (e.item)
-					errore_costruzione_SC := True
+					errore_costruzione_SC := 14
 				end
 			end
 		end
@@ -424,7 +447,7 @@ feature -- inizializzazione transizioni
 				inspect destinazioni.count
 				when 0 then
 					print ("ERRORE: lo stato >|" + sorgente.id + "|< ha una transizione con destinazione errata: 'target' non contiene id di stati della SC!%N")
-					errore_costruzione_SC := True
+					 errore_costruzione_SC:= 15
 				when 1 then
 					if attached transition_element.attribute_by_name ("source") as s then
 						altre_sorgenti := get_stati (get_nomi (s.value))
@@ -441,14 +464,14 @@ feature -- inizializzazione transizioni
 					if attached transition_element.attribute_by_name ("source") as s then
 							-- TODO: in realtà è possibile avere transizioni contemporaneamente fork e merge ma al momento non vengono gestite
 						print ("ERRORE: non posso avere contemporaneamente transizioni fork e merge!%N")
-						errore_costruzione_SC := True
+						errore_costruzione_SC := 16
 					else
 						assegna_transizione_fork (transition_element, destinazioni, sorgente)
 					end
 				end
 			else
 				print ("ERRORE: lo stato >|" + sorgente.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")
-				errore_costruzione_SC := True
+				errore_costruzione_SC := 17
 			end
 		end
 
@@ -504,7 +527,7 @@ feature -- inizializzazione transizioni
 			else
 				print ("ERRORE: Le sorgenti multiple indicate per la transizione che parte dallo stato >|" + sorgente.id + "|< non sono tra loro compatibili %N")
 				stampa_ancore_multiple (tutte_le_sorgenti)
-				errore_costruzione_SC := True
+				errore_costruzione_SC := 18
 			end
 		end
 
@@ -515,7 +538,7 @@ feature -- inizializzazione transizioni
 		do
 			if transizione_illegale (sorgente, destinazione) then
 				print ("ERRORE: transizione illegale da >|" + sorgente.id + "|< a >|" + destinazione.id + "|< !%N")
-				errore_costruzione_SC := True
+				errore_costruzione_SC := 19
 			else
 				create transizione.make_con_destinazione (destinazione, sorgente)
 				if attached transition_element.attribute_by_name ("type") as type then
@@ -546,7 +569,7 @@ feature -- inizializzazione transizioni
 			else
 				print ("ERRORE: Le destinazioni multiple indicate per la transizione che parte dallo stato >|" + sorgente.id + "|< non sono tra loro compatibili!%N")
 				stampa_ancore_multiple (destinazioni)
-				errore_costruzione_SC := True
+				errore_costruzione_SC := 20
 			end
 		end
 
