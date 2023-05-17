@@ -51,8 +51,6 @@ feature -- attributi
 	-- 18 Errore in transizione merge: gli stati di partenza della transizione non sono compatibili
 	-- 19 Errore in transizione singola: lo stato di partenza e di destinazione non sono compatibili per una transizione
 	-- 20 Errore in transizione fork: i target non sono tra di loro compatibili
-	-- 21
-	-- 22
 
 feature -- creazione
 
