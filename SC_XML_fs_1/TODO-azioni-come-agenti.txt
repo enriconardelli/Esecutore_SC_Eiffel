@@ -1,3 +1,9 @@
+- Capire in che modo gli agenti possono essere usati per migliorare l'evoluzione della state_chart (vd https://www.eiffel.org/node/315 )
+
+Avevo iniziato a fare come scritto sotto ma penso che non funzionasse
+
+============================================================
+
 class
 	AZIONE
 
