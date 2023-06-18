@@ -270,6 +270,17 @@ feature --test
 				evoluzione_state_chart("costrutto_merge_10.xml", "costrutto_merge_eventi_con_merge.txt", conf_finale)
 			end
 
+	t_costrutto_merge_non_ammissibile
+	 -- EN, 03/05/2023
+	 	local
+			esecutore: ESECUTORE
+		do
+			nomi_files_prova [1] := test_data_dir + "costrutto_merge_non_ammissibile.xml"
+			nomi_files_prova [2] := test_data_dir + "costrutto_merge_eventi_con_merge.txt"
+			create esecutore.make (nomi_files_prova)
+			assert ("ERRORE il sistema non riconosce che la configurazione di stati non è ammissibile per il costrutto merge", esecutore.state_chart.errore_costruzione_SC)
+		end
+
 --	t_costrutto_merge_non_ammissibile
 --	 -- EN, 24/08/2021
 --	 	local
