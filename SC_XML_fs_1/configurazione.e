@@ -31,26 +31,7 @@ feature -- attributi
 
 	errore_costruzione_SC: INTEGER
 
-	-- 1 Errore nel Datamodel: l'id di un data è una stringa vuota
-	-- 2 Errore nel Datamodel: manca l'"expr" di un data
-	-- 3 Errore nel Datamodel: manca l'attributo id di un data
-	-- 4 Errore nel Datamodel: l'"expr" di un data non è né un booleano né un intero
-	-- 5 Errore negli Stati: manca l'id di uno stato
-	-- 6 Errore negli Stati: l'id di uno stato è una stringa vuota
-	-- 7 Errore negli Stati: due Stati diversi hanno lo stesso id
-	-- 8 Errore nello stato parallel: un parallel non ha figli
-	-- 9 Errore nello Stato di default: lo stato intial indicato non è figlio dello stato di cui dovrebbe essere lo stato di default
-	-- 10 Errore nello Stato di default: lo stato initial indicato non esiste
-	-- 11 Errore nella radice della State Chart: la radice indicata ha un geniotore quindi non può essere radice
-	-- 12 Errore nella radice della State Chart: la radice indicata non esiste
-	-- 13 Errore nella radice della State Chart: la radice indicata è uno stato atomico
-	-- 14 Errore assegnazione figli a Stato: il figlio indiocato non è un figlio ammissibile di uno stato
-	-- 15 Errore in transizione: l'id del target della transizione non appartiene agli id degli stati della State Chart
-	-- 16 Errore in transizione: la transizione è una transizione sia merge che fork (da eliminare)
-	-- 17 Errore in transizione: la transizione non ha target specificato
-	-- 18 Errore in transizione merge: gli stati di partenza della transizione non sono compatibili
-	-- 19 Errore in transizione singola: lo stato di partenza e di destinazione non sono compatibili per una transizione
-	-- 20 Errore in transizione fork: i target non sono tra di loro compatibili
+	errore_costruzione_SC_tab: HASH_TABLE [STRING, INTEGER]
 
 feature -- creazione
 
@@ -64,9 +45,35 @@ feature -- creazione
 			if not errore_specifica_SC then
 				crea_stati_e_condizioni
 			end
+			create errore_costruzione_SC_tab.make (1)
+			crea_errore_costruzione_SC_tab
 		end
 
 feature -- supporto alla creazione
+
+	crea_errore_costruzione_SC_tab
+		do
+			errore_costruzione_SC_tab.extend ("Errore nel Datamodel: l'id di un data è una stringa vuota", 1)
+			errore_costruzione_SC_tab.extend ("Errore nel Datamodel: manca l''expr' di un data", 2)
+			errore_costruzione_SC_tab.extend ("Errore nel Datamodel: manca l'attributo id di un data", 3)
+			errore_costruzione_SC_tab.extend ("Errore nel Datamodel: l''expr' di un data non è né un booleano né un intero", 4)
+			errore_costruzione_SC_tab.extend ("Errore negli Stati: manca l'id di uno stato", 5)
+			errore_costruzione_SC_tab.extend ("Errore negli Stati: l'id di uno stato è una stringa vuota", 6)
+			errore_costruzione_SC_tab.extend ("Errore negli Stati: due Stati diversi hanno lo stesso id", 7)
+			errore_costruzione_SC_tab.extend ("Errore nello stato parallel: un parallel non ha figli", 8)
+			errore_costruzione_SC_tab.extend ("Errore nello Stato di default: lo stato intial indicato non è figlio dello stato di cui dovrebbe essere lo stato di default", 9)
+			errore_costruzione_SC_tab.extend ("Errore nello Stato di default: lo stato initial indicato non esiste", 10)
+			errore_costruzione_SC_tab.extend ("Errore nella radice della State Chart: la radice indicata ha un geniotore quindi non può essere radice", 11)
+			errore_costruzione_SC_tab.extend ("Errore nella radice della State Chart: la radice indicata non esiste", 12)
+			errore_costruzione_SC_tab.extend ("Errore nella radice della State Chart: la radice indicata è uno stato atomico", 13)
+			errore_costruzione_SC_tab.extend ("Errore assegnazione figli a Stato: il figlio indiocato non è un figlio ammissibile di uno stato", 14)
+			errore_costruzione_SC_tab.extend ("Errore in transizione: l'id del target della transizione non appartiene agli id degli stati della State Chart", 15)
+			errore_costruzione_SC_tab.extend ("Errore in transizione: la transizione è una transizione sia merge che fork (da eliminare)", 16)
+			errore_costruzione_SC_tab.extend ("Errore in transizione: la transizione non ha target specificato", 17)
+			errore_costruzione_SC_tab.extend ("Errore in transizione merge: gli stati di partenza della transizione non sono compatibili", 18)
+			errore_costruzione_SC_tab.extend ("Errore in transizione singola: lo stato di partenza e di destinazione non sono compatibili per una transizione", 19)
+			errore_costruzione_SC_tab.extend ("Errore in transizione fork: i target non sono tra di loro compatibili", 20)
+		end
 
 	crea_albero (nome_file_SC: STRING)
 			-- crea e inizializza `albero' XML che rappresenta la SC
@@ -445,7 +452,7 @@ feature -- inizializzazione transizioni
 				inspect destinazioni.count
 				when 0 then
 					print ("ERRORE: lo stato >|" + sorgente.id + "|< ha una transizione con destinazione errata: 'target' non contiene id di stati della SC!%N")
-					 errore_costruzione_SC:= 15
+					errore_costruzione_SC := 15
 				when 1 then
 					if attached transition_element.attribute_by_name ("source") as s then
 						altre_sorgenti := get_stati (get_nomi (s.value))
