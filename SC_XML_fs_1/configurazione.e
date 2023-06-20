@@ -925,10 +925,27 @@ feature -- inizializzazione onentry/onexit
 feature -- supporto generale
 
 	pulisci_stringa (stringa: STRING): STRING
-			-- elimina eventuali blank iniziali o finali
+			-- elimina eventuali blank iniziali o finali ed elemina eventuali spazi doppi interni
+		local
+			index: INTEGER
 		do
 			stringa.prune_all_leading (' ')
 			stringa.prune_all_trailing (' ')
+			from
+				index := 1
+			until
+				index = stringa.count
+			loop
+				if stringa [index] = ' ' then
+					from
+					until
+						stringa [index + 1] /= ' '
+					loop
+						stringa.remove (index + 1)
+					end
+				end
+				index:=index+1
+			end
 			Result := stringa
 		end
 
