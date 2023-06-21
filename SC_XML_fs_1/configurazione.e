@@ -755,6 +755,8 @@ feature -- inizializzazione transizioni
 		do
 			if variabili.booleane.has (pulisci_stringa (stringa)) then
 				Result := True
+			elseif pulisci_stringa (stringa).substring (1, 4) = "not " and variabili.booleane.has (pulisci_stringa (stringa).substring (5, pulisci_stringa (stringa).count)) then
+				Result := True
 			else
 				Result := False
 			end
@@ -785,6 +787,15 @@ feature -- inizializzazione transizioni
 				else
 					Result := False
 				end
+			end
+		end
+
+	stato_legittimo (stringa: STRING): BOOLEAN
+		do
+			if pulisci_stringa (stringa).substring (1, 3) = "in " and stati.has (pulisci_stringa (stringa).substring (5, pulisci_stringa (stringa).count)) then
+				Result := True
+			else
+				Result := False
 			end
 		end
 
