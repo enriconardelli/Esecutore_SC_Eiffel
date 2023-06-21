@@ -736,6 +736,8 @@ feature -- inizializzazione transizioni
 			if attached transition.attribute_by_name ("cond") as cond then
 				if id_illegittimo (cond.value) then
 					print ("ERRORE: la transizione da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica una condizione di valore >|" + cond.value + "|< stringa vuota o blank o Valore_Nullo !%N")
+				elseif id_not_in (cond.value) then
+					print ("ERRORE: la transizione da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica una condizione di valore >|" + cond.value + "|< che inizia con 'in ' o 'not ' !%N")
 				else
 					if booleana_legittima (cond.value) or intera_legittima (cond.value) then
 						transizione.set_condizione (pulisci_stringa (cond.value))
@@ -944,7 +946,7 @@ feature -- supporto generale
 						stringa.remove (index + 1)
 					end
 				end
-				index:=index+1
+				index := index + 1
 			end
 			Result := stringa
 		end
@@ -957,6 +959,16 @@ feature -- supporto generale
 			valore_nullo := {TRANSIZIONE}.Valore_Nullo
 			if stringa ~ "" or stringa.is_whitespace or stringa.as_lower ~ valore_nullo.as_lower then
 					-- il Valore_Nullo non può essere specificato nel model ma solo assegnato nella costruzione della SC
+				Result := True
+			else
+				Result := False
+			end
+		end
+
+	id_not_in (stringa: STRING): BOOLEAN
+			-- controlla se la condizione inizia con 'not' o 'in' che sono parole riservate
+		do
+			if pulisci_stringa (stringa).substring (1, 3) = "in " or pulisci_stringa (stringa).substring (1, 4) = "not " then
 				Result := True
 			else
 				Result := False
