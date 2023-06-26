@@ -50,4 +50,9 @@ feature -- Test routines
 		--       transizioni_illegali e non si può mandare testare così com'è perché le transizioni illegali
 		--       impediscono la successiva esecuzione della SC
 
+	t_transizioni_cond_in_stato
+		do
+			
+		end
+
 end
