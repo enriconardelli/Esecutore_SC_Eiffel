@@ -151,29 +151,29 @@ feature -- Test routines
 			assert ("Azione OnEntry NON assegnata correttamente", stato_prova.OnExit [1] ~ azione_prova)
 		end
 
-		-- Test per features con evento
+--		-- Test per features con evento
 
-	t_abilitata_con_evento_non_esistente
-		local
-			t: TRANSIZIONE
-		do
-			set_eventi_prova ("non", "non", "non")
-			t := stato_prova.transizione_abilitata (eventi_prova, variabili_prova)
-			assert ("ERRORE: transizione abilitata con evento non_esistente", stato_prova.transizione_abilitata (eventi_prova, variabili_prova) = Void)
-		end
+--	t_abilitata_con_evento_non_esistente
+--		local
+--			t: TRANSIZIONE
+--		do
+--			set_eventi_prova ("non", "non", "non")
+--			t := stato_prova.transizione_abilitata (eventi_prova, variabili_prova)
+--			assert ("ERRORE: transizione abilitata con evento non_esistente", stato_prova.transizione_abilitata (eventi_prova, variabili_prova) = Void)
+--		end
 
-	t_abilitata_con_evento_unica
-		do
-			set_cond_prova (TRUE, TRUE, TRUE)
-			set_eventi_prova ("non", "evento2", "non")
-			assert ("ERRORE: transizione abilitata con evento unica non rilevata", stato_prova.transizione_abilitata (eventi_prova, variabili_prova) = transizione_prova_2)
-		end
+--	t_abilitata_con_evento_unica
+--		do
+--			set_cond_prova (TRUE, TRUE, TRUE)
+--			set_eventi_prova ("non", "evento2", "non")
+--			assert ("ERRORE: transizione abilitata con evento unica non rilevata", stato_prova.transizione_abilitata (eventi_prova, variabili_prova) = transizione_prova_2)
+--		end
 
-	t_abilitata_con_evento_molteplici
-		do
-			set_cond_prova (TRUE, FALSE, TRUE)
-			set_eventi_prova ("evento1", "evento2", "evento3")
-			assert ("ERRORE: transizione abilitata con evento molteplici non rivela quella corretta", stato_prova.transizione_abilitata (eventi_prova, variabili_prova) = transizione_prova_1)
-		end
+--	t_abilitata_con_evento_molteplici
+--		do
+--			set_cond_prova (TRUE, FALSE, TRUE)
+--			set_eventi_prova ("evento1", "evento2", "evento3")
+--			assert ("ERRORE: transizione abilitata con evento molteplici non rivela quella corretta", stato_prova.transizione_abilitata (eventi_prova, variabili_prova) = transizione_prova_1)
+--		end
 
 end

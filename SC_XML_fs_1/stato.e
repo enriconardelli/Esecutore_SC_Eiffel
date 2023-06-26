@@ -127,7 +127,7 @@ feature --azione
 
 feature --situazione
 
-	transizione_abilitata (eventi: LINKED_SET [STRING]; variabili: DATAMODEL): detachable TRANSIZIONE
+	transizione_abilitata (eventi: LINKED_SET [STRING]; variabili: DATAMODEL; state_chart: CONFIGURAZIONE): detachable TRANSIZIONE
 			-- restituisce in base ai valori correnti di `eventi' e `variabili' la prima transizione abilitata in questo stato
 			-- sia direttamente nello stato (priorità SCXML dell'ordine di scrittura nel file .xml) o (se non ve ne sono)
 			-- mediante ereditarietà da un antenato (priorità strutturale object oriented)
@@ -150,7 +150,7 @@ feature --situazione
 			loop
 				transizione_corrente := transizioni [index_count]
 				evento_abilitato := transizione_corrente.check_evento (eventi)
-				condizione_abilitata := transizione_corrente.check_condizione (variabili)
+				condizione_abilitata := transizione_corrente.check_condizione (variabili, state_chart.stati)
 				if evento_abilitato and condizione_abilitata then
 					Result := transizioni [index_count]
 				end
@@ -158,7 +158,7 @@ feature --situazione
 			end
 			if Result = Void then
 				if attached genitore as sg then
-					Result := sg.transizione_abilitata (eventi, variabili)
+					Result := sg.transizione_abilitata (eventi, variabili, state_chart)
 				end
 			end
 		end

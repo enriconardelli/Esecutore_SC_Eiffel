@@ -125,9 +125,9 @@ feature -- check
 			end
 		end
 
-	check_condizione (variabili: DATAMODEL): BOOLEAN
+	check_condizione (variabili: DATAMODEL; stati: HASH_TABLE [STATO, STRING]): BOOLEAN
 		do
-			Result := check_condizione_booleana (variabili.booleane) or check_condizione_intera (variabili.intere)
+			Result := check_condizione_booleana (variabili.booleane) or check_condizione_intera (variabili.intere) or check_condizione_stato(stati)
 		end
 
 	check_condizione_booleana (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN

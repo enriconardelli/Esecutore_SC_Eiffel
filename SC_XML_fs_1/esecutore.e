@@ -206,7 +206,7 @@ feature -- evoluzione della statechart
 						--		antenato di quello immediatamente successivo implica - a causa del riordinamento degli stati in sorgenti in base
 						--		all'ordine di specifica nel file .xml - che nessuno dei suoi discendenti possiede transizioni eseguibili
 
-					if attached sorgenti [i].transizione_abilitata (eventi, variabili) as ta then
+					if attached sorgenti [i].transizione_abilitata (eventi, variabili, state_chart) as ta then
 						debug ("SC_transizioni_eseguibili")
 							print (" sorgente " + i.out + ": lo stato " + sorgenti [i].id + " con transizione a destinazione stato " + ta.destinazione.first.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita (ta).id)
 						end
@@ -232,7 +232,7 @@ feature -- evoluzione della statechart
 					end
 				else
 					debug ("SC_transizioni_eseguibili")
-						if attached sorgenti [i].transizione_abilitata (eventi, variabili) as ta then
+						if attached sorgenti [i].transizione_abilitata (eventi, variabili, state_chart) as ta then
 							print (" sorgente " + i.out + ": lo stato " + sorgenti [i].id + " con transizione a destinazione stato " + ta.destinazione.first.id + ". antenato_massimo_uscita = " + antenato_massimo_uscita (ta).id)
 							print (" e' antenato di sorgente successiva " + (i + 1).out + ": " + sorgenti [i + 1].id + " e viene scartato.%N")
 						end
@@ -257,7 +257,7 @@ feature -- evoluzione della statechart
 				debug ("SC_transizioni_eseguibili")
 					print ("  stato corrente di config_base: " + sc_cb.item.id + "%N")
 				end
-				if attached sc_cb.item.transizione_abilitata (eventi, variabili) as ta then
+				if attached sc_cb.item.transizione_abilitata (eventi, variabili, state_chart) as ta then
 					if ta.merge then
 						if sorgenti_multiple_attive (ta) then
 							debug ("SC_transizioni_eseguibili")

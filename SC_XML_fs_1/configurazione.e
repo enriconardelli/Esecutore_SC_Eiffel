@@ -52,6 +52,7 @@ feature -- creazione
 feature -- supporto alla creazione
 
 	crea_errore_costruzione_SC_tab
+	-- crea la tabella contenente i tipi di errori e la loro enumerazione
 		do
 			errore_costruzione_SC_tab.extend ("Errore nel Datamodel: l'id di un data è una stringa vuota", 1)
 			errore_costruzione_SC_tab.extend ("Errore nel Datamodel: manca l''expr' di un data", 2)
