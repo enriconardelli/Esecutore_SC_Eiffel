@@ -1,10 +1,10 @@
 
 PROCESSO
-- introdurre ambiente gestione di ticket
+- stiamo usando GitHub come ambiente gestione di ticket
 
-AMBIENTE DI TEST
-- inserire i test per verificare che gli errori nella specifica della SC di sorgenti non compatibili per transizioni merge vengono rilevati dai test e non nella costruzione della SC: vanno quindi sistemati i test merge_non_ammissibile)
- ==> trasformare errore_costruzione_SC (forse anche errore_specifica_SC) in INTEGER invece che boolean e usare questi valori interi per assert più precise
+RILEVAMENTO DEGLI ERRORI
+==> trasformare errore_costruzione_SC in INTEGER invece che boolean e usare questi valori interi per assert più precise nelle feature di test (in realtà al momento c'è solo una feature di test che usa errore_costruzione_SC)
+==> esaminare tutti i punti del progetto in cui errore_costruzione_SC viene assegnato a true e elencare la tipologia di errore e capire se è possibile individuare una classificazione gerarchica
 
 INTERESSANTE
 - gestione della negazione delle condizioni booleane
