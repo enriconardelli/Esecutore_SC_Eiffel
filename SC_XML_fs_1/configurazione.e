@@ -782,7 +782,7 @@ feature -- inizializzazione azioni
 			if attached p_azione.attribute_by_name ("name") as name then
 				transizione.azioni.force (create {STAMPA}.make_with_text (name.value), transizione.azioni.count + 1)
 			else
-				print ("ERRORE: l'azione <log> nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|< non ha attributo 'name'!%N")
+				print ("AVVISO: l'azione <log> nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|< non ha attributo 'name'!%N")
 --OLD			print ("ERRORE: l'azione <log> nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|< non ha attributo 'name'!%N")
 			end
 		end
@@ -800,7 +800,7 @@ feature -- inizializzazione onentry/onexit
 				elseif al.item.name ~ "log" then
 					assegna_onentry_log (al.item, stato)
 				else
-					print ("ERRORE: l'azione >|" + al.item.name + "|< specificata in <onentry> per lo stato >|" + stato.id + "|< non e' ammissibile!%N")
+					print ("AVVISO: l'azione >|" + al.item.name + "|< specificata in <onentry> per lo stato >|" + stato.id + "|< non e' ammissibile!%N")
 				end
 			end
 		end
@@ -816,7 +816,7 @@ feature -- inizializzazione onentry/onexit
 				elseif al.item.name ~ "log" then
 					assegna_onexit_log (al.item, stato)
 				else
-					print ("ERRORE: l'azione >|" + al.item.name + "|< specificata in <onexit> per lo stato >|" + stato.id + "|< non e' ammissibile!%N")
+					print ("AVVISO: l'azione >|" + al.item.name + "|< specificata in <onexit> per lo stato >|" + stato.id + "|< non e' ammissibile!%N")
 				end
 			end
 		end

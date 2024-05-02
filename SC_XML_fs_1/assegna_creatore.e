@@ -60,6 +60,10 @@ feature -- ammissibilità
 				Result := ["senza_valore", luogo.value.as_string_8, ""]
 			elseif not espressione_ammissibile (espressione.value) then
 				Result := ["valore_errato", luogo.value.as_string_8, espressione.value.as_string_8]
+			elseif variabili.intere.has (luogo.value) and valore_booleano(espressione.value) then
+				Result := ["variabile_intera_con_espressione_booleana", luogo.value.as_string_8, espressione.value.as_string_8]
+			elseif variabili.booleane.has (luogo.value) and (valore_intero(espressione.value) or valore_operazione (espressione.value)) then
+				Result := ["variabile_booleana_con_espressione_intera", luogo.value.as_string_8, espressione.value.as_string_8]
 			else
 				Result := ["OK", luogo.value.as_string_8, espressione.value.as_string_8]
 			end
@@ -77,6 +81,9 @@ feature -- stampa
 				print ("ERRORE: l'azione <assign> " + testo + " non ha attributo 'expr'!%N")
 			elseif esito ~ "valore_errato" then
 				print ("ERRORE: l'azione <assign> " + testo + " assegna alla <location> >|" + variabile + "|< come <expr> il valore >|" + espressione + "|< non ammissibile!%N")
+			elseif esito ~ "variabile_intera_con_espressione_booleana" or esito ~ "variabile_booleana_con_espressione_intera" then
+				print("ERRORE: da sistemare%N")
+
 			end
 		end
 
