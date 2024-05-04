@@ -419,19 +419,10 @@ feature -- inizializzazione storia
 			if attached {STATO_XOR} stato as st_xor then
 				-- se uno stato composto ha più di una storia viene salvata solo la prima
 				-- TODO: verificare che uno stato può avere solo un figlio "history"
-				if attached history_element.attribute_by_name ("id") as h_id then
-					if attached history_element.attribute_by_name ("type") as h_tp and then h_tp.value ~ "deep" then
-						storia_temp := create {STORIA_DEEP}.make_history_with_id (h_id.value, st_xor)
-					else
-						storia_temp := create {STORIA_SHALLOW}.make_history_with_id (h_id.value, st_xor)
-					end
-				else -- non è necessario che la storia abbia un id
-				-- TODO: ma se la storia non deve avere un id non si possono unificare i due rami dell'IF?
-					if attached history_element.attribute_by_name ("type") as h_tp and then h_tp.value ~ "deep" then
-						storia_temp := create {STORIA_DEEP}.make_history (st_xor)
-					else
-						storia_temp := create {STORIA_SHALLOW}.make_history (st_xor)
-					end
+				if attached history_element.attribute_by_name ("type") as h_tp and then h_tp.value ~ "deep" then
+					storia_temp := create {STORIA_DEEP}.make_history (st_xor)
+				else
+					storia_temp := create {STORIA_SHALLOW}.make_history (st_xor)
 				end
 				stato.add_storia (storia_temp)
 			end

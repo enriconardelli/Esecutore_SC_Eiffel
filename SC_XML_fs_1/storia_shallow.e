@@ -12,7 +12,7 @@ inherit
 	STORIA
 
 create
-	make_history_with_id, make_history
+	make_history
 
 feature -- attributi
 
@@ -20,11 +20,6 @@ feature -- attributi
 
 feature -- creazione
 
-	make_history_with_id (un_id: STRING; un_genitore: STATO_XOR)
-		do
-			genitore := un_genitore
-			id := un_id
-		end
 
 	make_history (un_genitore: STATO_XOR)
 		do

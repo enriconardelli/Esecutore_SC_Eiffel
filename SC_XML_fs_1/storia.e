@@ -11,13 +11,7 @@ feature -- attributi
 
 	genitore: STATO_XOR
 
-	id: detachable STRING
-
 feature -- creazione
-
-	make_history_with_id (un_id: STRING; un_genitore: STATO_XOR)
-		deferred
-		end
 
 	make_history (un_genitore: STATO_XOR)
 		deferred
