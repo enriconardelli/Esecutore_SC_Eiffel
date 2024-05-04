@@ -1,4 +1,4 @@
-<scxml version="1.0" initial="A">
+<scxml version="1.0" xmlns="http://www.w3.org/2005/07/scxml" initial="A">
 	<parallel id="A">
 		<state id="A1" initial="A11">
 			<parallel id="A11">

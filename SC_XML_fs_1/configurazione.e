@@ -77,8 +77,11 @@ feature -- supporto alla creazione
 	crea_stati_e_condizioni
 		--	riempie le hashtable degli stati e delle condizioni
 		--	inizializza ogni stato con le sue transizioni con eventi ed azioni
+		local
+			radice: detachable XML_ELEMENT
 		do
-			if attached {XML_ELEMENT} albero.document.first as f then
+			radice := trova_radice(albero.document.elements)
+			if attached radice as f then
 				istanzia_datamodel (f.elements)
 				istanzia_final (f.elements)
 				istanzia_stati (f.elements, Void)
@@ -89,6 +92,42 @@ feature -- supporto alla creazione
 		end
 
 feature -- inizializzazione SC
+
+	trova_radice(elements: LIST [XML_ELEMENT]): detachable XML_ELEMENT
+		do
+			across
+				elements as e
+			loop
+				if e.item.name ~ "scxml" then
+					if attached {XML_ATTRIBUTE} e.item.attribute_by_name ("xmlns") as xmlns then
+						if xmlns.value ~ "http://www.w3.org/2005/07/scxml" then
+							if attached {XML_ATTRIBUTE} e.item.attribute_by_name ("version") as version then
+								if version.value ~ "1.0" then
+										Result := e.item
+								else
+									print ("ERRORE: elemento <scxml> con attributo 'version' non corretto!%N")
+									errore_costruzione_SC := True
+								end
+							else
+								print ("ERRORE: elemento <scxml> senza attributo 'version'!%N")
+								errore_costruzione_SC := True
+							end
+						else
+							print ("ERRORE: elemento <scxml> con attributo 'xmlns' non corretto!%N")
+							errore_costruzione_SC := True
+						end
+					else
+						print ("ERRORE: elemento <scxml> senza attributo 'xmlns'!%N")
+						errore_costruzione_SC := True
+					end
+				else
+					print ("ERRORE: nessun elemento <scxml>!%N")
+					errore_costruzione_SC := True
+				end
+			end
+
+
+		end
 
 	istanzia_datamodel (elements: LIST [XML_ELEMENT])
 		-- istanzia il <datamodel>, che può essere anche suddiviso in più nodi
