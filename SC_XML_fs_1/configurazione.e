@@ -213,10 +213,6 @@ feature -- inizializzazione SC
 
 	istanzia_stati (elements: LIST [XML_ELEMENT]; p_genitore: detachable STATO_GERARCHICO)
 		-- crea gli stati assegnando loro l'eventuale genitore e gli eventuali figli
-		-- TODO: feature complessa, è possibile semplificarla?
-		local
-			stato_temp: STATO_ATOMICO
-			stato_ger_temp: STATO_GERARCHICO
 		do
 			across
 				elements as e
@@ -227,7 +223,7 @@ feature -- inizializzazione SC
 						stampa_elemento (e.item)
 						errore_costruzione_SC := True
 					elseif attached e.item.attribute_by_name ("id") as id_attr then
-						if id_attr.value ~ "" or id_attr.value.is_whitespace then
+						if id_illegittimo (id_attr.value) then
 							print ("ERRORE: il seguente elemento <state> o <parallel> ha un 'id' di valore stringa vuota o blank!%N")
 							stampa_elemento (e.item)
 							errore_costruzione_SC := True
@@ -237,52 +233,70 @@ feature -- inizializzazione SC
 							errore_costruzione_SC := True
 						else
 							if e.item.name ~ "state" then
-								if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
-									-- elemento corrente <state> ha figli, quindi è gerarchico
-									if attached p_genitore as pg then
-										-- istanzio elemento corrente con genitore e glielo assegno come figlio
-										stato_ger_temp := create {STATO_XOR}.make_with_id_and_parent (id_attr.value, pg)
-										pg.add_figlio (stato_ger_temp)
-									else -- istanzio elemento corrente senza genitore
-										stato_ger_temp := create {STATO_XOR}.make_with_id (id_attr.value)
-									end
-									stati.extend (stato_ger_temp, id_attr.value)
-									-- ricorsione sui figli con sé stesso come genitore
---									istanzia_stati (e.item.elements, stati.item (id_attr.value))
-									istanzia_stati (e.item.elements, stato_ger_temp)
-								else -- elemento corrente <state> non ha figli, quindi è atomico
-									if attached p_genitore as pg then
-										-- istanzio elemento corrente con genitore e glielo assegno come figlio
-										stato_temp := create {STATO_ATOMICO}.make_with_id_and_parent (id_attr.value, pg)
-										pg.add_figlio (stato_temp)
-									else -- istanzio elemento corrente senza genitore
-										stato_temp := create {STATO_ATOMICO}.make_with_id (id_attr.value)
-									end
-									stati.extend (stato_temp, id_attr.value)
-								end
+								istanzia_stato_XOR (e.item, p_genitore, id_attr.value )
 							end
+
 							if e.item.name ~ "parallel" then
-								if e.item.has_element_by_name ("state") or e.item.has_element_by_name ("parallel") then
-									-- elemento corrente <parallel> ha figli
-									if attached p_genitore as pg then
-										-- istanzio elemento corrente con genitore e glielo assegno come figlio
-										stato_ger_temp := create {STATO_AND}.make_with_id_and_parent (id_attr.value, pg)
-										pg.add_figlio (stato_ger_temp)
-									else -- istanzio elemento corrente senza genitore
-										stato_ger_temp := create {STATO_AND}.make_with_id (id_attr.value)
-									end
-									stati.extend (stato_ger_temp, id_attr.value)
-										-- ricorsione sui figli con sé stesso come genitore
---									istanzia_stati (e.item.elements, stati.item (id_attr.value))
-									istanzia_stati (e.item.elements, stato_ger_temp)
-								else -- elemento corrente <parallel> non ha figli
-									print ("ERRORE: lo stato <parallel> >|" + id_attr.value + "|< non ha figli !%N")
-									errore_costruzione_SC := True
-								end
+								istanzia_stato_AND (e.item, p_genitore, id_attr.value )
 							end
 						end
 					end
 				end
+			end
+		end
+
+	istanzia_stato_XOR (e: XML_ELEMENT; p_genitore: detachable STATO_GERARCHICO; id_attr: STRING)
+		-- crea uno stati XOR assegnando l'eventuale genitore e gli eventuali figli. id_attr viene considerata del formato corretto (controllo eseguito in istanzia_stati)
+		local
+			stato_temp: STATO_ATOMICO
+			stato_ger_temp: STATO_GERARCHICO
+		do
+			if e.has_element_by_name ("state") or e.has_element_by_name ("parallel") then
+				-- elemento corrente <state> ha figli, quindi è gerarchico
+				if attached p_genitore as pg then
+					-- istanzio elemento corrente con genitore e glielo assegno come figlio
+					stato_ger_temp := create {STATO_XOR}.make_with_id_and_parent (id_attr, pg)
+					pg.add_figlio (stato_ger_temp)
+				else -- istanzio elemento corrente senza genitore
+					stato_ger_temp := create {STATO_XOR}.make_with_id (id_attr)
+				end
+				stati.extend (stato_ger_temp, id_attr)
+				-- ricorsione sui figli con sé stesso come genitore
+				istanzia_stati (e.elements, stato_ger_temp)
+			else -- elemento corrente <state> non ha figli, quindi è atomico
+				if attached p_genitore as pg then
+					-- istanzio elemento corrente con genitore e glielo assegno come figlio
+					stato_temp := create {STATO_ATOMICO}.make_with_id_and_parent (id_attr, pg)
+					pg.add_figlio (stato_temp)
+				else -- istanzio elemento corrente senza genitore
+					stato_temp := create {STATO_ATOMICO}.make_with_id (id_attr)
+				end
+				stati.extend (stato_temp, id_attr)
+			end
+
+		end
+
+	istanzia_stato_AND (e: XML_ELEMENT; p_genitore: detachable STATO_GERARCHICO; id_attr: STRING)
+		-- crea uno stati AND assegnando l'eventuale genitore e i figli. id_attr viene considerata del formato corretto (controllo eseguito in istanzia_stati)
+		local
+			stato_temp: STATO_ATOMICO
+			stato_ger_temp: STATO_GERARCHICO
+		do
+			if e.has_element_by_name ("state") or e.has_element_by_name ("parallel") then
+				-- elemento corrente <parallel> ha figli
+				if attached p_genitore as pg then
+					-- istanzio elemento corrente con genitore e glielo assegno come figlio
+					stato_ger_temp := create {STATO_AND}.make_with_id_and_parent (id_attr, pg)
+					pg.add_figlio (stato_ger_temp)
+				else -- istanzio elemento corrente senza genitore
+					stato_ger_temp := create {STATO_AND}.make_with_id (id_attr)
+				end
+				stati.extend (stato_ger_temp, id_attr)
+					-- ricorsione sui figli con sé stesso come genitore
+				istanzia_stati (e.elements, stato_ger_temp)
+			else -- elemento corrente <parallel> non ha figli
+				print ("ERRORE: lo stato <parallel> >|" + id_attr + "|< non ha figli !%N")
+				errore_costruzione_SC := True
 			end
 		end
 
