@@ -952,7 +952,7 @@ feature -- supporto generale
 			valore_nullo: STRING
 		do
 			valore_nullo := {TRANSIZIONE}.Valore_Nullo
-			if stringa ~ "" or stringa.is_whitespace or stringa.as_lower ~ valore_nullo.as_lower  then
+			if stringa ~ "" or stringa.is_whitespace or stringa.as_lower ~ valore_nullo.as_lower or pulisci_stringa(stringa).has (' ') then
 				-- il Valore_Nullo non può essere specificato nel model ma solo assegnato nella costruzione della SC
 				Result := True
 			else
