@@ -195,9 +195,18 @@ feature -- inizializzazione SC
 			across
 				elements as e
 			loop
-				if e.item.name ~ "final" and attached e.item.attribute_by_name ("id") as id then
-				-- TODO: avvisare se "id" è assente
-					stati.extend (create {STATO_ATOMICO}.make_final_with_id (id.value), id.value)
+				if e.item.name ~ "final" then
+					if attached e.item.attribute_by_name ("id") as id then
+						if id_illegittimo (id.value)  then
+							print ("ERRORE: elemento <final> con 'id' >|" + id.value + "|< di valore stringa vuota o blank o 'NULL' !%N")
+							errore_costruzione_SC := True
+						else
+							stati.extend (create {STATO_ATOMICO}.make_final_with_id (id.value), id.value)
+						end
+					else
+						print ("ERRORE: elemento <final> senza 'id'!%N")
+						errore_costruzione_SC := True
+					end
 				end
 			end
 		end
