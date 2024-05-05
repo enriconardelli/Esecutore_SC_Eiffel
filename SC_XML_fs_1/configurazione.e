@@ -151,19 +151,23 @@ feature -- inizializzazione SC
 			across
 				data_elements as data
 			loop
-				if attached {XML_ATTRIBUTE} data.item.attribute_by_name ("id") as nome then
-					if id_illegittimo (nome.value) then
-						print ("ERRORE: elemento <data> con 'id' >|" + nome.value + "|< di valore stringa vuota o blank o 'NULL' !%N")
-						errore_costruzione_SC := True
-					elseif attached {XML_ATTRIBUTE} data.item.attribute_by_name ("expr") as valore then
-						assegna_variabile (pulisci_stringa (nome.value), pulisci_stringa (valore.value))
+				if data.item.name ~ "data" then
+					if attached {XML_ATTRIBUTE} data.item.attribute_by_name ("id") as nome then
+						if id_illegittimo (nome.value) then
+							print ("ERRORE: elemento <data> con 'id' >|" + nome.value + "|< di valore stringa vuota o blank o 'NULL' !%N")
+							errore_costruzione_SC := True
+						elseif attached {XML_ATTRIBUTE} data.item.attribute_by_name ("expr") as valore then
+							assegna_variabile (pulisci_stringa (nome.value), pulisci_stringa (valore.value))
+						else
+							print ("ERRORE: elemento <data> con id >|" + nome.value + "|< senza attributo 'expr'!%N")
+							errore_costruzione_SC := True
+						end
 					else
-						print ("ERRORE: elemento <data> con id >|" + nome.value + "|< senza attributo 'expr'!%N")
+						print ("ERRORE: elemento <data> senza attributo 'id'!%N")
 						errore_costruzione_SC := True
 					end
 				else
-					print ("ERRORE: elemento <data> senza attributo 'id'!%N")
-					errore_costruzione_SC := True
+					print ("AVVISO: elemento in <datamodel> errato perche` del tipo <"+ data.item.name + "> e non del tipo <data>!%N")
 				end
 			end
 			-- aggiunge variabile booleana '{TRANSIZIONE}.Valore_Nullo' che è sempre True e si usa per le transizioni che non specificano una condizione nel file del modello

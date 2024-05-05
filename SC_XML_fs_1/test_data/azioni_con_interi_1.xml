@@ -2,7 +2,7 @@
 <scxml initial="X" version="1.0" xmlns="http://www.w3.org/2005/07/scxml">
 	<datamodel>
 		<data expr="5" id="N"/>
-    <data expr="2" id="M"/>
+    		<data expr="2" id="M"/>
 	</datamodel>
   
 	<parallel id="X">
