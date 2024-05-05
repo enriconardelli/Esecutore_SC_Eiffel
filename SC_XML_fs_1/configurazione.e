@@ -279,7 +279,6 @@ feature -- inizializzazione SC
 	istanzia_stato_AND (e: XML_ELEMENT; p_genitore: detachable STATO_GERARCHICO; id_attr: STRING)
 		-- crea uno stati AND assegnando l'eventuale genitore e i figli. id_attr viene considerata del formato corretto (controllo eseguito in istanzia_stati)
 		local
-			stato_temp: STATO_ATOMICO
 			stato_ger_temp: STATO_GERARCHICO
 		do
 			if e.has_element_by_name ("state") or e.has_element_by_name ("parallel") then
@@ -416,7 +415,10 @@ feature -- inizializzazione SC
 
 	assegna_figli (stato: STATO; element: XML_ELEMENT)
 		-- completa lo `stato' con i suoi figli che non sono <state> o <parallel>: transizioni, azioni onentry/onexit, history
+		local
+			history_trovata: BOOLEAN
 		do
+			history_trovata := False
 			across
 				element.elements as e
 			loop
@@ -427,9 +429,15 @@ feature -- inizializzazione SC
 				elseif e.item.name ~ "onexit" then
 					assegna_onexit (e.item.elements, stato)
 				elseif e.item.name ~ "history" then
-					assegna_storia (e.item, stato)
+					-- verifica unicità di <history>
+					if history_trovata then
+						print("AVVISO: ci sono 2 o più elementi <history>. Vengono ignorati quelli successivi al primo!%N")
+					else
+						assegna_storia (e.item, stato)
+						history_trovata:= True
+					end
 				elseif not (e.item.name ~ "state" or e.item.name ~ "parallel") then
-					print ("ERRORE: lo stato >|" + stato.id + "|< specifica un figlio non ammissibile!")
+					print ("ERRORE: lo stato >|" + stato.id + "|< specifica un figlio non ammissibile!%N")
 					stampa_elemento (e.item)
 					errore_costruzione_SC := True
 				end
@@ -445,10 +453,12 @@ feature -- inizializzazione storia
 		do
 			if attached {STATO_XOR} stato as st_xor then
 				-- se uno stato composto ha più di una storia viene salvata solo la prima
-				-- TODO: verificare che uno stato può avere solo un figlio "history"
 				if attached history_element.attribute_by_name ("type") as h_tp and then h_tp.value ~ "deep" then
 					storia_temp := create {STORIA_DEEP}.make_history (st_xor)
 				else
+					if not (attached history_element.attribute_by_name ("type") as h_tp and then h_tp.value ~ "shallow") then
+						print ("AVVISO: la storia dello stato >|" + stato.id  + "|< viene considerata shallow!%N")
+					end
 					storia_temp := create {STORIA_SHALLOW}.make_history (st_xor)
 				end
 				stato.add_storia (storia_temp)
