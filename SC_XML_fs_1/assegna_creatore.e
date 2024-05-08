@@ -82,8 +82,7 @@ feature -- stampa
 			elseif esito ~ "valore_errato" then
 				print ("ERRORE: l'azione <assign> " + testo + " assegna alla <location> >|" + variabile + "|< come <expr> il valore >|" + espressione + "|< non ammissibile!%N")
 			elseif esito ~ "variabile_intera_con_espressione_booleana" or esito ~ "variabile_booleana_con_espressione_intera" then
-				print("ERRORE: da sistemare%N")
-
+				print ("ERRORE: l'azione <assign> " + testo + " assegna alla <location> >|" + variabile + "|< come <expr> il valore >|" + espressione + "|< non ammissibile!%N")
 			end
 		end
 

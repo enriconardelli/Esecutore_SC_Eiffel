@@ -177,10 +177,10 @@ feature -- inizializzazione SC
 	assegna_variabile (variabile, espressione: STRING)
 		do
 		-- assegna il valore alla singola variabile del <datamodel>
-			if valore_booleano (espressione) then
+			if espressione.is_boolean then
 				variabili.booleane.extend (espressione.as_lower ~ "true", variabile)
 				debug ("SC_inizializza_variabili") print ("Booleano: " + variabile + " = " + variabili.booleane [variabile].out + "%N") end
-			elseif valore_intero (espressione) then
+			elseif espressione.is_integer then
 				variabili.intere.extend (espressione.to_integer, variabile)
 				debug ("SC_inizializza_variabili") print ("Intero: " + variabile + " = " + variabili.intere [variabile].out + "%N") end
 			else
@@ -1049,17 +1049,7 @@ feature -- supporto generale
 			end
 		end
 
-	valore_booleano (valore: READABLE_STRING_32): BOOLEAN
-		-- TODO: feature duplicata in ASSEGNA, da risolvere
-		do
-			Result := valore.as_lower ~ "true" or valore.as_lower ~ "false"
-		end
 
-	valore_intero (valore: READABLE_STRING_32): BOOLEAN
-		-- TODO: feature duplicata in ASSEGNA, da risolvere
-		do
-			Result := valore.is_integer
-		end
 
 		-- Aggiungere 'feature' per tracciare quanto accade scrivendo su file model_out.txt:
 		--  l'evoluzione della SC in termini di sequenza di quintuple:
