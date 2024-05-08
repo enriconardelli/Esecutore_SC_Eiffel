@@ -745,17 +745,14 @@ feature -- inizializzazione transizioni
 		end
 
 	assegna_condizione (transition: XML_ELEMENT; transizione: TRANSIZIONE)
-	-- TODO: migliorare il controllo della correttezza sintattica delle condizione per interi
 		do
 			if attached transition.attribute_by_name ("cond") as cond then
-				if id_illegittimo (cond.value) then
-					print ("ERRORE: la transizione da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica una condizione di valore >|" + cond.value + "|< stringa vuota o blank o Valore_Nullo !%N")
+				if booleana_legittima (cond.value) then
+					transizione.set_condizione (pulisci_stringa (cond.value))
+				elseif not intera_legittima_stringa(cond.value).is_empty then
+					transizione.set_condizione (intera_legittima_stringa(cond.value))
 				else
-					if booleana_legittima (cond.value) or intera_legittima (cond.value) then
-						transizione.set_condizione (pulisci_stringa (cond.value))
-					else
-						print ("ERRORE: la transizione da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica una condizione di valore (non pulito) >|" + cond.value + "|< illegittimo !%N")
-					end
+					print ("ERRORE: la transizione da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica una condizione di valore (non pulito) >|" + cond.value + "|< illegittimo !%N")
 				end
 			else
 				transizione.set_condizione ({TRANSIZIONE}.Valore_Nullo)
@@ -772,32 +769,52 @@ feature -- inizializzazione transizioni
 			end
 		end
 
-	intera_legittima (stringa: STRING): BOOLEAN
-	-- verifica che `stringa' sia una condizione intera legittima
-	-- TODO: si ripetono alcuni controlli fatti in TRANSIZIONI.check_condizione_intera per la verifica della condizione
-	-- TODO: verificare/definire quale deve essere la forma sintatticamente corretta delle condizioni (qualcosa è in TRANSIZIONI)
+	intera_legittima_stringa (stringa: STRING): STRING
+	-- crea una stringas che rispetta le condizioni assunte in TRANSIZIONI.check_condizione_intera. Se non le ripetta restituisce stringa vuota
 	-- TODO: usare libreria di Eiffel 'parse' per analisi di correttezza della stringa delle condizioni (va aggiunta al progetto)
 		local
 			var: STRING
+			var1: STRING
+			expr: STRING
 		do
 			if stringa.has ('<') then
 				var := stringa.substring (1, stringa.index_of ('<', 1) - 1)
+				var1 := stringa.substring (stringa.index_of ('<', 1) + 1, stringa.count)
+				expr := "<"
+					if var1.index_of ('=', 1) = 1 then
+						var1 := var1.substring (2,var1.count)
+						expr := "<="
+					end
 			elseif stringa.has ('>') then
 				var := stringa.substring (1, stringa.index_of ('>', 1) - 1)
-			elseif stringa.has ('/') then
+				var1 := stringa.substring (stringa.index_of ('>', 1) + 1, stringa.count)
+				expr := ">"
+					if var1.index_of ('=', 1) = 1 then
+						var1 := var1.substring (2,var1.count)
+						expr := "<="
+					end
+			elseif stringa.has_substring ("/=") then
 				var := stringa.substring (1, stringa.index_of ('/', 1) - 1)
+				var1 := stringa.substring (stringa.index_of ('=', 1) + 1, stringa.count)
+				expr := "/="
 			elseif stringa.has ('=') then
 				var := stringa.substring (1, stringa.index_of ('=', 1) - 1)
-			else
-				Result := False
+				var1 := stringa.substring (stringa.index_of ('=', 1) + 1, stringa.count)
+				expr := "="
 			end
+			create Result.make_empty
 			if attached var as v then
 				if variabili.intere.has (pulisci_stringa (v)) then
-					Result := True
-				else
-					Result := False
+					if attached var1 as v1 then
+						if v1.is_integer  then
+							if attached expr as e then
+								Result := v + e + v1
+							end
+						end
+					end
 				end
 			end
+
 		end
 
 feature -- inizializzazione azioni
