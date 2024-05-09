@@ -27,7 +27,7 @@ feature -- attributi
 	albero: XML_CALLBACKS_NULL_FILTER_DOCUMENT
 		-- albero XML con la SC letta dal file
 
-	errore_specifica_SC: BOOLEAN
+	errore_parsing_file_SC: BOOLEAN
 
 	errore_costruzione_SC: BOOLEAN
 
@@ -40,7 +40,7 @@ feature -- creazione
 			create variabili.make
 			create creatore_di_assegna
 			crea_albero (nome_SC)
-			if not errore_specifica_SC then
+			if not errore_parsing_file_SC then
 				crea_stati_e_condizioni
 			end
 		end
@@ -67,10 +67,10 @@ feature -- supporto alla creazione
 				print (" - ")
 				print (parser.last_error_description)
 				print ("%N ")
-				errore_specifica_SC := True
+				errore_parsing_file_SC := True
 			else
 				print ("Parsing OK. %N")
-				errore_specifica_SC := False
+				errore_parsing_file_SC := False
 			end
 		end
 
