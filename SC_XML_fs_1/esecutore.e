@@ -32,7 +32,7 @@ feature -- Attributi
 			print ("crea la SC in " + nomi_files [1] + "%N")
 			create state_chart.make (nomi_files [1])
 			create ambiente_corrente.make_empty
-			if not state_chart.errore_costruzione_SC and not state_chart.errore_parsing_file_SC then
+			if not state_chart.errore_parsing_file_SC and not state_chart.errore_costruzione_SC then
 				print ("e la esegue con gli eventi in " + nomi_files [2] + "%N")
 				ambiente_corrente.acquisisci_eventi (nomi_files [2])
 				print ("acquisiti eventi %N")

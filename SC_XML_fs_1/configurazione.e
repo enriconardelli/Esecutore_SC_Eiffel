@@ -669,11 +669,11 @@ feature -- inizializzazione transizioni
 					end
 					if catena_di_paralleli (altro_stato, stato_mac) then
 						Result := True
-						debug ("sc_transizioni_illegali") print ("ERRORE: transizione illegale: transizione con MAC <parallel> in verticale e catena di <parallel> %N") end
+						debug ("sc_transizioni_illegali") print ("transizione illegale: transizione con MAC <parallel> in verticale e catena di <parallel> %N") end
 					end
 				else -- stato_mac è diverso da entrambi
 					Result := True
- 					debug ("sc_transizioni_illegali") print ("ERRORE: transizione illegale: transizione con MAC <parallel> in orizzontale tra discendenti del MAC (attraversa la frontiera)%N") end
+ 					debug ("sc_transizioni_illegali") print ("transizione illegale: transizione con MAC <parallel> in orizzontale tra discendenti del MAC (attraversa la frontiera)%N") end
 				end
 			end
 		end
@@ -753,6 +753,7 @@ feature -- inizializzazione transizioni
 					transizione.set_condizione (intera_legittima_stringa(cond.value))
 				else
 					print ("ERRORE: la transizione da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica una condizione di valore (non pulito) >|" + cond.value + "|< illegittimo !%N")
+					errore_costruzione_SC := True
 				end
 			else
 				transizione.set_condizione ({TRANSIZIONE}.Valore_Nullo)
@@ -830,8 +831,8 @@ feature -- inizializzazione azioni
 				elseif al.item.name ~ "log" then
 					assegna_azione_log (al.item, transizione)
 				else
-					print ("AVVISO: la transizione da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica un'azione >|" + al.item.name + "|< sconosciuta!%N")
---OLD				print ("AVVISO: la transizione da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|< specifica un'azione >|" + al.item.name + "|< sconosciuta!%N")
+					-- TODO: stampare tutti gli stati sorgente e destinazione della transizione
+					print ("AVVISO: la transizione dalla prima sorgente >|" + transizione.sorgente.first.id + "|< alla prima destinazione >|" + transizione.destinazione.first.id + "|< specifica un'azione >|" + al.item.name + "|< sconosciuta!%N")
 				end
 			end
 		end
@@ -846,8 +847,8 @@ feature -- inizializzazione azioni
 			if esito ~ "OK" then
 				transizione.azioni.force (creatore_di_assegna.crea_istanza (variabile, espressione), transizione.azioni.count + 1)
 			else
-				testo := "nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|<"
---OLD			testo := "nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|<"
+				-- TODO: stampare tutti gli stati sorgente e destinazione della transizione
+				testo := "nella transizione con evento >|" + nome_evento(transizione) + "|< dalla prima sorgente >|" + transizione.sorgente.first.id + "|< alla prima destinazione >|" + transizione.destinazione.first.id + "|<"
 				creatore_di_assegna.stampa_errata (testo, esito, variabile, espressione)
 			end
 		end
@@ -866,8 +867,8 @@ feature -- inizializzazione azioni
 			if attached p_azione.attribute_by_name ("name") as name then
 				transizione.azioni.force (create {STAMPA}.make_with_text (name.value), transizione.azioni.count + 1)
 			else
-				print ("AVVISO: l'azione <log> nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|< non ha attributo 'name'!%N")
---OLD			print ("ERRORE: l'azione <log> nella transizione con evento >|" + nome_evento(transizione) + "|< da >|" + transizione.sorgente.id + "|< a >|" + transizione.destinazione.id + "|< non ha attributo 'name'!%N")
+				-- TODO: stampare tutti gli stati sorgente e destinazione della transizione
+				print ("AVVISO: l'azione <log> nella transizione con evento >|" + nome_evento(transizione) + "|< dalla prima sorgente >|" + transizione.sorgente.first.id + "|< alla prima destinazione >|" + transizione.destinazione.first.id + "|< non ha attributo 'name'!%N")
 			end
 		end
 
@@ -940,7 +941,7 @@ feature -- inizializzazione onentry/onexit
 			if attached p_azione.attribute_by_name ("name") as name then
 				stato.set_onentry (create {STAMPA}.make_with_text (name.value))
 			else
-				print ("ERRORE: l'azione <log> specificata in <onentry> per lo stato >|" + stato.id + "|< non ha attributo 'name'!%N")
+				print ("AVVISO: l'azione <log> specificata in <onentry> per lo stato >|" + stato.id + "|< non ha attributo 'name'!%N")
 			end
 		end
 
@@ -949,7 +950,7 @@ feature -- inizializzazione onentry/onexit
 			if attached p_azione.attribute_by_name ("name") as name then
 				stato.set_onexit (create {STAMPA}.make_with_text (name.value))
 			else
-				print ("ERRORE: l'azione <log> specificata in <onexit> per lo stato >|" + stato.id + "|< non ha attributo 'name'!%N")
+				print ("AVVISO: l'azione <log> specificata in <onexit> per lo stato >|" + stato.id + "|< non ha attributo 'name'!%N")
 			end
 		end
 
@@ -995,6 +996,7 @@ feature -- supporto generale
 			end
 			if place_holder.after then
 				print ("ERRORE: non esistono <state> o <parallel> nel modello!%N")
+				errore_costruzione_SC := True
 			else
 				debug ("SC_first_sub_state") print ("AVVISO: trovato primo figlio <state> o <parallel>%N"); stampa_elemento (place_holder.item) end
 				-- NB: regolarità di 'id' è stata già controllata in `istanzia_stati'
