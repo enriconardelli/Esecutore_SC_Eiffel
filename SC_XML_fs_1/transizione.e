@@ -112,10 +112,10 @@ feature -- setter
 
 feature -- check
 
-	check_evento (istante: LINKED_SET [STRING] ): BOOLEAN
+	check_evento (eventi_istante_corrente: LINKED_SET [STRING] ): BOOLEAN
 		do
 			if attached evento as e then
-				if istante.has (e) then
+				if eventi_istante_corrente.has (e) then
 					Result:= True
 				end
 			else

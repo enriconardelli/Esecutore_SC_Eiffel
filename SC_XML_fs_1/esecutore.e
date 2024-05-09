@@ -68,6 +68,7 @@ feature -- evoluzione della statechart
 			until
 				stato_final (state_chart.config_base) or istante > eventi.count
 			loop
+				-- TODO: se nel quanto di tempo `istante' non ci sono eventi non si fa evolvere la SC anche se in teoria potrebbero esserci transizioni eseguibili
 				if attached eventi [istante] as eventi_correnti then
 					stampa_conf_corrente (istante)
 					create prossima_config_base.make_empty
