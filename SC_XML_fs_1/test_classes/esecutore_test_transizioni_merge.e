@@ -278,7 +278,7 @@ feature --test
 			nomi_files_prova [1] := test_data_dir + "costrutto_merge_non_ammissibile.xml"
 			nomi_files_prova [2] := test_data_dir + "costrutto_merge_eventi_con_merge.txt"
 			create esecutore.make (nomi_files_prova)
-			assert ("ERRORE il sistema non riconosce che la configurazione di stati non è ammissibile per il costrutto merge", esecutore.state_chart.errore_costruzione_SC)
+			assert ("ERRORE il sistema non riconosce che la configurazione di stati non è ammissibile per il costrutto merge", not esecutore.state_chart.errore_costruzione_SC.is_empty )
 		end
 
 --	t_costrutto_merge_non_ammissibile

@@ -29,12 +29,13 @@ feature -- attributi
 
 	errore_parsing_file_SC: BOOLEAN
 
-	errore_costruzione_SC: BOOLEAN
+	errore_costruzione_SC: LINKED_LIST [INTEGER]
 
 feature -- creazione
 
 	make (nome_SC: STRING)
 		do
+			create errore_costruzione_SC.make
 			create config_base.make_empty
 			create stati.make (1)
 			create variabili.make
@@ -106,23 +107,23 @@ feature -- inizializzazione SC
 										Result := e.item
 								else
 									print ("ERRORE: elemento <scxml> con attributo 'version' non corretto!%N")
-									errore_costruzione_SC := True
+									errore_costruzione_SC.extend (1)
 								end
 							else
 								print ("ERRORE: elemento <scxml> senza attributo 'version'!%N")
-								errore_costruzione_SC := True
+								errore_costruzione_SC.extend (2)
 							end
 						else
 							print ("ERRORE: elemento <scxml> con attributo 'xmlns' non corretto!%N")
-							errore_costruzione_SC := True
+							errore_costruzione_SC.extend (3)
 						end
 					else
 						print ("ERRORE: elemento <scxml> senza attributo 'xmlns'!%N")
-						errore_costruzione_SC := True
+						errore_costruzione_SC.extend (4)
 					end
 				else
 					print ("ERRORE: nessun elemento <scxml>!%N")
-					errore_costruzione_SC := True
+					errore_costruzione_SC.extend (5)
 				end
 			end
 
@@ -155,16 +156,16 @@ feature -- inizializzazione SC
 					if attached {XML_ATTRIBUTE} data.item.attribute_by_name ("id") as nome then
 						if id_illegittimo (nome.value) then
 							print ("ERRORE: elemento <data> con 'id' >|" + nome.value + "|< di valore stringa vuota o blank o 'NULL' !%N")
-							errore_costruzione_SC := True
+							errore_costruzione_SC.extend (29)
 						elseif attached {XML_ATTRIBUTE} data.item.attribute_by_name ("expr") as valore then
 							assegna_variabile (pulisci_stringa (nome.value), pulisci_stringa (valore.value))
 						else
 							print ("ERRORE: elemento <data> con id >|" + nome.value + "|< senza attributo 'expr'!%N")
-							errore_costruzione_SC := True
+							errore_costruzione_SC.extend (6)
 						end
 					else
 						print ("ERRORE: elemento <data> senza attributo 'id'!%N")
-						errore_costruzione_SC := True
+						errore_costruzione_SC.extend (7)
 					end
 				else
 					print ("AVVISO: elemento in <datamodel> errato perche` del tipo <"+ data.item.name + "> e non del tipo <data>!%N")
@@ -185,7 +186,7 @@ feature -- inizializzazione SC
 				debug ("SC_inizializza_variabili") print ("Intero: " + variabile + " = " + variabili.intere [variabile].out + "%N") end
 			else
 				print ("ERRORE: elemento <data> con id >|" + variabile + "|< assegna a 'expr' il valore >|" + espressione + "|< non booleano e non intero!%N")
-				errore_costruzione_SC := True
+				errore_costruzione_SC.extend (8)
 			end
 		end
 
@@ -199,13 +200,13 @@ feature -- inizializzazione SC
 					if attached e.item.attribute_by_name ("id") as id then
 						if id_illegittimo (id.value)  then
 							print ("ERRORE: elemento <final> con 'id' >|" + id.value + "|< di valore stringa vuota o blank o 'NULL' !%N")
-							errore_costruzione_SC := True
+							errore_costruzione_SC.extend (9)
 						else
 							stati.extend (create {STATO_ATOMICO}.make_final_with_id (id.value), id.value)
 						end
 					else
 						print ("ERRORE: elemento <final> senza 'id'!%N")
-						errore_costruzione_SC := True
+						errore_costruzione_SC.extend (10)
 					end
 				end
 			end
@@ -221,16 +222,16 @@ feature -- inizializzazione SC
 					if not attached e.item.attribute_by_name ("id") then
 						print ("ERRORE: il seguente elemento <state> o <parallel> non ha 'id':%N")
 						stampa_elemento (e.item)
-						errore_costruzione_SC := True
+						errore_costruzione_SC.extend (11)
 					elseif attached e.item.attribute_by_name ("id") as id_attr then
 						if id_illegittimo (id_attr.value) then
 							print ("ERRORE: il seguente elemento <state> o <parallel> ha un 'id' di valore stringa vuota o blank!%N")
 							stampa_elemento (e.item)
-							errore_costruzione_SC := True
+							errore_costruzione_SC.extend (12)
 						elseif stati.has (id_attr.value) then
 							print ("ERRORE: il seguente elemento <state> o <parallel> ha un 'id' duplicato!%N")
 							stampa_elemento (e.item)
-							errore_costruzione_SC := True
+							errore_costruzione_SC.extend (13)
 						else
 							if e.item.name ~ "state" then
 								istanzia_stato_XOR (e.item, p_genitore, id_attr.value )
@@ -295,7 +296,7 @@ feature -- inizializzazione SC
 				istanzia_stati (e.elements, stato_ger_temp)
 			else -- elemento corrente <parallel> non ha figli
 				print ("ERRORE: lo stato <parallel> >|" + id_attr + "|< non ha figli !%N")
-				errore_costruzione_SC := True
+				errore_costruzione_SC.extend (14)
 			end
 		end
 
@@ -318,11 +319,11 @@ feature -- inizializzazione SC
 									stato.set_initial (initial_state)
 								else
 									print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come sotto-stato iniziale di default dello stato >|" + stato.id + "|< non e' figlio di questo stato!%N")
-									errore_costruzione_SC := True
+									errore_costruzione_SC.extend (15)
 								end
 							else
 								print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come sotto-stato iniziale di default dello stato >|" + stato.id + "|< non esiste!%N")
-								errore_costruzione_SC := True
+								errore_costruzione_SC.extend (16)
 							end
 						else -- `e.item' non ha attributo 'initial' ma certamente first_sub_state ritorna figlio <state> o <parallel>
 							print ("AVVISO: lo <state> >|" + stato.id + "|< non specifica attributo 'initial', si sceglie il primo figlio che sia <state> o <parallel>.%N")
@@ -360,11 +361,11 @@ feature -- inizializzazione SC
 						iniziale_SC := r
 					else
 						print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come stato iniziale della statechart non è uno degli stati 'top'!%N")
-						errore_costruzione_SC := True
+						errore_costruzione_SC.extend (17)
 					end
 				else -- l'initial della radice non esiste
 					print ("ERRORE: lo stato >|" + initial_attr.value + "|< indicato come stato iniziale della statechart non esiste!%N")
-					errore_costruzione_SC := True
+					errore_costruzione_SC.extend (18)
 				end
 			else -- la SC non specifica un sotto-stato iniziale di default si sceglie il primo
 				print ("AVVISO: la SC non specifica attributo 'initial', si sceglie il primo figlio che sia <state> o <parallel>.%N")
@@ -374,7 +375,7 @@ feature -- inizializzazione SC
 				inizializza_config_base (isc)
 			else
 				print ("ERRORE: la SC non specifica attributo 'initial' ma non ha figli <state> o <parallel>!%N")
-				errore_costruzione_SC := True
+				errore_costruzione_SC.extend (19)
 			end
 
 		end
@@ -439,7 +440,7 @@ feature -- inizializzazione SC
 				elseif not (e.item.name ~ "state" or e.item.name ~ "parallel") then
 					print ("ERRORE: lo stato >|" + stato.id + "|< specifica un figlio non ammissibile!%N")
 					stampa_elemento (e.item)
-					errore_costruzione_SC := True
+					errore_costruzione_SC.extend (20)
 				end
 			end
 		end
@@ -483,7 +484,7 @@ feature -- inizializzazione transizioni
 				inspect destinazioni.count
 				when 0 then
 					print ("ERRORE: lo stato >|" + sorgente.id + "|< ha una transizione con destinazione errata: 'target' non contiene id di stati della SC!%N")
-					errore_costruzione_SC := True
+					errore_costruzione_SC.extend (21)
 				when 1 then
 					if attached transition_element.attribute_by_name ("source") as s then
 						altre_sorgenti := get_stati (get_nomi (s.value))
@@ -500,14 +501,14 @@ feature -- inizializzazione transizioni
 					if attached transition_element.attribute_by_name ("source") as s then
 						-- TODO: in realtà è possibile avere transizioni contemporaneamente fork e merge ma al momento non vengono gestite
 						print ("ERRORE: non posso avere contemporaneamente transizioni fork e merge!%N")
-						errore_costruzione_SC := True
+						errore_costruzione_SC.extend (22)
 					else
 						assegna_transizione_fork(transition_element, destinazioni, sorgente)
 					end
 				end
 			else
 				print ("ERRORE: lo stato >|" + sorgente.id + "|< ha una transizione con destinazione non specificata (manca il 'target')!%N")
-				errore_costruzione_SC := True
+				errore_costruzione_SC.extend (23)
 			end
 		end
 
@@ -559,7 +560,7 @@ feature -- inizializzazione transizioni
 			else
 				print ("ERRORE: Le sorgenti multiple indicate per la transizione che parte dallo stato >|" + sorgente.id + "|< non sono tra loro compatibili %N")
 				stampa_ancore_multiple (tutte_le_sorgenti)
-				errore_costruzione_SC := True
+				errore_costruzione_SC.extend (24)
 			end
 		end
 
@@ -570,7 +571,7 @@ feature -- inizializzazione transizioni
 		do
 			if transizione_illegale (sorgente, destinazione) then
 				print ("ERRORE: transizione illegale da >|" + sorgente.id + "|< a >|" + destinazione.id + "|< !%N")
-				errore_costruzione_SC := True
+				errore_costruzione_SC.extend (25)
 			else
 				create transizione.make_con_destinazione (destinazione, sorgente)
 				if attached transition_element.attribute_by_name ("type") as type then
@@ -597,7 +598,7 @@ feature -- inizializzazione transizioni
 			else
 				print ("ERRORE: Le destinazioni multiple indicate per la transizione che parte dallo stato >|" + sorgente.id + "|< non sono tra loro compatibili!%N")
 				stampa_ancore_multiple (destinazioni)
-				errore_costruzione_SC := True
+				errore_costruzione_SC.extend (26)
 			end
 		end
 
@@ -753,7 +754,7 @@ feature -- inizializzazione transizioni
 					transizione.set_condizione (intera_legittima_stringa(cond.value))
 				else
 					print ("ERRORE: la transizione da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica una condizione di valore (non pulito) >|" + cond.value + "|< illegittimo !%N")
-					errore_costruzione_SC := True
+					errore_costruzione_SC.extend (27)
 				end
 			else
 				transizione.set_condizione ({TRANSIZIONE}.Valore_Nullo)
@@ -996,7 +997,7 @@ feature -- supporto generale
 			end
 			if place_holder.after then
 				print ("ERRORE: non esistono <state> o <parallel> nel modello!%N")
-				errore_costruzione_SC := True
+				errore_costruzione_SC.extend (28)
 			else
 				debug ("SC_first_sub_state") print ("AVVISO: trovato primo figlio <state> o <parallel>%N"); stampa_elemento (place_holder.item) end
 				-- NB: regolarità di 'id' è stata già controllata in `istanzia_stati'

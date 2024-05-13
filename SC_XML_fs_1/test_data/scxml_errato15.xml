@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml version="1.0" xmlns="http://www.w3.org/2005/07/scxml">
+	<state id="A" initial="B">
+		<state id="C"/>
+	</state>
+	<state id="B"/>
+</scxml>
