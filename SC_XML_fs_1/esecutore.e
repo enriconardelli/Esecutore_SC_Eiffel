@@ -68,12 +68,17 @@ feature -- evoluzione della statechart
 			from
 				istante := 1
 			until
-				stato_final (state_chart.config_base) or istante > eventi.count
+				stato_final (state_chart.config_base) or istante > instante_massimo
 			loop
 				-- TODO: se nel quanto di tempo `istante' non ci sono eventi non si fa evolvere la SC anche se in teoria potrebbero esserci transizioni eseguibili
 				stampa_conf_corrente (istante)
 				create prossima_config_base.make_empty
-				transizioni_eseguibili := trova_transizioni_eseguibili (eventi [istante], state_chart.variabili)
+				if istante <= eventi.count then
+					transizioni_eseguibili := trova_transizioni_eseguibili (eventi [istante], state_chart.variabili)
+				else
+					transizioni_eseguibili := trova_transizioni_eseguibili (create {LINKED_SET[STRING]}.make , state_chart.variabili)
+				end
+
  					across transizioni_eseguibili as te
  					loop
 					salva_storie (antenato_massimo_uscita (te.item))
