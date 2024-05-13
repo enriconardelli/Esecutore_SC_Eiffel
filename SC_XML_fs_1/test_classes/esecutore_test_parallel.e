@@ -152,4 +152,9 @@ feature -- Test routines
 			evoluzione_state_chart("transizione_senza_evento_parallelo_bis.xml", "transizione_senza_evento_parallelo_eventi.txt", conf_finale)
 		end
 
+	t_transioni_con_file_eventi_vuoto
+		do
+			conf_finale.force("B")
+			evoluzione_state_chart("transioni_con_file_eventi_vuoto.xml","eventi_vuoto.txt", conf_finale)
+		end
 end

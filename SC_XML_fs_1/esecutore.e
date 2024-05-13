@@ -18,7 +18,9 @@ feature -- Attributi
 	ambiente_corrente: AMBIENTE
 			-- rappresenta l'ambiente in cui la SC si evolve
 
---feature -- Creazione sia per i test che per esecuzione interattiva
+	instante_massimo: INTEGER = 100
+
+feature -- Creazione sia per i test che per esecuzione interattiva
 
 	make (nomi_files: ARRAY [STRING])
 			-- prepara ed esegue la SC con i parametri passati come argomento
@@ -69,32 +71,31 @@ feature -- evoluzione della statechart
 				stato_final (state_chart.config_base) or istante > eventi.count
 			loop
 				-- TODO: se nel quanto di tempo `istante' non ci sono eventi non si fa evolvere la SC anche se in teoria potrebbero esserci transizioni eseguibili
-				if attached eventi [istante] as eventi_correnti then
-					stampa_conf_corrente (istante)
-					create prossima_config_base.make_empty
-					transizioni_eseguibili := trova_transizioni_eseguibili (eventi_correnti, state_chart.variabili)
+				stampa_conf_corrente (istante)
+				create prossima_config_base.make_empty
+				transizioni_eseguibili := trova_transizioni_eseguibili (eventi [istante], state_chart.variabili)
  					across transizioni_eseguibili as te
  					loop
-						salva_storie (antenato_massimo_uscita (te.item))
-						debug ("SC_storia") stampa_storia (antenato_massimo_uscita (te.item)) end
-						esegui_azioni (te.item)
-						trova_default (te.item.destinazione.first, prossima_config_base)
-						if te.item.fork then
-							across te.item.destinazione as destinazione_corrente
-							-- TODO: se ci sono destinazioni multiple `trova_default' viene eseguita due volte sulla prima destinazione
-							-- TODO: si dovrebbe vedere perché dovrebbe eseguire due volte l'azione "on_entry"
-							loop
-								trova_default (destinazione_corrente.item, prossima_config_base)
-							end
+					salva_storie (antenato_massimo_uscita (te.item))
+					debug ("SC_storia") stampa_storia (antenato_massimo_uscita (te.item)) end
+					esegui_azioni (te.item)
+					trova_default (te.item.destinazione.first, prossima_config_base)
+					if te.item.fork then
+						across te.item.destinazione as destinazione_corrente
+						-- TODO: se ci sono destinazioni multiple `trova_default' viene eseguita due volte sulla prima destinazione
+						-- TODO: si dovrebbe vedere perché dovrebbe eseguire due volte l'azione "on_entry"
+						loop
+							trova_default (destinazione_corrente.item, prossima_config_base)
 						end
-						aggiungi_paralleli (te.item.destinazione.first, prossima_config_base)
 					end
-					aggiungi_stati_attivi(prossima_config_base)
-					prossima_config_base := riordina_stati (prossima_config_base)
-					if not prossima_config_base.is_empty then
-						state_chart.config_base.copy (prossima_config_base)
-					end
+					aggiungi_paralleli (te.item.destinazione.first, prossima_config_base)
 				end
+				aggiungi_stati_attivi(prossima_config_base)
+				prossima_config_base := riordina_stati (prossima_config_base)
+				if not prossima_config_base.is_empty then
+					state_chart.config_base.copy (prossima_config_base)
+				end
+
 				istante := istante + 1
 			end
 			print ("%NHo terminato l'elaborazione degli eventi%N")
