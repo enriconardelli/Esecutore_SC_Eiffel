@@ -63,12 +63,13 @@ feature -- evoluzione della statechart
 			istante: INTEGER
 			prossima_config_base: ARRAY [STATO]
 			transizioni_eseguibili: ARRAY [TRANSIZIONE]
+			transizioni_finite: BOOLEAN
 		do
 			print ("%Nentrato in evolvi_SC:  %N %N")
 			from
 				istante := 1
 			until
-				stato_final (state_chart.config_base) or istante > instante_massimo
+				stato_final (state_chart.config_base) or istante > instante_massimo or transizioni_finite
 			loop
 				-- TODO: se nel quanto di tempo `istante' non ci sono eventi non si fa evolvere la SC anche se in teoria potrebbero esserci transizioni eseguibili
 				stampa_conf_corrente (istante)
@@ -77,6 +78,9 @@ feature -- evoluzione della statechart
 					transizioni_eseguibili := trova_transizioni_eseguibili (eventi [istante], state_chart.variabili)
 				else
 					transizioni_eseguibili := trova_transizioni_eseguibili (create {LINKED_SET[STRING]}.make , state_chart.variabili)
+					if transizioni_eseguibili.is_empty then
+						transizioni_finite := True
+					end
 				end
 
  					across transizioni_eseguibili as te
