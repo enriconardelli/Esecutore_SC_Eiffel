@@ -833,7 +833,8 @@ feature -- inizializzazione azioni
 					assegna_azione_log (al.item, transizione)
 				else
 					-- TODO: stampare tutti gli stati sorgente e destinazione della transizione
-					print ("AVVISO: la transizione dalla prima sorgente >|" + transizione.sorgente.first.id + "|< alla prima destinazione >|" + transizione.destinazione.first.id + "|< specifica un'azione >|" + al.item.name + "|< sconosciuta!%N")
+					print ("ERRORE: la transizione dalla prima sorgente >|" + transizione.sorgente.first.id + "|< alla prima destinazione >|" + transizione.destinazione.first.id + "|< specifica un'azione >|" + al.item.name + "|< sconosciuta!%N")
+					errore_costruzione_SC.extend (30)
 				end
 			end
 		end
@@ -851,6 +852,17 @@ feature -- inizializzazione azioni
 				-- TODO: stampare tutti gli stati sorgente e destinazione della transizione
 				testo := "nella transizione con evento >|" + nome_evento(transizione) + "|< dalla prima sorgente >|" + transizione.sorgente.first.id + "|< alla prima destinazione >|" + transizione.destinazione.first.id + "|<"
 				creatore_di_assegna.stampa_errata (testo, esito, variabile, espressione)
+				if esito ~ "senza_luogo" then
+					errore_costruzione_SC.extend (31)
+				elseif esito ~ "luogo_assente" then
+					errore_costruzione_SC.extend (32)
+				elseif esito ~ "senza_valore" then
+					errore_costruzione_SC.extend (33)
+				elseif esito ~ "valore_errato" then
+					errore_costruzione_SC.extend (34)
+				elseif esito ~ "variabile_intera_con_espressione_booleana" or esito ~ "variabile_booleana_con_espressione_intera" then
+					errore_costruzione_SC.extend (35)
+				end
 			end
 		end
 
@@ -869,7 +881,8 @@ feature -- inizializzazione azioni
 				transizione.azioni.force (create {STAMPA}.make_with_text (name.value), transizione.azioni.count + 1)
 			else
 				-- TODO: stampare tutti gli stati sorgente e destinazione della transizione
-				print ("AVVISO: l'azione <log> nella transizione con evento >|" + nome_evento(transizione) + "|< dalla prima sorgente >|" + transizione.sorgente.first.id + "|< alla prima destinazione >|" + transizione.destinazione.first.id + "|< non ha attributo 'name'!%N")
+				print ("ERRORE: l'azione <log> nella transizione con evento >|" + nome_evento(transizione) + "|< dalla prima sorgente >|" + transizione.sorgente.first.id + "|< alla prima destinazione >|" + transizione.destinazione.first.id + "|< non ha attributo 'name'!%N")
+				errore_costruzione_SC.extend (36)
 			end
 		end
 
@@ -886,7 +899,8 @@ feature -- inizializzazione onentry/onexit
 				elseif al.item.name ~ "log" then
 					assegna_onentry_log (al.item, stato)
 				else
-					print ("AVVISO: l'azione >|" + al.item.name + "|< specificata in <onentry> per lo stato >|" + stato.id + "|< non e' ammissibile!%N")
+					print ("ERRORE: l'azione >|" + al.item.name + "|< specificata in <onentry> per lo stato >|" + stato.id + "|< non e' ammissibile!%N")
+					errore_costruzione_SC.extend (30)
 				end
 			end
 		end
@@ -902,7 +916,8 @@ feature -- inizializzazione onentry/onexit
 				elseif al.item.name ~ "log" then
 					assegna_onexit_log (al.item, stato)
 				else
-					print ("AVVISO: l'azione >|" + al.item.name + "|< specificata in <onexit> per lo stato >|" + stato.id + "|< non e' ammissibile!%N")
+					print ("ERRORE: l'azione >|" + al.item.name + "|< specificata in <onexit> per lo stato >|" + stato.id + "|< non e' ammissibile!%N")
+					errore_costruzione_SC.extend (30)
 				end
 			end
 		end
@@ -919,6 +934,17 @@ feature -- inizializzazione onentry/onexit
 			else
 				testo := "specificata in <onentry> per lo stato >|" + stato.id + "|<"
 				creatore_di_assegna.stampa_errata (testo, esito, variabile, espressione)
+				if esito ~ "senza_luogo" then
+					errore_costruzione_SC.extend (31)
+				elseif esito ~ "luogo_assente" then
+					errore_costruzione_SC.extend (32)
+				elseif esito ~ "senza_valore" then
+					errore_costruzione_SC.extend (33)
+				elseif esito ~ "valore_errato" then
+					errore_costruzione_SC.extend (34)
+				elseif esito ~ "variabile_intera_con_espressione_booleana" or esito ~ "variabile_booleana_con_espressione_intera" then
+					errore_costruzione_SC.extend (35)
+				end
 			end
 		end
 
@@ -934,6 +960,17 @@ feature -- inizializzazione onentry/onexit
 			else
 				testo := "specificata in <onexit> per lo stato >|" + stato.id + "|<"
 				creatore_di_assegna.stampa_errata (testo, esito, variabile, espressione)
+				if esito ~ "senza_luogo" then
+					errore_costruzione_SC.extend (31)
+				elseif esito ~ "luogo_assente" then
+					errore_costruzione_SC.extend (32)
+				elseif esito ~ "senza_valore" then
+					errore_costruzione_SC.extend (33)
+				elseif esito ~ "valore_errato" then
+					errore_costruzione_SC.extend (34)
+				elseif esito ~ "variabile_intera_con_espressione_booleana" or esito ~ "variabile_booleana_con_espressione_intera" then
+					errore_costruzione_SC.extend (35)
+				end
 			end
 		end
 
@@ -942,7 +979,8 @@ feature -- inizializzazione onentry/onexit
 			if attached p_azione.attribute_by_name ("name") as name then
 				stato.set_onentry (create {STAMPA}.make_with_text (name.value))
 			else
-				print ("AVVISO: l'azione <log> specificata in <onentry> per lo stato >|" + stato.id + "|< non ha attributo 'name'!%N")
+				print ("ERRORE: l'azione <log> specificata in <onentry> per lo stato >|" + stato.id + "|< non ha attributo 'name'!%N")
+				errore_costruzione_SC.extend (36)
 			end
 		end
 
@@ -951,7 +989,8 @@ feature -- inizializzazione onentry/onexit
 			if attached p_azione.attribute_by_name ("name") as name then
 				stato.set_onexit (create {STAMPA}.make_with_text (name.value))
 			else
-				print ("AVVISO: l'azione <log> specificata in <onexit> per lo stato >|" + stato.id + "|< non ha attributo 'name'!%N")
+				print ("ERRORE: l'azione <log> specificata in <onexit> per lo stato >|" + stato.id + "|< non ha attributo 'name'!%N")
+				errore_costruzione_SC.extend (36)
 			end
 		end
 

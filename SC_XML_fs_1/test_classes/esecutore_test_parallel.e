@@ -155,6 +155,6 @@ feature -- Test routines
 	t_transioni_con_file_eventi_vuoto
 		do
 			conf_finale.force("B")
-			evoluzione_state_chart("transioni_con_file_eventi_vuoto.xml","eventi_vuoto.txt", conf_finale)
+			evoluzione_state_chart("transizioni_con_file_eventi_vuoto.xml","eventi_vuoto.txt", conf_finale)
 		end
 end

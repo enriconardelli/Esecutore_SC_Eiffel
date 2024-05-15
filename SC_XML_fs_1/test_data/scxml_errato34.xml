@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml version="1.0" xmlns="http://www.w3.org/2005/07/scxml" initial="A">
+	<datamodel>
+		<data id="n" expr="1"/>
+	</datamodel>
+	<state id="B"/>
+	<state id="A">
+		<transition target="B" cond="n>4"/>
+		<transition target="A">
+			<assign location="n" expr="test" />
+		</transition>
+		
+	</state>
+
+</scxml>
