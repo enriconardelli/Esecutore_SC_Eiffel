@@ -90,56 +90,56 @@ feature -- la condizione viene cambiata dall'azione della TRANSIZIONE
  		do
  			conf_finale.force("S2")
 			conf_finale.force("T2")
-			evoluzione_state_chart("sincronizzazione_senza_eventi.xml", "sincronizzazione_eventi_1.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "1", conf_finale)
 		end
 
 	t_sincronizzazione_senza_eventi_2
  		do
  			conf_finale.force("S1")
 			conf_finale.force("T2")
-			evoluzione_state_chart("sincronizzazione_senza_eventi.xml", "sincronizzazione_eventi_2.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "2", conf_finale)
 		end
 
 	t_sincronizzazione_senza_eventi_3
  		do
  			conf_finale.force("S2")
 			conf_finale.force("T1")
-			evoluzione_state_chart("sincronizzazione_senza_eventi.xml", "sincronizzazione_eventi_3.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "3", conf_finale)
 		end
 
 	t_sincronizzazione_senza_eventi_4
  		do
  			conf_finale.force("S1")
 			conf_finale.force("T1")
-			evoluzione_state_chart("sincronizzazione_senza_eventi.xml", "sincronizzazione_eventi_4.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "4", conf_finale)
 		end
 
 	t_sincronizzazione_senza_eventi_alt_1
  		do
  			conf_finale.force("S2")
 			conf_finale.force("T2")
-			evoluzione_state_chart("sincronizzazione_senza_eventi_alt.xml", "sincronizzazione_eventi_1.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "1", conf_finale)
 		end
 
 	t_sincronizzazione_senza_eventi_alt_2
  		do
  			conf_finale.force("S1")
 			conf_finale.force("T2")
-			evoluzione_state_chart("sincronizzazione_senza_eventi_alt.xml", "sincronizzazione_eventi_2.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "2", conf_finale)
 		end
 
 	t_sincronizzazione_senza_eventi_alt_3
  		do
  			conf_finale.force("S2")
 			conf_finale.force("T1")
-			evoluzione_state_chart("sincronizzazione_senza_eventi_alt.xml", "sincronizzazione_eventi_3.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "3", conf_finale)
 		end
 
 	t_sincronizzazione_senza_eventi_alt_4
  		do
  			conf_finale.force("S1")
 			conf_finale.force("T1")
-			evoluzione_state_chart("sincronizzazione_senza_eventi_alt.xml", "sincronizzazione_eventi_4.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "4", conf_finale)
 		end
 
 feature -- la condizione viene cambiata dall'azione ONENTRY
@@ -204,56 +204,56 @@ feature -- la condizione viene cambiata dall'azione ONENTRY
  		do
  			conf_finale.force("S2")
 			conf_finale.force("T2")
-			evoluzione_state_chart("sincronizzazione_senza_eventi_onentry.xml", "sincronizzazione_eventi_1.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "1", conf_finale)
 		end
 
 	t_sincronizzazione_senza_eventi_onentry_2
  		do
  			conf_finale.force("S1")
 			conf_finale.force("T2")
-			evoluzione_state_chart("sincronizzazione_senza_eventi_onentry.xml", "sincronizzazione_eventi_2.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "2", conf_finale)
 		end
 
 	t_sincronizzazione_senza_eventi_onentry_3
  		do
  			conf_finale.force("S2")
 			conf_finale.force("T1")
-			evoluzione_state_chart("sincronizzazione_senza_eventi_onentry.xml", "sincronizzazione_eventi_3.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "3", conf_finale)
 		end
 
 	t_sincronizzazione_senza_eventi_onentry_4
  		do
  			conf_finale.force("S1")
 			conf_finale.force("T1")
-			evoluzione_state_chart("sincronizzazione_senza_eventi_onentry.xml", "sincronizzazione_eventi_4.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "4", conf_finale)
 		end
 
 	t_sincronizzazione_senza_eventi_onentry_alt_1
  		do
  			conf_finale.force("S2")
 			conf_finale.force("T2")
-			evoluzione_state_chart("sincronizzazione_senza_eventi_onentry_alt.xml", "sincronizzazione_eventi_1.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "1", conf_finale)
 		end
 
 	t_sincronizzazione_senza_eventi_onentry_alt_2
  		do
  			conf_finale.force("S1")
 			conf_finale.force("T2")
-			evoluzione_state_chart("sincronizzazione_senza_eventi_onentry_alt.xml", "sincronizzazione_eventi_2.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "2", conf_finale)
 		end
 
 	t_sincronizzazione_senza_eventi_onentry_alt_3
  		do
  			conf_finale.force("S2")
 			conf_finale.force("T1")
-			evoluzione_state_chart("sincronizzazione_senza_eventi_onentry_alt.xml", "sincronizzazione_eventi_3.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "3", conf_finale)
 		end
 
 	t_sincronizzazione_senza_eventi_onentry_alt_4
  		do
  			conf_finale.force("S1")
 			conf_finale.force("T1")
-			evoluzione_state_chart("sincronizzazione_senza_eventi_onentry_alt.xml", "sincronizzazione_eventi_4.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "4", conf_finale)
 		end
 
 feature -- la condizione viene cambiata dall'azione ONEXIT
@@ -318,55 +318,55 @@ feature -- la condizione viene cambiata dall'azione ONEXIT
  		do
  			conf_finale.force("S2")
 			conf_finale.force("T2")
-			evoluzione_state_chart("sincronizzazione_senza_eventi_onexit.xml", "sincronizzazione_eventi_1.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "1", conf_finale)
 		end
 
 	t_sincronizzazione_senza_eventi_onexit_2
  		do
  			conf_finale.force("S1")
 			conf_finale.force("T2")
-			evoluzione_state_chart("sincronizzazione_senza_eventi_onexit.xml", "sincronizzazione_eventi_2.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "2", conf_finale)
 		end
 
 	t_sincronizzazione_senza_eventi_onexit_3
  		do
  			conf_finale.force("S2")
 			conf_finale.force("T1")
-			evoluzione_state_chart("sincronizzazione_senza_eventi_onexit.xml", "sincronizzazione_eventi_3.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "3", conf_finale)
 		end
 
 	t_sincronizzazione_senza_eventi_onexit_4
  		do
  			conf_finale.force("S1")
 			conf_finale.force("T1")
-			evoluzione_state_chart("sincronizzazione_senza_eventi_onexit.xml", "sincronizzazione_eventi_4.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "4", conf_finale)
 		end
 
 	t_sincronizzazione_senza_eventi_onexit_alt_1
  		do
  			conf_finale.force("S2")
 			conf_finale.force("T2")
-			evoluzione_state_chart("sincronizzazione_senza_eventi_onexit_alt.xml", "sincronizzazione_eventi_1.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "1", conf_finale)
 		end
 
 	t_sincronizzazione_senza_eventi_onexit_alt_2
  		do
  			conf_finale.force("S1")
 			conf_finale.force("T2")
-			evoluzione_state_chart("sincronizzazione_senza_eventi_onexit_alt.xml", "sincronizzazione_eventi_2.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "2", conf_finale)
 		end
 
 	t_sincronizzazione_senza_eventi_onexit_alt_3
  		do
  			conf_finale.force("S2")
 			conf_finale.force("T1")
-			evoluzione_state_chart("sincronizzazione_senza_eventi_onexit_alt.xml", "sincronizzazione_eventi_3.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "3", conf_finale)
 		end
 
 	t_sincronizzazione_senza_eventi_onexit_alt_4
  		do
  			conf_finale.force("S1")
 			conf_finale.force("T1")
-			evoluzione_state_chart("sincronizzazione_senza_eventi_onexit_alt.xml", "sincronizzazione_eventi_4.txt", conf_finale)
+			evoluzione_state_chart_limitata("sincronizzazione_senza_eventi.xml", "eventi_vuoto.txt", "4", conf_finale)
 		end
 end

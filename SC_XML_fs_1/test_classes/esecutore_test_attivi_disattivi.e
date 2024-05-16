@@ -19,9 +19,9 @@ feature -- Test routines
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "attivi_inattivi.xml"
-			nomi_files_prova [2] := test_data_dir + "attivi_inattivi_eventi_1.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "attivi_inattivi.xml"
+			argomenti [2] := test_data_dir + "attivi_inattivi_eventi_1.txt"
+			create esecutore.make (argomenti)
 			assert ("ERRORE 1.1 non attiva A", attached esecutore.state_chart.stati.item("A") as item and then item.attivo)
 			assert ("ERRORE 1.2 non attiva A1", attached esecutore.state_chart.stati.item("A1") as item and then item.attivo)
 			assert ("ERRORE 1.3 non attiva A11", attached esecutore.state_chart.stati.item("A11") as item and then item.attivo)
@@ -41,9 +41,9 @@ feature -- Test routines
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "attivi_inattivi.xml"
-			nomi_files_prova [2] := test_data_dir + "attivi_inattivi_eventi_2.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "attivi_inattivi.xml"
+			argomenti [2] := test_data_dir + "attivi_inattivi_eventi_2.txt"
+			create esecutore.make (argomenti)
 			assert ("ERRORE 2.1 non disattiva A111", attached esecutore.state_chart.stati.item("A111") as item and then not item.attivo)
 			assert ("ERRORE 2.2 non disattiva A112", attached esecutore.state_chart.stati.item("A112") as item and then not item.attivo)
 			assert ("ERRORE 2.3 non disattiva A11", attached esecutore.state_chart.stati.item("A11") as item and then not item.attivo)
@@ -60,9 +60,9 @@ feature -- Test routines
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "attivi_inattivi.xml"
-			nomi_files_prova [2] := test_data_dir + "attivi_inattivi_eventi_3.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "attivi_inattivi.xml"
+			argomenti [2] := test_data_dir + "attivi_inattivi_eventi_3.txt"
+			create esecutore.make (argomenti)
 			assert ("ERRORE 3.1 non attiva A111", attached esecutore.state_chart.stati.item("A111") as item and then item.attivo)
 			assert ("ERRORE 3.2 non attiva A112", attached esecutore.state_chart.stati.item("A112") as item and then item.attivo)
 			assert ("ERRORE 3.3 non attiva A11", attached esecutore.state_chart.stati.item("A11") as item and then item.attivo)
@@ -80,9 +80,9 @@ feature -- Test routines
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "storie_inscatolate.xml"
-			nomi_files_prova [2] := test_data_dir + "storie_inscatolate_eventi_2.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "storie_inscatolate.xml"
+			argomenti [2] := test_data_dir + "storie_inscatolate_eventi_2.txt"
+			create esecutore.make (argomenti)
 			assert ("ERRORE 4.1 non attiva R", attached esecutore.state_chart.stati.item("R") as item and then item.attivo)
 			assert ("ERRORE 4.2 non attiva R1", attached esecutore.state_chart.stati.item("R1") as item and then item.attivo)
 			assert ("ERRORE 4.3 non attiva R2", attached esecutore.state_chart.stati.item("R2") as item and then item.attivo)

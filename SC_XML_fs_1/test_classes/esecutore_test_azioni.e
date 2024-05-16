@@ -29,9 +29,9 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-	    nomi_files_prova [1] := test_data_dir + "xor.xml"
-			nomi_files_prova [2] := test_data_dir + "xor_eventi_2.txt"
-			create esecutore.make (nomi_files_prova)
+	    argomenti [1] := test_data_dir + "xor.xml"
+			argomenti [2] := test_data_dir + "xor_eventi_2.txt"
+			create esecutore.make (argomenti)
 			assert ("ERRORE il sistema non ha eseguito l'azione on_entryB", esecutore.state_chart.variabili.booleane.item ("on_entryB"))
 			assert ("ERRORE il sistema non ha eseguito l'azione on_entryB1", esecutore.state_chart.variabili.booleane.item ("on_entryB1"))
 			assert ("ERRORE il sistema non ha eseguito l'azione on_exitA", esecutore.state_chart.variabili.booleane.item ("on_exitA"))
@@ -46,9 +46,9 @@ feature -- Test
     local
       esecutore: ESECUTORE
     do
-      nomi_files_prova [1] := test_data_dir + "azioni_uscita.xml"
-      nomi_files_prova [2] := test_data_dir + "azioni_uscita_eventi.txt"
-      create esecutore.make (nomi_files_prova)
+      argomenti [1] := test_data_dir + "azioni_uscita.xml"
+      argomenti [2] := test_data_dir + "azioni_uscita_eventi.txt"
+      create esecutore.make (argomenti)
       assert("ERRORE 5.1 non esco da X", esecutore.state_chart.variabili.booleane.item ("on_exitX"))
       assert("ERRORE 5.2 non esco da A", esecutore.state_chart.variabili.booleane.item ("on_exitA"))
       assert("ERRORE 5.3 non esco da A1", esecutore.state_chart.variabili.booleane.item ("on_exitA1"))
@@ -61,9 +61,9 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "entrata_azioni_2.xml"
-  		nomi_files_prova [2] := test_data_dir + "entrata_azioni_2_eventi.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "entrata_azioni_2.xml"
+  		argomenti [2] := test_data_dir + "entrata_azioni_2_eventi.txt"
+			create esecutore.make (argomenti)
 			assert ("ERRORE 3.1 il sistema non ha eseguito l'azione on_exitA1", esecutore.state_chart.variabili.booleane.item ("on_exitA1"))
 			assert ("ERRORE 3.2 il sistema non ha eseguito l'azione on_entryA2",  esecutore.state_chart.variabili.booleane.item ("on_entryA2"))
 			assert ("ERRORE 3.3 il sistema non ha eseguito l'azione on_entryA2A", esecutore.state_chart.variabili.booleane.item ("on_entryA2A"))
@@ -80,9 +80,9 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "transizione_interna.xml"
-  		nomi_files_prova [2] := test_data_dir + "transizione_interna_eventi.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "transizione_interna.xml"
+  		argomenti [2] := test_data_dir + "transizione_interna_eventi.txt"
+			create esecutore.make (argomenti)
 			assert("ERRORE 4.1 esco da S", not esecutore.state_chart.variabili.booleane.item ("on_exitS"))
 			assert("ERRORE 4.2 entro in S", not esecutore.state_chart.variabili.booleane.item ("on_entryS"))
 			assert("ERRORE 4.3 non esco da T", esecutore.state_chart.variabili.booleane.item ("on_exitT"))
@@ -94,9 +94,9 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "onexit_complesso.xml"
-			nomi_files_prova [2] := test_data_dir + "onexit_complesso_eventi_1.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "onexit_complesso.xml"
+			argomenti [2] := test_data_dir + "onexit_complesso_eventi_1.txt"
+			create esecutore.make (argomenti)
 			assert("Errore 1: lo stato di arrivo non Ã¨ T", conf_has_state(esecutore.state_chart.config_base,"T"))
 			assert("Errore B2: non doveva venir eseguita l' onexit di B2", not esecutore.state_chart.variabili.booleane.item("on_exitB2"))
 			assert("Errore S: non viene eseguita l' onexit di S", esecutore.state_chart.variabili.booleane.item("on_exitS"))
@@ -123,9 +123,9 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "onexit_complesso.xml"
-			nomi_files_prova [2] := test_data_dir + "onexit_complesso_eventi_2.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "onexit_complesso.xml"
+			argomenti [2] := test_data_dir + "onexit_complesso_eventi_2.txt"
+			create esecutore.make (argomenti)
 			assert("Errore 1: lo stato di arrivo non Ã¨ T", conf_has_state(esecutore.state_chart.config_base,"T"))
 			assert("Errore B2: non viene eseguita l' onexit di B2", esecutore.state_chart.variabili.booleane.item("on_exitB2"))
 			assert("Errore S: non viene eseguita l' onexit di S", esecutore.state_chart.variabili.booleane.item("on_exitS"))
@@ -152,9 +152,9 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "onexit_complesso.xml"
-			nomi_files_prova [2] := test_data_dir + "onexit_complesso_eventi_3.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "onexit_complesso.xml"
+			argomenti [2] := test_data_dir + "onexit_complesso_eventi_3.txt"
+			create esecutore.make (argomenti)
 			assert("Errore B2: non viene eseguita l' onexit di B2", esecutore.state_chart.variabili.booleane.item("on_exitB2"))
 			assert("Errore S: non viene eseguita l' onexit di S", esecutore.state_chart.variabili.booleane.item("on_exitS"))
 			assert("Errore A: non viene eseguita l' onexit di A", esecutore.state_chart.variabili.booleane.item("on_exitA"))
@@ -180,9 +180,9 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "storia_con_parallelo.xml"
-  			nomi_files_prova [2] := test_data_dir + "storia_con_parallelo_eventi_1.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "storia_con_parallelo.xml"
+  			argomenti [2] := test_data_dir + "storia_con_parallelo_eventi_1.txt"
+			create esecutore.make (argomenti)
 			assert("ERRORE_P: non viene eseguita l' onentry di P", esecutore.state_chart.variabili.booleane.item ("on_entryP"))
 			assert("ERRORE_P2: non viene eseguita l' onentry di P2", esecutore.state_chart.variabili.booleane.item ("on_entryP2"))
 			assert("ERRORE_A: non viene eseguita l' onentry di A", esecutore.state_chart.variabili.booleane.item ("on_entryA"))
@@ -195,9 +195,9 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_1.xml"
-  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_1_eventi_1.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "azioni_con_interi_1.xml"
+  			argomenti [2] := test_data_dir + "azioni_con_interi_1_eventi_1.txt"
+			create esecutore.make (argomenti)
 			assert("ERRORE: il sistema non termina in (Y)", conf_has_state(esecutore.state_chart.config_base,"Y"))
 		end
 
@@ -205,9 +205,9 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_1.xml"
-  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_1_eventi_2.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "azioni_con_interi_1.xml"
+  			argomenti [2] := test_data_dir + "azioni_con_interi_1_eventi_2.txt"
+			create esecutore.make (argomenti)
 			assert("ERRORE: il sistema non termina in (Y)", esecutore.state_chart.variabili.intere.item ("N") = 20)
 			assert("ERRORE: il sistema non termina in (Y)", esecutore.state_chart.variabili.intere.item ("M") = 4)
 			assert("ERRORE: il sistema non termina in (Y)", conf_has_state(esecutore.state_chart.config_base,"Y"))
@@ -217,9 +217,9 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_1.xml"
-  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_1_eventi_3.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "azioni_con_interi_1.xml"
+  			argomenti [2] := test_data_dir + "azioni_con_interi_1_eventi_3.txt"
+			create esecutore.make (argomenti)
 			assert("ERRORE: il sistema non termina in (A1,B2)", conf_has_state(esecutore.state_chart.config_base,"A1") and conf_has_state(esecutore.state_chart.config_base,"B2"))
 		end
 
@@ -227,9 +227,9 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_2.xml"
-  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_2_eventi_1.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "azioni_con_interi_2.xml"
+  			argomenti [2] := test_data_dir + "azioni_con_interi_2_eventi_1.txt"
+			create esecutore.make (argomenti)
 			assert("ERRORE: il sistema non termina in (P1B, P2B)", conf_has_state(esecutore.state_chart.config_base,"P1B") and conf_has_state(esecutore.state_chart.config_base,"P2B"))
 			assert("ERRORE: M è diverso da 0",  esecutore.state_chart.variabili.intere.item ("M") = 0)
      		assert("ERRORE: N è diverso da -1", esecutore.state_chart.variabili.intere.item ("N") = -1)
@@ -239,9 +239,9 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_2.xml"
-  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_2_eventi_2.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "azioni_con_interi_2.xml"
+  			argomenti [2] := test_data_dir + "azioni_con_interi_2_eventi_2.txt"
+			create esecutore.make (argomenti)
 			assert("ERRORE: il sistema non termina in (C)", conf_has_state(esecutore.state_chart.config_base,"C"))
 			assert("ERRORE: M è diverso da 6",  esecutore.state_chart.variabili.intere.item ("M") = 6)
      		assert("ERRORE: N è diverso da 2", esecutore.state_chart.variabili.intere.item ("N") = 2)
@@ -251,9 +251,9 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_2.xml"
-  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_2_eventi_3.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "azioni_con_interi_2.xml"
+  			argomenti [2] := test_data_dir + "azioni_con_interi_2_eventi_3.txt"
+			create esecutore.make (argomenti)
 			assert("ERRORE: il sistema non termina in (D)", conf_has_state(esecutore.state_chart.config_base,"D"))
 			assert("ERRORE: M è diverso da 8",  esecutore.state_chart.variabili.intere.item ("M") = 8)
      		assert("ERRORE: N è diverso da 1", esecutore.state_chart.variabili.intere.item ("N") = 1)
@@ -263,9 +263,9 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_3.xml"
-  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_3_eventi_1.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "azioni_con_interi_3.xml"
+  			argomenti [2] := test_data_dir + "azioni_con_interi_3_eventi_1.txt"
+			create esecutore.make (argomenti)
 			assert("ERRORE: il sistema non termina in (D)", conf_has_state(esecutore.state_chart.config_base,"D"))
 			assert("ERRORE: M è diverso da 3",  esecutore.state_chart.variabili.intere.item ("M") = 3)
      		assert("ERRORE: L è diverso da 10", esecutore.state_chart.variabili.intere.item ("L") = 10)
@@ -276,9 +276,9 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_3.xml"
-  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_3_eventi_2.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "azioni_con_interi_3.xml"
+  			argomenti [2] := test_data_dir + "azioni_con_interi_3_eventi_2.txt"
+			create esecutore.make (argomenti)
 			assert("ERRORE: il sistema non termina in (B1B, B2A)", conf_has_state(esecutore.state_chart.config_base,"B1B") and conf_has_state(esecutore.state_chart.config_base,"B2A"))
 			assert("ERRORE: M è diverso da 3",  esecutore.state_chart.variabili.intere.item ("M") = 3)
      		assert("ERRORE: L è diverso da 3", esecutore.state_chart.variabili.intere.item ("L") = 3)
@@ -289,9 +289,9 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_3_variazione.xml"
-  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_3_variazione_eventi_1.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "azioni_con_interi_3_variazione.xml"
+  			argomenti [2] := test_data_dir + "azioni_con_interi_3_variazione_eventi_1.txt"
+			create esecutore.make (argomenti)
 			assert("ERRORE: il sistema non termina in (B1C, B2A)", conf_has_state(esecutore.state_chart.config_base,"B1C") and conf_has_state(esecutore.state_chart.config_base,"B2A"))
 			assert("ERRORE: M è diverso da 3",  esecutore.state_chart.variabili.intere.item ("M") = 3)
      		assert("ERRORE: L è diverso da 10", esecutore.state_chart.variabili.intere.item ("L") = 10)
@@ -302,9 +302,9 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_3_variazione.xml"
-  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_3_variazione_eventi_2.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "azioni_con_interi_3_variazione.xml"
+  			argomenti [2] := test_data_dir + "azioni_con_interi_3_variazione_eventi_2.txt"
+			create esecutore.make (argomenti)
 			assert("ERRORE: il sistema non termina in (C)", conf_has_state(esecutore.state_chart.config_base,"C"))
 			assert("ERRORE: M è diverso da 4",  esecutore.state_chart.variabili.intere.item ("M") = 4)
      		assert("ERRORE: L è diverso da 3", esecutore.state_chart.variabili.intere.item ("L") = 3)
@@ -315,9 +315,9 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_3_variazione.xml"
-  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_3_variazione_eventi_3.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "azioni_con_interi_3_variazione.xml"
+  			argomenti [2] := test_data_dir + "azioni_con_interi_3_variazione_eventi_3.txt"
+			create esecutore.make (argomenti)
 			assert("ERRORE: il sistema non termina in (B1C, B2A)", conf_has_state(esecutore.state_chart.config_base,"B1C") and conf_has_state(esecutore.state_chart.config_base,"B2A"))
 			assert("ERRORE: M è diverso da 3",  esecutore.state_chart.variabili.intere.item ("M") = 3)
      		assert("ERRORE: L è diverso da 10", esecutore.state_chart.variabili.intere.item ("L") = 10)
@@ -328,9 +328,9 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_3_variazione.xml"
-  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_3_variazione_eventi_4.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "azioni_con_interi_3_variazione.xml"
+  			argomenti [2] := test_data_dir + "azioni_con_interi_3_variazione_eventi_4.txt"
+			create esecutore.make (argomenti)
 			assert("ERRORE: il sistema non termina in (B1A, B2A)", conf_has_state(esecutore.state_chart.config_base,"B1A") and conf_has_state(esecutore.state_chart.config_base,"B2A"))
 			assert("ERRORE: M è diverso da 3",  esecutore.state_chart.variabili.intere.item ("M") = 3)
      		assert("ERRORE: L è diverso da 3", esecutore.state_chart.variabili.intere.item ("L") = 3)
@@ -341,9 +341,9 @@ feature -- Test
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "azioni_con_interi_3_variazione_alt.xml"
-  			nomi_files_prova [2] := test_data_dir + "azioni_con_interi_3_variazione_eventi_4.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "azioni_con_interi_3_variazione_alt.xml"
+  			argomenti [2] := test_data_dir + "azioni_con_interi_3_variazione_eventi_4.txt"
+			create esecutore.make (argomenti)
 			assert("ERRORE: il sistema non termina in (B1B, B2A)", conf_has_state(esecutore.state_chart.config_base,"B1B") and conf_has_state(esecutore.state_chart.config_base,"B2A"))
 			assert("ERRORE: M è diverso da 3",  esecutore.state_chart.variabili.intere.item ("M") = 3)
      		assert("ERRORE: L è diverso da 3", esecutore.state_chart.variabili.intere.item ("L") = 3)

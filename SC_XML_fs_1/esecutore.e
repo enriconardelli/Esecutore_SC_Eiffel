@@ -18,31 +18,51 @@ feature -- Attributi
 	ambiente_corrente: AMBIENTE
 			-- rappresenta l'ambiente in cui la SC si evolve
 
-	instante_massimo: INTEGER = 100
+	istante_massimo: INTEGER
+		-- variabile che indica il numero massimo di istanti di evoluzione della SC
+
+	istante_massimo_default :INTEGER = 100
+		-- valore di default per il numero massimo di istanti di evoluzione della SC
 
 feature -- Creazione sia per i test che per esecuzione interattiva
 
-	make (nomi_files: ARRAY [STRING])
+	make (argomenti: ARRAY [STRING])
 			-- prepara ed esegue la SC con i parametri passati come argomento
 			-- per esecuzione interattiva gli argomenti vanno scritti in Eiffel Studio
 			-- nel menu "Execution" -> "Execution Parameters" -> "Add"
 			-- doppio click su spazio bianco accanto a "Arguments"
-			-- scrivere i parametri ognuno tra doppi apici includendo l'estensione
-			-- .xml per il file della SC e .txt per il file degli eventi
+			-- scrivere i parametri ognuno tra doppi apici separati da uno spazio includendo l'estensione
+			-- .xml per il file della SC e .txt per il file degli eventi ed eventualmente un terzo parametro
+			-- per scegliere il numero massimo di istanti di evoluzione della SC
 		do
+
+			if argomenti.valid_index (3) then
+				if argomenti[3].is_integer then
+					istante_massimo :=  argomenti[3].to_integer
+				else
+					istante_massimo := istante_massimo_default
+				end
+			else
+				istante_massimo := istante_massimo_default
+			end
+
+
 			print ("%N=========%N CREAZIONE INIZIO%N")
-			print ("crea la SC in " + nomi_files [1] + "%N")
-			create state_chart.make (nomi_files [1])
+			print ("crea la SC in " + argomenti [1] + "%N")
+			create state_chart.make (argomenti [1])
 			create ambiente_corrente.make_empty
 			if not state_chart.errore_parsing_file_SC and state_chart.errore_costruzione_SC.is_empty then
-				print ("e la esegue con gli eventi in " + nomi_files [2] + "%N")
-				ambiente_corrente.acquisisci_eventi (nomi_files [2])
+				print ("e la esegue con gli eventi in " + argomenti [2] + "%N")
+				ambiente_corrente.acquisisci_eventi (argomenti [2])
 				print ("acquisiti eventi %N")
 				if not ambiente_corrente.verifica_eventi_esterni (state_chart) then
 					print ("AVVISO: nel file ci sono eventi che la SC non conosce. Verranno ignorati.%N")
 				end
 				print ("eventi verificati, si esegue la SC %N")
+				print ("%N CREAZIONE FINE%N=========%N")
+
 				evolvi_SC (ambiente_corrente.eventi_esterni)
+
 			else
 				print ("Non si esegue la SC perche' ")
 				if state_chart.errore_costruzione_SC.is_empty then
@@ -50,8 +70,10 @@ feature -- Creazione sia per i test che per esecuzione interattiva
 				else
 					print ("Ci sono problemi con il file xml.%N")
 				end
+
+				print ("%N CREAZIONE FINE%N=========%N")
 			end
-			print ("%N CREAZIONE FINE%N=========%N")
+
 		end
 
 
@@ -69,9 +91,8 @@ feature -- evoluzione della statechart
 			from
 				istante := 1
 			until
-				stato_final (state_chart.config_base) or istante > instante_massimo or transizioni_finite
+				stato_final (state_chart.config_base) or istante > istante_massimo or transizioni_finite
 			loop
-				-- TODO: se nel quanto di tempo `istante' non ci sono eventi non si fa evolvere la SC anche se in teoria potrebbero esserci transizioni eseguibili
 				stampa_conf_corrente (istante)
 				create prossima_config_base.make_empty
 				if istante <= eventi.count then

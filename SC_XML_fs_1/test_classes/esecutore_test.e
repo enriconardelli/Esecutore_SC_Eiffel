@@ -19,7 +19,7 @@ inherit
 
 feature {NONE} -- Supporto
 
-	nomi_files_prova: ARRAY [STRING]
+	argomenti: ARRAY [STRING]
 	a_path: PATH
 	test_data_dir: STRING
 
@@ -30,7 +30,7 @@ feature -- Test routines
 			create a_path.make_current
 			create test_data_dir.make_from_string ("test_data")
 			test_data_dir.append_character(a_path.directory_separator)
-			create nomi_files_prova.make_filled ("", 1, 2)
+			create argomenti.make_filled ("", 1, 3)
 
 		end
 
@@ -67,9 +67,22 @@ feature -- Test routines
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + stati
-			nomi_files_prova [2] := test_data_dir + eventi
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + stati
+			argomenti [2] := test_data_dir + eventi
+			create esecutore.make (argomenti)
+			assert ("ERRORE il sistema non ha terminato nello stato corretto ", conf_has_states(esecutore.state_chart.config_base, stati_corretti))
+		end
+
+	evoluzione_state_chart_limitata(stati: STRING; eventi: STRING; limite: STRING; stati_corretti: LINKED_SET[STRING])
+	--Prende in input il file .xml della state-chart e il file .txt degli eventi e restituisce errore se
+	--il sistema non termina negli stati corretti.
+		local
+			esecutore: ESECUTORE
+		do
+			argomenti [1] := test_data_dir + stati
+			argomenti [2] := test_data_dir + eventi
+			argomenti [3] := limite
+			create esecutore.make (argomenti)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto ", conf_has_states(esecutore.state_chart.config_base, stati_corretti))
 		end
 end

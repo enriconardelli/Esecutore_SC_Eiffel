@@ -181,9 +181,9 @@ feature -- Test routines
 		local
 			esecutore: ESECUTORE
 		do
-			nomi_files_prova [1] := test_data_dir + "storia_con_parallelo.xml"
-			nomi_files_prova [2] := test_data_dir + "storia_con_parallelo_eventi_2.txt"
-			create esecutore.make (nomi_files_prova)
+			argomenti [1] := test_data_dir + "storia_con_parallelo.xml"
+			argomenti [2] := test_data_dir + "storia_con_parallelo_eventi_2.txt"
+			create esecutore.make (argomenti)
 			assert ("ERRORE_parallelo_2_1: la storia non memorizza il giusto numero di stati", (attached esecutore.state_chart.stati.item ("P") as item and then attached {STORIA_DEEP} item.storia as storia and then storia.stati_memorizzati.count = 5))
 			assert ("ERRORE_parallelo_2_2: la storia non salva lo stato P2", (attached esecutore.state_chart.stati.item ("P") as item and then attached {STORIA_DEEP} item.storia as storia and then storia.stati_memorizzati [1].id ~ "P2"))
 			assert ("ERRORE_parallelo_2_3: la storia non salva lo stato A", (attached esecutore.state_chart.stati.item ("P") as item and then attached {STORIA_DEEP} item.storia as storia and then storia.stati_memorizzati [2].id ~ "A"))
