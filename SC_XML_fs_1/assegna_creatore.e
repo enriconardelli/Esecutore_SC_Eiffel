@@ -69,22 +69,4 @@ feature -- ammissibilità
 			end
 		end
 
-feature -- stampa
-
-	stampa_errata (testo, esito, variabile, espressione: STRING)
-		do
-			if esito ~ "senza_luogo" then
-				print ("ERRORE: l'azione <assign> " + testo + " non ha attributo 'location'!%N")
-			elseif esito ~ "luogo_assente" then
-				print ("ERRORE: l'azione <assign> " + testo + " specifica la 'location' >|" + variabile + "|< che non esiste nel <datamodel> della SC!%N")
-			elseif esito ~ "senza_valore" then
-				print ("ERRORE: l'azione <assign> " + testo + " non ha attributo 'expr'!%N")
-			elseif esito ~ "valore_errato" then
-				print ("ERRORE: l'azione <assign> " + testo + " assegna alla <location> >|" + variabile + "|< come <expr> il valore >|" + espressione + "|< non ammissibile!%N")
-			elseif esito ~ "variabile_intera_con_espressione_booleana" or esito ~ "variabile_booleana_con_espressione_intera" then
-				print ("ERRORE: l'azione <assign> " + testo + " assegna alla <location> >|" + variabile + "|< come <expr> il valore >|" + espressione + "|< non ammissibile!%N")
-			end
-		end
-
-
 end
