@@ -4,7 +4,7 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	STATO_GERARCHICO
 
 inherit
@@ -12,11 +12,6 @@ inherit
 		redefine
 			stampa
 		end
-
-create
-	make_with_id,
-	make_final_with_id,
-	make_with_id_and_parent
 
 feature --situazione
 

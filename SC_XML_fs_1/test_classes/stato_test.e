@@ -19,7 +19,7 @@ inherit
 
 feature {NONE} -- Supporto
 
-	stato_prova, stato_prova_senza_evento: STATO_GERARCHICO
+	stato_prova, stato_prova_senza_evento: STATO_XOR
 
 	destinazione_prova_1, destinazione_prova_2, destinazione_prova_3: STATO_ATOMICO
 
