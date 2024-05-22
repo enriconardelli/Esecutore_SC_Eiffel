@@ -8,7 +8,7 @@ note
 	testing: "type/manual"
 
 class
-	STATO_TEST
+	STATO_AND_TEST
 
 inherit
 
@@ -19,7 +19,7 @@ inherit
 
 feature {NONE} -- Supporto
 
-	stato_prova, stato_prova_senza_evento: STATO_XOR
+	stato_prova, stato_prova_senza_evento: STATO_AND
 
 	destinazione_prova_1, destinazione_prova_2, destinazione_prova_3: STATO_ATOMICO
 
