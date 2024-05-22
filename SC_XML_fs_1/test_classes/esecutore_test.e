@@ -85,4 +85,18 @@ feature -- Test routines
 			create esecutore.make (argomenti)
 			assert ("ERRORE il sistema non ha terminato nello stato corretto ", conf_has_states(esecutore.state_chart.config_base, stati_corretti))
 		end
+
+	evoluzione_state_chart_con_dato_intero(stati: STRING; eventi: STRING; variabile: STRING; intero: INTEGER)
+	--Prende in input il file .xml della state-chart e il file .txt degli eventi e restituisce errore se
+	--il sistema non termina negli stati corretti.
+		local
+			esecutore: ESECUTORE
+		do
+			argomenti [1] := test_data_dir + stati
+			argomenti [2] := test_data_dir + eventi
+			create esecutore.make (argomenti)
+			assert ("ERRORE La variabile non ha valore desiderato. ", esecutore.state_chart.variabili.intere.at(variabile) = intero)
+
+
+		end
 end

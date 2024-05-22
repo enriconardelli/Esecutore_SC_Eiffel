@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="S">
+	<datamodel>
+		<data id="n" expr="1"/>
+	</datamodel>
+	<state id="S">
+		<transition event="e" target="A1 B1">
+		</transition>
+		<transition event="f" target="A1">
+		</transition>
+	</state>
+	
+	<parallel id="X">	
+		<state id="A" initial="A1">
+			<state id="A1">
+				<onentry>
+					<log name="ciao"/>
+					<assign location="n" expr="inc"/>
+				</onentry>
+			</state>		
+		</state>
+		<state id="B" initial="B2">
+			<state id="B1">
+			</state>
+			<state id="B2">
+			</state>
+		</state>							
+	</parallel>
+
+</scxml>

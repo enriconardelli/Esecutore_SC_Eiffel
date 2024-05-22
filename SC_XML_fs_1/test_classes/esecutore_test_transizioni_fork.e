@@ -262,4 +262,8 @@ feature --test
 			evoluzione_state_chart("costrutto_fork_non_ammissibile_3.xml", "costrutto_fork_eventi_con_fork.txt", conf_finale)
 		end
 
+	t_costrutto_fork_onentry
+ 			do
+				evoluzione_state_chart_con_dato_intero("costrutto_fork_onentry.xml", "costrutto_fork_eventi_con_fork.txt", "n",2)
+			end
 end

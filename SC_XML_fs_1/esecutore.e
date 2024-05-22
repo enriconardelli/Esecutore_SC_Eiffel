@@ -109,14 +109,14 @@ feature -- evoluzione della statechart
 					salva_storie (antenato_massimo_uscita (te.item))
 					debug ("SC_storia") stampa_storia (antenato_massimo_uscita (te.item)) end
 					esegui_azioni (te.item)
-					trova_default (te.item.destinazione.first, prossima_config_base)
+
 					if te.item.fork then
 						across te.item.destinazione as destinazione_corrente
-						-- TODO: se ci sono destinazioni multiple `trova_default' viene eseguita due volte sulla prima destinazione
-						-- TODO: si dovrebbe vedere perché dovrebbe eseguire due volte l'azione "on_entry"
 						loop
 							trova_default (destinazione_corrente.item, prossima_config_base)
 						end
+					else
+						trova_default (te.item.destinazione.first, prossima_config_base)
 					end
 					aggiungi_paralleli (te.item.destinazione.first, prossima_config_base)
 				end
