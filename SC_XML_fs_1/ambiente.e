@@ -27,7 +27,7 @@ feature --creazione
 
 feature
 
-	acquisisci_eventi (nome_file_eventi: STRING)
+	acquisisci_eventi (nome_file_eventi: STRING) :BOOLEAN
 			-- Legge gli eventi dal file passato come argomento e li inserisce in `eventi_esterni'
 		local
 			file: PLAIN_TEXT_FILE
@@ -55,8 +55,9 @@ feature
 					i := i + 1
 				end
 				file.close
+				Result := True
 			else
-				print ("%N ERRORE: il file " + nome_file_eventi + " non esiste! %N")
+				Result := False
 			end
 		end
 

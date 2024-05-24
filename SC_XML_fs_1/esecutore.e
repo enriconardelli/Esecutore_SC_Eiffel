@@ -34,6 +34,8 @@ feature -- Creazione sia per i test che per esecuzione interattiva
 			-- scrivere i parametri ognuno tra doppi apici separati da uno spazio includendo l'estensione
 			-- .xml per il file della SC e .txt per il file degli eventi ed eventualmente un terzo parametro
 			-- per scegliere il numero massimo di istanti di evoluzione della SC
+		local
+			eventi_acquisiti: BOOLEAN
 		do
 
 			if argomenti.valid_index (3) then
@@ -53,15 +55,22 @@ feature -- Creazione sia per i test che per esecuzione interattiva
 			create ambiente_corrente.make_empty
 			if not state_chart.errore_parsing_file_SC and state_chart.errore_costruzione_SC.is_empty then
 				print ("e la esegue con gli eventi in " + argomenti [2] + "%N")
-				ambiente_corrente.acquisisci_eventi (argomenti [2])
-				print ("acquisiti eventi %N")
-				if not ambiente_corrente.verifica_eventi_esterni (state_chart) then
-					print ("AVVISO: nel file ci sono eventi che la SC non conosce. Verranno ignorati.%N")
-				end
-				print ("eventi verificati, si esegue la SC %N")
-				print ("%N CREAZIONE FINE%N=========%N")
+				eventi_acquisiti := ambiente_corrente.acquisisci_eventi (argomenti [2])
+				if eventi_acquisiti then
+					print ("acquisiti eventi %N")
+					if not ambiente_corrente.verifica_eventi_esterni (state_chart) then
+						print ("AVVISO: nel file ci sono eventi che la SC non conosce. Verranno ignorati.%N")
+					end
 
-				evolvi_SC (ambiente_corrente.eventi_esterni)
+					print ("eventi verificati, si esegue la SC %N")
+					print ("%N CREAZIONE FINE%N=========%N")
+
+					evolvi_SC (ambiente_corrente.eventi_esterni)
+				else
+
+					print ("%N ERRORE: il file " + argomenti [2] + " non esiste! %N")
+					print ("%N CREAZIONE FINE%N=========%N")
+				end
 
 			else
 				print ("Non si esegue la SC perche' ")

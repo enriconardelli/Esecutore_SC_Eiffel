@@ -34,9 +34,10 @@ feature -- Test routines
 	test_verifica_eventi_esterni_1
 		local
 			ambiente: AMBIENTE
+			eventi_acquisiti: BOOLEAN
 		do
 			create ambiente.make_empty
-			ambiente.acquisisci_eventi (test_data_dir + "tre_stati_atomici_eventi_6.txt")
+			eventi_acquisiti := ambiente.acquisisci_eventi (test_data_dir + "tre_stati_atomici_eventi_6.txt")
 			-- in "tre_stati_atomici_eventi_6.xml" ci sono eventi non noti alla SC
 			assert("non viene rilevato evento esterno assente",ambiente.verifica_eventi_esterni(configurazione_prova)=False)
 		end
@@ -44,9 +45,10 @@ feature -- Test routines
 	test_verifica_eventi_esterni_2
 		local
 			ambiente: AMBIENTE
+			eventi_acquisiti: BOOLEAN
 		do
 			create ambiente.make_empty
-			ambiente.acquisisci_eventi (test_data_dir + "tre_stati_atomici_eventi_5.txt")
+			eventi_acquisiti := ambiente.acquisisci_eventi (test_data_dir + "tre_stati_atomici_eventi_5.txt")
 			-- tutti gli eventi in "tre_stati_atomici_eventi_5.xml" sono noti alla SC
 			assert("viene falsamente rilevato assenza di evento esterno assente",ambiente.verifica_eventi_esterni(altro_configurazione_prova)=True)
 		end
