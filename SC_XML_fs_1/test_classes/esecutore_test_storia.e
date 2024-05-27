@@ -184,12 +184,12 @@ feature -- Test routines
 			argomenti [1] := test_data_dir + "storia_con_parallelo.xml"
 			argomenti [2] := test_data_dir + "storia_con_parallelo_eventi_2.txt"
 			create esecutore.make (argomenti)
-			assert ("ERRORE_parallelo_2_1: la storia non memorizza il giusto numero di stati", (attached esecutore.state_chart.stati.item ("P") as item and then attached {STORIA_DEEP} item.storia as storia and then storia.stati_memorizzati.count = 5))
-			assert ("ERRORE_parallelo_2_2: la storia non salva lo stato P2", (attached esecutore.state_chart.stati.item ("P") as item and then attached {STORIA_DEEP} item.storia as storia and then storia.stati_memorizzati [1].id ~ "P2"))
-			assert ("ERRORE_parallelo_2_3: la storia non salva lo stato A", (attached esecutore.state_chart.stati.item ("P") as item and then attached {STORIA_DEEP} item.storia as storia and then storia.stati_memorizzati [2].id ~ "A"))
-			assert ("ERRORE_parallelo_2_4: la storia non salva lo stato A2", (attached esecutore.state_chart.stati.item ("P") as item and then attached {STORIA_DEEP} item.storia as storia and then storia.stati_memorizzati [3].id ~ "A2"))
-			assert ("ERRORE_parallelo_2_5: la storia non salva lo stato B", (attached esecutore.state_chart.stati.item ("P") as item and then attached {STORIA_DEEP} item.storia as storia and then storia.stati_memorizzati [4].id ~ "B"))
-			assert ("ERRORE_parallelo_2_6: la storia non salva lo stato B2", (attached esecutore.state_chart.stati.item ("P") as item and then attached {STORIA_DEEP} item.storia as storia and then storia.stati_memorizzati [5].id ~ "B2"))
+			assert ("ERRORE_parallelo_2_1: la storia non memorizza il giusto numero di stati", (attached esecutore.state_chart.stati.item ("P") as item and then attached {STORIA_DEEP} item.storia as storia and then attached storia.stati_memorizzati as sm and then sm.count = 5))
+			assert ("ERRORE_parallelo_2_2: la storia non salva lo stato P2", (attached esecutore.state_chart.stati.item ("P") as item and then attached {STORIA_DEEP} item.storia as storia and then attached storia.stati_memorizzati as sm and then sm [1].id ~ "P2"))
+			assert ("ERRORE_parallelo_2_3: la storia non salva lo stato A", (attached esecutore.state_chart.stati.item ("P") as item and then attached {STORIA_DEEP} item.storia as storia and then attached storia.stati_memorizzati as sm and then sm [2].id ~ "A"))
+			assert ("ERRORE_parallelo_2_4: la storia non salva lo stato A2", (attached esecutore.state_chart.stati.item ("P") as item and then attached {STORIA_DEEP} item.storia as storia and then attached storia.stati_memorizzati as sm and then sm [3].id ~ "A2"))
+			assert ("ERRORE_parallelo_2_5: la storia non salva lo stato B", (attached esecutore.state_chart.stati.item ("P") as item and then attached {STORIA_DEEP} item.storia as storia and then attached storia.stati_memorizzati as sm and then sm [4].id ~ "B"))
+			assert ("ERRORE_parallelo_2_6: la storia non salva lo stato B2", (attached esecutore.state_chart.stati.item ("P") as item and then attached {STORIA_DEEP} item.storia as storia and then attached storia.stati_memorizzati as sm and then sm [5].id ~ "B2"))
 		end
 
 	t_storia_con_parallelo_3

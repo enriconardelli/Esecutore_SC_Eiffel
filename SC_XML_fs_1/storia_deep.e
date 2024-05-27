@@ -16,37 +16,31 @@ create
 
 feature -- attributi
 
-	stati_memorizzati: ARRAY [STATO]
+	stati_memorizzati: LINKED_LIST [STATO]
 
 feature -- creazione
 
-	make_history (un_genitore: STATO_XOR)
+	make_history
 		do
-			create stati_memorizzati.make_empty
-			genitore := un_genitore
+			create stati_memorizzati.make
 		end
 
 feature -- gestione storia
 
 	aggiungi_stati (stati: LINKED_LIST [STATO])
 		do
-			across
-				stati as st
-			loop
-				if not stati_memorizzati.has (st.item) then
-					stati_memorizzati.force (st.item, stati_memorizzati.upper + 1)
-				end
-			end
+			stati_memorizzati.wipe_out
+			stati_memorizzati.append (stati)
 		end
 
 	svuota_memoria
 		do
-			stati_memorizzati.make_empty
+			stati_memorizzati.wipe_out
 		end
 
 	storia_vuota: BOOLEAN
 		do
-			Result := stati_memorizzati.is_empty
+			Result :=  stati_memorizzati.is_empty
 		end
 
 end

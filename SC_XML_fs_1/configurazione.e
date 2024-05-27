@@ -455,12 +455,12 @@ feature -- inizializzazione storia
 			if attached {STATO_XOR} stato as st_xor then
 				-- se uno stato composto ha più di una storia viene salvata solo la prima
 				if attached history_element.attribute_by_name ("type") as h_tp and then h_tp.value ~ "deep" then
-					storia_temp := create {STORIA_DEEP}.make_history (st_xor)
+					storia_temp := create {STORIA_DEEP}.make_history 
 				else
 					if not (attached history_element.attribute_by_name ("type") as h_tp and then h_tp.value ~ "shallow") then
 						print ("AVVISO: la storia dello stato >|" + stato.id  + "|< viene considerata shallow!%N")
 					end
-					storia_temp := create {STORIA_SHALLOW}.make_history (st_xor)
+					storia_temp := create {STORIA_SHALLOW}.make_history
 				end
 				stato.add_storia (storia_temp)
 			end
@@ -938,7 +938,7 @@ feature -- inizializzazione onentry/onexit
 				stato.set_onentry (creatore_di_assegna.crea_istanza (variabile, espressione))
 			else
 				testo := "specificata in <onentry> per lo stato >|" + stato.id + "|<"
-				
+
 				if esito ~ "senza_luogo" then
 					print ("ERRORE 31: l'azione <assign> " + testo + " non ha attributo 'location'!%N")
 					errore_costruzione_SC.extend (31)

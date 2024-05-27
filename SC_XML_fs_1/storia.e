@@ -7,13 +7,9 @@ note
 deferred class
 	STORIA
 
-feature -- attributi
-
-	genitore: STATO_XOR
-
 feature -- creazione
 
-	make_history (un_genitore: STATO_XOR)
+	make_history 
 		deferred
 		end
 

@@ -86,7 +86,6 @@ feature -- Creazione sia per i test che per esecuzione interattiva
 		end
 
 
-
 feature -- evoluzione della statechart
 
 	evolvi_SC (eventi: ARRAY [LINKED_SET [STRING]])
@@ -113,10 +112,12 @@ feature -- evoluzione della statechart
 					end
 				end
 
- 					across transizioni_eseguibili as te
- 					loop
+ 				across
+ 					transizioni_eseguibili as te
+ 				loop
 					salva_storie (antenato_massimo_uscita (te.item))
 					debug ("SC_storia") stampa_storia (antenato_massimo_uscita (te.item)) end
+
 					esegui_azioni (te.item)
 
 					if te.item.fork then
@@ -142,74 +143,43 @@ feature -- evoluzione della statechart
 		end
 
 	salva_storie(stato_uscente: STATO)
-	-- Arianna & Riccardo 05/07/2020
-	-- aggiorna le storie nei discendenti dello 'stato_uscente'
+	-- aggiorna le storie nei discendenti attivi dello 'stato_uscente' in modo ricorsivo
 		do
-			-- TODO eliminare qui la chiama a pulisci_storie
-			pulisci_storie(stato_uscente)
-			across
-				state_chart.config_base as cbc
-			loop
-				if stato_uscente.antenato_di (cbc.item)	then
-					salva_storia(cbc.item, stato_uscente)
+			if not state_chart.config_base.has (stato_uscente)  then
+				if attached{STORIA_SHALLOW} stato_uscente.storia then
+					salva_storia_shallow(stato_uscente)
+				elseif attached{STORIA_DEEP} stato_uscente.storia then
+					salva_storia_deep(stato_uscente)
 				end
+			end
+
+			across
+				stato_uscente.figli as figlio
+			loop
+				if figlio.item.attivo  then
+					salva_storie (figlio.item)
+				end
+			end
+
+		end
+
+	salva_storia_deep(stato: STATO)
+	-- memorizza gli stati attivi e gli stati attvi dei discendenti nella storia deep
+		do
+			if attached{STORIA_DEEP} stato.storia as storia then
+				storia.aggiungi_stati (trova_stati_figli_attivi(stato))
 			end
 		end
 
-	pulisci_storie(stato_uscita: STATO)
-	-- Arianna & Riccardo 26/07/2020
-	-- elimina gli stati salvati in tutte le storie che si incontrano nel percorso dagli stati di state_chart.config_base allo 'stato_uscita'
-	-- Edit Forte, Sarandrea 28/06/2021
-	-- correzione errore
-		local
-			stato_temp: STATO
+	salva_storia_shallow(stato_uscente: STATO)
+		-- memorizza nella storia shallow il figlio attivo di uno stato xor
 		do
-			across
-				state_chart.config_base as cbc
-			loop
-				if stato_uscita.antenato_di (cbc.item)	then
-					from
-						stato_temp := cbc.item
-					until
-						stato_temp = stato_uscita
-					loop
-						if attached stato_temp.genitore as gen then
-							if attached gen.storia as storia then
-							storia.svuota_memoria
-							end
-							stato_temp := gen
-						end
-					end
-				end
-			end
-		end
-
-	salva_storia(stato_config_base, stato_uscente: STATO)
-	-- Arianna & Riccardo 05/07/2020
-	-- memorizza i percorsi di uscita partendo da 'stato_config_base' e arrivando fino a 'stato_uscente'
-		local
-			stato_temp: STATO
-			percorso_uscita: LINKED_LIST[STATO]
-		do
-			if stato_uscente /= stato_config_base then
-				-- se esco da uno stato atomico non ho storia
-				create percorso_uscita.make
-				from
-					stato_temp := stato_config_base
-				until
-					stato_temp = stato_uscente
+			if attached{STORIA_SHALLOW} stato_uscente.storia as storia then
+				across
+					stato_uscente.figli as figlio
 				loop
-					percorso_uscita.put_front (stato_temp)
-					if attached stato_temp.genitore as gen then
-						stato_temp := gen
-					end
-
-					if attached{STORIA_DEEP} stato_temp.storia as storia then
-						-- se la storia è "deep" salvo tutto l'array del percorso
-						storia.aggiungi_stati (percorso_uscita)
-					elseif attached{STORIA_SHALLOW} stato_temp.storia as storia then
-						-- se la storia è "shallow" salvo solo lo stato uscente allo stesso livello della storia
-						storia.memorizza_stato (percorso_uscita.first)
+					if figlio.item.attivo  then
+						storia.memorizza_stato(figlio.item)
 					end
 				end
 			end
@@ -456,9 +426,9 @@ feature -- evoluzione della statechart
 		do
 			stato.set_attivo
 			esegui_onentry(stato)
-			if attached{STORIA_DEEP} stato.storia as st then
+			if attached{STORIA_DEEP} stato.storia as st and then attached st.stati_memorizzati as stati then
 				across
-					st.stati_memorizzati as sm
+					stati as sm
 				loop
 					sm.item.set_attivo
 					esegui_onentry(sm.item)
@@ -592,6 +562,24 @@ feature -- controllo
 
 feature -- utilita
 
+	trova_stati_figli_attivi(stato: STATO): LINKED_LIST[STATO]
+	-- funzione che restituisce i figli attivi di uno stato in modo ricorsivo
+		local
+			figli_attivi:LINKED_LIST [STATO]
+		do
+			create figli_attivi.make
+
+			across
+				stato.figli as figlio
+			loop
+				if figlio.item.attivo  then
+					figli_attivi.extend (figlio.item)
+					figli_attivi.append (trova_stati_figli_attivi(figlio.item))
+				end
+			end
+			Result := figli_attivi
+		end
+
 	riordina_stati (p_stati: ARRAY[STATO]): ARRAY[STATO]
 	-- Agulini Claudia & Fiorini Federico 11/05/2020
 	-- Riordina `p_stati' in base all'ordine del file .xml, che è quello con cui sono stati creati gli stati
@@ -650,17 +638,34 @@ feature -- utilita
 
 	stampa_storia (stato_storia: STATO)
 		do
-			print(" Storia di ")
-			print(stato_storia.id)
-			print(" : ")
 			if attached{STORIA_DEEP} stato_storia.storia as ss then
-				across
-					ss.stati_memorizzati as sm
-				loop
-					print(sm.item.id)
+				if attached ss.stati_memorizzati as ssm then
+					print(" Storia di ")
+					print(stato_storia.id)
+					print(" : ")
+					across
+						ssm as sm
+					loop
+						print(sm.item.id+" ")
+					end
+					print("%N")
 				end
-			elseif attached{STORIA_SHALLOW} stato_storia.storia as ss and then attached ss.stato_memorizzato as ssm then
-				print(ssm.id)
+			elseif attached{STORIA_SHALLOW} stato_storia.storia as ss then
+				if attached ss.stato_memorizzato as ssm then
+					print(" Storia di ")
+					print(stato_storia.id)
+					print(" : ")
+					print(ssm.id)
+					print("%N")
+				end
 			end
+
+			across
+				stato_storia.figli as figlio
+			loop
+				stampa_storia (figlio.item)
+			end
+
+
 		end
 end
