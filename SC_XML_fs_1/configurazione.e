@@ -455,7 +455,7 @@ feature -- inizializzazione storia
 			if attached {STATO_XOR} stato as st_xor then
 				-- se uno stato composto ha più di una storia viene salvata solo la prima
 				if attached history_element.attribute_by_name ("type") as h_tp and then h_tp.value ~ "deep" then
-					storia_temp := create {STORIA_DEEP}.make_history 
+					storia_temp := create {STORIA_DEEP}.make_history
 				else
 					if not (attached history_element.attribute_by_name ("type") as h_tp and then h_tp.value ~ "shallow") then
 						print ("AVVISO: la storia dello stato >|" + stato.id  + "|< viene considerata shallow!%N")
@@ -555,10 +555,13 @@ feature -- inizializzazione transizioni
 				transizione.set_merge
 				transizione.add_sorgenti (altre_sorgenti)
 				completa_transizione (transition_element, transizione, sorgente)
-				-- TODO: aggiungere nel debug la stampa di tutte le sorgenti
-				debug ("sc_transizioni_legali") print (" - Transizione legale da >|" + sorgente.id + "|< a >|" + destinazione.id + "|< %N") end
+				debug ("sc_transizioni_legali")
+					print (" - Transizione legale da >| ")
+					across tutte_le_sorgenti as s loop print(s.item.id + " ") end
+					print ( "|< a >|" + destinazione.id + "|< %N")
+				end
 			else
-				print ("ERRORE 24: Le sorgenti multiple indicate per la transizione che parte dallo stato >|" + sorgente.id + "|< non sono tra loro compatibili %N")
+				print ("ERRORE 24: Le sorgenti multiple indicate per la transizione che parte dallo stato >| " + sorgente.id + " |< non sono tra loro compatibili %N")
 				stampa_ancore_multiple (tutte_le_sorgenti)
 				errore_costruzione_SC.extend (24)
 			end
@@ -570,7 +573,7 @@ feature -- inizializzazione transizioni
 			transizione: TRANSIZIONE
 		do
 			if transizione_illegale (sorgente, destinazione) then
-				print ("ERRORE 25: transizione illegale da >|" + sorgente.id + "|< a >|" + destinazione.id + "|< !%N")
+				print ("ERRORE 25: transizione illegale da >|" + sorgente.id + "|< a >| " + destinazione.id + " |< !%N")
 				errore_costruzione_SC.extend (25)
 			else
 				create transizione.make_con_destinazione (destinazione, sorgente)
@@ -580,7 +583,7 @@ feature -- inizializzazione transizioni
 					end
 				end
 				completa_transizione (transition_element, transizione, sorgente)
-				debug ("sc_transizioni_legali") print (" - Transizione legale da >|" + sorgente.id + "|< a >|" + destinazione.id + "|< %N") end
+				debug ("sc_transizioni_legali") print (" - Transizione legale da >| " + sorgente.id + " |< a >| " + destinazione.id + " |< %N") end
 			end
 		end
 
@@ -593,8 +596,11 @@ feature -- inizializzazione transizioni
 				transizione.set_fork
 				transizione.add_destinazioni (destinazioni)
 				completa_transizione (transition_element, transizione, sorgente)
-				-- TODO: aggiungere nel debug la stampa di tutte le destinazioni
-				debug ("sc_transizioni_legali") print (" - Transizione legale da >|" + sorgente.id + "|< a >|" + destinazioni.first.id + "|< %N") end
+				debug ("sc_transizioni_legali")
+					print (" - Transizione legale da >| " + sorgente.id + " |< a >| ")
+					across destinazioni as d loop print( d.item.id + " ") end
+					print("|< %N")
+				end
 			else
 				print ("ERRORE 26: Le destinazioni multiple indicate per la transizione che parte dallo stato >|" + sorgente.id + "|< non sono tra loro compatibili!%N")
 				stampa_ancore_multiple (destinazioni)
