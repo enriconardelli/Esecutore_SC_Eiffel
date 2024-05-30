@@ -417,14 +417,17 @@ feature -- inizializzazione SC
 	assegna_figli (stato: STATO; element: XML_ELEMENT)
 		-- completa lo `stato' con i suoi figli che non sono <state> o <parallel>: transizioni, azioni onentry/onexit, history
 		local
+			transizioni : LINKED_LIST [XML_ELEMENT]
 			history_trovata: BOOLEAN
 		do
 			history_trovata := False
+			create transizioni.make
+
 			across
 				element.elements as e
 			loop
 				if e.item.name ~ "transition" then
-					assegna_transizione (e.item, stato)
+					transizioni.extend (e.item)
 				elseif e.item.name ~ "onentry" then
 					assegna_onentry (e.item.elements, stato)
 				elseif e.item.name ~ "onexit" then
@@ -443,6 +446,8 @@ feature -- inizializzazione SC
 					errore_costruzione_SC.extend (20)
 				end
 			end
+			assegna_transizioni_con_priorita (transizioni,stato)
+
 		end
 
 feature -- inizializzazione storia
@@ -471,6 +476,48 @@ feature -- inizializzazione storia
 
 
 feature -- inizializzazione transizioni
+
+	assegna_transizioni_con_priorita (transizioni: LINKED_LIST[XML_ELEMENT]; sorgente: STATO)
+		-- Assegna a `sorgente' le transizioni tenendo conto della priorità esplicita impostata dall'utente.
+		-- Le transizione senza priorità esplicita vengono considerate avere la priorità più bassa
+		local
+			transizioni_con_priorita_table: HASH_TABLE [XML_ELEMENT, INTEGER]
+			transizioni_con_priorita: LINKED_LIST[XML_ELEMENT]
+			transizioni_senza_priorita: LINKED_LIST[XML_ELEMENT]
+			a_sorter: BUBBLE_SORTER[INTEGER]
+			indici_priorita: ARRAY[INTEGER]
+		do
+			create transizioni_con_priorita_table.make (0)
+			create transizioni_senza_priorita.make
+			create transizioni_con_priorita.make
+			create a_sorter.make (create {COMPARABLE_COMPARATOR[INTEGER]})
+
+			across
+				transizioni as t
+			loop
+				if attached t.item.attribute_by_name ("priority") as p then
+					if not p.value.is_integer then
+						print("ERRORE 37: l'attributo 'priority' di una transizione dello stato " + sorgente.id +" deve avere un valore intero!%N")
+						errore_costruzione_SC.extend (37)
+					else
+						if transizioni_con_priorita_table.has(p.value.to_integer)  then
+							print("ERRORE 37: l'attributo 'priority' di una transizione dello stato " + sorgente.id +" non può essere un valore duplicato!%N")
+							errore_costruzione_SC.extend (38)
+						else
+							transizioni_con_priorita_table.extend (t.item , p.value.to_integer)
+						end
+					end
+				else
+					transizioni_senza_priorita.extend (t.item)
+				end
+			end
+
+			indici_priorita := transizioni_con_priorita_table.current_keys
+			a_sorter.sort (indici_priorita)
+			across indici_priorita as i loop if attached transizioni_con_priorita_table.at (i.item ) as t then transizioni_con_priorita.extend (t) end  end
+			across transizioni_con_priorita as t loop assegna_transizione (t.item,sorgente)  end
+			across transizioni_senza_priorita as t loop assegna_transizione (t.item,sorgente)  end
+		end
 
 	assegna_transizione (transition_element: XML_ELEMENT; sorgente: STATO)
 		-- assegna a `sorgente' la transizione specificata in `transition_element' tenendo conto del tipo di transizione
