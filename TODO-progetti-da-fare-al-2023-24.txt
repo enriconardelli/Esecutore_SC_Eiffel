@@ -2,7 +2,7 @@
 PROCESSO
 - stiamo usando GitHub come ambiente gestione di ticket
 
-RILEVAMENTO DEGLI ERRORI
+RILEVAMENTO DEGLI ERRORI - FATTO
 ==> trasformare errore_costruzione_SC in INTEGER invece che boolean e usare questi valori interi per assert più precise nelle feature di test (in realtà al momento c'è solo una feature di test che usa errore_costruzione_SC)
 ==> esaminare tutti i punti del progetto in cui errore_costruzione_SC viene assegnato a true e elencare la tipologia di errore e capire se è possibile individuare una classificazione gerarchica
 
@@ -15,13 +15,14 @@ INTERESSANTE
 INTERESSANTE MA DIFFICILE
 - aggiungere azioni di pulizia della storia deep e shallow
 
-MENO INTERESSANTE
+MENO INTERESSANTE - FATTO
 - trasformare STATO-GERARCHICO in deferred (spiegata più sotto)
 
-INTERESSANTE MA DA VERIFICARE QUANTO COMPLICATO
+INTERESSANTE - DA FARE
 - la feature `transizione_abilitata' in STATO restituisce l'ultima (nell'array delle transizioni, che è l'ordine con cui le transizioni per quello stato sono state descritte nel file .xml) transizione abilitata con l'evento o gli eventi correnti
  - se si tratta di più transizioni con stesso evento allora andrebbe segnalato in una fase di analisi della SC ed andrebbe indicato che vanno introdotte le priorità esplicite (di cui va realizzata l'implementazione)
  - se si tratta di più transizioni con eventi diversi la segnalazione a livello di analisi della SC non ha molto senso (visto che presumibilmente voglio che in uno stato con eventi diversi faccia cose diverse) ma andrebbe segnalato il non determinismo a tempo di esecuzione, accorgendosi che in quel momento è abilitata più di una transizione
+ 
 
 COMPLICATO E POCO UTILE 
 - verificare sequenza di comportamenti, come per esempio gli stati attraversati da una SC a seguito di eventi, per evitare di dover fare tanti test ognuno con una sottosequenza degli eventi e verifica dello stato finale
