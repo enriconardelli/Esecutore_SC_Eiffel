@@ -29,8 +29,13 @@ feature -- gestione storia
 
 	aggiungi_stati (stati: LINKED_LIST [STATO])
 		do
-			stati_memorizzati.wipe_out
-			stati_memorizzati.append (stati)
+			across
+				stati as st
+			loop
+				if not stati_memorizzati.has (st.item) then
+					stati_memorizzati.extend (st.item)
+				end
+			end
 		end
 
 	svuota_memoria

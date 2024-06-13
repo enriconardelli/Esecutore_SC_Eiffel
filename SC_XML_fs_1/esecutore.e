@@ -143,43 +143,74 @@ feature -- evoluzione della statechart
 		end
 
 	salva_storie(stato_uscente: STATO)
-	-- aggiorna le storie nei discendenti attivi dello 'stato_uscente' in modo ricorsivo
+	-- Arianna & Riccardo 05/07/2020
+	-- aggiorna le storie nei discendenti dello 'stato_uscente'
 		do
-			if not state_chart.config_base.has (stato_uscente)  then
-				if attached{STORIA_SHALLOW} stato_uscente.storia then
-					salva_storia_shallow(stato_uscente)
-				elseif attached{STORIA_DEEP} stato_uscente.storia then
-					salva_storia_deep(stato_uscente)
-				end
-			end
-
+			pulisci_storie(stato_uscente)
 			across
-				stato_uscente.figli as figlio
+				state_chart.config_base as cbc
 			loop
-				if figlio.item.attivo  then
-					salva_storie (figlio.item)
+				if stato_uscente.antenato_di (cbc.item)	then
+					salva_storia(cbc.item, stato_uscente)
 				end
 			end
 
 		end
 
-	salva_storia_deep(stato: STATO)
-	-- memorizza gli stati attivi e gli stati attvi dei discendenti nella storia deep
+	pulisci_storie(stato_uscita: STATO)
+	-- Arianna & Riccardo 26/07/2020
+	-- elimina gli stati salvati in tutte le storie che si incontrano nel percorso dagli stati di state_chart.config_base allo 'stato_uscita'
+	-- Edit Forte, Sarandrea 28/06/2021
+	-- correzione errore
+		local
+			stato_temp: STATO
 		do
-			if attached{STORIA_DEEP} stato.storia as storia then
-				storia.aggiungi_stati (trova_stati_figli_attivi(stato))
+			across
+				state_chart.config_base as cbc
+			loop
+				if stato_uscita.antenato_di (cbc.item)	then
+					from
+						stato_temp := cbc.item
+					until
+						stato_temp = stato_uscita
+					loop
+						if attached stato_temp.genitore as gen then
+							if attached gen.storia as storia then
+							storia.svuota_memoria
+							end
+							stato_temp := gen
+						end
+					end
+				end
 			end
 		end
 
-	salva_storia_shallow(stato_uscente: STATO)
-		-- memorizza nella storia shallow il figlio attivo di uno stato xor
+	salva_storia(stato_config_base, stato_uscente: STATO)
+	-- Arianna & Riccardo 05/07/2020
+	-- memorizza i percorsi di uscita partendo da 'stato_config_base' e arrivando fino a 'stato_uscente'
+		local
+			stato_temp: STATO
+			percorso_uscita: LINKED_LIST[STATO]
 		do
-			if attached{STORIA_SHALLOW} stato_uscente.storia as storia then
-				across
-					stato_uscente.figli as figlio
+			if stato_uscente /= stato_config_base then
+				-- se esco da uno stato atomico non ho storia
+				create percorso_uscita.make
+				from
+					stato_temp := stato_config_base
+				until
+					stato_temp = stato_uscente
 				loop
-					if figlio.item.attivo  then
-						storia.memorizza_stato(figlio.item)
+					percorso_uscita.put_front (stato_temp)
+					if attached stato_temp.genitore as gen then
+						stato_temp := gen
+					end
+
+					if attached{STORIA_DEEP} stato_temp.storia as storia then
+						-- se la storia è "deep" salvo tutto l'array del percorso
+						storia.aggiungi_stati (percorso_uscita)
+					elseif attached{STORIA_SHALLOW} stato_temp.storia as storia then
+						-- se la storia è "shallow" salvo solo lo stato uscente allo stesso livello della storia
+						storia.memorizza_stato (percorso_uscita.first)
 					end
 				end
 			end
