@@ -19,7 +19,7 @@ feature -- Test routines
 			from
 				n := 1
 			until
-				n = 39
+				n = 41
 			loop
 				test_singolo(n)
 				n:= n+1

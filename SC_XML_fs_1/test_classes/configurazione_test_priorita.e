@@ -49,4 +49,12 @@ feature -- Test routines
 			conf_finale.force ("C")
 			evoluzione_state_chart ("priorita_transizione_2.xml", "eventi_vuoto.txt", conf_finale)
 		end
+
+	t_priorita_stato_1
+			-- Verifica che le transizioni vengono eseguite con la giusta priorità esplicita.
+			-- Caso in cui le transizioni partono da <state> figli dello stesso <parallel>
+		do
+			conf_finale.force ("B")
+			evoluzione_state_chart ("priorita_stato_1.xml", "eventi_vuoto.txt", conf_finale)
+		end
 end

@@ -85,7 +85,7 @@ feature -- supporto alla creazione
 			if attached radice as f then
 				istanzia_datamodel (f.elements)
 				istanzia_final (f.elements)
-				istanzia_stati (f.elements, Void)
+				across f.elements as fe loop istanzia_stato (fe.item, Void) end
 				assegna_initial (f.elements)
 				inizializza_config_base_radice (f)
 				completa_stati (f.elements)
@@ -212,42 +212,39 @@ feature -- inizializzazione SC
 			end
 		end
 
-	istanzia_stati (elements: LIST [XML_ELEMENT]; p_genitore: detachable STATO_GERARCHICO)
+	istanzia_stato (element: XML_ELEMENT; p_genitore: detachable STATO_GERARCHICO)
 		-- crea gli stati assegnando loro l'eventuale genitore e gli eventuali figli
 		do
-			across
-				elements as e
-			loop
-				if (e.item.name ~ "state" or e.item.name ~ "parallel") then
-					if not attached e.item.attribute_by_name ("id") then
-						print ("ERRORE 11: il seguente elemento <state> o <parallel> non ha 'id':%N")
-						stampa_elemento (e.item)
-						errore_costruzione_SC.extend (11)
-					elseif attached e.item.attribute_by_name ("id") as id_attr then
-						if id_illegittimo (id_attr.value) then
-							print ("ERRORE 12: il seguente elemento <state> o <parallel> ha un 'id' di valore stringa vuota o blank!%N")
-							stampa_elemento (e.item)
-							errore_costruzione_SC.extend (12)
-						elseif stati.has (id_attr.value) then
-							print ("ERRORE 13: il seguente elemento <state> o <parallel> ha un 'id' duplicato!%N")
-							stampa_elemento (e.item)
-							errore_costruzione_SC.extend (13)
-						else
-							if e.item.name ~ "state" then
-								istanzia_stato_XOR (e.item, p_genitore, id_attr.value )
-							end
+			if (element.name ~ "state" or element.name ~ "parallel") then
+				if not attached element.attribute_by_name ("id") then
+					print ("ERRORE 11: il seguente elemento <state> o <parallel> non ha 'id':%N")
+					stampa_elemento (element)
+					errore_costruzione_SC.extend (11)
+				elseif attached element.attribute_by_name ("id") as id_attr then
+					if id_illegittimo (id_attr.value) then
+						print ("ERRORE 12: il seguente elemento <state> o <parallel> ha un 'id' di valore stringa vuota o blank!%N")
+						stampa_elemento (element)
+						errore_costruzione_SC.extend (12)
+					elseif stati.has (id_attr.value) then
+						print ("ERRORE 13: il seguente elemento <state> o <parallel> ha un 'id' duplicato!%N")
+						stampa_elemento (element)
+						errore_costruzione_SC.extend (13)
+					else
+						if element.name ~ "state" then
+							istanzia_stato_XOR (element, p_genitore, id_attr.value )
+						end
 
-							if e.item.name ~ "parallel" then
-								istanzia_stato_AND (e.item, p_genitore, id_attr.value )
-							end
+						if element.name ~ "parallel" then
+							istanzia_stato_AND (element, p_genitore, id_attr.value )
 						end
 					end
 				end
 			end
+
 		end
 
 	istanzia_stato_XOR (e: XML_ELEMENT; p_genitore: detachable STATO_GERARCHICO; id_attr: STRING)
-		-- crea uno stati XOR assegnando l'eventuale genitore e gli eventuali figli. id_attr viene considerata del formato corretto (controllo eseguito in istanzia_stati)
+		-- crea uno stati XOR assegnando l'eventuale genitore e gli eventuali figli. id_attr viene considerata del formato corretto (controllo eseguito in istanzia_stato)
 		local
 			stato_temp: STATO_ATOMICO
 			stato_ger_temp: STATO_GERARCHICO
@@ -263,7 +260,8 @@ feature -- inizializzazione SC
 				end
 				stati.extend (stato_ger_temp, id_attr)
 				-- ricorsione sui figli con sé stesso come genitore
-				istanzia_stati (e.elements, stato_ger_temp)
+				across e.elements as element loop istanzia_stato (element.item, stato_ger_temp) end
+
 			else -- elemento corrente <state> non ha figli, quindi è atomico
 				if attached p_genitore as pg then
 					-- istanzio elemento corrente con genitore e glielo assegno come figlio
@@ -278,7 +276,7 @@ feature -- inizializzazione SC
 		end
 
 	istanzia_stato_AND (e: XML_ELEMENT; p_genitore: detachable STATO_GERARCHICO; id_attr: STRING)
-		-- crea uno stati AND assegnando l'eventuale genitore e i figli. id_attr viene considerata del formato corretto (controllo eseguito in istanzia_stati)
+		-- crea uno stati AND assegnando l'eventuale genitore e i figli. id_attr viene considerata del formato corretto (controllo eseguito in istanzia_stato)
 		local
 			stato_ger_temp: STATO_GERARCHICO
 		do
@@ -293,16 +291,50 @@ feature -- inizializzazione SC
 				end
 				stati.extend (stato_ger_temp, id_attr)
 					-- ricorsione sui figli con sé stesso come genitore
-				istanzia_stati (e.elements, stato_ger_temp)
+				across ordina_stati_con_priorita(e.elements) as element loop istanzia_stato (element.item, stato_ger_temp) end
 			else -- elemento corrente <parallel> non ha figli
 				print ("ERRORE 14: lo stato <parallel> >|" + id_attr + "|< non ha figli !%N")
 				errore_costruzione_SC.extend (14)
 			end
 		end
 
+	ordina_stati_con_priorita(stati_figli:LIST[XML_ELEMENT]) :LIST[XML_ELEMENT]
+		local
+			stati_con_priorita: ARRAY [detachable XML_ELEMENT]
+			stati_senza_priorita: LINKED_LIST[XML_ELEMENT]
+		do
+			create {LINKED_LIST [XML_ELEMENT]} Result.make
+			create stati_con_priorita.make_filled (Void, 1, 4)
+			create stati_senza_priorita.make
+
+			across
+				stati_figli as s
+			loop
+				if attached s.item.attribute_by_name ("priority") as p then
+					if not p.value.is_integer then
+						print("ERRORE 37: l'attributo 'priority' di uno stato figlio di uno stato <parallel> deve avere un valore intero!%N")
+						errore_costruzione_SC.extend (39)
+					else
+						if stati_con_priorita.valid_index(p.value.to_integer)  and then attached stati_con_priorita.at (p.value.to_integer)  then
+							print("ERRORE 37: l'attributo 'priority' di uno stato figlio di uno stato <parallel> deve avere un valore intero!%N")
+							errore_costruzione_SC.extend (40)
+						else
+							stati_con_priorita.force (s.item , p.value.to_integer)
+						end
+					end
+				else
+					stati_senza_priorita.extend (s.item)
+				end
+			end
+
+			across stati_con_priorita as s loop if attached s.item as sa then Result.extend(sa)  end end
+			across stati_senza_priorita as s loop Result.extend(s.item)  end
+	end
+
+
 	assegna_initial (elements: LIST [XML_ELEMENT])
 		-- assegna ricorsivamente agli stati i loro sotto-stati iniziali di default
-		-- NB: regolarità di 'id' è stata già controllata in `istanzia_stati'
+		-- NB: regolarità di 'id' è stata già controllata in `istanzia_stato'
 		do
 			across
 				elements as e
@@ -404,10 +436,10 @@ feature -- inizializzazione SC
 				elements as e
 			loop
 				if (e.item.name ~ "state" or e.item.name ~ "parallel") and attached e.item.attribute_by_name ("id") as id_stato then
-					-- assenza di 'id' viene controllata in `istanzia_stati'
+					-- assenza di 'id' viene controllata in `istanzia_stato'
 					completa_stati (e.item.elements)
 					if attached stati.item (id_stato.value) as stato then
-						-- lo stato esiste perché viene creato in `stati' da `istanzia_stati'
+						-- lo stato esiste perché viene creato in `stati' da `istanzia_stato'
 						assegna_figli (stato, e.item)
 					end
 				end
@@ -1103,7 +1135,7 @@ feature -- supporto generale
 				errore_costruzione_SC.extend (28)
 			else
 				debug ("SC_first_sub_state") print ("AVVISO: trovato primo figlio <state> o <parallel>%N"); stampa_elemento (place_holder.item) end
-				-- NB: regolarità di 'id' è stata già controllata in `istanzia_stati'
+				-- NB: regolarità di 'id' è stata già controllata in `istanzia_stato'
 				if attached place_holder.item.attribute_by_name ("id") as id_attr then
 					if attached stati.item (id_attr.value) as sub_state then
 						Result := sub_state
