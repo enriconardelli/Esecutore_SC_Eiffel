@@ -481,16 +481,12 @@ feature -- inizializzazione transizioni
 		-- Assegna a `sorgente' le transizioni tenendo conto della priorità esplicita impostata dall'utente.
 		-- Le transizione senza priorità esplicita vengono considerate avere la priorità più bassa
 		local
-			transizioni_con_priorita_table: HASH_TABLE [XML_ELEMENT, INTEGER]
-			transizioni_con_priorita: LINKED_LIST[XML_ELEMENT]
+			transizioni_con_priorita: ARRAY [detachable XML_ELEMENT]
 			transizioni_senza_priorita: LINKED_LIST[XML_ELEMENT]
-			a_sorter: BUBBLE_SORTER[INTEGER]
-			indici_priorita: ARRAY[INTEGER]
+
 		do
-			create transizioni_con_priorita_table.make (0)
+			create transizioni_con_priorita.make_filled (Void, 1, 4)
 			create transizioni_senza_priorita.make
-			create transizioni_con_priorita.make
-			create a_sorter.make (create {COMPARABLE_COMPARATOR[INTEGER]})
 
 			across
 				transizioni as t
@@ -500,11 +496,11 @@ feature -- inizializzazione transizioni
 						print("ERRORE 37: l'attributo 'priority' di una transizione dello stato " + sorgente.id +" deve avere un valore intero!%N")
 						errore_costruzione_SC.extend (37)
 					else
-						if transizioni_con_priorita_table.has(p.value.to_integer)  then
+						if transizioni_con_priorita.valid_index(p.value.to_integer)  and then attached transizioni_con_priorita.at (p.value.to_integer)  then
 							print("ERRORE 37: l'attributo 'priority' di una transizione dello stato " + sorgente.id +" non può essere un valore duplicato!%N")
 							errore_costruzione_SC.extend (38)
 						else
-							transizioni_con_priorita_table.extend (t.item , p.value.to_integer)
+							transizioni_con_priorita.force (t.item , p.value.to_integer)
 						end
 					end
 				else
@@ -512,11 +508,9 @@ feature -- inizializzazione transizioni
 				end
 			end
 
-			indici_priorita := transizioni_con_priorita_table.current_keys
-			a_sorter.sort (indici_priorita)
-			across indici_priorita as i loop if attached transizioni_con_priorita_table.at (i.item ) as t then transizioni_con_priorita.extend (t) end  end
-			across transizioni_con_priorita as t loop assegna_transizione (t.item,sorgente)  end
+			across transizioni_con_priorita as t loop if attached t.item as ta then assegna_transizione (ta,sorgente)  end end
 			across transizioni_senza_priorita as t loop assegna_transizione (t.item,sorgente)  end
+
 		end
 
 	assegna_transizione (transition_element: XML_ELEMENT; sorgente: STATO)

@@ -26,7 +26,7 @@ feature -- Test routines
 			create conf_finale.make
 		end
 
-	t_verifica_priorita_semplice
+	t_priorita_transizione_1
 			-- Verifica che le transizioni vengono eseguite con la giusta priorità esplicita.
 			-- Caso in cui le transizioni partono dallo stesso <state>
 		do
@@ -34,11 +34,19 @@ feature -- Test routines
 			evoluzione_state_chart ("priorita_transizione_1.xml", "eventi_vuoto.txt", conf_finale)
 		end
 
-	t_verifica_priorita_merge
+	t_priorita_merge_1
 			-- Verifica che le transizioni vengono eseguite con la giusta priorità esplicita.
-			-- Caso in cui le transizioni partono dallo stesso <state>
+			-- Caso in cui c'è una transizione merge
 		do
 			conf_finale.force ("A")
 			evoluzione_state_chart ("priorita_merge_1.xml", "eventi_vuoto.txt", conf_finale)
+		end
+
+	t_priorita_transizione_2
+			-- Verifica che le transizioni vengono eseguite con la giusta priorità esplicita.
+			-- Caso in cui molte transizioni partono dallo stesso <state>
+		do
+			conf_finale.force ("C")
+			evoluzione_state_chart ("priorita_transizione_2.xml", "eventi_vuoto.txt", conf_finale)
 		end
 end

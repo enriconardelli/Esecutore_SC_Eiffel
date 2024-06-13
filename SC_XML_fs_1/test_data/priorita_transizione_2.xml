@@ -1,0 +1,17 @@
+<scxml version="1.0" xmlns="http://www.w3.org/2005/07/scxml" initial="A">
+	<state id="A">
+		<transition target="B" priority="7"/>	
+		<transition target="C" priority="1"/>
+		<transition event="x" target="B" priority="6"/>	
+		<transition event="x" target="C" priority="4"/>	
+		<transition event="y" target="B" priority="5"/>	
+		<transition event="y" target="C" priority="3"/>	
+		<transition event="z" target="B" priority="8"/>	
+		<transition event="z" target="C" priority="2"/>	
+	</state>
+
+	<state id="B"/>
+	
+	<state id="C"/>
+		
+</scxml>
