@@ -601,7 +601,8 @@ feature -- inizializzazione transizioni
 				create transizione.make_con_destinazione (destinazione, sorgente)
 				transizione.set_merge
 				transizione.add_sorgenti (altre_sorgenti)
-				completa_transizione (transition_element, transizione, sorgente)
+				completa_transizione (transition_element, transizione)
+				across tutte_le_sorgenti as s loop s.item.aggiungi_transizione (transizione) end
 				debug ("sc_transizioni_legali")
 					print (" - Transizione legale da >| ")
 					across tutte_le_sorgenti as s loop print(s.item.id + " ") end
@@ -629,7 +630,8 @@ feature -- inizializzazione transizioni
 						transizione.set_interna
 					end
 				end
-				completa_transizione (transition_element, transizione, sorgente)
+				completa_transizione (transition_element, transizione)
+				sorgente.aggiungi_transizione (transizione)
 				debug ("sc_transizioni_legali") print (" - Transizione legale da >| " + sorgente.id + " |< a >| " + destinazione.id + " |< %N") end
 			end
 		end
@@ -642,7 +644,8 @@ feature -- inizializzazione transizioni
 				create transizione.make_con_destinazione (destinazioni.first, sorgente)
 				transizione.set_fork
 				transizione.add_destinazioni (destinazioni)
-				completa_transizione (transition_element, transizione, sorgente)
+				completa_transizione (transition_element, transizione)
+				sorgente.aggiungi_transizione (transizione)
 				debug ("sc_transizioni_legali")
 					print (" - Transizione legale da >| " + sorgente.id + " |< a >| ")
 					across destinazioni as d loop print( d.item.id + " ") end
@@ -655,13 +658,12 @@ feature -- inizializzazione transizioni
 			end
 		end
 
-	completa_transizione (transition_element: XML_ELEMENT; transizione: TRANSIZIONE; stato: STATO)
+	completa_transizione (transition_element: XML_ELEMENT; transizione: TRANSIZIONE)
 		--	assegna evento, condizione e azioni alla transizione e la aggiunge a `stato'
 	do
 		assegna_evento (transition_element, transizione)
 		assegna_condizione (transition_element, transizione)
 		assegna_azioni (transition_element.elements, transizione)
-		stato.aggiungi_transizione (transizione)
 	end
 
 	ancore_multiple_compatibili(lista_stati: LINKED_LIST [STATO]): BOOLEAN

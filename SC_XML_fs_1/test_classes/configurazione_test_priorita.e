@@ -33,4 +33,12 @@ feature -- Test routines
 			conf_finale.force ("C")
 			evoluzione_state_chart ("priorita_transizione_1.xml", "eventi_vuoto.txt", conf_finale)
 		end
+
+	t_verifica_priorita_merge
+			-- Verifica che le transizioni vengono eseguite con la giusta priorità esplicita.
+			-- Caso in cui le transizioni partono dallo stesso <state>
+		do
+			conf_finale.force ("A")
+			evoluzione_state_chart ("priorita_merge_1.xml", "eventi_vuoto.txt", conf_finale)
+		end
 end
