@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" initial="S">
+
+<parallel id="S">	
+	<transition event="E" target="A1">
+		<log name="E - da S a A1" />
+	</transition>
+	<transition event="X" target="A">
+		<log name="X - illegale - da S a A" />
+	</transition>
+
+	<state id="A" initial="A2">
+		<transition event="Y" target="S">
+			<log name="Y - illegale - da A a S" />
+		</transition>
+		
+		<state id="A1">
+			<transition event="F" target="A">
+				<log name="F - da A1 a A" />
+			</transition>
+		</state>
+
+		<state id="A2">
+			<transition event="G" target="A1">
+				<log name="G - da A2 a A1" />
+			</transition>
+		</state>
+	</state>
+	
+	<state id="B" initial="B1">
+		<state id="B1">
+		</state>
+		<state id="B2">
+		</state>
+	</state>
+
+</parallel>
+</scxml>
