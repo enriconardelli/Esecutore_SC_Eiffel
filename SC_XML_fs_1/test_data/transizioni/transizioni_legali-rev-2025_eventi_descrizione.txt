@@ -1,0 +1,12 @@
+
+Configurazione iniziale				A1a		A2b		B1
+dopo Le [A -> A1b]						A1b		A2b		B1
+dopo Lg [A2b -> S]						A1a		A2b		B1
+dopo Lc [A1a -> A1b]					A1b		A2b		B1
+dopo Lf [S -> A2a]						A1b		w z		B1
+dopo Li [Z -> S]							A1a		A2b		B1
+dopo Lh [S -> Q]							A1a		w z		B1
+dopo Lj [w -> A2b]						A1a		A2b		B1
+dopo Lb [B1 -> B2]						A1a		A2b		B2
+dopo Ld [B2 -> B]							A1a		A2b		B1
+dopo La [B1 -> B1]						A1a		A2b		B1
