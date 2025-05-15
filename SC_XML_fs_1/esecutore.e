@@ -341,10 +341,8 @@ feature -- evoluzione della statechart
 		local
 			contesto, stato_temp: detachable STATO
 		do
-		-- TODO: perché qui e in esegui_azioni si fanno gli stessi controlli con antenato_di e trova_contesto?
 			Result := transizione.sorgente.first
 			if transizione.interna then
-				-- TODO: perché si usa solo il primo di sorgente e destinazione?
 				if transizione.sorgente.first.antenato_di (transizione.destinazione.first) then
 					across
 						transizione.sorgente.first.figli as figli
@@ -363,7 +361,14 @@ feature -- evoluzione della statechart
 					end
 				end
 			else
-				-- TODO: perché si trova il contesto usando solo il primo di sorgente e destinazione?
+				-- si trova il contesto usando solo il primo di sorgente e destinazione perche se
+				-- c'è un eventuale transizione fork o merge, se è legale, basta iniziare da uno
+				-- qualunque degli stati sorgente o destinazione
+
+				-- TODO verificare se una volta rifattorizzata trova_contesto non si può anche
+				-- nel caso di transizione interna fare sempre le istruzioni qua sotto senza dover
+				-- testare se la transizione sia interna o meno
+
 				contesto := trova_contesto (transizione.sorgente.first, transizione.destinazione.first)
 				from
 					stato_temp := transizione.sorgente.first
@@ -506,16 +511,21 @@ feature -- esecuzione azioni
 		local
 			contesto: detachable STATO
 		do
-		-- TODO: perché qui e in antenato_massimo_uscita si fanno gli stessi controlli con antenato_di e trova_contesto?
+			-- TODO rifattorizzare trova_contesto in modo che gestisca al suo interno il
+			-- caso di transizione interna e qui rimanga solo la sua invocazione
 			if transizione.interna then
-				-- TODO: perché si usa solo il primo di sorgente e destinazione?
+				-- si trova il contesto usando solo il primo di sorgente e destinazione perche se
+				-- c'è un eventuale transizione fork o merge, se è legale, basta iniziare da uno
+				-- qualunque degli stati sorgente o destinazione
 				if transizione.sorgente.first.antenato_di (transizione.destinazione.first) then
 					contesto := transizione.sorgente.first
 				else
 					contesto := transizione.destinazione.first
 				end
 			else
-				-- TODO: perché si trova il contesto usando solo il primo di sorgente e destinazione?
+				-- si trova il contesto usando solo il primo di sorgente e destinazione perche se
+				-- c'è un eventuale transizione fork o merge, se è legale, basta iniziare da uno
+				-- qualunque degli stati sorgente o destinazione
 				contesto := trova_contesto (transizione.sorgente.first, transizione.destinazione.first)
 			end
 			esegui_azioni_onexit (antenato_massimo_uscita (transizione))
