@@ -165,12 +165,9 @@ feature --situazione
 
 	antenato_di (uno_stato: STATO): BOOLEAN
 	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
-	-- controlla se il Current è antenato "proprio" di `uno_stato'antenato_di (uno_stato: STATO): BOOLEAN
-	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
 	-- controlla se il Current è antenato "proprio" di `uno_stato'
-
-	deferred
-	end
+		deferred
+		end
 
 	incomparabile_con (uno_stato: STATO): BOOLEAN
 	-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
