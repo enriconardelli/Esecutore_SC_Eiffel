@@ -25,7 +25,7 @@ feature {NONE} -- Supporto
 	evoluzione_state_chart_local(eventi: STRING; stati_corretti: LINKED_SET[STRING])
 		do
 			test_data_dir_local.append_character(a_path.directory_separator)
-			evoluzione_state_chart(test_data_dir_local + "transizioni_legali.xml",test_data_dir_local + eventi,stati_corretti)
+			evoluzione_state_chart(test_data_dir_local + "transizioni_legali_rev_2025.xml",test_data_dir_local + eventi,stati_corretti)
 		end
 
 feature -- Test routines
@@ -36,15 +36,17 @@ feature -- Test routines
 		end
 
 	t_transizioni_legali
-		do 	conf_finale.force("A1a")
-			conf_finale.force("W")
-			conf_finale.force("Z")
+		do
+			conf_finale.force("A1a")
+			conf_finale.force("A2b")
+--			conf_finale.force("W")
+--			conf_finale.force("Z")
 			conf_finale.force("B1")
-			evoluzione_state_chart_local("transizioni_legali_eventi_1.txt", conf_finale)
+			evoluzione_state_chart_local("transizioni_legali_rev_2025_eventi.txt", conf_finale)
 		end
 
 -- TODO: il file nella directory generale di test ""transizioni_legali_illegali"" contiene anche
---       transizioni_illegali e non si può mandare testare così com'è perché le transizioni illegali
+--       transizioni_illegali e non si può testare così com'è perché le transizioni illegali
 --       impediscono la successiva esecuzione della SC
 end
 
