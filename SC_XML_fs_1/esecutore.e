@@ -342,43 +342,36 @@ feature -- evoluzione della statechart
 
 	antenato_massimo_uscita (transizione: TRANSIZIONE): STATO
 			-- Arianna Calzuola & Riccardo Malandruccolo 22/05/2020
-			-- restituisce l'antenato più grande dal quale si esce con 'transizione'
+			-- restituisce l'antenato più grande dal quale si esce con 'transizione'	
+			-- si trova il contesto usando solo il primo di sorgente e destinazione perche se
+			-- c'è un eventuale transizione fork o merge, se è legale, basta iniziare da uno
+			-- qualunque degli stati sorgente o destinazione
 		local
-			contesto, stato_temp: detachable STATO
+		   	 stato_temp: detachable STATO
 		do
 			Result := transizione.sorgente.first
 			if transizione.interna then
 				if transizione.sorgente.first.antenato_di (transizione.destinazione.first) then
-					across
-						transizione.sorgente.first.figli as figli
-					loop
-						if figli.item.attivo then
-							Result := figli.item
-						end
-					end
+					stato_temp := transizione.sorgente.first
 				else
-					across
-						transizione.destinazione.first.figli as figli
-					loop
-						if figli.item.attivo then
-							Result := figli.item
-						end
+					stato_temp := transizione.destinazione.first
+				end
+				across
+					stato_temp.figli as figli
+				loop
+					if figli.item.attivo then
+						Result := figli.item
 					end
 				end
 			else
-					-- si trova il contesto usando solo il primo di sorgente e destinazione perche se
-					-- c'è un eventuale transizione fork o merge, se è legale, basta iniziare da uno
-					-- qualunque degli stati sorgente o destinazione
-
 					-- TODO verificare se una volta rifattorizzata trova_contesto non si può anche
 					-- nel caso di transizione interna fare sempre le istruzioni qua sotto senza dover
 					-- testare se la transizione sia interna o meno
 
-				contesto := trova_contesto (transizione.sorgente.first, transizione.destinazione.first)
 				from
 					stato_temp := transizione.sorgente.first
 				until
-					stato_temp = contesto
+					stato_temp = trova_contesto (transizione.sorgente.first, transizione.destinazione.first)
 				loop
 					if attached stato_temp then
 						Result := stato_temp
