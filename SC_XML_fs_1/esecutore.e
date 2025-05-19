@@ -513,6 +513,12 @@ feature -- evoluzione della statechart
 				end
 				Result := corrente
             end
+            from
+            until
+            	Result = Void or else attached {STATO_XOR} Result
+            loop
+            	Result := Result.genitore
+            end
 		end
 
 feature -- esecuzione azioni
