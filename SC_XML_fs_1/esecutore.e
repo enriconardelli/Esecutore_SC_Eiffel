@@ -347,7 +347,7 @@ feature -- evoluzione della statechart
 			-- c'è un eventuale transizione fork o merge, se è legale, basta iniziare da uno
 			-- qualunque degli stati sorgente o destinazione
 		local
-		   	 stato_temp: detachable STATO
+		   	 stato_temp, contesto: detachable STATO
 		do
 			Result := transizione.sorgente.first
 			if transizione.interna then
@@ -364,14 +364,11 @@ feature -- evoluzione della statechart
 					end
 				end
 			else
-					-- TODO verificare se una volta rifattorizzata trova_contesto non si può anche
-					-- nel caso di transizione interna fare sempre le istruzioni qua sotto senza dover
-					-- testare se la transizione sia interna o meno
-
 				from
 					stato_temp := transizione.sorgente.first
+					contesto := trova_contesto (transizione)
 				until
-					stato_temp = trova_contesto (transizione.sorgente.first, transizione.destinazione.first)
+					stato_temp = contesto
 				loop
 					if attached stato_temp then
 						Result := stato_temp
@@ -476,15 +473,25 @@ feature -- evoluzione della statechart
 			end
 		end
 
-	trova_contesto (p_sorgente, p_destinazione: STATO): detachable STATO
+	trova_contesto (p_transizione: TRANSIZIONE): detachable STATO
 			-- trova il contesto in base alla specifica SCXML secondo cui il contesto
 			-- è il minimo antenato comune PROPRIO a p_sorgente e p_destinazione
+			-- a meno che la transizione sia interna, nel qual caso è il minimo antenato
+			-- comune, che quindi coincide con uno dei due, perché la transizione interna
+			-- coinvolge sempre due stati uno antenato dell'altro
 		local
 			antenati: HASH_TABLE [STRING, STRING]
 			corrente: STATO
-		do --caso base in cui p_sorgente è il contesto
-			if p_sorgente.antenato_di (p_destinazione) then
-				Result := p_sorgente
+			p_sorgente, p_destinazione: STATO
+		do
+			p_sorgente := p_transizione.sorgente.first
+			p_destinazione := p_transizione.destinazione.first
+			if p_transizione.interna then
+				if p_sorgente.antenato_di(p_destinazione) then
+					Result := p_sorgente
+				else
+					Result := p_destinazione
+				end
 			else
 				create antenati.make (0)
 					-- "marca" tutti gli antenati di p_sorgente incluso p_destinazione
@@ -504,7 +511,7 @@ feature -- evoluzione della statechart
 				loop
 					corrente := corrente.genitore
 				end
-			Result := corrente
+				Result := corrente
             end
 		end
 
@@ -517,7 +524,8 @@ feature -- esecuzione azioni
 			-- si trova il contesto usando solo il primo di sorgente e destinazione perche se
 			-- c'è un eventuale transizione fork o merge, se è legale, basta iniziare da uno
 			-- qualunque degli stati sorgente o destinazione
-			contesto := trova_contesto (transizione.sorgente.first, transizione.destinazione.first)
+
+			contesto := trova_contesto (transizione)
 			esegui_azioni_onexit (antenato_massimo_uscita (transizione))
 			esegui_azioni_transizione (transizione.azioni)
 			esegui_azioni_onentry (contesto, transizione.destinazione.first)
