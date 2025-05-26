@@ -77,7 +77,7 @@ feature -- Test routines
 		 do
 			conf_finale.force("A3")
 			conf_finale.force("B11")
-			conf_finale.force("B12b")
+			conf_finale.force("B12a")
 			evoluzione_state_chart("non_determinismo_1_5.xml", "non_determinismo_1_5_eventi.txt", conf_finale)
 		end
 
@@ -86,7 +86,7 @@ feature -- Test routines
 		 do
 			conf_finale.force("A3")
 			conf_finale.force("B11a")
-			conf_finale.force("B12a")
+			conf_finale.force("B12b")
 			evoluzione_state_chart("non_determinismo_1_5_1.xml", "non_determinismo_1_5_eventi.txt", conf_finale)
 		end
 
@@ -104,7 +104,7 @@ feature -- Test routines
 		 do
 			conf_finale.force("A3")
 			conf_finale.force("B11a")
-			conf_finale.force("B12b")
+			conf_finale.force("B12a")
 			evoluzione_state_chart("non_determinismo_1_5_3.xml", "non_determinismo_1_5_eventi.txt", conf_finale)
 		end
 
