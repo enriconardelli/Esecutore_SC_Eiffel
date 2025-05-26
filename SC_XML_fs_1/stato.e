@@ -133,7 +133,7 @@ feature --situazione
 		-- mediante ereditarietà da un antenato (priorità strutturale object oriented)
 		-- TODO: nel caso di un evento (o più eventi presenti nello stesso istante) in grado di abilitare più transizioni
 		-- TODO: se è uno stesso evento si può rilevare durante l'analisi della SC (e poi vanno introdotte e gestite qui le priorità)
-		-- TODO: se sono eventi diversi va rilevato dinamicamente in questa feature
+		-- TODO: se sono eventi diversi non c'è niente da fare, riceve la priorità la prima transzione che compare nel file .xml
 		local
 			index_count: INTEGER
 			transizione_corrente: detachable TRANSIZIONE
