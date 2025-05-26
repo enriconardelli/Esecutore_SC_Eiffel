@@ -9,9 +9,9 @@
 			<debug name="sc_inizializza_variabili" enabled="false"/>
 			<debug name="sc_modifica_variabili" enabled="false"/>
 			<debug name="sc_storia" enabled="false"/>
-			<debug name="sc_transizioni_eseguibili" enabled="false"/>
+			<debug name="sc_transizioni_eseguibili" enabled="true"/>
 			<debug name="sc_transizioni_illegali" enabled="false"/>
-			<debug name="sc_transizioni_legali" enabled="true"/>
+			<debug name="sc_transizioni_legali" enabled="false"/>
 			<debug name="xml_print" enabled="false"/>
 			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
 		</option>
