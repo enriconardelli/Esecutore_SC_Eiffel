@@ -1,7 +1,9 @@
-# Eiffel compiled code directory, *.rc file and *.ecf configuration file 
+# Eiffel compiled code directory, *.rc file, error configuration file 
 EIFGENs
 *.rc
-# commentata perché forse è utile condividere i file ECF -- EN 6mar2020
+exception_trace.log
+
+# commentata perché è utile condividere i file ECF -- EN 6mar2020
 # *.ecf
 
 # Editor back-up files
