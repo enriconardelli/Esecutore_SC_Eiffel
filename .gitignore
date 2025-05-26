@@ -1,7 +1,7 @@
 # Eiffel compiled code directory, *.rc file, error configuration file 
 EIFGENs
 *.rc
-exception_trace.log
+*/exception_trace.log
 
 # commentata perché è utile condividere i file ECF -- EN 6mar2020
 # *.ecf
@@ -55,3 +55,4 @@ test_out.xml
 Network Trash Folder
 Temporary Items
 .apdisk
+
