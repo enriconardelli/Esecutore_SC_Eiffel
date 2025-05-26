@@ -853,8 +853,9 @@ feature -- inizializzazione transizioni
 		end
 
 	intera_legittima_stringa (stringa: STRING): STRING
-	-- crea una stringas che rispetta le condizioni assunte in TRANSIZIONI.check_condizione_intera. Se non le ripetta restituisce stringa vuota
+	-- crea una stringa che rispetta le condizioni assunte in TRANSIZIONI.check_condizione_intera. Se non le rispetta restituisce stringa vuota
 	-- TODO: usare libreria di Eiffel 'parse' per analisi di correttezza della stringa delle condizioni (va aggiunta al progetto)
+	-- TODO: negli if annidati finali manca nel ramo else la registrazione del tipo di errore
 		local
 			var: STRING
 			var1: STRING
@@ -889,7 +890,7 @@ feature -- inizializzazione transizioni
 			if attached var as v then
 				if variabili.intere.has (pulisci_stringa (v)) then
 					if attached var1 as v1 then
-						if v1.is_integer  then
+						if v1.is_integer then
 							if attached expr as e then
 								Result := v + e + v1
 							end

@@ -144,11 +144,6 @@ feature -- check
 
 	check_condizione_intera (variabili_intere: HASH_TABLE [INTEGER, STRING]): BOOLEAN
 	-- Controlla se la condizione sulle variabili intere è verificata.
-	-- assunzioni che NON vengono controllate:
-	--		ciò che c'è prima di '<' o '>' o '=' o '/=' è il nome della variabile
-	--		se c'è '=' dopo '<' o '>' allora li segue immediatamente
-	--		se c'é '/' allora '=' lo segue immediatamente
-	--		tutto ciò che c'è dopo espressione di confronto è trasformabile in numero
 	local
 		var: STRING
 		valore: INTEGER
