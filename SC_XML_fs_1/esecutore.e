@@ -350,6 +350,10 @@ feature -- evoluzione della statechart
 		   	 stato_temp, contesto: detachable STATO
 		do
 			Result := transizione.sorgente.first
+			-- TODO: annotato qua per non dimenticarlo; se una transizione va da uno stato in sé stesso NON può essere interna
+			-- TODO: se questo non viene controllato durante la lettura della SC allora il test sotto non funziona
+			-- TODO: nel caso di una transizione interna di stato atomico su sé stesso perché questo non ha figli
+			-- TODO: Analogamente una transizione interna può essere solo discendente (vedere note_diario_corso_24-25)
 			if transizione.interna then
 				if transizione.sorgente.first.antenato_di (transizione.destinazione.first) then
 					stato_temp := transizione.sorgente.first
@@ -475,10 +479,11 @@ feature -- evoluzione della statechart
 
 	trova_contesto (p_transizione: TRANSIZIONE): detachable STATO
 			-- trova il contesto in base alla specifica SCXML secondo cui il contesto
-			-- è il minimo antenato comune PROPRIO a p_sorgente e p_destinazione
+			-- è il minimo antenato comune PROPRIO a p_sorgente e p_destinazione che sia STATO_XOR
 			-- a meno che la transizione sia interna, nel qual caso è il minimo antenato
 			-- comune, che quindi coincide con uno dei due, perché la transizione interna
 			-- coinvolge sempre due stati uno antenato dell'altro
+			-- TODO: Attenzione agli appunti scritti in note_diario_corso_24-25
 		local
 			antenati: HASH_TABLE [STRING, STRING]
 			corrente: STATO
