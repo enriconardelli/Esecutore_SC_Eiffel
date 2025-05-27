@@ -501,6 +501,7 @@ feature -- inizializzazione storia
 				end
 				stato.add_storia (storia_temp)
 			end
+			-- TODO: il test seguente va anticipato in assegna_figli
 			if attached {STATO_AND} stato as st_and then
 				print ("AVVISO: " + st_and.id + " è uno stato parallelo, pertanto la sua storia non verrà considerata!%N")
 			end
