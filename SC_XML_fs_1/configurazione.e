@@ -888,6 +888,9 @@ feature -- inizializzazione transizioni
 				expr := "="
 			end
 			create Result.make_empty
+
+
+
 			if attached var as v then
 				if variabili.intere.has (pulisci_stringa (v)) then
 					if attached var1 as v1 then
