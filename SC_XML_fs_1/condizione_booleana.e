@@ -5,7 +5,7 @@ note
 	revision: "$Revision$"
 
 class
-	CONDIZIONE_BOOELANA
+	CONDIZIONE_BOOLEANA
 
 inherit
 	CONDIZIONE
