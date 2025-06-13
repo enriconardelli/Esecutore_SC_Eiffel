@@ -35,7 +35,7 @@ feature -- attributi
 
 	evento: detachable STRING
 
-	condizione: STRING
+	condizione: CONDIZIONE
 
     azioni: ARRAY [AZIONE]
 
@@ -56,9 +56,9 @@ feature -- setter
 			evento := a_string
 		end
 
-	set_condizione (a_string: STRING)
+	set_condizione (a_condizione: CONDIZIONE)
 		do
-			condizione := a_string
+			condizione := a_condizione
 		end
 
 	set_destinazione (uno_stato: STATO)

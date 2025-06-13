@@ -9,4 +9,5 @@ deferred class
 
 feature -- attributi
 	variabile: STRING
+
 end
