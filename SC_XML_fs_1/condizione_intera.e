@@ -5,8 +5,11 @@ note
 	revision: "$Revision$"
 
 deferred class
+	CONDIZIONE_INTERA
+
+inherit
 	CONDIZIONE
 
 feature -- attributi
-	variabile: STRING
+	operazione: STRING
 end

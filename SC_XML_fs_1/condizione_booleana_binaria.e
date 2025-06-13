@@ -1,19 +1,20 @@
 note
-	description: "Summary description for {CONDIZIONE_INTERA_BINARIA}."
+	description: "Summary description for {CONDIZIONE_BOOELANA_BINARIA}."
 	author: "Marco Aragona & Gabriele Messina"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
-	CONDIZIONE_INTERA_BINARIA
+	CONDIZIONE_BOOLEANA_BINARIA
 
 inherit
-	CONDIZIONE_INTERA
+	CONDIZIONE_BOOLEANA
 
 create
 	make
 
 feature -- attributi
+	operazione: STRING
 	variabile2: STRING
 
 feature {NONE} -- Initialization
