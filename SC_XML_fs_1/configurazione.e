@@ -861,48 +861,41 @@ feature -- inizializzazione transizioni
 			var: STRING
 			var1: STRING
 			expr: STRING
+			operators: ARRAY[STRING]
+			found_operator: STRING
+			operator_pos: INTEGER
+			pos: INTEGER
+			current_op: STRING
 		do
-			if stringa.has ('<') then
-				var := stringa.substring (1, stringa.index_of ('<', 1) - 1)
-				var1 := stringa.substring (stringa.index_of ('<', 1) + 1, stringa.count)
-				expr := "<"
-					if var1.index_of ('=', 1) = 1 then
-						var1 := var1.substring (2,var1.count)
-						expr := "<="
-					end
-			elseif stringa.has ('>') then
-				var := stringa.substring (1, stringa.index_of ('>', 1) - 1)
-				var1 := stringa.substring (stringa.index_of ('>', 1) + 1, stringa.count)
-				expr := ">"
-					if var1.index_of ('=', 1) = 1 then
-						var1 := var1.substring (2,var1.count)
-						expr := "<="
-					end
-			elseif stringa.has_substring ("/=") then
-				var := stringa.substring (1, stringa.index_of ('/', 1) - 1)
-				var1 := stringa.substring (stringa.index_of ('=', 1) + 1, stringa.count)
-				expr := "/="
-			elseif stringa.has ('=') then
-				var := stringa.substring (1, stringa.index_of ('=', 1) - 1)
-				var1 := stringa.substring (stringa.index_of ('=', 1) + 1, stringa.count)
-				expr := "="
+			operators:= <<">=", "/=", "<", ">", "=">>  -- Ordine importante: prima gli operatori multi-carattere
+			found_operator := " "
+			operator_pos := 0
+
+			-- Cerca gli operatori nell'ordine specificato
+			across operators as op loop
+			    current_op := op.item
+			    pos := stringa.index_of (current_op[1], 1)
+
+			    if pos > 0 and then found_operator.is_empty then
+			        -- Verifica se è effettivamente l'operatore (per distinguere < da <=)
+			        if current_op.count = 1 or
+			           (stringa.count >= pos + current_op.count - 1 and then
+			            stringa.substring (pos, pos + current_op.count - 1).is_equal (current_op)) then
+			            found_operator := current_op
+			            operator_pos := pos
+			        end
+			    end
 			end
+
 			create Result.make_empty
 
-
-
-			if attached var as v then
-				if variabili.intere.has (pulisci_stringa (v)) then
-					if attached var1 as v1 then
-						if v1.is_integer then
-							if attached expr as e then
-								Result := v + e + v1
-							end
-						end
-					end
-				end
+			if found_operator /= "" then
+			    var := stringa.substring(1, operator_pos - 1)
+			    pos := operator_pos + found_operator.count --starting pos
+			    var1 := stringa.substring(pos, stringa.count)
+			    expr := found_operator
+			    Result := var + expr + var1
 			end
-
 		end
 
 feature -- inizializzazione azioni
