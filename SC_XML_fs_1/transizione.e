@@ -143,34 +143,29 @@ feature -- check
 	check_condizione_intera (variabili_intere: HASH_TABLE [INTEGER, STRING]): BOOLEAN
 			-- Controlla se la condizione sulle variabili intere è verificata.
 		local
-			var: STRING
-			valore: INTEGER
+			variabile: STRING
 			operazione: STRING
+			valore: INTEGER
 		do
+			Result:=False
 			if attached {CONDIZIONE_INTERA} condizione as cond then
 				valore := cond.valore
 				if attached cond.operazione as op then
 					operazione := op
-					if attached cond.variabile as variabile then
-						var := variabile
-						if operazione.has ('<') then
-							if operazione.has_substring ("<=") then
-								Result := variabili_intere.item (var) <= valore
-							else
-								Result := variabili_intere.item (var) < valore
-							end
-						elseif operazione.has ('>') then
-							if operazione.has_substring (">=") then
-								Result := variabili_intere.item (var) >= valore
-							else
-								Result := variabili_intere.item (var) > valore
-							end
-						elseif operazione.has ('=') then
-							if operazione.has_substring ("/=") then
-								Result := variabili_intere.item (var) /= valore
-							else
-								Result := variabili_intere.item (var) = valore
-							end
+					if attached cond.variabile as var then
+						variabile := var
+						if operazione.is_equal("<=") then
+							Result := variabili_intere.item (variabile) <= valore
+						elseif operazione.is_equal("<") then
+							Result := variabili_intere.item (variabile) < valore
+						elseif operazione.is_equal(">=") then
+							Result := variabili_intere.item (variabile) >= valore
+						elseif operazione.is_equal(">") then
+							Result := variabili_intere.item (variabile) > valore
+						elseif operazione.is_equal("/=") then
+							Result := variabili_intere.item (variabile) /= valore
+						elseif operazione.is_equal("=") then
+							Result := variabili_intere.item (variabile) = valore
 						else
 							Result := False
 						end
