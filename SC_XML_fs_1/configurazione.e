@@ -892,13 +892,13 @@ feature -- inizializzazione transizioni
 				var1 := stringa.substring (stringa.index_of ('=', 1) + 1, stringa.count)
 				expr := "="
 			end
-
+			create Result.make_empty
 			if attached var as v then
 				if variabili.intere.has (pulisci_stringa (v)) then
 					if attached var1 as v1 then
 						if v1.is_integer then
 							if attached expr as e then
-								create Result.make(v,e,v1.to_integer)
+							    Result.set(v,e,v1.to_integer)
 								--Result := v + e + v1
 							end
 						end
@@ -906,7 +906,7 @@ feature -- inizializzazione transizioni
 				end
 			end
 
-			create Result.make_empty
+
 		end
 
 feature -- inizializzazione azioni

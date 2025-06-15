@@ -16,6 +16,7 @@ create
 feature
 	make(variabile_input: STRING)
 		do
+		is_null:= false
 		variabile:=variabile_input
 	end
 end

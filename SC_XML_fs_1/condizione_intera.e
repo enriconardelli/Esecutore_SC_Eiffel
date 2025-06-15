@@ -24,6 +24,16 @@ feature -- attributi
 feature -- Initialization
 	make (variabile_input: STRING; operazione_input: STRING; valore_input: INTEGER)
 		do
+			is_null := false
+			variabile := variabile_input
+			operazione := operazione_input
+			valore := valore_input
+			is_empty:= variabile.is_empty and operazione.is_empty and valore=0
+		end
+
+	set (variabile_input: STRING; operazione_input: STRING; valore_input: INTEGER)
+		do
+			is_null := false
 			variabile := variabile_input
 			operazione := operazione_input
 			valore := valore_input
@@ -32,6 +42,7 @@ feature -- Initialization
 
 	make_empty
 		do
+			is_null := false
 			variabile := "V"
 			operazione := "V"
 			valore := 0
