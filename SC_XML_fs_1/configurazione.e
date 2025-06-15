@@ -927,7 +927,7 @@ feature -- inizializzazione transizioni
 					if attached valore as v1 then
 					--	if v1.is_integer then
 							if attached op as e then
-							    Result.set(v+e,e,v1)
+							    Result.set(v,e,v1)
 								--Result := v + e + v1
 							end
 					--	end
