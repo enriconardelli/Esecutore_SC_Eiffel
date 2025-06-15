@@ -896,41 +896,13 @@ feature -- inizializzazione transizioni
 				op:="="
 			end
 		end
---			if stringa.has ('<') then
---				var := stringa.substring (1, stringa.index_of ('<', 1) - 1)
---				var1 := stringa.substring (stringa.index_of ('<', 1) + 1, stringa.count)
---				expr := "<"
---					if var1.index_of ('=', 1) = 1 then
---						var1 := var1.substring (2,var1.count)
---						expr := "<="
---					end
---			elseif stringa.has ('>') then
---				var := stringa.substring (1, stringa.index_of ('>', 1) - 1)
---				var1 := stringa.substring (stringa.index_of ('>', 1) + 1, stringa.count)
---				expr := ">"
---					if var1.index_of ('=', 1) = 1 then
---						var1 := var1.substring (2,var1.count)
---						expr := "<="
---					end
---			elseif stringa.has_substring ("/=") then
---				var := stringa.substring (1, stringa.index_of ('/', 1) - 1)
---				var1 := stringa.substring (stringa.index_of ('=', 1) + 1, stringa.count)
---				expr := "/="
---			elseif stringa.has ('=') then
---				var := stringa.substring (1, stringa.index_of ('=', 1) - 1)
---				var1 := stringa.substring (stringa.index_of ('=', 1) + 1, stringa.count)
---				expr := "="
---			end
 			create Result.make_empty
 			if attached var as v then
 				if variabili.intere.has (pulisci_stringa (v)) then
 					if attached valore as v1 then
-					--	if v1.is_integer then
-							if attached op as e then
-							    Result.set(v+e,e,v1)
-								--Result := v + e + v1
-							end
-					--	end
+						if attached op as e then
+							Result.set(v,e,v1)
+						end
 					end
 				end
 			end
