@@ -863,45 +863,74 @@ feature -- inizializzazione transizioni
 	-- TODO: usare libreria di Eiffel 'parse' per analisi di correttezza della stringa delle condizioni (va aggiunta al progetto)
 	-- TODO: negli if annidati finali manca nel ramo else la registrazione del tipo di errore
 		local
-			var: STRING
-			var1: STRING
-			expr: STRING
+			var:STRING
+			op: STRING
+			valore:INTEGER
 		do
-			if stringa.has ('<') then
-				var := stringa.substring (1, stringa.index_of ('<', 1) - 1)
-				var1 := stringa.substring (stringa.index_of ('<', 1) + 1, stringa.count)
-				expr := "<"
-					if var1.index_of ('=', 1) = 1 then
-						var1 := var1.substring (2,var1.count)
-						expr := "<="
-					end
-			elseif stringa.has ('>') then
-				var := stringa.substring (1, stringa.index_of ('>', 1) - 1)
-				var1 := stringa.substring (stringa.index_of ('>', 1) + 1, stringa.count)
-				expr := ">"
-					if var1.index_of ('=', 1) = 1 then
-						var1 := var1.substring (2,var1.count)
-						expr := "<="
-					end
-			elseif stringa.has_substring ("/=") then
-				var := stringa.substring (1, stringa.index_of ('/', 1) - 1)
-				var1 := stringa.substring (stringa.index_of ('=', 1) + 1, stringa.count)
-				expr := "/="
-			elseif stringa.has ('=') then
-				var := stringa.substring (1, stringa.index_of ('=', 1) - 1)
-				var1 := stringa.substring (stringa.index_of ('=', 1) + 1, stringa.count)
-				expr := "="
+		if stringa.has ('<') then
+			var := stringa.substring (1, stringa.index_of ('<', 1) - 1)
+			if stringa.has_substring ("<=") then
+				valore := stringa.substring (stringa.index_of ('<', 1) + 2, stringa.count).to_integer
+				op:="<="
+			else
+				valore := stringa.substring (stringa.index_of ('<', 1) + 1, stringa.count).to_integer
+				op:="<"
 			end
+		elseif stringa.has ('>') then
+			var := stringa.substring (1, stringa.index_of ('>', 1) - 1)
+			if stringa.has_substring (">=") then
+				valore := stringa.substring (stringa.index_of ('>', 1) + 2, stringa.count).to_integer
+				op:=">="
+			else
+				valore := stringa.substring (stringa.index_of ('>', 1) + 1, stringa.count).to_integer
+				op:=">"
+			end
+		elseif stringa.has ('=') then
+			if stringa.has_substring ("/=") then
+				var := stringa.substring (1, stringa.index_of ('/', 1) - 1)
+				valore := stringa.substring (stringa.index_of ('/', 1) + 2, stringa.count).to_integer
+				op:="/="
+			else
+				var := stringa.substring (1, stringa.index_of ('=', 1) - 1)
+				valore := stringa.substring (stringa.index_of ('=', 1) + 1, stringa.count).to_integer
+				op:="="
+			end
+		end
+--			if stringa.has ('<') then
+--				var := stringa.substring (1, stringa.index_of ('<', 1) - 1)
+--				var1 := stringa.substring (stringa.index_of ('<', 1) + 1, stringa.count)
+--				expr := "<"
+--					if var1.index_of ('=', 1) = 1 then
+--						var1 := var1.substring (2,var1.count)
+--						expr := "<="
+--					end
+--			elseif stringa.has ('>') then
+--				var := stringa.substring (1, stringa.index_of ('>', 1) - 1)
+--				var1 := stringa.substring (stringa.index_of ('>', 1) + 1, stringa.count)
+--				expr := ">"
+--					if var1.index_of ('=', 1) = 1 then
+--						var1 := var1.substring (2,var1.count)
+--						expr := "<="
+--					end
+--			elseif stringa.has_substring ("/=") then
+--				var := stringa.substring (1, stringa.index_of ('/', 1) - 1)
+--				var1 := stringa.substring (stringa.index_of ('=', 1) + 1, stringa.count)
+--				expr := "/="
+--			elseif stringa.has ('=') then
+--				var := stringa.substring (1, stringa.index_of ('=', 1) - 1)
+--				var1 := stringa.substring (stringa.index_of ('=', 1) + 1, stringa.count)
+--				expr := "="
+--			end
 			create Result.make_empty
 			if attached var as v then
 				if variabili.intere.has (pulisci_stringa (v)) then
-					if attached var1 as v1 then
-						if v1.is_integer then
-							if attached expr as e then
-							    Result.set(v+e+v1,e,v1.to_integer)
+					if attached valore as v1 then
+					--	if v1.is_integer then
+							if attached op as e then
+							    Result.set(v+e,e,v1)
 								--Result := v + e + v1
 							end
-						end
+					--	end
 					end
 				end
 			end
