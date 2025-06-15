@@ -898,15 +898,13 @@ feature -- inizializzazione transizioni
 					if attached var1 as v1 then
 						if v1.is_integer then
 							if attached expr as e then
-							    Result.set(v,e,v1.to_integer)
+							    Result.set(v+e+v1,e,v1.to_integer)
 								--Result := v + e + v1
 							end
 						end
 					end
 				end
 			end
-
-
 		end
 
 feature -- inizializzazione azioni

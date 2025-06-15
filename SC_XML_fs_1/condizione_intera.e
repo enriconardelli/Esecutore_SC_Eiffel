@@ -43,8 +43,8 @@ feature -- Initialization
 	make_empty
 		do
 			is_null := false
-			variabile := "V"
-			operazione := "V"
+			variabile := "NULL"
+			operazione := "NULL"
 			valore := 0
 			is_empty:= True
 		end
@@ -52,9 +52,9 @@ feature -- Initialization
 feature
 	set_null
 		do
-			variabile:="N"
+			variabile:="NULL"
 			is_null:=True
-			operazione := "V"
+			operazione := "NULL"
 			valore := 0
 			is_empty:= True
 	end

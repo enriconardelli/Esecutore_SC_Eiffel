@@ -140,54 +140,58 @@ feature -- check
 
 	check_condizione_intera (variabili_intere: HASH_TABLE [INTEGER, STRING]): BOOLEAN
 	-- Controlla se la condizione sulle variabili intere è verificata.
+	local
+		var:STRING
+		valore:INTEGER
 	do
---		if condizione.has ('<') then
---			var := condizione.substring (1,   condizione.index_of ('<', 1) - 1)
---			if condizione.has_substring ("<=") then
---				valore := condizione.substring (condizione.index_of ('<', 1) + 2, condizione.count).to_integer
---				Result := variabili_intere.item (var) <= valore
---			else
---				valore := condizione.substring ( condizione.index_of ('<', 1) + 1, condizione.count).to_integer
---				Result := variabili_intere.item (var) < valore
---			end
---		elseif condizione.has ('>') then
---			var := condizione.substring (1,  condizione.index_of ('>', 1) - 1)
---			if condizione.has_substring (">=") then
---				valore := condizione.substring (condizione.index_of ('>', 1) + 2, condizione.count).to_integer
---				Result := variabili_intere.item (var) >= valore
---			else
---				valore := condizione.substring ( condizione.index_of ('>', 1) + 1, condizione.count).to_integer
---				Result := variabili_intere.item (var) > valore
---			end
---		elseif condizione.has ('=') then
---			if condizione.has_substring ("/=") then
---				var := condizione.substring (1,   condizione.index_of ('/', 1) - 1)
---				valore := condizione.substring (condizione.index_of ('/', 1) + 2, condizione.count).to_integer
---				Result := variabili_intere.item (var) /= valore
---			else
---				var := condizione.substring (1,  condizione.index_of ('=', 1) - 1)
---				valore := condizione.substring ( condizione.index_of ('=', 1) + 1, condizione.count).to_integer
---				Result := variabili_intere.item (var) = valore
---			end
---		else
---			Result := False
---		end
---	end
-	if attached{CONDIZIONE_INTERA} condizione as cond then
-			if cond.operazione="<=" then
-				Result := variabili_intere.item (cond.variabile) <= cond.valore
-		    elseif  cond.operazione=">=" then
-				Result := variabili_intere.item (cond.variabile) >= cond.valore
-			elseif  cond.operazione="/=" then
-				Result := variabili_intere.item (cond.variabile) /= cond.valore
-			elseif  cond.operazione="<" then
-				Result := variabili_intere.item (cond.variabile) < cond.valore
-			elseif  cond.operazione=">" then
-				Result := variabili_intere.item (cond.variabile) > cond.valore
-		    elseif  cond.operazione="=" then
-				Result := variabili_intere.item (cond.variabile) = cond.valore
+		if condizione.variabile.has ('<') then
+			var := condizione.variabile.substring (1,   condizione.variabile.index_of ('<', 1) - 1)
+			if condizione.variabile.has_substring ("<=") then
+				valore := condizione.variabile.substring (condizione.variabile.index_of ('<', 1) + 2, condizione.variabile.count).to_integer
+				Result := variabili_intere.item (var) <= valore
+			else
+				valore := condizione.variabile.substring ( condizione.variabile.index_of ('<', 1) + 1, condizione.variabile.count).to_integer
+				Result := variabili_intere.item (var) < valore
 			end
-		else Result:=false
+		elseif condizione.variabile.has ('>') then
+			var := condizione.variabile.substring (1,  condizione.variabile.index_of ('>', 1) - 1)
+			if condizione.variabile.has_substring (">=") then
+				valore := condizione.variabile.substring (condizione.variabile.index_of ('>', 1) + 2, condizione.variabile.count).to_integer
+				Result := variabili_intere.item (var) >= valore
+			else
+				valore := condizione.variabile.substring ( condizione.variabile.index_of ('>', 1) + 1, condizione.variabile.count).to_integer
+				Result := variabili_intere.item (var) > valore
+			end
+		elseif condizione.variabile.has ('=') then
+			if condizione.variabile.has_substring ("/=") then
+				var := condizione.variabile.substring (1,   condizione.variabile.index_of ('/', 1) - 1)
+				valore := condizione.variabile.substring (condizione.variabile.index_of ('/', 1) + 2, condizione.variabile.count).to_integer
+				Result := variabili_intere.item (var) /= valore
+			else
+				var := condizione.variabile.substring (1,  condizione.variabile.index_of ('=', 1) - 1)
+				valore := condizione.variabile.substring ( condizione.variabile.index_of ('=', 1) + 1, condizione.variabile.count).to_integer
+				Result := variabili_intere.item (var) = valore
+			end
+		else
+			Result := False
 		end
-  	 end
 	end
+end
+--	if attached{CONDIZIONE_INTERA} condizione as cond then
+--			if cond.operazione="<=" then
+--				Result := variabili_intere.item (cond.variabile) <= cond.valore
+--		    elseif  cond.operazione=">=" then
+--				Result := variabili_intere.item (cond.variabile) >= cond.valore
+--			elseif  cond.operazione="/=" then
+--				Result := variabili_intere.item (cond.variabile) /= cond.valore
+--			elseif  cond.operazione="<" then
+--				Result := variabili_intere.item (cond.variabile) < cond.valore
+--			elseif  cond.operazione=">" then
+--				Result := variabili_intere.item (cond.variabile) > cond.valore
+--		    elseif  cond.operazione="=" then
+--				Result := variabili_intere.item (cond.variabile) = cond.valore
+--			end
+--		else Result:=false
+--		end
+--  	 end
+--	end
