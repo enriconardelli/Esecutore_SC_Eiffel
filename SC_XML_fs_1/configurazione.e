@@ -901,7 +901,7 @@ feature -- inizializzazione transizioni
 				if variabili.intere.has (pulisci_stringa (v)) then
 					if attached valore as v1 then
 						if attached op as e then
-							Result.set(v,e,v1)
+							Result.set(pulisci_stringa(v),e,v1)
 						end
 					end
 				end

@@ -143,18 +143,17 @@ feature -- check
 --	local
 --		var:STRING
 --		valore:INTEGER
+--		operazione: STRING
 --	do
 --		if attached{CONDIZIONE_INTERA}condizione as cond then
 --			operazione:=cond.operazione
 --			valore:=cond.valore
 --		end
---		if condizione.variabile.has ('<') then
+--		if operazione.is_equal ("<=") then
 --			var := condizione.variabile.substring (1,   condizione.variabile.index_of ('<', 1) - 1)
 --			if condizione.variabile.has_substring ("<=") then
---				--valore := condizione.variabile.substring (condizione.variabile.index_of ('<', 1) + 2, condizione.variabile.count).to_integer
 --				Result := variabili_intere.item (var) <= valore
 --			else
---				--valore := condizione.variabile.substring ( condizione.variabile.index_of ('<', 1) + 1, condizione.variabile.count).to_integer
 --				Result := variabili_intere.item (var) < valore
 --			end
 --		elseif condizione.variabile.has ('>') then
@@ -181,22 +180,30 @@ feature -- check
 --		end
 --	end
 --end
-	do
-	if attached{CONDIZIONE_INTERA} condizione as cond then
-			if cond.operazione="<=" then
-				Result := variabili_intere.item (cond.variabile) <= cond.valore
-		    elseif  cond.operazione=">=" then
-				Result := variabili_intere.item (cond.variabile) >= cond.valore
-			elseif  cond.operazione="/=" then
-				Result := variabili_intere.item (cond.variabile) /= cond.valore
-			elseif  cond.operazione="<" then
-				Result := variabili_intere.item (cond.variabile) < cond.valore
-			elseif  cond.operazione=">" then
-				Result := variabili_intere.item (cond.variabile) > cond.valore
-		    elseif  cond.operazione="=" then
-				Result := variabili_intere.item (cond.variabile) = cond.valore
+		local
+			operazione: STRING
+		do	
+			if attached {CONDIZIONE_INTERA} condizione as cond then
+				if attached operazione as op then
+					if op.is_equal("<=") then
+						Result := variabili_intere.item (cond.variabile) <= cond.valore
+					elseif op.is_equal(">=") then
+						Result := variabili_intere.item (cond.variabile) >= cond.valore
+					elseif op.is_equal("/=") then
+						Result := variabili_intere.item (cond.variabile) /= cond.valore
+					elseif op.is_equal("<") then
+						Result := variabili_intere.item (cond.variabile) < cond.valore
+					elseif op.is_equal(">") then
+						Result := variabili_intere.item (cond.variabile) > cond.valore
+					elseif op.is_equal("=") then
+						Result := variabili_intere.item (cond.variabile) = cond.valore
+					end
+				else
+					Result:=False
+				end
+			else
+				Result := false
 			end
-		else Result:=false
 		end
-	 end
+
 end
