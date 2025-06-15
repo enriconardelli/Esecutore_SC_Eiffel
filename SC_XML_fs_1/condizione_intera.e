@@ -9,13 +9,16 @@ class
 
 inherit
 	CONDIZIONE
+		redefine
+			set_null
+		end
 
 create
 	make, make_empty
 
 feature -- attributi
 	operazione: STRING
-	valore: INTEGER--POI TOGLI SE NON NECESSARIA
+	valore: INTEGER
 	is_empty: BOOLEAN
 
 feature -- Initialization
@@ -34,4 +37,14 @@ feature -- Initialization
 			valore := 0
 			is_empty:= True
 		end
+
+feature
+	set_null
+		do
+			variabile:="N"
+			is_null:=True
+			operazione := "V"
+			valore := 0
+			is_empty:= True
+	end
 end

@@ -4,10 +4,21 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
+class
 	CONDIZIONE
 
+create
+	set_null
+
 feature -- attributi
+	is_null:BOOLEAN
 	variabile: STRING
 
+feature
+	set_null
+		do
+			is_null:=True
+			variabile:="NULL"
+	end
 end
+

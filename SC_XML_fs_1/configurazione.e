@@ -171,8 +171,8 @@ feature -- inizializzazione SC
 					print ("AVVISO: elemento in <datamodel> errato perche` del tipo <"+ data.item.name + "> e non del tipo <data>!%N")
 				end
 			end
-			-- aggiunge variabile booleana '{TRANSIZIONE}.Valore_Nullo' che è sempre True e si usa per le transizioni che non specificano una condizione nel file del modello
-			variabili.booleane.extend (True, {TRANSIZIONE}.Valore_Nullo)
+			-- aggiunge variabile booleana per il valore nullo che è sempre True e si usa per le transizioni che non specificano una condizione nel file del modello
+			variabili.booleane.extend (True, "NULL")
 		end
 
 	assegna_variabile (variabile, espressione: STRING)
@@ -828,10 +828,14 @@ feature -- inizializzazione transizioni
 		end
 
 	assegna_condizione (transition: XML_ELEMENT; transizione: TRANSIZIONE)
+		local
+			condizione_legittima: CONDIZIONE_BOOLEANA
+			condizione_nulla: CONDIZIONE
 		do
 			if attached transition.attribute_by_name ("cond") as cond then
 				if booleana_legittima (cond.value) then
-					transizione.set_condizione (pulisci_stringa (cond.value))
+					create condizione_legittima.make(pulisci_stringa (cond.value))
+					transizione.set_condizione(condizione_legittima)
 				elseif not intera_legittima_stringa(cond.value).is_empty then
 					transizione.set_condizione (intera_legittima_stringa(cond.value))
 				else
@@ -839,7 +843,8 @@ feature -- inizializzazione transizioni
 					errore_costruzione_SC.extend (27)
 				end
 			else
-				transizione.set_condizione ({TRANSIZIONE}.Valore_Nullo)
+				create condizione_nulla.set_null
+				transizione.set_condizione (condizione_nulla)
 			end
 		end
 
@@ -1106,10 +1111,9 @@ feature -- supporto generale
 
 	id_illegittimo (stringa: STRING): BOOLEAN
 		local
-			-- {TRANSIZIONE}.Valore_Nullo è una costante e non posso convertirla 'as_lower'
 			valore_nullo: STRING
 		do
-			valore_nullo := {TRANSIZIONE}.Valore_Nullo
+			valore_nullo := "NULL"
 			if stringa ~ "" or stringa.is_whitespace or stringa.as_lower ~ valore_nullo.as_lower or pulisci_stringa(stringa).has (' ') then
 				-- il Valore_Nullo non può essere specificato nel model ma solo assegnato nella costruzione della SC
 				Result := True

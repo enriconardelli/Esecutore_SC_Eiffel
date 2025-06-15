@@ -38,6 +38,10 @@ feature {NONE} -- Supporto
 feature {NONE} -- Events
 
 	on_prepare
+		local
+			cond1: CONDIZIONE_BOOLEANA
+			cond2: CONDIZIONE_BOOLEANA
+			cond3: CONDIZIONE_BOOLEANA
 		do
 			create variabili_prova.make
 
@@ -51,19 +55,22 @@ feature {NONE} -- Events
 			create destinazione_prova_1.make_with_id ("destinazione_prova_1")
 			create transizione_prova_1.make_con_destinazione (destinazione_prova_1, stato_prova)
 			transizione_prova_1.set_evento ("evento1")
-			transizione_prova_1.set_condizione ("cond1")
+			create cond1.make ("cond1")
+			transizione_prova_1.set_condizione (cond1)
 			stato_prova.aggiungi_transizione (transizione_prova_1)
 
 			create destinazione_prova_2.make_with_id ("destinazione_prova_2")
 			create transizione_prova_2.make_con_destinazione (destinazione_prova_2, stato_prova)
 			transizione_prova_2.set_evento ("evento2")
-			transizione_prova_2.set_condizione ("cond2")
+			create cond2.make ("cond2")
+			transizione_prova_2.set_condizione (cond2)
 			stato_prova.aggiungi_transizione (transizione_prova_2)
 
 			create destinazione_prova_3.make_with_id ("destinazione_prova_3")
 			create transizione_prova_3.make_con_destinazione (destinazione_prova_3, stato_prova)
 			transizione_prova_3.set_evento ("evento1")
-			transizione_prova_3.set_condizione ("cond3")
+			create cond3.make ("cond3")
+			transizione_prova_3.set_condizione (cond3)
 			stato_prova.aggiungi_transizione (transizione_prova_3)
 
 			variabili_prova.booleane.put (False, "cond1")
@@ -79,17 +86,17 @@ feature {NONE} -- Events
 
 			create destinazione_prova_senza_evento_1.make_with_id ("destinazione_prova_senza_evento_1")
 			create transizione_prova_senza_evento_1.make_con_destinazione (destinazione_prova_senza_evento_1, stato_prova_senza_evento)
-			transizione_prova_senza_evento_1.set_condizione ("cond1")
+			transizione_prova_senza_evento_1.set_condizione (cond1)
 			stato_prova_senza_evento.aggiungi_transizione (transizione_prova_senza_evento_1)
 
 			create destinazione_prova_senza_evento_2.make_with_id ("destinazione_prova_senza_evento_2")
 			create transizione_prova_senza_evento_2.make_con_destinazione (destinazione_prova_senza_evento_2, stato_prova_senza_evento)
-			transizione_prova_senza_evento_2.set_condizione ("cond2")
+			transizione_prova_senza_evento_2.set_condizione (cond2)
 			stato_prova_senza_evento.aggiungi_transizione (transizione_prova_senza_evento_2)
 
 			create destinazione_prova_senza_evento_3.make_with_id ("destinazione_prova_senza_evento_3")
 			create transizione_prova_senza_evento_3.make_con_destinazione (destinazione_prova_senza_evento_3, stato_prova_senza_evento)
-			transizione_prova_senza_evento_3.set_condizione ("cond2")
+			transizione_prova_senza_evento_3.set_condizione (cond2)
 			stato_prova_senza_evento.aggiungi_transizione (transizione_prova_senza_evento_3)
 
 			create cond_prova_senza_evento.make (2)

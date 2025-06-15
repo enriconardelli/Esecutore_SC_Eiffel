@@ -4,11 +4,19 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-deferred class
+class
 	CONDIZIONE_BOOLEANA
 
 inherit
 	CONDIZIONE
 
+create
+	make
+
+feature
+	make(variabile_input: STRING)
+		do
+		variabile:=variabile_input
+	end
 end
 

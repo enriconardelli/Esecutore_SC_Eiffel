@@ -10,10 +10,6 @@ class
 create
 	make_con_destinazione
 
-feature -- costante
-
-	Valore_Nullo : STRING = "NULL"
-
 feature -- creazione
 
 	make_con_destinazione (stato_destinazione, stato_sorgente: STATO)
@@ -26,7 +22,7 @@ feature -- creazione
             create azioni.make_empty
 			evento := Void
 			interna := False
-			condizione := Valore_Nullo
+			create condizione.set_null
 			fork := False
 			merge := False
 		end
@@ -131,11 +127,11 @@ feature -- check
 	check_condizione_booleana (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
 	-- Controlla se la condizione sulle variabili booleane è verificata.
 	do
-		if condizione ~ valore_nullo then
+		if condizione.is_null then
 			Result:= True
 		else
-			if variabili_booleane.has (condizione) then
-				Result:= variabili_booleane.item (condizione)
+			if variabili_booleane.has (condizione.variabile) then
+				Result:= variabili_booleane.item (condizione.variabile)
 			else
 				Result:= False
 			end
@@ -144,9 +140,6 @@ feature -- check
 
 	check_condizione_intera (variabili_intere: HASH_TABLE [INTEGER, STRING]): BOOLEAN
 	-- Controlla se la condizione sulle variabili intere è verificata.
-	local
-		var: STRING
-		valore: INTEGER
 	do
 --		if condizione.has ('<') then
 --			var := condizione.substring (1,   condizione.index_of ('<', 1) - 1)
