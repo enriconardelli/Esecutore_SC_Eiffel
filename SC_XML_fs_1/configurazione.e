@@ -893,7 +893,7 @@ feature -- inizializzazione transizioni
 					if attached var1 as v1 then
 						if v1.is_integer then
 							if attached expr as e then
-								create Result.make(v,e,v1)
+								create Result.make(v,e,v1.to_integer)
 								--Result := v + e + v1
 							end
 						end

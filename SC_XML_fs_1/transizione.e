@@ -148,36 +148,53 @@ feature -- check
 		var: STRING
 		valore: INTEGER
 	do
-		if condizione.has ('<') then
-			var := condizione.substring (1,   condizione.index_of ('<', 1) - 1)
-			if condizione.has_substring ("<=") then
-				valore := condizione.substring (condizione.index_of ('<', 1) + 2, condizione.count).to_integer
-				Result := variabili_intere.item (var) <= valore
-			else
-				valore := condizione.substring ( condizione.index_of ('<', 1) + 1, condizione.count).to_integer
-				Result := variabili_intere.item (var) < valore
+--		if condizione.has ('<') then
+--			var := condizione.substring (1,   condizione.index_of ('<', 1) - 1)
+--			if condizione.has_substring ("<=") then
+--				valore := condizione.substring (condizione.index_of ('<', 1) + 2, condizione.count).to_integer
+--				Result := variabili_intere.item (var) <= valore
+--			else
+--				valore := condizione.substring ( condizione.index_of ('<', 1) + 1, condizione.count).to_integer
+--				Result := variabili_intere.item (var) < valore
+--			end
+--		elseif condizione.has ('>') then
+--			var := condizione.substring (1,  condizione.index_of ('>', 1) - 1)
+--			if condizione.has_substring (">=") then
+--				valore := condizione.substring (condizione.index_of ('>', 1) + 2, condizione.count).to_integer
+--				Result := variabili_intere.item (var) >= valore
+--			else
+--				valore := condizione.substring ( condizione.index_of ('>', 1) + 1, condizione.count).to_integer
+--				Result := variabili_intere.item (var) > valore
+--			end
+--		elseif condizione.has ('=') then
+--			if condizione.has_substring ("/=") then
+--				var := condizione.substring (1,   condizione.index_of ('/', 1) - 1)
+--				valore := condizione.substring (condizione.index_of ('/', 1) + 2, condizione.count).to_integer
+--				Result := variabili_intere.item (var) /= valore
+--			else
+--				var := condizione.substring (1,  condizione.index_of ('=', 1) - 1)
+--				valore := condizione.substring ( condizione.index_of ('=', 1) + 1, condizione.count).to_integer
+--				Result := variabili_intere.item (var) = valore
+--			end
+--		else
+--			Result := False
+--		end
+--	end
+	if attached{CONDIZIONE_INTERA} condizione as cond then
+			if cond.operazione="<=" then
+				Result := variabili_intere.item (cond.variabile) <= cond.valore
+		    elseif  cond.operazione=">=" then
+				Result := variabili_intere.item (cond.variabile) >= cond.valore
+			elseif  cond.operazione="/=" then
+				Result := variabili_intere.item (cond.variabile) /= cond.valore
+			elseif  cond.operazione="<" then
+				Result := variabili_intere.item (cond.variabile) < cond.valore
+			elseif  cond.operazione=">" then
+				Result := variabili_intere.item (cond.variabile) > cond.valore
+		    elseif  cond.operazione="=" then
+				Result := variabili_intere.item (cond.variabile) = cond.valore
 			end
-		elseif condizione.has ('>') then
-			var := condizione.substring (1,  condizione.index_of ('>', 1) - 1)
-			if condizione.has_substring (">=") then
-				valore := condizione.substring (condizione.index_of ('>', 1) + 2, condizione.count).to_integer
-				Result := variabili_intere.item (var) >= valore
-			else
-				valore := condizione.substring ( condizione.index_of ('>', 1) + 1, condizione.count).to_integer
-				Result := variabili_intere.item (var) > valore
-			end
-		elseif condizione.has ('=') then
-			if condizione.has_substring ("/=") then
-				var := condizione.substring (1,   condizione.index_of ('/', 1) - 1)
-				valore := condizione.substring (condizione.index_of ('/', 1) + 2, condizione.count).to_integer
-				Result := variabili_intere.item (var) /= valore
-			else
-				var := condizione.substring (1,  condizione.index_of ('=', 1) - 1)
-				valore := condizione.substring ( condizione.index_of ('=', 1) + 1, condizione.count).to_integer
-				Result := variabili_intere.item (var) = valore
-			end
-		else
-			Result := False
+		else Result:=false
 		end
+  	 end
 	end
-end
