@@ -166,8 +166,6 @@ feature -- check
 							Result := variabili_intere.item (variabile) /= valore
 						elseif operazione.is_equal("=") then
 							Result := variabili_intere.item (variabile) = valore
-						else
-							Result := False
 						end
 					end
 				end
