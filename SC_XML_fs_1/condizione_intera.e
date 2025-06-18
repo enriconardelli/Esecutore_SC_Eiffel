@@ -18,9 +18,6 @@ feature -- attributi
 	valore: INTEGER
 	is_empty: BOOLEAN
 
-feature {NONE} -- Implementation
-	confronti: HASH_TABLE [ROUTINE, STRING]
-
 feature -- Initialization
 	make (variabile_input: STRING; operazione_input: STRING; valore_input: INTEGER)
 		do
@@ -29,7 +26,6 @@ feature -- Initialization
 			operazione := operazione_input
 			valore := valore_input
 			is_empty:= variabile.is_empty and operazione.is_empty and valore=0
-			inizializza_confronti
 		end
 
 	set (variabile_input: STRING; operazione_input: STRING; valore_input: INTEGER)
@@ -48,27 +44,25 @@ feature -- Initialization
 			operazione := "NULL"
 			valore := 0
 			is_empty:= True
-			inizializza_confronti
 		end
-
-feature {NONE} -- Setup
-    inizializza_confronti
-        do
-            create confronti.make (6)
-            confronti.put (agent (x: INTEGER): BOOLEAN do Result := x <= valore end, "<=")
-            confronti.put (agent (x: INTEGER): BOOLEAN do Result := x >= valore end, ">=")
-            confronti.put (agent (x: INTEGER): BOOLEAN do Result := x /= valore end, "/=")
-            confronti.put (agent (x: INTEGER): BOOLEAN do Result := x < valore end, "<")
-            confronti.put (agent (x: INTEGER): BOOLEAN do Result := x > valore end, ">")
-            confronti.put (agent (x: INTEGER): BOOLEAN do Result := x = valore end, "=")
-        end
 
 feature -- Valutazione
     valuta (variabile_istanziata: INTEGER): BOOLEAN
         do
-            if attached confronti.item(operazione) as confronto then
-           		confronto.call(variabile_istanziata)
-            end
+        	Result:=False
+        	if operazione.is_equal("<=") then
+				Result := variabile_istanziata <= valore
+			elseif operazione.is_equal("<") then
+				Result := variabile_istanziata < valore
+			elseif operazione.is_equal(">=") then
+				Result := variabile_istanziata >= valore
+			elseif operazione.is_equal(">") then
+				Result := variabile_istanziata > valore
+			elseif operazione.is_equal("/=") then
+				Result := variabile_istanziata /= valore
+			elseif operazione.is_equal("=") then
+				Result := variabile_istanziata = valore
+			end
         end
-        
+
 end

@@ -142,35 +142,14 @@ feature -- check
 
 	check_condizione_intera (variabili_intere: HASH_TABLE [INTEGER, STRING]): BOOLEAN
 			-- Controlla se la condizione sulle variabili intere è verificata.
---		local
---			variabile: STRING
---			operazione: STRING
---			valore: INTEGER
+		local
+			variabile: STRING
+			operazione: STRING
+			valore: INTEGER
 		do
-			--prova
 			Result:=False
 			if attached {CONDIZIONE_INTERA} condizione as cond then
 				Result:=cond.valuta (variabili_intere.item (cond.variabile))
---				valore := cond.valore
---				if attached cond.operazione as op then
---					operazione := op
---					if attached cond.variabile as var then
---						variabile := var
---						if operazione.is_equal("<=") then
---							Result := variabili_intere.item (variabile) <= valore
---						elseif operazione.is_equal("<") then
---							Result := variabili_intere.item (variabile) < valore
---						elseif operazione.is_equal(">=") then
---							Result := variabili_intere.item (variabile) >= valore
---						elseif operazione.is_equal(">") then
---							Result := variabili_intere.item (variabile) > valore
---						elseif operazione.is_equal("/=") then
---							Result := variabili_intere.item (variabile) /= valore
---						elseif operazione.is_equal("=") then
---							Result := variabili_intere.item (variabile) = valore
---						end
---					end
---				end
 			end
 		end
 
