@@ -147,6 +147,7 @@ feature -- check
 --			operazione: STRING
 --			valore: INTEGER
 		do
+			--prova
 			Result:=False
 			if attached {CONDIZIONE_INTERA} condizione as cond then
 				Result:=cond.valuta (variabili_intere.item (cond.variabile))
