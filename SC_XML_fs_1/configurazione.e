@@ -858,59 +858,6 @@ feature -- inizializzazione transizioni
 			end
 		end
 
---	intera_legittima_stringa (stringa: STRING): CONDIZIONE_INTERA
---	-- crea una stringa che rispetta le condizioni assunte in TRANSIZIONI.check_condizione_intera. Se non le rispetta restituisce stringa vuota
---	-- TODO: usare libreria di Eiffel 'parse' per analisi di correttezza della stringa delle condizioni (va aggiunta al progetto)
---	-- TODO: negli if annidati finali manca nel ramo else la registrazione del tipo di errore
---		local
---			var:STRING
---			op: STRING
---			valore:INTEGER
---		do
---		if stringa.has ('<') then
---			var := stringa.substring (1, stringa.index_of ('<', 1) - 1)
---			if stringa.has_substring ("<=") then
---				valore := stringa.substring (stringa.index_of ('<', 1) + 2, stringa.count).to_integer
---				op:="<="
---			else
---				valore := stringa.substring (stringa.index_of ('<', 1) + 1, stringa.count).to_integer
---				op:="<"
---			end
---		elseif stringa.has ('>') then
---			var := stringa.substring (1, stringa.index_of ('>', 1) - 1)
---			if stringa.has_substring (">=") then
---				valore := stringa.substring (stringa.index_of ('>', 1) + 2, stringa.count).to_integer
---				op:=">="
---			else
---				valore := stringa.substring (stringa.index_of ('>', 1) + 1, stringa.count).to_integer
---				op:=">"
---			end
---		elseif stringa.has ('=') then
---			if stringa.has_substring ("/=") then
---				var := stringa.substring (1, stringa.index_of ('/', 1) - 1)
---				valore := stringa.substring (stringa.index_of ('/', 1) + 2, stringa.count).to_integer
---				op:="/="
---			else
---				var := stringa.substring (1, stringa.index_of ('=', 1) - 1)
---				valore := stringa.substring (stringa.index_of ('=', 1) + 1, stringa.count).to_integer
---				op:="="
---			end
---		end
---			create Result.make_empty
---			if attached var as v then
---				if variabili.intere.has (pulisci_stringa (v)) then
---					if attached valore as v1 then
---					--	if v1.is_integer then
---							if attached op as e then
---							    Result.set(v,e,v1)
---								--Result := v + e + v1
---							end
---					--	end
---					end
---				end
---			end
---		end
-
 intera_legittima_stringa  (input: STRING): CONDIZIONE_INTERA
         local
             operatori: ARRAY [STRING]
@@ -920,7 +867,6 @@ intera_legittima_stringa  (input: STRING): CONDIZIONE_INTERA
         do
             create Result.make_empty
             operatori := << "<=", ">=", "/=", "<", ">", "=" >>
-
             across operatori as op_cursor loop
                 op := op_cursor.item
                 if input.has_substring (op) then
@@ -928,7 +874,6 @@ intera_legittima_stringa  (input: STRING): CONDIZIONE_INTERA
                     if pos > 1 and pos + op.count <= input.count then
                         variabile := input.substring (1, pos - 1)
                         valore := input.substring (pos + op.count, input.count)
-
                         if variabili.intere.has (variabile) and then valore.is_integer then
                             Result.set (variabile, op, valore.to_integer)
                         end

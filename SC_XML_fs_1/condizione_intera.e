@@ -11,7 +11,7 @@ inherit
 	CONDIZIONE
 
 create
-	make, make_empty
+	make_empty
 
 feature -- attributi
 	operazione: STRING
@@ -19,24 +19,6 @@ feature -- attributi
 	is_empty: BOOLEAN
 
 feature -- Initialization
-	make (variabile_input: STRING; operazione_input: STRING; valore_input: INTEGER)
-		do
-			is_null := false
-			variabile := variabile_input
-			operazione := operazione_input
-			valore := valore_input
-			is_empty:= variabile.is_empty and operazione.is_empty and valore=0
-		end
-
-	set (variabile_input: STRING; operazione_input: STRING; valore_input: INTEGER)
-		do
-			is_null := false
-			variabile := variabile_input
-			operazione := operazione_input
-			valore := valore_input
-			is_empty:= variabile.is_empty and operazione.is_empty and valore=0
-		end
-
 	make_empty
 		do
 			is_null := false
@@ -44,6 +26,16 @@ feature -- Initialization
 			operazione := "NULL"
 			valore := 0
 			is_empty:= True
+		end
+
+feature
+	set (variabile_input: STRING; operazione_input: STRING; valore_input: INTEGER)
+		do
+			is_null := false
+			variabile := variabile_input
+			operazione := operazione_input
+			valore := valore_input
+			is_empty:= variabile.is_empty and operazione.is_empty and valore=0
 		end
 
 feature -- Valutazione
