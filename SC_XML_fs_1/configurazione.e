@@ -829,13 +829,17 @@ feature -- inizializzazione transizioni
 
 	assegna_condizione (transition: XML_ELEMENT; transizione: TRANSIZIONE)
 		local
+			condizione_booelana: CONDIZIONE_BOOLEANA
+			condizione_intera: CONDIZIONE_INTERA
 			condizione_nulla: CONDIZIONE
 		do
 			if attached transition.attribute_by_name ("cond") as cond then
-                if not booleana_legittima (cond.value).is_empty then
-					transizione.set_condizione(booleana_legittima (cond.value))
-				elseif not intera_legittima(cond.value).is_empty then
-					transizione.set_condizione (intera_legittima(cond.value))
+				condizione_booelana := booleana_legittima (cond.value)
+				condizione_intera := intera_legittima (cond.value)
+                if not condizione_booelana.is_empty then
+					transizione.set_condizione(condizione_booelana)
+				elseif not condizione_intera.is_empty then
+					transizione.set_condizione (condizione_intera)
 				else
 					print ("ERRORE 27: la transizione da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica una condizione di valore (non pulito) >|" + cond.value + "|< illegittimo !%N")
 					errore_costruzione_SC.extend (27)
@@ -847,14 +851,7 @@ feature -- inizializzazione transizioni
 		end
 
 	booleana_legittima (stringa: STRING): CONDIZIONE_BOOLEANA
-	-- verifica che `stringa' sia una condizione booleana legittima
---		do
---			if variabili.booleane.has (pulisci_stringa (stringa)) then
---				Result := True
---			else
---				Result := False
---			end
-    local
+    	local
             operatori: ARRAY [STRING]
             op, variabile_sinistra, variabile_destra: STRING
             pos: INTEGER
@@ -862,7 +859,7 @@ feature -- inizializzazione transizioni
         do
         	has_operator := False
         	create Result.make_empty
-        	operatori := <<"/=", "=" , "and" , "not" , "xor" ,"or">>
+        	operatori := <<"/=", "=" , "and" , "or">>
         	across operatori as op_cursor loop
             op := op_cursor.item
                 if stringa.has_substring (op) then

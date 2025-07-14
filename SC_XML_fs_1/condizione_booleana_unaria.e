@@ -10,6 +10,10 @@ class
 inherit
 	CONDIZIONE_BOOLEANA
 
+redefine
+	valuta
+	end
+
 create
 	make
 
@@ -21,4 +25,8 @@ feature
 			is_empty:= variabile.is_empty
 		end
 
+    valuta (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
+        do
+        	Result:= variabili_booleane.item(variabile)
+        end
 end

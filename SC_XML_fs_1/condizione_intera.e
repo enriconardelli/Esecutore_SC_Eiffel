@@ -47,7 +47,6 @@ feature -- Valutazione
 			end
         end
 
-feature -- Valutazione
     valuta (variabili_intere: HASH_TABLE [INTEGER, STRING]): BOOLEAN
         do
         	Result:=False

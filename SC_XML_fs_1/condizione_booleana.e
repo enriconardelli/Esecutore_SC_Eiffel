@@ -24,5 +24,16 @@ feature
 			variabile := "NULL"
 			is_empty:= True
 		end
+
+feature -- Valutazione
+    valuta (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
+        do
+        	Result:=False
+        end
+
+    negata(variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
+    	do
+    		Result:= not valuta(variabili_booleane)
+    	end
 end
 

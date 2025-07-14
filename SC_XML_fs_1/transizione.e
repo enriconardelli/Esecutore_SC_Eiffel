@@ -132,25 +132,19 @@ feature -- check
 			if condizione.is_null then
 				Result := True
 			else
-				if variabili_booleane.has (condizione.variabile) then
-					Result := variabili_booleane.item (condizione.variabile)
-				else
-					Result := False
+				Result:=False
+				if attached {CONDIZIONE_BOOLEANA} condizione as cond then
+					Result:=cond.valuta (variabili_booleane)
 				end
 			end
 		end
 
 	check_condizione_intera (variabili_intere: HASH_TABLE [INTEGER, STRING]): BOOLEAN
 			-- Controlla se la condizione sulle variabili intere è verificata.
-		local
-			variabile: STRING
-			operazione: STRING
-			valore: INTEGER
 		do
 			Result:=False
 			if attached {CONDIZIONE_INTERA} condizione as cond then
 				Result:=cond.valuta (variabili_intere)
 			end
 		end
-
 end
