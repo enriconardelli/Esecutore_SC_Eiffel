@@ -26,6 +26,11 @@ feature
 		end
 
 feature -- Valutazione
+    lista_operazioni: ARRAY[STRING]
+       once
+       		Result := <<"/=", "=","and" ,"or">>
+       end
+
     valuta (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
         do
         	Result:=False

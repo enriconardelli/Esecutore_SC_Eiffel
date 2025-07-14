@@ -859,7 +859,7 @@ feature -- inizializzazione transizioni
         do
         	has_operator := False
         	create Result.make_empty
-        	operatori := <<"/=", "=" , "and" , "or">>
+            operatori := Result.lista_operazioni
         	across operatori as op_cursor loop
             op := op_cursor.item
                 if stringa.has_substring (op) then
@@ -875,26 +875,26 @@ feature -- inizializzazione transizioni
 
                 end
             end
-            if not has_operator and variabili.booleane.has (pulisci_stringa (stringa)) then
-            	create {CONDIZIONE_BOOLEANA_UNARIA}Result.make(pulisci_stringa (stringa))
+            if not has_operator and variabili.booleane.has (stringa) then
+            	create {CONDIZIONE_BOOLEANA_UNARIA}Result.make(stringa)
             end
 		end
 
-	intera_legittima  (input: STRING): CONDIZIONE_INTERA
+	intera_legittima  (stringa: STRING): CONDIZIONE_INTERA
         local
             operatori: ARRAY [STRING]
             op, variabile_sinistra, variabile_destra: STRING
             pos: INTEGER
         do
         	create Result.make_empty
-        	operatori := << "<=", ">=", "/=", "<", ">", "=" >>
+            operatori := Result.lista_operazioni
         	across operatori as op_cursor loop
             op := op_cursor.item
-                if input.has_substring (op) then
-                    pos := input.substring_index (op, 1)
-                    if pos > 1 and pos + op.count <= input.count then
-                        variabile_sinistra := input.substring (1, pos - 1)
-                        variabile_destra := input.substring (pos + op.count, input.count)
+                if stringa.has_substring (op) then
+                    pos := stringa.substring_index (op, 1)
+                    if pos > 1 and pos + op.count <= stringa.count then
+                        variabile_sinistra := stringa.substring (1, pos - 1)
+                        variabile_destra := stringa.substring (pos + op.count, stringa.count)
                         if variabili.intere.has (variabile_sinistra) then
                       		if variabile_destra.is_integer then
                             	create {CONDIZIONE_INTERA_UNARIA}Result.make(variabile_sinistra, op, variabile_destra.to_integer)

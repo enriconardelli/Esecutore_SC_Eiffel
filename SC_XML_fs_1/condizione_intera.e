@@ -29,6 +29,11 @@ feature -- Initialization
 		end
 
 feature -- Valutazione
+    lista_operazioni: ARRAY[STRING]
+       once
+       		Result := <<"<=", ">=", "/=" , "<", ">", "=">>
+       end
+
     valutazione (v1, v2: INTEGER): BOOLEAN
         do
         	Result:=False
