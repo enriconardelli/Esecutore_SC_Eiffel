@@ -39,9 +39,9 @@ feature {NONE} -- Events
 
 	on_prepare
 		local
-			cond1: CONDIZIONE_BOOLEANA
-			cond2: CONDIZIONE_BOOLEANA
-			cond3: CONDIZIONE_BOOLEANA
+			cond1: CONDIZIONE_BOOLEANA_UNARIA
+			cond2: CONDIZIONE_BOOLEANA_UNARIA
+			cond3: CONDIZIONE_BOOLEANA_UNARIA
 		do
 			create variabili_prova.make
 

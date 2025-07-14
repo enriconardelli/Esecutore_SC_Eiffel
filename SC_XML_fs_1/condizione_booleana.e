@@ -10,14 +10,19 @@ class
 inherit
 	CONDIZIONE
 
+redefine
+    make_empty
+    end
+
 create
-	make
+	make_empty
 
 feature
-	make(variabile_input: STRING)
+	make_empty
 		do
-		is_null:= false
-		variabile:=variabile_input
-	end
+			is_null := false
+			variabile := "NULL"
+			is_empty:= True
+		end
 end
 

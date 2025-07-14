@@ -10,12 +10,14 @@ class
 inherit
 	CONDIZIONE
 
-create
+redefine
 	make_empty
+	end
+
+create make_empty
 
 feature -- attributi
 	operazione: STRING
-	is_empty: BOOLEAN
 
 feature -- Initialization
 	make_empty

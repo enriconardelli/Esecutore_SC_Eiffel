@@ -829,15 +829,15 @@ feature -- inizializzazione transizioni
 
 	assegna_condizione (transition: XML_ELEMENT; transizione: TRANSIZIONE)
 		local
-			condizione_legittima: CONDIZIONE_BOOLEANA
+			condizione_legittima: CONDIZIONE_BOOLEANA_UNARIA
 			condizione_nulla: CONDIZIONE
 		do
 			if attached transition.attribute_by_name ("cond") as cond then
 				if booleana_legittima (cond.value) then
 					create condizione_legittima.make(pulisci_stringa (cond.value))
 					transizione.set_condizione(condizione_legittima)
-				elseif not intera_legittima_stringa(cond.value).is_empty then
-					transizione.set_condizione (intera_legittima_stringa(cond.value))
+				elseif not intera_legittima(cond.value).is_empty then
+					transizione.set_condizione (intera_legittima(cond.value))
 				else
 					print ("ERRORE 27: la transizione da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica una condizione di valore (non pulito) >|" + cond.value + "|< illegittimo !%N")
 					errore_costruzione_SC.extend (27)
@@ -858,7 +858,7 @@ feature -- inizializzazione transizioni
 			end
 		end
 
-	intera_legittima_stringa  (input: STRING): CONDIZIONE_INTERA
+	intera_legittima  (input: STRING): CONDIZIONE_INTERA
         local
             operatori: ARRAY [STRING]
             op, variabile_sinistra, variabile_destra: STRING
