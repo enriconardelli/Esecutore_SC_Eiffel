@@ -873,10 +873,12 @@ feature -- inizializzazione transizioni
                     if pos > 1 and pos + op.count <= input.count then
                         variabile_sinistra := input.substring (1, pos - 1)
                         variabile_destra := input.substring (pos + op.count, input.count)
-
-                        --DISTINGUERE I CASI
-                        if variabili.intere.has (variabile_sinistra) and then variabile_destra.is_integer then
-                            create {CONDIZIONE_INTERA_UNARIA}Result.make(variabile_sinistra, op, variabile_destra.to_integer)
+                        if variabili.intere.has (variabile_sinistra) then
+                      		if variabile_destra.is_integer then
+                            	create {CONDIZIONE_INTERA_UNARIA}Result.make(variabile_sinistra, op, variabile_destra.to_integer)
+                        	elseif variabili.intere.has (variabile_destra) then
+                        		create {CONDIZIONE_INTERA_BINARIA}Result.make(variabile_sinistra, op, variabile_destra)
+                        	end
                         end
                     end
                 end

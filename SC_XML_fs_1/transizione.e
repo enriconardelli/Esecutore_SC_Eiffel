@@ -149,7 +149,7 @@ feature -- check
 		do
 			Result:=False
 			if attached {CONDIZIONE_INTERA} condizione as cond then
-				Result:=cond.valuta (variabili_intere.item (cond.variabile))
+				Result:=cond.valuta (variabili_intere)
 			end
 		end
 
