@@ -829,13 +829,11 @@ feature -- inizializzazione transizioni
 
 	assegna_condizione (transition: XML_ELEMENT; transizione: TRANSIZIONE)
 		local
-			condizione_legittima: CONDIZIONE_BOOLEANA_UNARIA
 			condizione_nulla: CONDIZIONE
 		do
 			if attached transition.attribute_by_name ("cond") as cond then
-				if booleana_legittima (cond.value) then
-					create condizione_legittima.make(pulisci_stringa (cond.value))
-					transizione.set_condizione(condizione_legittima)
+                if not booleana_legittima (cond.value).is_empty then
+					transizione.set_condizione(booleana_legittima (cond.value))
 				elseif not intera_legittima(cond.value).is_empty then
 					transizione.set_condizione (intera_legittima(cond.value))
 				else
@@ -848,14 +846,41 @@ feature -- inizializzazione transizioni
 			end
 		end
 
-	booleana_legittima (stringa: STRING): BOOLEAN
+	booleana_legittima (stringa: STRING): CONDIZIONE_BOOLEANA
 	-- verifica che `stringa' sia una condizione booleana legittima
-		do
-			if variabili.booleane.has (pulisci_stringa (stringa)) then
-				Result := True
-			else
-				Result := False
-			end
+--		do
+--			if variabili.booleane.has (pulisci_stringa (stringa)) then
+--				Result := True
+--			else
+--				Result := False
+--			end
+    local
+            operatori: ARRAY [STRING]
+            op, variabile_sinistra, variabile_destra: STRING
+            pos: INTEGER
+            has_operator:BOOLEAN
+        do
+        	has_operator := False
+        	create Result.make_empty
+        	operatori := <<"/=", "=" , "and" , "not" , "xor" ,"or">>
+        	across operatori as op_cursor loop
+            op := op_cursor.item
+                if stringa.has_substring (op) then
+                    has_operator := True
+                    pos := stringa.substring_index (op, 1)
+                    if pos > 1 and pos + op.count <= stringa.count then
+                        variabile_sinistra := stringa.substring (1, pos - 1)
+                        variabile_destra := stringa.substring (pos + op.count, stringa.count)
+                        if variabili.booleane.has (variabile_sinistra) and variabili.booleane.has (variabile_destra) then
+                        	create {CONDIZIONE_BOOLEANA_BINARIA}Result.make(variabile_sinistra, op, variabile_destra)
+                        end
+                    end
+
+                end
+            end
+            if not has_operator and variabili.booleane.has (pulisci_stringa (stringa)) then
+            	create {CONDIZIONE_BOOLEANA_UNARIA}Result.make(pulisci_stringa (stringa))
+            end
 		end
 
 	intera_legittima  (input: STRING): CONDIZIONE_INTERA
