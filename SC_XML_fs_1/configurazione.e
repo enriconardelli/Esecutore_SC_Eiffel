@@ -858,29 +858,30 @@ feature -- inizializzazione transizioni
 			end
 		end
 
-intera_legittima_stringa  (input: STRING): CONDIZIONE_INTERA
+	intera_legittima_stringa  (input: STRING): CONDIZIONE_INTERA
         local
             operatori: ARRAY [STRING]
-            op: STRING
+            op, variabile_sinistra, variabile_destra: STRING
             pos: INTEGER
-            variabile, valore: STRING
         do
-            create Result.make_empty
-            operatori := << "<=", ">=", "/=", "<", ">", "=" >>
-            across operatori as op_cursor loop
-                op := op_cursor.item
+        	create Result.make_empty
+        	operatori := << "<=", ">=", "/=", "<", ">", "=" >>
+        	across operatori as op_cursor loop
+            op := op_cursor.item
                 if input.has_substring (op) then
                     pos := input.substring_index (op, 1)
                     if pos > 1 and pos + op.count <= input.count then
-                        variabile := input.substring (1, pos - 1)
-                        valore := input.substring (pos + op.count, input.count)
-                        if variabili.intere.has (variabile) and then valore.is_integer then
-                            Result.set (variabile, op, valore.to_integer)
+                        variabile_sinistra := input.substring (1, pos - 1)
+                        variabile_destra := input.substring (pos + op.count, input.count)
+
+                        --DISTINGUERE I CASI
+                        if variabili.intere.has (variabile_sinistra) and then variabile_destra.is_integer then
+                            create {CONDIZIONE_INTERA_UNARIA}Result.make(variabile_sinistra, op, variabile_destra.to_integer)
                         end
                     end
                 end
             end
-        end
+	 end
 
 feature -- inizializzazione azioni
 
