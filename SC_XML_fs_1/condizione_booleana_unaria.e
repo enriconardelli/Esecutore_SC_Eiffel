@@ -18,9 +18,10 @@ create
 	make
 
 feature
-	make(variabile_input: STRING)
+	make(negata_input: BOOLEAN; variabile_input: STRING)
 		do
 			is_null := false
+			negata := negata_input
 			variabile := variabile_input
 			is_empty:= variabile.is_empty
 		end
@@ -28,5 +29,8 @@ feature
     valuta (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
         do
         	Result:= variabili_booleane.item(variabile)
+        	if negata then
+        		Result := not Result
+        	end
         end
 end

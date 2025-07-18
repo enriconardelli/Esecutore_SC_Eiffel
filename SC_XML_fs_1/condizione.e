@@ -23,7 +23,7 @@ feature
 			is_empty:=True
 	end
 
-feature -- Initialization
+feature -- Initializzazione
 	make_empty
 		do
 			is_null := false

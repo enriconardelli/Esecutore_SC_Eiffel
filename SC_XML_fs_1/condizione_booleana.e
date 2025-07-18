@@ -25,6 +25,9 @@ feature
 			is_empty:= True
 		end
 
+feature
+	negata: BOOLEAN
+
 feature -- Valutazione
     lista_operazioni: ARRAY[STRING]
        once
@@ -35,10 +38,5 @@ feature -- Valutazione
         do
         	Result:=False
         end
-
-    negata(variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
-    	do
-    		Result:= not valuta(variabili_booleane)
-    	end
 end
 

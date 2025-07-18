@@ -853,7 +853,8 @@ feature -- inizializzazione transizioni
 	booleana_legittima (stringa: STRING): CONDIZIONE_BOOLEANA
     	local
             operatori: ARRAY [STRING]
-            op, variabile_sinistra, variabile_destra: STRING
+            op: STRING
+            variabile, variabile2: TUPLE [negata: BOOLEAN; var: STRING; valida: BOOLEAN]
             pos: INTEGER
             has_operator:BOOLEAN
         do
@@ -866,24 +867,44 @@ feature -- inizializzazione transizioni
                     has_operator := True
                     pos := stringa.substring_index (op, 1)
                     if pos > 1 and pos + op.count <= stringa.count then
-                        variabile_sinistra := stringa.substring (1, pos - 1)
-                        variabile_destra := stringa.substring (pos + op.count, stringa.count)
-                        if variabili.booleane.has (variabile_sinistra) and variabili.booleane.has (variabile_destra) then
-                        	create {CONDIZIONE_BOOLEANA_BINARIA}Result.make(variabile_sinistra, op, variabile_destra)
+                    	variabile := booleana_variabile_legittima(stringa.substring (1, pos - 1), variabili.booleane)
+                    	variabile2 := booleana_variabile_legittima(stringa.substring (pos + op.count, stringa.count), variabili.booleane)
+                        if variabile.valida and variabile2.valida then
+                        	create {CONDIZIONE_BOOLEANA_BINARIA}Result.make(variabile.negata, variabile.var, op, variabile2.negata, variabile2.var)
                         end
                     end
-
                 end
             end
-            if not has_operator and variabili.booleane.has (stringa) then
-            	create {CONDIZIONE_BOOLEANA_UNARIA}Result.make(stringa)
+			variabile:= booleana_variabile_legittima(stringa, variabili.booleane)
+            if not has_operator and variabile.valida then
+            	create {CONDIZIONE_BOOLEANA_UNARIA}Result.make(variabile.negata, variabile.var)
             end
 		end
+
+booleana_variabile_legittima (string: STRING; variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): TUPLE [negata: BOOLEAN; variabile: STRING; valida: BOOLEAN]
+    local
+        parts: LIST [STRING]
+        part1, part2: STRING
+    do
+    	Result := [False, "NULL", False]
+        parts := string.split (' ')
+        part1 := parts.first
+       -- Caso Variabile
+        if parts.count = 1 and then variabili_booleane.has (part1) then
+            Result := [False, part1, True]
+        -- Caso Not Variabile
+        elseif parts.count = 2 then
+        	part2 := parts.i_th (2)  -- Seconda parola
+           	if part1.is_equal ("not") and then variabili_booleane.has (part2) then
+          		Result := [True, part2, True]
+            end
+        end
+    end
 
 	intera_legittima  (stringa: STRING): CONDIZIONE_INTERA
         local
             operatori: ARRAY [STRING]
-            op, variabile_sinistra, variabile_destra: STRING
+            op, variabile, variabile2: STRING
             pos: INTEGER
         do
         	create Result.make_empty
@@ -893,13 +914,13 @@ feature -- inizializzazione transizioni
                 if stringa.has_substring (op) then
                     pos := stringa.substring_index (op, 1)
                     if pos > 1 and pos + op.count <= stringa.count then
-                        variabile_sinistra := stringa.substring (1, pos - 1)
-                        variabile_destra := stringa.substring (pos + op.count, stringa.count)
-                        if variabili.intere.has (variabile_sinistra) then
-                      		if variabile_destra.is_integer then
-                            	create {CONDIZIONE_INTERA_UNARIA}Result.make(variabile_sinistra, op, variabile_destra.to_integer)
-                        	elseif variabili.intere.has (variabile_destra) then
-                        		create {CONDIZIONE_INTERA_BINARIA}Result.make(variabile_sinistra, op, variabile_destra)
+                        variabile := stringa.substring (1, pos - 1)
+                        variabile2 := stringa.substring (pos + op.count, stringa.count)
+                        if variabili.intere.has (variabile) then
+                      		if variabile2.is_integer then
+                            	create {CONDIZIONE_INTERA_UNARIA}Result.make(variabile, op, variabile2.to_integer)
+                        	elseif variabili.intere.has (variabile2) then
+                        		create {CONDIZIONE_INTERA_BINARIA}Result.make(variabile, op, variabile2)
                         	end
                         end
                     end
