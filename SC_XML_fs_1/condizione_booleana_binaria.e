@@ -51,14 +51,14 @@ feature -- Valutazione
 
     valuta (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
         local
-        	var1, va2: BOOLEAN
+        	var1, var2: BOOLEAN
         do
         	var1 := variabili_booleane.item(variabile)
         	var2 := variabili_booleane.item(variabile2)
-        	if negata1 then
+        	if negata then
         		var1 := not var1
         	end
-        	if negata2 then
+        	if negata then
         		var2 := not var2
         	end
         	Result:= valutazione(var1, var2)
