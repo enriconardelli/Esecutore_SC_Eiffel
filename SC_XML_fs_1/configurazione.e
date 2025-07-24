@@ -832,10 +832,11 @@ feature -- inizializzazione transizioni
 			condizione: CONDIZIONE
 --			condizione_booelana: CONDIZIONE_BOOLEANA
 --			condizione_intera: CONDIZIONE_INTERA
-			condizione_vuota: CONDIZIONE
+			condizione_vuota: CONDIZIONE_VUOTA
 		do
 			-- creare e assegnare qua la condizione vuota
---			transizione.set_condizione (condizione_vuota)
+			create condizione_vuota.make
+			transizione.set_condizione (condizione_vuota)
 			-- e poi eventualmente modificarla col resto del codice
 			if attached transition.attribute_by_name ("cond") as cond then
 				condizione := condizione_legittima (cond.value)
@@ -869,9 +870,9 @@ feature -- inizializzazione transizioni
 			end
 		end
 
-	condizione_legittima (stringa: STRING): CONDIZIONE
-		local
-			condizione_vuota: CONDIZIONE_VUOTA
+	condizione_legittima (stringa: STRING): detachable CONDIZIONE
+--		local
+--			condizione_vuota: CONDIZIONE_VUOTA
 		do
 			Result := booleana_legittima (stringa)
 			if Result = Void then
@@ -883,20 +884,23 @@ feature -- inizializzazione transizioni
 --			end
 		end
 
-	booleana_legittima (stringa: STRING): CONDIZIONE_BOOLEANA
+	booleana_legittima (stringa: STRING): detachable CONDIZIONE_BOOLEANA
     	local
             operatori: ARRAY [STRING]
             op: STRING
             variabile, variabile2: TUPLE [negata: BOOLEAN; var: STRING; valida: BOOLEAN]
             pos: INTEGER
             has_operator:BOOLEAN
+            temp: CONDIZIONE_BOOLEANA
         do
         	-- questa restituirà VOID o un'istanza di CONDIZIONE_BOOLEANA_BINARIA o di CONDIZIONE_BOOLEANA_UNARIA
         	-- lo stesso per intera_legittima
         	has_operator := False
-        	create Result.make_empty
---        	operatori := {CONDIZIONE_BOOLEANA}.lista_operazioni
-            operatori := Result.lista_operazioni
+	--      create Result.make_empty
+			create temp.make_empty
+			operatori := temp.lista_operazioni
+	       	--operatori := CONDIZIONE_BOOLEANA.lista_operazioni --IMPLEMENTA IN QUESTO MODO MA NON CI RIESCO
+            --operatori := Result.lista_operazioni
         	across operatori as op_cursor loop
             op := op_cursor.item
                 if stringa.has_substring (op) then
@@ -937,14 +941,17 @@ booleana_variabile_legittima (string: STRING; variabili_booleane: HASH_TABLE [BO
         end
     end
 
-	intera_legittima  (stringa: STRING): CONDIZIONE_INTERA
+	intera_legittima  (stringa: STRING): detachable CONDIZIONE_INTERA
         local
             operatori: ARRAY [STRING]
             op, variabile, variabile2: STRING
             pos: INTEGER
+            temp: CONDIZIONE_INTERA
         do
-        	create Result.make_empty
-            operatori := Result.lista_operazioni
+--        	create Result.make_empty
+			create temp.make_empty
+			operatori := temp.lista_operazioni
+            --operatori := Result.lista_operazioni
         	across operatori as op_cursor loop
             op := op_cursor.item
                 if stringa.has_substring (op) then

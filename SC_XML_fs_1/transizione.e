@@ -131,7 +131,8 @@ feature -- check
 			-- Controlla se la condizione sulle variabili booleane è verificata.
 		do
 --			if condizione.is_null then
-			if condizione.is_empty then
+--			if condizione.is_empty then
+			if attached{CONDIZIONE_VUOTA}condizione then
 				Result := True
 			else
 				Result:=False

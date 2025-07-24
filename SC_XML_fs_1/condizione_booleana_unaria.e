@@ -20,10 +20,10 @@ create
 feature
 	make(negata_input: BOOLEAN; variabile_input: STRING)
 		do
-			is_null := false
+--			is_null := false
 			negata := negata_input
 			variabile := variabile_input
-			is_empty:= variabile.is_empty
+--			is_empty:= variabile.is_empty
 		end
 
     valuta (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN

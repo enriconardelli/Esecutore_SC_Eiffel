@@ -25,13 +25,13 @@ feature -- attributi
 feature
 	make(negata_input: BOOLEAN; variabile_input: STRING; operazione_input: STRING; negata2_input: BOOLEAN; variabile2_input: STRING)
 		do
-			is_null := false
+--			is_null := false
 			negata := negata_input
 			variabile := variabile_input
 			operazione := operazione_input
 			negata2 := negata2_input
 			variabile2 := variabile2_input
-			is_empty:= variabile.is_empty and operazione.is_empty and variabile2.is_empty
+--			is_empty:= variabile.is_empty and operazione.is_empty and variabile2.is_empty
 		end
 
 feature -- Valutazione

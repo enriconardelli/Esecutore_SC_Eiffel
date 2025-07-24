@@ -14,9 +14,8 @@ create
 	make
 
 feature
-
 	make
-	do
-		variabile := "NULL"
-	end
+		do
+			variabile := "NULL"
+		end
 end

@@ -12,9 +12,9 @@ create
 	make_empty
 
 feature -- attributi
-	is_null:BOOLEAN
+--	is_null:BOOLEAN
 	variabile: STRING
-	is_empty: BOOLEAN
+--	is_empty: BOOLEAN
 
 feature
 --	set_null
@@ -27,9 +27,9 @@ feature
 feature -- Initializzazione
 	make_empty
 		do
-			is_null := false
+--			is_null := false
 			variabile := "NULL"
-			is_empty:= True
+--			is_empty:= True
 		end
 end
 
