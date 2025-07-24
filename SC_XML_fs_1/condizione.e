@@ -8,7 +8,8 @@ class
 	CONDIZIONE
 
 create
-	set_null,make_empty
+--	set_null,	
+	make_empty
 
 feature -- attributi
 	is_null:BOOLEAN
@@ -16,12 +17,12 @@ feature -- attributi
 	is_empty: BOOLEAN
 
 feature
-	set_null
-		do
-			is_null:=True
-			variabile:="NULL"
-			is_empty:=True
-	end
+--	set_null
+--		do
+--			is_null:=True
+--			variabile:="NULL"
+--			is_empty:=True
+--	end
 
 feature -- Initializzazione
 	make_empty

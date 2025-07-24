@@ -22,10 +22,11 @@ feature -- attributi
 feature -- Initialization
 	make_empty
 		do
-			is_null := false
-			variabile := "NULL"
+			Precursor
 			operazione := "NULL"
-			is_empty:= True
+--			is_null := false
+--			variabile := "NULL"
+--			is_empty:= True
 		end
 
 feature -- Valutazione
