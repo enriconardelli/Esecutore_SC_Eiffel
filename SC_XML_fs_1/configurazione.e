@@ -891,13 +891,13 @@ feature -- inizializzazione transizioni
             variabile, variabile2: TUPLE [negata: BOOLEAN; var: STRING; valida: BOOLEAN]
             pos: INTEGER
             has_operator:BOOLEAN
-            temp: CONDIZIONE_BOOLEANA
+            temp: CONDIZIONE_BOOLEANA_UNARIA
         do
         	-- questa restituirà VOID o un'istanza di CONDIZIONE_BOOLEANA_BINARIA o di CONDIZIONE_BOOLEANA_UNARIA
         	-- lo stesso per intera_legittima
         	has_operator := False
 	--      create Result.make_empty
-			create temp.make_empty
+			create temp.make(false, "NULL")
 			operatori := temp.lista_operazioni
 	       	--operatori := CONDIZIONE_BOOLEANA.lista_operazioni --IMPLEMENTA IN QUESTO MODO MA NON CI RIESCO
             --operatori := Result.lista_operazioni
@@ -946,10 +946,10 @@ booleana_variabile_legittima (string: STRING; variabili_booleane: HASH_TABLE [BO
             operatori: ARRAY [STRING]
             op, variabile, variabile2: STRING
             pos: INTEGER
-            temp: CONDIZIONE_INTERA
+            temp: CONDIZIONE_INTERA_UNARIA
         do
 --        	create Result.make_empty
-			create temp.make_empty
+			create temp.make("NULL", " ", 0)
 			operatori := temp.lista_operazioni
             --operatori := Result.lista_operazioni
         	across operatori as op_cursor loop

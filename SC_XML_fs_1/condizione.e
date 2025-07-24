@@ -4,19 +4,19 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	CONDIZIONE
 
-create
---	set_null,	
-	make_empty
+--create
+----	set_null,	
+--	make_empty
 
 feature -- attributi
 --	is_null:BOOLEAN
 	variabile: STRING
 --	is_empty: BOOLEAN
 
-feature
+--feature
 --	set_null
 --		do
 --			is_null:=True
@@ -24,12 +24,12 @@ feature
 --			is_empty:=True
 --	end
 
-feature -- Initializzazione
-	make_empty
-		do
---			is_null := false
-			variabile := "NULL"
---			is_empty:= True
-		end
+--feature -- Initializzazione
+--	make_empty
+--		do
+----			is_null := false
+--			variabile := "NULL"
+----			is_empty:= True
+--		end
 end
 

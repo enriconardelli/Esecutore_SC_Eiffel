@@ -23,7 +23,7 @@ feature -- creazione
 			evento := Void
 			interna := False
 --			create condizione.set_null
-			create condizione.make_empty
+			create {CONDIZIONE_VUOTA}condizione.make
 			fork := False
 			merge := False
 		end

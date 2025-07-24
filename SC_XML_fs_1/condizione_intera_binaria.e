@@ -9,9 +9,9 @@ class
 inherit
 	CONDIZIONE_INTERA
 
-redefine
-	valuta
-	end
+--redefine
+--	valuta
+--	end
 
 create
 	make

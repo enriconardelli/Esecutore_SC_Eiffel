@@ -4,7 +4,7 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	CONDIZIONE_BOOLEANA
 
 inherit
@@ -14,8 +14,8 @@ inherit
 --    make_empty
 --    end
 
-create
-	make_empty
+--create
+--	make_empty
 
 --feature
 --	make_empty
@@ -36,8 +36,7 @@ feature -- Operazioni
 
 feature -- Valutazione
     valuta (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
-        do
-        	Result:=False
+        deferred
         end
 end
 

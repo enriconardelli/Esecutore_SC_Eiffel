@@ -4,30 +4,30 @@ note
 	date: "$Date$"
 	revision: "$Revision$"
 
-class
+deferred class
 	CONDIZIONE_INTERA
 
 inherit
 	CONDIZIONE
 
-redefine
-	make_empty
-	end
+--redefine
+--	make_empty
+--	end
 
-create make_empty
+--create make_empty
 
 feature -- attributi
 	operazione: STRING
 
-feature -- Initialization
-	make_empty
-		do
-			Precursor
-			operazione := "NULL"
---			is_null := false
---			variabile := "NULL"
---			is_empty:= True
-		end
+--feature -- Initialization
+--	make_empty
+--		do
+--			Precursor
+--			operazione := "NULL"
+----			is_null := false
+----			variabile := "NULL"
+----			is_empty:= True
+--		end
 
 feature -- Valutazione
     lista_operazioni: ARRAY[STRING]
@@ -53,8 +53,13 @@ feature -- Valutazione
 			end
         end
 
+--	valuta (variabili_intere: HASH_TABLE [INTEGER, STRING]): BOOLEAN
+--        do
+--        	Result:=False
+--        end
+
+feature
     valuta (variabili_intere: HASH_TABLE [INTEGER, STRING]): BOOLEAN
-        do
-        	Result:=False
+        deferred
         end
 end

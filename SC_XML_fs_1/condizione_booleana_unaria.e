@@ -10,9 +10,9 @@ class
 inherit
 	CONDIZIONE_BOOLEANA
 
-redefine
-	valuta
-	end
+--redefine
+--	valuta
+--	end
 
 create
 	make
