@@ -830,14 +830,10 @@ feature -- inizializzazione transizioni
 	assegna_condizione (transition: XML_ELEMENT; transizione: TRANSIZIONE)
 		local
 			condizione: CONDIZIONE
---			condizione_booelana: CONDIZIONE_BOOLEANA
---			condizione_intera: CONDIZIONE_INTERA
 			condizione_vuota: CONDIZIONE_VUOTA
 		do
-			-- creare e assegnare qua la condizione vuota
 			create condizione_vuota.make
 			transizione.set_condizione (condizione_vuota)
-			-- e poi eventualmente modificarla col resto del codice
 			if attached transition.attribute_by_name ("cond") as cond then
 				condizione := condizione_legittima (cond.value)
 				if condizione /= Void then
@@ -857,31 +853,15 @@ feature -- inizializzazione transizioni
 					print ("ERRORE 27: la transizione da >|" + transizione.sorgente.first.id + "|< a >|" + transizione.destinazione.first.id + "|< specifica una condizione di valore (non pulito) >|" + cond.value + "|< illegittimo !%N")
 					errore_costruzione_SC.extend (27)
 				end
---				condizione_booelana := booleana_legittima (cond.value)
---				condizione_intera := intera_legittima (cond.value)
---                if not condizione_booelana.is_empty then
---					transizione.set_condizione(condizione_booelana)
---				elseif not condizione_intera.is_empty then
---					transizione.set_condizione (condizione_intera)
---			else
-----				create condizione_nulla.set_null
---				create condizione_nulla.make_empty
---				transizione.set_condizione (condizione_nulla)
 			end
 		end
 
 	condizione_legittima (stringa: STRING): detachable CONDIZIONE
---		local
---			condizione_vuota: CONDIZIONE_VUOTA
 		do
 			Result := booleana_legittima (stringa)
 			if Result = Void then
 				Result := intera_legittima (stringa)
 			end
---			if Result = Void then
---				create condizione_vuota.make
---				Result := condizione_vuota
---			end
 		end
 
 	booleana_legittima (stringa: STRING): detachable CONDIZIONE_BOOLEANA
@@ -893,14 +873,10 @@ feature -- inizializzazione transizioni
             has_operator:BOOLEAN
             temp: CONDIZIONE_BOOLEANA_UNARIA
         do
-        	-- questa restituirà VOID o un'istanza di CONDIZIONE_BOOLEANA_BINARIA o di CONDIZIONE_BOOLEANA_UNARIA
-        	-- lo stesso per intera_legittima
+        	-- restituisce VOID o un'istanza di CONDIZIONE_BOOLEANA_BINARIA o di CONDIZIONE_BOOLEANA_UNARIA
         	has_operator := False
-	--      create Result.make_empty
 			create temp.make(false, "NULL")
 			operatori := temp.lista_operazioni
-	       	--operatori := CONDIZIONE_BOOLEANA.lista_operazioni --IMPLEMENTA IN QUESTO MODO MA NON CI RIESCO
-            --operatori := Result.lista_operazioni
         	across operatori as op_cursor loop
             op := op_cursor.item
                 if stringa.has_substring (op) then
@@ -948,10 +924,9 @@ booleana_variabile_legittima (string: STRING; variabili_booleane: HASH_TABLE [BO
             pos: INTEGER
             temp: CONDIZIONE_INTERA_UNARIA
         do
---        	create Result.make_empty
+        	-- restituisce VOID o un'istanza di CONDIZIONE_INTERA_BINARIA o di CONDIZIONE_INTERA_UNARIA
 			create temp.make("NULL", " ", 0)
 			operatori := temp.lista_operazioni
-            --operatori := Result.lista_operazioni
         	across operatori as op_cursor loop
             op := op_cursor.item
                 if stringa.has_substring (op) then

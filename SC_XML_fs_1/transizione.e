@@ -22,7 +22,6 @@ feature -- creazione
 			create azioni.make_empty
 			evento := Void
 			interna := False
---			create condizione.set_null
 			create {CONDIZIONE_VUOTA}condizione.make
 			fork := False
 			merge := False
@@ -130,8 +129,6 @@ feature -- check
 	check_condizione_booleana (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN
 			-- Controlla se la condizione sulle variabili booleane è verificata.
 		do
---			if condizione.is_null then
---			if condizione.is_empty then
 			if attached{CONDIZIONE_VUOTA}condizione then
 				Result := True
 			else
