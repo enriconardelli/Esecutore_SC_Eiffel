@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml initial="A" version="1.0" xmlns="http://www.w3.org/2005/07/scxml">
+  <datamodel>
+    <data expr="true" id="x"/>
+    <data expr="false" id="y"/>
+  </datamodel>
+  <state id="A">
+    <transition event="e" target="B" cond="x != not y"/> <!-- x != NOT y -->
+  </state>
+  <state id="B">
+    <transition event="e" target="A" cond="y = not x"/> <!-- y = NOT x -->
+  </state>
+</scxml>
