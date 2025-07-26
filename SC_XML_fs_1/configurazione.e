@@ -893,7 +893,7 @@ feature -- inizializzazione transizioni
                     	variabile := booleana_variabile_legittima(stringa.substring (1, pos - 1), variabili.booleane)
                     	variabile2 := booleana_variabile_legittima(stringa.substring (pos + op.count, stringa.count), variabili.booleane)
                         if variabile.valida and variabile2.valida then
-                        	create {CONDIZIONE_BOOLEANA_BINARIA}Result.make(variabile.negata, variabile.var, op, variabile2.negata, variabile2.var)
+                        	create {CONDIZIONE_BOOLEANA_BINARIA}Result.make(variabile.negata, pulisci_stringa(variabile.var), op, variabile2.negata, pulisci_stringa(variabile2.var))
                         end
                     end
                 end
@@ -935,8 +935,8 @@ booleana_variabile_legittima (string: STRING; variabili_booleane: HASH_TABLE [BO
                 if stringa.has_substring (op) then
                     pos := stringa.substring_index (op, 1)
                     if pos > 1 and pos + op.count <= stringa.count then
-                        variabile := stringa.substring (1, pos - 1)
-                        variabile2 := stringa.substring (pos + op.count, stringa.count)
+                        variabile := pulisci_stringa(stringa.substring (1, pos - 1))
+                        variabile2 := pulisci_stringa(stringa.substring (pos + op.count, stringa.count))
                         if variabili.intere.has (variabile) then
                       		if variabile2.is_integer then
                             	create {CONDIZIONE_INTERA_UNARIA}Result.make(variabile, op, variabile2.to_integer)

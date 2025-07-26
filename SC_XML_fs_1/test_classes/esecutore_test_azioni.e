@@ -383,6 +383,17 @@ feature -- Test
 			create esecutore.make (argomenti)
 			assert("ERRORE: il sistema non termina in (Y)", conf_has_state(esecutore.state_chart.config_base,"Y"))
 		end
+    t_intero_binario_3_spazi
+	--uguale ad azioni_con_interi_1 con 'M >= N'al posto di 'M > 2
+		local
+			esecutore: ESECUTORE
+		do
+			argomenti [1] := test_data_dir + "prova_spazi_binaria.xml"
+  			argomenti [2] := test_data_dir + "azioni_con_interi_1_eventi_1.txt"
+			create esecutore.make (argomenti)
+			assert("ERRORE: il sistema non termina in (Y)", conf_has_state(esecutore.state_chart.config_base,"Y"))
+		end
+
 
 	t_intero_binario_4
 	--uguale ad azioni_con_interi_1 con 'M<=N'al posto di 'M>2
@@ -445,6 +456,17 @@ feature -- Test
 			esecutore: ESECUTORE
 		do
 			argomenti [1] := test_data_dir + "booleano_binario_3.xml"
+  			argomenti [2] := test_data_dir + "booleano_binario_eventi_1.txt"
+			create esecutore.make (argomenti)
+			assert("ERRORE: il sistema non termina in (A)", conf_has_state(esecutore.state_chart.config_base,"A"))
+		end
+
+	t_booleano_binario_3_spazi
+	--test per and
+		local
+			esecutore: ESECUTORE
+		do
+			argomenti [1] := test_data_dir + "booleano_binario_3_spazi.xml"
   			argomenti [2] := test_data_dir + "booleano_binario_eventi_1.txt"
 			create esecutore.make (argomenti)
 			assert("ERRORE: il sistema non termina in (A)", conf_has_state(esecutore.state_chart.config_base,"A"))
