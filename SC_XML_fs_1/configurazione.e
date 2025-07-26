@@ -31,10 +31,21 @@ feature -- attributi
 
 	errore_costruzione_SC: LINKED_LIST [INTEGER]
 
+	operazioni_intere: ARRAY [STRING]
+
+	operazioni_booleane: ARRAY [STRING]
+
 feature -- creazione
 
 	make (nome_SC: STRING)
-		do
+		local
+            temp_boolean: CONDIZIONE_BOOLEANA_BINARIA
+            temp_integer: CONDIZIONE_INTERA_BINARIA
+        do
+			create temp_boolean.make(false, "NULL","!=",false,"NULL")
+			operazioni_booleane := temp_boolean.lista_operazioni
+			create temp_integer.make("NULL", " ", "NULL")
+			operazioni_intere := temp_integer.lista_operazioni
 			create errore_costruzione_SC.make
 			create config_base.make_empty
 			create stati.make (1)
@@ -866,18 +877,14 @@ feature -- inizializzazione transizioni
 
 	booleana_legittima (stringa: STRING): detachable CONDIZIONE_BOOLEANA
     	local
-            operatori: ARRAY [STRING]
             op: STRING
             variabile, variabile2: TUPLE [negata: BOOLEAN; var: STRING; valida: BOOLEAN]
             pos: INTEGER
             has_operator:BOOLEAN
-            temp: CONDIZIONE_BOOLEANA_BINARIA
         do
         	-- restituisce VOID o un'istanza di CONDIZIONE_BOOLEANA_BINARIA o di CONDIZIONE_BOOLEANA_UNARIA
         	has_operator := False
-			create temp.make(false, "NULL","!=",false,"NULL")
-			operatori := temp.lista_operazioni
-        	across operatori as op_cursor loop
+        	across operazioni_booleane as op_cursor loop
             op := op_cursor.item
                 if stringa.has_substring (op) then
                     has_operator := True
@@ -919,15 +926,11 @@ booleana_variabile_legittima (string: STRING; variabili_booleane: HASH_TABLE [BO
 
 	intera_legittima  (stringa: STRING): detachable CONDIZIONE_INTERA
         local
-            operatori: ARRAY [STRING]
             op, variabile, variabile2: STRING
             pos: INTEGER
-            temp: CONDIZIONE_INTERA_UNARIA
         do
         	-- restituisce VOID o un'istanza di CONDIZIONE_INTERA_BINARIA o di CONDIZIONE_INTERA_UNARIA
-			create temp.make("NULL", " ", 0)
-			operatori := temp.lista_operazioni
-        	across operatori as op_cursor loop
+        	across operazioni_intere as op_cursor loop
             op := op_cursor.item
                 if stringa.has_substring (op) then
                     pos := stringa.substring_index (op, 1)
