@@ -349,4 +349,14 @@ feature -- Test
      		assert("ERRORE: L è diverso da 3", esecutore.state_chart.variabili.intere.item ("L") = 3)
      		assert("ERRORE: K è diverso da true", esecutore.state_chart.variabili.booleane.item ("K"))
 		end
+
+	t_intero_binario
+		local
+			esecutore: ESECUTORE
+		do
+			argomenti [1] := test_data_dir + "intero_binario.xml"
+  			argomenti [2] := test_data_dir + "azioni_con_interi_1_eventi_1.txt"
+			create esecutore.make (argomenti)
+			assert("ERRORE: il sistema non termina in (Y)", conf_has_state(esecutore.state_chart.config_base,"Y"))
+		end
 end
