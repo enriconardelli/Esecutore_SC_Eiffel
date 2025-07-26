@@ -350,11 +350,68 @@ feature -- Test
      		assert("ERRORE: K è diverso da true", esecutore.state_chart.variabili.booleane.item ("K"))
 		end
 
-	t_intero_binario
+	t_intero_binario_1
+	--uguale ad azioni_con_interi_1 con 'M>N'al posto di 'M>2
 		local
 			esecutore: ESECUTORE
 		do
-			argomenti [1] := test_data_dir + "intero_binario.xml"
+			argomenti [1] := test_data_dir + "intero_binario_1.xml"
+  			argomenti [2] := test_data_dir + "azioni_con_interi_1_eventi_1.txt"
+			create esecutore.make (argomenti)
+			assert("ERRORE: il sistema non termina in (Y)", conf_has_state(esecutore.state_chart.config_base,"Y"))
+		end
+
+	t_intero_binario_2
+	--uguale ad azioni_con_interi_1 con 'M<N'al posto di 'M>2
+		local
+			esecutore: ESECUTORE
+		do
+
+			argomenti [1] := test_data_dir + "intero_binario_2.xml"
+  			argomenti [2] := test_data_dir + "azioni_con_interi_1_eventi_1.txt"
+			create esecutore.make (argomenti)
+			assert("ERRORE: il sistema non termina in (Y)", conf_has_state(esecutore.state_chart.config_base,"Y"))
+		end
+
+	t_intero_binario_3
+	--uguale ad azioni_con_interi_1 con 'M>=N'al posto di 'M>2
+		local
+			esecutore: ESECUTORE
+		do
+			argomenti [1] := test_data_dir + "intero_binario_3.xml"
+  			argomenti [2] := test_data_dir + "azioni_con_interi_1_eventi_1.txt"
+			create esecutore.make (argomenti)
+			assert("ERRORE: il sistema non termina in (Y)", conf_has_state(esecutore.state_chart.config_base,"Y"))
+		end
+
+	t_intero_binario_4
+	--uguale ad azioni_con_interi_1 con 'M<=N'al posto di 'M>2
+		local
+			esecutore: ESECUTORE
+		do
+			argomenti [1] := test_data_dir + "intero_binario_4.xml"
+  			argomenti [2] := test_data_dir + "azioni_con_interi_1_eventi_1.txt"
+			create esecutore.make (argomenti)
+			assert("ERRORE: il sistema non termina in (A2,B3)", conf_has_state(esecutore.state_chart.config_base,"A2") and conf_has_state(esecutore.state_chart.config_base,"B3"))
+		end
+
+	t_intero_binario_5
+	--uguale ad azioni_con_interi_1 con 'M/=N'al posto di 'M>2
+		local
+			esecutore: ESECUTORE
+		do
+			argomenti [1] := test_data_dir + "intero_binario_5.xml"
+  			argomenti [2] := test_data_dir + "azioni_con_interi_1_eventi_1.txt"
+			create esecutore.make (argomenti)
+			assert("ERRORE: il sistema non termina in (A2,B3)", conf_has_state(esecutore.state_chart.config_base,"A2") and conf_has_state(esecutore.state_chart.config_base,"B3"))
+		end
+
+	t_intero_binario_6
+	--uguale ad azioni_con_interi_1 con 'M=N'al posto di 'M>2
+		local
+			esecutore: ESECUTORE
+		do
+			argomenti [1] := test_data_dir + "intero_binario_6.xml"
   			argomenti [2] := test_data_dir + "azioni_con_interi_1_eventi_1.txt"
 			create esecutore.make (argomenti)
 			assert("ERRORE: il sistema non termina in (Y)", conf_has_state(esecutore.state_chart.config_base,"Y"))

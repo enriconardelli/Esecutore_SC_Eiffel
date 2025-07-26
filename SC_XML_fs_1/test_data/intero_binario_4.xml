@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml initial="X" version="1.0" xmlns="http://www.w3.org/2005/07/scxml">
+  <datamodel>
+    <data expr="5" id="N"/>
+    <data expr="2" id="M"/>
+  </datamodel>
+  <parallel id="X">
+    <state initial="A1" id="A">
+      <state id="A1">
+        <onexit>
+          <assign expr="inc" location="M"/>
+        </onexit>
+        <transition event="e" target="A2"/>
+      </state>
+      <state id="A2">
+        <transition event="e" target="A1">
+          <assign expr="inc" location="N"/>
+        </transition>
+      </state>
+    </state>
+    <state initial="B1" id="B">
+      <state id="B1">
+        <transition target="Y" event="z"/>
+        <transition target="B2" cond="M&lt;=N" event="f"/>
+      </state>
+      <state id="B2">
+        <transition target="B1" event="f"/>
+        <transition target="B3" cond="N&lt;=6" event="g"/>
+        <transition target="Y" cond="N&lt;=20" event="h"/>
+      </state>
+      <state id="B3">
+        <onentry>
+          <assign expr="20" location="N"/>
+        </onentry>
+        <transition target="B2" event="g"/>
+      </state>
+    </state>
+  </parallel>
+  <state id="Y">
+    <transition target="X" event="z">
+      <assign expr="dec" location="N"/>
+    </transition>
+  </state>
+</scxml>
