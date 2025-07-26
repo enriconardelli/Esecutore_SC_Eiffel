@@ -416,4 +416,48 @@ feature -- Test
 			create esecutore.make (argomenti)
 			assert("ERRORE: il sistema non termina in (Y)", conf_has_state(esecutore.state_chart.config_base,"Y"))
 		end
+
+	t_booleano_binario_1
+	--test per /=
+		local
+			esecutore: ESECUTORE
+		do
+			argomenti [1] := test_data_dir + "booleano_binario_1.xml"
+  			argomenti [2] := test_data_dir + "booleano_binario_eventi_1.txt"
+			create esecutore.make (argomenti)
+			assert("ERRORE: il sistema non termina in (B)", conf_has_state(esecutore.state_chart.config_base,"B"))
+		end
+
+	t_booleano_binario_2
+	--test per =
+		local
+			esecutore: ESECUTORE
+		do
+			argomenti [1] := test_data_dir + "booleano_binario_2.xml"
+  			argomenti [2] := test_data_dir + "booleano_binario_eventi_1.txt"
+			create esecutore.make (argomenti)
+			assert("ERRORE: il sistema non termina in (B)", conf_has_state(esecutore.state_chart.config_base,"B"))
+		end
+
+	t_booleano_binario_3
+	--test per and
+		local
+			esecutore: ESECUTORE
+		do
+			argomenti [1] := test_data_dir + "booleano_binario_3.xml"
+  			argomenti [2] := test_data_dir + "booleano_binario_eventi_1.txt"
+			create esecutore.make (argomenti)
+			assert("ERRORE: il sistema non termina in (A)", conf_has_state(esecutore.state_chart.config_base,"A"))
+		end
+
+	t_booleano_binario_4
+	--test per or
+		local
+			esecutore: ESECUTORE
+		do
+			argomenti [1] := test_data_dir + "booleano_binario_4.xml"
+  			argomenti [2] := test_data_dir + "booleano_binario_eventi_1.txt"
+			create esecutore.make (argomenti)
+			assert("ERRORE: il sistema non termina in (B)", conf_has_state(esecutore.state_chart.config_base,"B"))
+		end
 end

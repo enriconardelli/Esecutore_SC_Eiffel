@@ -871,11 +871,11 @@ feature -- inizializzazione transizioni
             variabile, variabile2: TUPLE [negata: BOOLEAN; var: STRING; valida: BOOLEAN]
             pos: INTEGER
             has_operator:BOOLEAN
-            temp: CONDIZIONE_BOOLEANA_UNARIA
+            temp: CONDIZIONE_BOOLEANA_BINARIA
         do
         	-- restituisce VOID o un'istanza di CONDIZIONE_BOOLEANA_BINARIA o di CONDIZIONE_BOOLEANA_UNARIA
         	has_operator := False
-			create temp.make(false, "NULL")
+			create temp.make(false, "NULL","!=",false,"NULL")
 			operatori := temp.lista_operazioni
         	across operatori as op_cursor loop
             op := op_cursor.item

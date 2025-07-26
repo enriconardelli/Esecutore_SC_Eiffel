@@ -9,15 +9,9 @@ deferred class
 
 inherit
 	CONDIZIONE
-	
+
 feature
 	negata: BOOLEAN
-
-feature -- Operazioni
-    lista_operazioni: ARRAY[STRING]
-       once
-       		Result := <<"/=", "=","and" ,"or">>
-       end
 
 feature -- Valutazione
     valuta (variabili_booleane: HASH_TABLE [BOOLEAN, STRING]): BOOLEAN

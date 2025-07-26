@@ -28,17 +28,23 @@ feature
 			variabile2 := variabile2_input
 		end
 
+feature -- Operazioni
+    lista_operazioni: ARRAY[STRING]
+       once
+       		Result := <<"!=", "=","&" ,"|">>
+       end
+
 feature -- Valutazione
     valutazione (v1, v2: BOOLEAN): BOOLEAN
         do
         	Result:=False
-        	if operazione.is_equal("/=") then
+        	if operazione.is_equal("!=") then
 				Result := v1 /= v2
 			elseif operazione.is_equal("=") then
 				Result := v1 = v2
-			elseif operazione.is_equal("and") then
+			elseif operazione.is_equal("&") then
 				Result := v1 and v2
-			elseif operazione.is_equal("or") then
+			elseif operazione.is_equal("|") then
 				Result := v1 or v2
 			end
         end

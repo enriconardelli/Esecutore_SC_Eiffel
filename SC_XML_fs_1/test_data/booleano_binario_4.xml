@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scxml initial="A" version="1.0" xmlns="http://www.w3.org/2005/07/scxml">
+  <datamodel>
+    <data expr="false" id="x"/>
+    <data expr="true" id="y"/>
+  </datamodel>
+  <state id="A">
+    <transition event="e" target="B" cond="x|y"/>
+  </state>
+  <state id="B">
+    <transition event="e" target="A" cond="y|x"/>
+  </state>
+</scxml>
